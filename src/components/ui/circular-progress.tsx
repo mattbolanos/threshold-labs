@@ -47,7 +47,7 @@ const CircularProgress = ({
           strokeWidth={strokeWidth}
         />
         <circle
-          className={cn("stroke-primary transition-all", progressClassName)}
+          className={cn("stroke-primary", progressClassName)}
           cx={size / 2}
           cy={size / 2}
           fill="none"

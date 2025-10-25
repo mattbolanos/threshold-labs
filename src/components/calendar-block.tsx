@@ -8,7 +8,7 @@ interface CalendarBlockProps {
 }
 
 export function CalendarBlock({ className }: CalendarBlockProps) {
-  const rpe = Math.floor(Math.random() * 9) + 2;
+  const rpe = Math.floor(Math.random() * 10) + 1;
   const time = Math.floor(Math.random() * 100) + 30;
   const stl = rpe * (time / 10);
   const workoutType =

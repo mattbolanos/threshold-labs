@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 const geistSans = Geist({
   subsets: ["latin"],
@@ -29,7 +30,7 @@ export default function RootLayout({
       >
         <main>
           <div className="mx-auto max-w-7xl p-5 pb-20 sm:p-8 sm:pt-20">
-            {children}
+            <NuqsAdapter>{children}</NuqsAdapter>
           </div>
         </main>
       </body>

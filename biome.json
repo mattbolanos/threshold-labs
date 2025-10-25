@@ -25,6 +25,9 @@
     },
     "enabled": true,
     "rules": {
+      "a11y": {
+        "useSemanticElements": "warn"
+      },
       "correctness": {
         "noUnusedFunctionParameters": "error",
         "noUnusedImports": "error",

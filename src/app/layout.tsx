@@ -3,18 +3,18 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
   subsets: ["latin"],
+  variable: "--font-geist-sans",
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
   subsets: ["latin"],
+  variable: "--font-geist-mono",
 });
 
 export const metadata: Metadata = {
-  title: "Threshold Lab",
   description: "Train Smarter. Race Faster.",
+  title: "Threshold Lab",
 };
 
 export default function RootLayout({
@@ -28,7 +28,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <main>
-          <div className="max-w-7xl mx-auto p-6 pb-20 sm:p-20">{children}</div>
+          <div className="mx-auto max-w-7xl p-5 pb-20 sm:p-8 sm:pt-20">
+            {children}
+          </div>
         </main>
       </body>
     </html>

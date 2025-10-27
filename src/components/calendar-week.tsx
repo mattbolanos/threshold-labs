@@ -1,6 +1,5 @@
 "use client";
 
-import { useMemo } from "react";
 import { CalendarBlock } from "@/components/calendar-block";
 import { useWeekStart } from "@/hooks/use-week-start";
 import { cn, getWeekDays, isSameDay } from "@/lib/utils";
@@ -8,7 +7,7 @@ import { cn, getWeekDays, isSameDay } from "@/lib/utils";
 export function CalendarWeek() {
   const { weekStart } = useWeekStart();
 
-  const weekDays = useMemo(() => getWeekDays(weekStart), [weekStart]);
+  const weekDays = getWeekDays(weekStart);
   const today = new Date();
 
   return (

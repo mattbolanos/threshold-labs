@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
-import { useMemo } from "react";
+
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { useWeekStart } from "@/hooks/use-week-start";
@@ -11,10 +11,7 @@ export function CalendarArrows() {
   const today = new Date();
   const { weekStart, setWeekStart } = useWeekStart();
 
-  const headerLabel = useMemo(
-    () => formatWeekRangeLabel(weekStart),
-    [weekStart],
-  );
+  const headerLabel = formatWeekRangeLabel(weekStart);
 
   const handleGoBack = () => {
     setWeekStart((prev) => addWeeks(prev, -1));

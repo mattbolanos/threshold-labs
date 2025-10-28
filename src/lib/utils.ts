@@ -28,7 +28,6 @@ export function startOfWeek(date: Date): Date {
     date.getMonth(),
     date.getDate(),
   );
-  normalized.setHours(0, 0, 0, 0);
   const currentDay = normalized.getDay();
 
   const diff = (currentDay + 7) % 7;
@@ -80,4 +79,8 @@ export function formatWeekRangeLabel(
     return `${startMonth} - ${endMonth} ${startYear}`;
   }
   return `${startMonth} ${startYear} - ${endMonth} ${endYear}`;
+}
+
+export function formatQueryDate(date: Date): string {
+  return date.toISOString().split("T")[0];
 }

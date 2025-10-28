@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { Providers } from "./providers";
 
 const geistSans = Geist({
   subsets: ["latin"],
@@ -25,12 +25,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {process.env.NODE_ENV === "development" && (
+          <script
+            crossOrigin="anonymous"
+            src="//unpkg.com/react-scan/dist/auto.global.js"
+          />
+        )}
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <main>
           <div className="mx-auto max-w-7xl p-5 pb-20 sm:p-8 sm:pt-20">
-            <NuqsAdapter>{children}</NuqsAdapter>
+            <Providers>{children}</Providers>
           </div>
         </main>
       </body>

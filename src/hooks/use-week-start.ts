@@ -1,5 +1,3 @@
-"use client";
-
 import { parseAsString, useQueryState } from "nuqs";
 import { addWeeks, startOfWeek } from "@/lib/utils";
 

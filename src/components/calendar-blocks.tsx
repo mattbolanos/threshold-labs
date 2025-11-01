@@ -3,7 +3,7 @@
 import { useWeekStart } from "@/hooks/use-week-start";
 import { addDays, formatQueryDate, getWeekDays } from "@/lib/utils";
 import { api } from "@/trpc/react";
-import { CalendarBlock } from "./calendar-block";
+import { Block } from "./block/block";
 
 export function CalendarBlocks() {
   const { weekStartDate } = useWeekStart();
@@ -26,7 +26,7 @@ export function CalendarBlocks() {
         return (
           <div className="flex flex-col gap-2" key={day.toISOString()}>
             {dayWorkouts.map((workout) => (
-              <CalendarBlock key={workout.id} workout={workout} />
+              <Block key={workout.id} workout={workout} />
             ))}
           </div>
         );

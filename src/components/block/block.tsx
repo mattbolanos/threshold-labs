@@ -5,7 +5,7 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { CircularProgress } from "@/components/ui/circular-progress";
 import { cn, formatMinutesToTime } from "@/lib/utils";
 import type { WorkoutsOutput } from "@/server/api/types";
-import { BlockDialog } from "./block-dialog";
+import { BlockDialog } from "./dialog-content";
 
 interface BlockProps {
   workout: WorkoutsOutput[number];
@@ -32,7 +32,6 @@ export function Block({ workout, className }: BlockProps) {
           </span>
           <div className="flex items-center gap-2">
             <span className="text-sm tabular-nums">{workout.rpe} RPE</span>
-
             <CircularProgress size={24} strokeWidth={3} value={workout.rpe} />
           </div>
           <span className="text-sm tabular-nums">

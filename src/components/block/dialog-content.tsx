@@ -1,4 +1,13 @@
-import { Calendar1Icon, FlameIcon, TimerIcon, WeightIcon } from "lucide-react";
+import {
+  Calendar1Icon,
+  FlameIcon,
+  HeartIcon,
+  ListIcon,
+  RefreshCcwIcon,
+  TimerIcon,
+  WeightIcon,
+} from "lucide-react";
+import { CircularProgress } from "@/components/ui/circular-progress";
 import {
   Dialog,
   DialogContent,
@@ -7,7 +16,6 @@ import {
 } from "@/components/ui/dialog";
 import { formatMinutesToTime } from "@/lib/utils";
 import type { WorkoutsOutput } from "@/server/api/types";
-import { CircularProgress } from "../ui/circular-progress";
 import { DialogProperty } from "./dialog-property";
 
 interface BlockDialogProps {
@@ -34,6 +42,11 @@ export function BlockDialog({ open, onOpenChange, workout }: BlockDialogProps) {
             })}
           />
           <DialogProperty
+            Icon={RefreshCcwIcon}
+            label="Cycle"
+            value={workout.cycle}
+          />
+          <DialogProperty
             Icon={TimerIcon}
             label="Training Minutes"
             value={formatMinutesToTime(workout.trainingMinutes)}
@@ -53,9 +66,19 @@ export function BlockDialog({ open, onOpenChange, workout }: BlockDialogProps) {
             }
           />
           <DialogProperty
+            Icon={HeartIcon}
+            label="Cardio Minutes"
+            value={formatMinutesToTime(workout.cardioMinutes)}
+          />
+          <DialogProperty
             Icon={WeightIcon}
             label="STL"
             value={workout.subjectiveTrainingLoad.toFixed(1)}
+          />
+          <DialogProperty
+            Icon={ListIcon}
+            label="Plan"
+            value={workout.workoutPlan}
           />
         </div>
       </DialogContent>

@@ -11,7 +11,7 @@ interface DialogPropertyProps {
 
 export function DialogProperty({ Icon, label, value }: DialogPropertyProps) {
   return (
-    <div className="flex items-center justify-start gap-8">
+    <div className="flex justify-start gap-8">
       <DialogLabel Icon={Icon} label={label} />
       <DialogValue value={value} />
     </div>

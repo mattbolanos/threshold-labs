@@ -5,8 +5,9 @@ interface DialogValueProps {
 }
 
 export function DialogValue({ value }: DialogValueProps) {
-  if (typeof value === "string") {
-    return <span className="text-sm tabular-nums">{value}</span>;
-  }
-  return value;
+  return (
+    <div className="flex h-full min-h-[34px] flex-1 shrink grow items-center">
+      <span className="py-1.5 text-sm">{value}</span>
+    </div>
+  );
 }

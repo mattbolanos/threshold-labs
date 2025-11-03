@@ -4,7 +4,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
 import type { WorkoutsOutput } from "@/server/api/types";
+import { DialogFreeText } from "./dialog-free-text";
 import { dialogProperties } from "./dialog-properties";
 import { DialogProperty } from "./dialog-property";
 
@@ -30,6 +32,9 @@ export function BlockDialog({ open, onOpenChange, workout }: BlockDialogProps) {
               value={property.getValue(workout)}
             />
           ))}
+          <Separator />
+          <DialogFreeText text={workout.workoutPlan} title="Plan" />
+          <DialogFreeText text={workout.notes} title="Notes" />
         </div>
       </DialogContent>
     </Dialog>

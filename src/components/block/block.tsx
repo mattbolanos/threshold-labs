@@ -5,7 +5,7 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { CircularProgress } from "@/components/ui/circular-progress";
 import { cn, formatMinutesToTime } from "@/lib/utils";
 import type { WorkoutsOutput } from "@/server/api/types";
-import { BlockDialog } from "./dialog-content";
+import { BlockDialog } from "./dialog";
 
 interface BlockProps {
   workout: WorkoutsOutput[number];

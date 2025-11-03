@@ -11,6 +11,7 @@ interface DialogPropertyProps {
 
 export function DialogProperty({ Icon, label, value }: DialogPropertyProps) {
   if (value === null) return null;
+
   return (
     <div className="flex justify-start gap-8">
       <DialogLabel Icon={Icon} label={label} />

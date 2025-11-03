@@ -3,7 +3,6 @@ import {
   BikeIcon,
   BrickWallIcon,
   Calendar1Icon,
-  ClipboardListIcon,
   CupSodaIcon,
   FlameIcon,
   FootprintsIcon,
@@ -70,11 +69,6 @@ export const dialogProperties: DialogPropertyConfig[] = [
     getValue: (workout) => formatMinutesToTime(workout.cardioMinutes),
     Icon: HeartIcon,
     label: "Cardio mins",
-  },
-  {
-    getValue: (workout) => workout.workoutPlan,
-    Icon: ClipboardListIcon,
-    label: "Plan",
   },
   {
     getValue: (workout) => workout.totalRunMiles,

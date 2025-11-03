@@ -1,0 +1,124 @@
+import type { LucideIcon } from "lucide-react";
+import {
+  BikeIcon,
+  BrickWallIcon,
+  Calendar1Icon,
+  ClipboardListIcon,
+  CupSodaIcon,
+  FlameIcon,
+  FootprintsIcon,
+  GaugeIcon,
+  HeartIcon,
+  KayakIcon,
+  RabbitIcon,
+  RefreshCcwIcon,
+  RocketIcon,
+  TimerIcon,
+  WeightIcon,
+  WindIcon,
+} from "lucide-react";
+import type { ReactNode } from "react";
+import { CircularProgress } from "@/components/ui/circular-progress";
+import { formatMinutesToTime } from "@/lib/utils";
+import type { WorkoutsOutput } from "@/server/api/types";
+
+type Workout = WorkoutsOutput[number];
+
+interface DialogPropertyConfig {
+  Icon: LucideIcon;
+  label: string;
+  getValue: (workout: Workout) => string | ReactNode | null | number;
+}
+
+export const dialogProperties: DialogPropertyConfig[] = [
+  {
+    getValue: (workout) =>
+      new Date(workout.workoutDate).toLocaleDateString("en-US", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }),
+    Icon: Calendar1Icon,
+    label: "Date",
+  },
+  {
+    getValue: (workout) => workout.cycle,
+    Icon: RefreshCcwIcon,
+    label: "Cycle",
+  },
+  {
+    getValue: (workout) => formatMinutesToTime(workout.trainingMinutes),
+    Icon: TimerIcon,
+    label: "Training mins",
+  },
+  {
+    getValue: (workout) => (
+      <div className="flex items-center gap-1">
+        <span className="text-sm tabular-nums">{workout.rpe}</span>
+        <CircularProgress size={24} strokeWidth={3} value={workout.rpe} />
+      </div>
+    ),
+    Icon: FlameIcon,
+    label: "RPE",
+  },
+  {
+    getValue: (workout) => workout.subjectiveTrainingLoad,
+    Icon: WeightIcon,
+    label: "STL",
+  },
+  {
+    getValue: (workout) => formatMinutesToTime(workout.cardioMinutes),
+    Icon: HeartIcon,
+    label: "Cardio mins",
+  },
+  {
+    getValue: (workout) => workout.workoutPlan,
+    Icon: ClipboardListIcon,
+    label: "Plan",
+  },
+  {
+    getValue: (workout) => workout.totalRunMiles,
+    Icon: FootprintsIcon,
+    label: "Run mi",
+  },
+  {
+    getValue: (workout) => workout.thresholdMiles,
+    Icon: GaugeIcon,
+    label: "Threshold mi",
+  },
+  {
+    getValue: (workout) => workout.tempoMiles,
+    Icon: RabbitIcon,
+    label: "Tempo mi",
+  },
+  {
+    getValue: (workout) => workout.vo2Miles,
+    Icon: WindIcon,
+    label: "VO2 mi",
+  },
+  {
+    getValue: (workout) => workout.speedMiles,
+    Icon: RocketIcon,
+    label: "Speed mi",
+  },
+  {
+    getValue: (workout) => workout.totalBikeMiles,
+    Icon: BikeIcon,
+    label: "Bike mi",
+  },
+  {
+    getValue: (workout) => workout.totalRowKs,
+    Icon: KayakIcon,
+    label: "Row km",
+  },
+  {
+    getValue: (workout) => workout.burpees,
+    Icon: CupSodaIcon,
+    label: "Burpees",
+  },
+  {
+    getValue: (workout) => workout.wallballs,
+    Icon: BrickWallIcon,
+    label: "Wallballs",
+  },
+];

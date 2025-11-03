@@ -6,10 +6,11 @@ import { DialogValue } from "./dialog-value";
 interface DialogPropertyProps {
   label: string;
   Icon: LucideIcon;
-  value: string | ReactNode;
+  value: string | ReactNode | null;
 }
 
 export function DialogProperty({ Icon, label, value }: DialogPropertyProps) {
+  if (value === null) return null;
   return (
     <div className="flex justify-start gap-8">
       <DialogLabel Icon={Icon} label={label} />

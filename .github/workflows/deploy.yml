@@ -1,0 +1,40 @@
+name: Deploy to Vercel
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.1.31
+
+      - name: Install Vercel CLI (bun)
+        run: bun add -g vercel
+
+      - name: Deploy project
+        env:
+          VERCEL_TOKEN: ${{ secrets.TLAB_VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_PROJECT_NAME: threshold-labs
+        run: |
+          if [ "${GITHUB_REF}" = "refs/heads/main" ]; then
+            echo "Deploying to production..."
+            vercel deploy --prod --token "$VERCEL_TOKEN" --yes
+          else
+            echo "Deploying to preview..."
+            vercel deploy --token "$VERCEL_TOKEN" --yes
+          fi

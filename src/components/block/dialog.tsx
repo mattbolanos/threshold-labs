@@ -32,7 +32,7 @@ export function BlockDialog({ open, onOpenChange, workout }: BlockDialogProps) {
               value={property.getValue(workout)}
             />
           ))}
-          <div className="my-2 space-y-2 px-1.5">
+          <div className="my-4 space-y-4 px-1.5">
             <Separator />
             <div className="space-y-4">
               <DialogFreeText text={workout.workoutPlan} title="Plan" />

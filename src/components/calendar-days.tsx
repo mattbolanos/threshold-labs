@@ -15,7 +15,7 @@ export function CalendarDays() {
 
         return (
           <div key={day.toISOString()}>
-            <div className="bg-card col-span-1 hidden cursor-pointer flex-col items-center justify-center rounded-md border py-1 font-medium md:flex">
+            <div className="bg-card col-span-1 hidden flex-col items-center justify-center rounded-md border py-1 font-medium md:flex">
               <span className="text-xs opacity-70">
                 {day.toLocaleString("default", {
                   weekday: "short",
@@ -31,7 +31,7 @@ export function CalendarDays() {
               </span>
             </div>
             <button
-              className="bg-card col-span-1 flex w-full cursor-pointer flex-col items-center justify-center rounded-md border py-1 font-medium md:hidden"
+              className="bg-card hover:bg-muted/80 col-span-1 flex w-full cursor-pointer flex-col items-center justify-center rounded-md border py-1 font-medium md:hidden"
               key={day.toISOString()}
               onClick={() => setSelectedDay(day)}
               type="button"

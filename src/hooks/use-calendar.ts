@@ -1,4 +1,4 @@
-import { parseAsIsoDate, parseAsString, useQueryState } from "nuqs";
+import { parseAsString, useQueryState } from "nuqs";
 import { addWeeks, startOfWeek } from "@/lib/utils";
 
 export function useCalendar() {
@@ -11,11 +11,11 @@ export function useCalendar() {
 
   const [selectedDay, setSelectedDay] = useQueryState(
     "selectedDay",
-    parseAsIsoDate.withDefault(today),
+    parseAsString.withDefault(today.toISOString().split("T")[0]),
   );
 
   const weekStartDate = new Date(`${weekStart}T00:00:00`);
-  const selectedDayDate = new Date(selectedDay);
+  const selectedDayDate = new Date(`${selectedDay}T00:00:00`);
 
   const addWeektoStart = () => {
     setWeekStart(addWeeks(weekStartDate, 1).toISOString().split("T")[0]);
@@ -27,6 +27,7 @@ export function useCalendar() {
 
   const jumpToToday = () => {
     setWeekStart(startOfWeek(today).toISOString().split("T")[0]);
+    setSelectedDay(today.toISOString().split("T")[0]);
   };
 
   return {

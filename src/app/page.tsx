@@ -1,8 +1,8 @@
 import { Suspense } from "react";
-import { CalendarArrows } from "@/components/calendar-arrows";
-import { CalendarBlocks } from "@/components/calendar-blocks";
-import { CalendarDays } from "@/components/calendar-days";
-import { CalendarHeaderText } from "@/components/calendar-header-text";
+import { CalendarArrows } from "@/components/calendar/calendar-arrows";
+import { CalendarBlocks } from "@/components/calendar/calendar-blocks";
+import { CalendarDays } from "@/components/calendar/calendar-days";
+import { CalendarHeaderText } from "@/components/calendar/calendar-header-text";
 
 export default function Home() {
   return (

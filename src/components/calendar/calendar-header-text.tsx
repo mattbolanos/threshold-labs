@@ -4,9 +4,9 @@ import { useCalendar } from "@/hooks/use-calendar";
 import { formatWeekRangeLabel } from "@/lib/utils";
 
 export function CalendarHeaderText() {
-  const { weekStartDate } = useCalendar();
+  const { selectedDayDate } = useCalendar();
 
-  const headerLabel = formatWeekRangeLabel(weekStartDate);
+  const headerLabel = formatWeekRangeLabel(selectedDayDate);
 
   return (
     <div className="flex flex-col">

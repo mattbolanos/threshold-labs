@@ -9,7 +9,7 @@ import {
   isSameDay,
 } from "@/lib/utils";
 import { api } from "@/trpc/react";
-import { Block } from "./block/block";
+import { Block } from "../block/block";
 
 export function CalendarBlocks() {
   const { weekStartDate, selectedDayDate } = useCalendar();

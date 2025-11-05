@@ -35,6 +35,7 @@ export const dialogProperties: DialogPropertyConfig[] = [
       new Date(workout.workoutDate).toLocaleDateString("en-US", {
         day: "numeric",
         month: "long",
+        timeZone: "UTC",
         year: "numeric",
       }),
     Icon: Calendar1Icon,

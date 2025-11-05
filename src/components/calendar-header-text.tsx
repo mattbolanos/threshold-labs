@@ -1,10 +1,10 @@
 "use client";
 
-import { useWeekStart } from "@/hooks/use-week-start";
+import { useCalendar } from "@/hooks/use-calendar";
 import { formatWeekRangeLabel } from "@/lib/utils";
 
 export function CalendarHeaderText() {
-  const { weekStartDate } = useWeekStart();
+  const { weekStartDate } = useCalendar();
 
   const headerLabel = formatWeekRangeLabel(weekStartDate);
 

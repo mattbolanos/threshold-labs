@@ -4,13 +4,13 @@ import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
-import { useWeekStart } from "@/hooks/use-week-start";
+import { useCalendar } from "@/hooks/use-calendar";
 import { addDays, formatQueryDate } from "@/lib/utils";
 import { api } from "@/trpc/react";
 
 export function CalendarArrows() {
   const { addWeektoStart, jumpToToday, subtractWeekfromStart, weekStartDate } =
-    useWeekStart();
+    useCalendar();
 
   // prefetch last week
   api.internal.getWorkouts.usePrefetchQuery({

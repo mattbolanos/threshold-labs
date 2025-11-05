@@ -1,12 +1,18 @@
 "use client";
 
-import { useWeekStart } from "@/hooks/use-week-start";
-import { addDays, formatQueryDate, getWeekDays } from "@/lib/utils";
+import { useCalendar } from "@/hooks/use-calendar";
+import {
+  addDays,
+  cn,
+  formatQueryDate,
+  getWeekDays,
+  isSameDay,
+} from "@/lib/utils";
 import { api } from "@/trpc/react";
 import { Block } from "./block/block";
 
 export function CalendarBlocks() {
-  const { weekStartDate } = useWeekStart();
+  const { weekStartDate, selectedDayDate } = useCalendar();
 
   const [data] = api.internal.getWorkouts.useSuspenseQuery({
     from: formatQueryDate(weekStartDate),
@@ -16,15 +22,23 @@ export function CalendarBlocks() {
   const weekDays = getWeekDays(weekStartDate);
 
   return (
-    <div className="grid grid-cols-7 gap-2">
+    <div className="grid grid-cols-1 gap-2 md:grid-cols-7">
       {weekDays.map((day) => {
         const dayString = formatQueryDate(day);
         const dayWorkouts = data.filter(
           (workout) => workout.workoutDate === dayString,
         );
 
+        const isSelected = isSameDay(selectedDayDate, day);
+
         return (
-          <div className="flex flex-col gap-2" key={day.toISOString()}>
+          <div
+            className={cn(
+              "flex flex-col gap-2",
+              isSelected ? "flex" : "hidden md:flex",
+            )}
+            key={day.toISOString()}
+          >
             {dayWorkouts.map((workout) => (
               <Block key={workout.id} workout={workout} />
             ))}

@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { CircularProgress } from "@/components/ui/circular-progress";
@@ -20,7 +19,6 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn, formatMinutesToTime } from "@/lib/utils";
 import type { WorkoutsOutput } from "@/server/api/types";
 import { BlockContent } from "./block-content";
@@ -31,9 +29,6 @@ interface BlockProps {
 }
 
 export function Block({ workout, className }: BlockProps) {
-  const [open, setOpen] = useState(false);
-  const isDesktop = useMediaQuery("(min-width: 768px)");
-
   const BaseCard = () => (
     <Card className={cn(className, "hover:bg-muted/80 w-full cursor-pointer")}>
       <CardContent className="flex flex-col items-start gap-3 text-left">
@@ -58,10 +53,10 @@ export function Block({ workout, className }: BlockProps) {
 
   const Content = () => <BlockContent workout={workout} />;
 
-  if (isDesktop) {
-    return (
-      <Dialog onOpenChange={setOpen} open={open}>
-        <DialogTrigger>
+  return (
+    <>
+      <Dialog>
+        <DialogTrigger className="hidden sm:inline-flex">
           <BaseCard />
         </DialogTrigger>
         <DialogContent>
@@ -71,25 +66,22 @@ export function Block({ workout, className }: BlockProps) {
           <Content />
         </DialogContent>
       </Dialog>
-    );
-  }
-
-  return (
-    <Drawer onOpenChange={setOpen} open={open}>
-      <DrawerTrigger>
-        <BaseCard />
-      </DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader>
-          <DrawerTitle>{workout.workoutType}</DrawerTitle>
-        </DrawerHeader>
-        <Content />
-        <DrawerFooter>
-          <DrawerClose asChild>
-            <Button>Close</Button>
-          </DrawerClose>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+      <Drawer>
+        <DrawerTrigger className="inline-flex sm:hidden">
+          <BaseCard />
+        </DrawerTrigger>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>{workout.workoutType}</DrawerTitle>
+          </DrawerHeader>
+          <Content />
+          <DrawerFooter>
+            <DrawerClose asChild>
+              <Button>Close</Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+    </>
   );
 }

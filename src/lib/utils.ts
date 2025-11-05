@@ -84,3 +84,26 @@ export function formatWeekRangeLabel(
 export function formatQueryDate(date: Date): string {
   return date.toISOString().split("T")[0];
 }
+
+export function getCalendarDays(anchorDate: Date): {
+  lowerBound: Date;
+  upperBound: Date;
+  days: Date[];
+} {
+  const days = [];
+  const start = new Date(anchorDate);
+  start.setDate(anchorDate.getDate() - 30);
+
+  for (let i = 0; i < 61; i++) {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+
+    days.push(d);
+  }
+
+  return {
+    days,
+    lowerBound: start,
+    upperBound: addDays(start, 60),
+  };
+}

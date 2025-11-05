@@ -39,6 +39,15 @@ export function CalendarBlocks() {
             )}
             key={day.toISOString()}
           >
+            {isSelected && (
+              <span className="py-2 font-semibold md:hidden">
+                {selectedDayDate.toLocaleString("default", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })}
+              </span>
+            )}
             {dayWorkouts.map((workout) => (
               <Block key={workout.id} workout={workout} />
             ))}

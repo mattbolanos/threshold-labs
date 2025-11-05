@@ -31,19 +31,19 @@ export function CalendarDays() {
               </span>
             </div>
             <button
-              className="bg-card hover:bg-muted/80 col-span-1 flex w-full cursor-pointer flex-col items-center justify-center rounded-md border py-1 font-medium md:hidden"
+              className="bg-card col-span-1 flex w-full cursor-pointer flex-col items-center justify-center gap-0.5 rounded-full font-medium md:hidden"
               key={day.toISOString()}
               onClick={() => setSelectedDay(day)}
               type="button"
             >
-              <span className="text-xs opacity-70">
+              <span className="text-[10px] opacity-70">
                 {day.toLocaleString("default", {
-                  weekday: "short",
+                  weekday: "narrow",
                 })}
               </span>
               <span
                 className={cn(
-                  "flex size-7 items-center justify-center rounded-full tabular-nums",
+                  "flex size-7 items-center justify-center rounded-full text-sm tabular-nums",
                   isSelected ? "bg-primary text-primary-foreground" : "",
                 )}
               >

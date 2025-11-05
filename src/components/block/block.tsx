@@ -30,7 +30,9 @@ interface BlockProps {
 
 export function Block({ workout, className }: BlockProps) {
   const BaseCard = () => (
-    <Card className={cn(className, "hover:bg-muted/80 w-full cursor-pointer")}>
+    <Card
+      className={cn(className, "sm:hover:bg-muted/80 w-full cursor-pointer")}
+    >
       <CardContent className="flex flex-col items-start gap-3 text-left">
         <CardTitle className="flex items-start gap-2 pb-1">
           <span className="text-[15px] leading-snug">

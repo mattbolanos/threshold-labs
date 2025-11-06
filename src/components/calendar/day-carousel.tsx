@@ -18,6 +18,7 @@ interface DayCarouselProps {
 export function DayCarousel({ maxWorkoutDate }: DayCarouselProps) {
   const { setWeekStart, weekStartDate } = useCalendarNav();
   const { dayOfWeek, setDayOfWeek } = useDayOfWeek();
+  const [emblaApi, setEmblaApi] = React.useState<CarouselApi>();
 
   const calendarDays = React.useMemo(
     () =>
@@ -46,49 +47,42 @@ export function DayCarousel({ maxWorkoutDate }: DayCarouselProps) {
     [calendarDays, weekStartDate],
   );
 
-  const emblaApiRef = React.useRef<CarouselApi | null>(null);
-
-  const setEmblaApi = React.useCallback((api: CarouselApi | null) => {
-    emblaApiRef.current = api;
-  }, []);
-
-  const scrollToCurrentWeek = React.useCallback(() => {
-    const api = emblaApiRef.current;
-    if (!api) return;
-    api.scrollTo(currentWeekIndex, true);
-  }, [currentWeekIndex]);
-
-  const onSlidesInView = React.useCallback(() => {
-    const api = emblaApiRef.current;
-    if (!api) return;
-
-    const slides = api.slidesInView();
-    const firstSlideIndex = slides[0];
-    const day = calendarDays[firstSlideIndex];
-    if (day && day.date.getDay() === 0 && day.weekIndex !== currentWeekIndex) {
-      const newWeekStart = startOfWeek(day.date).toISOString().split("T")[0];
-      setWeekStart(newWeekStart);
-    }
-  }, [calendarDays, currentWeekIndex, setWeekStart]);
-
   React.useEffect(() => {
-    const api = emblaApiRef.current;
-    if (!api) return;
+    if (!emblaApi) return;
 
-    api.on("init", scrollToCurrentWeek);
-    api.on("reInit", scrollToCurrentWeek);
-    api.on("slidesInView", onSlidesInView);
+    const scrollToCurrentWeek = () => {
+      emblaApi.scrollTo(currentWeekIndex, true);
+    };
+
+    const onSlidesInView = () => {
+      const slides = emblaApi.slidesInView();
+      const firstSlideIndex = slides[0];
+      const day = calendarDays[firstSlideIndex];
+
+      if (
+        day &&
+        day.date.getDay() === 0 &&
+        day.weekIndex !== currentWeekIndex
+      ) {
+        const newWeekStart = startOfWeek(day.date).toISOString().split("T")[0];
+        setWeekStart(newWeekStart);
+      }
+    };
+
+    emblaApi.on("init", scrollToCurrentWeek);
+    emblaApi.on("reInit", scrollToCurrentWeek);
+    emblaApi.on("slidesInView", onSlidesInView);
 
     return () => {
-      api.off("init", scrollToCurrentWeek);
-      api.off("reInit", scrollToCurrentWeek);
-      api.off("slidesInView", onSlidesInView);
+      emblaApi.off("init", scrollToCurrentWeek);
+      emblaApi.off("reInit", scrollToCurrentWeek);
+      emblaApi.off("slidesInView", onSlidesInView);
     };
-  }, [scrollToCurrentWeek, onSlidesInView]);
+  }, [currentWeekIndex, calendarDays, setWeekStart, emblaApi]);
 
   return (
     <Carousel
-      className="relative mx-auto -mt-6 w-full md:hidden"
+      className="mx-auto -mt-6 w-full md:hidden"
       opts={{
         dragFree: false,
         slidesToScroll: 7,

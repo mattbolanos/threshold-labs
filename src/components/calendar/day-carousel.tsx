@@ -16,15 +16,23 @@ interface DayCarouselProps {
 }
 
 export function DayCarousel({ maxWorkoutDate }: DayCarouselProps) {
-  const { setWeekStart, subtractWeekfromStart, addWeektoStart, weekStartDate } =
-    useCalendarNav();
+  const { setWeekStart, weekStartDate } = useCalendarNav();
   const { dayOfWeek, setDayOfWeek } = useDayOfWeek();
 
-  const calendarDays = getCalendarDays(
-    maxWorkoutDate ? new Date(`${maxWorkoutDate}T00:00:00`) : new Date(),
+  const calendarDays = React.useMemo(
+    () =>
+      getCalendarDays(
+        maxWorkoutDate ? new Date(`${maxWorkoutDate}T00:00:00`) : new Date(),
+      ),
+    [maxWorkoutDate],
   );
-  const startIndex =
-    calendarDays.find((day) => isSameDay(day.date, new Date()))?.weekIndex ?? 0;
+
+  const startIndex = React.useMemo(
+    () =>
+      calendarDays.find((day) => isSameDay(day.date, new Date()))?.weekIndex ??
+      0,
+    [calendarDays],
+  );
 
   const handleSelectDay = (date: Date) => {
     setWeekStart(startOfWeek(date).toISOString().split("T")[0]);
@@ -44,39 +52,43 @@ export function DayCarousel({ maxWorkoutDate }: DayCarouselProps) {
     emblaApiRef.current = api;
   }, []);
 
+  const scrollToCurrentWeek = React.useCallback(() => {
+    const api = emblaApiRef.current;
+    if (!api) return;
+    api.scrollTo(currentWeekIndex, true);
+  }, [currentWeekIndex]);
+
+  const onSlidesInView = React.useCallback(() => {
+    const api = emblaApiRef.current;
+    if (!api) return;
+
+    const slides = api.slidesInView();
+    const firstSlideIndex = slides[0];
+    const day = calendarDays[firstSlideIndex];
+    if (day && day.date.getDay() === 0 && day.weekIndex !== currentWeekIndex) {
+      const newWeekStart = startOfWeek(day.date).toISOString().split("T")[0];
+      setWeekStart(newWeekStart);
+    }
+  }, [calendarDays, currentWeekIndex, setWeekStart]);
+
   React.useEffect(() => {
     const api = emblaApiRef.current;
     if (!api) return;
 
-    const scrollToCurrentWeek = () => {
-      api.scrollTo(currentWeekIndex);
-    };
-
-    const handleSettle = () => {
-      const index = api.selectedScrollSnap();
-      if (index !== currentWeekIndex) {
-        if (index < currentWeekIndex) {
-          subtractWeekfromStart();
-        } else {
-          addWeektoStart();
-        }
-      }
-    };
-
     api.on("init", scrollToCurrentWeek);
     api.on("reInit", scrollToCurrentWeek);
-    api.on("settle", handleSettle);
+    api.on("slidesInView", onSlidesInView);
 
     return () => {
       api.off("init", scrollToCurrentWeek);
       api.off("reInit", scrollToCurrentWeek);
-      api.off("settle", handleSettle);
+      api.off("slidesInView", onSlidesInView);
     };
-  }, [currentWeekIndex, subtractWeekfromStart, addWeektoStart]);
+  }, [scrollToCurrentWeek, onSlidesInView]);
 
   return (
     <Carousel
-      className="mx-auto -mt-6 w-full md:hidden"
+      className="relative mx-auto -mt-6 w-full md:hidden"
       opts={{
         dragFree: false,
         slidesToScroll: 7,

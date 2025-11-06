@@ -3,16 +3,22 @@
 import { Block } from "@/components/block/block";
 import { useCalendarNav } from "@/hooks/use-calendar-nav";
 import { useDayOfWeek } from "@/hooks/use-day-of-week";
-import { addDays, cn, formatQueryDate, getWeekDays } from "@/lib/utils";
+import {
+  cn,
+  formatQueryDate,
+  getMonthDateRange,
+  getWeekDays,
+} from "@/lib/utils";
 import { api } from "@/trpc/react";
 
 export function CalendarBlocks() {
   const { weekStartDate } = useCalendarNav();
   const { dayOfWeek } = useDayOfWeek();
+  const { from, to } = getMonthDateRange(weekStartDate);
 
   const [data] = api.internal.getWorkouts.useSuspenseQuery({
-    from: formatQueryDate(weekStartDate),
-    to: formatQueryDate(addDays(weekStartDate, 6)),
+    from: formatQueryDate(from),
+    to: formatQueryDate(to),
   });
 
   const weekDays = getWeekDays(weekStartDate);
@@ -36,12 +42,18 @@ export function CalendarBlocks() {
             key={day.toISOString()}
           >
             {isSelected && (
-              <span className="py-2 font-semibold md:hidden">
+              <span className="py-2 text-center font-semibold md:hidden">
                 {day.toLocaleString("default", {
                   day: "numeric",
                   month: "short",
+                  weekday: "long",
                   year: "numeric",
                 })}
+              </span>
+            )}
+            {dayWorkouts.length === 0 && (
+              <span className="text-muted-foreground py-2 text-center md:hidden">
+                No activities found
               </span>
             )}
             {dayWorkouts.map((workout) => (

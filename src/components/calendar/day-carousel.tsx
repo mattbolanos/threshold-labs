@@ -65,7 +65,13 @@ export function DayCarousel({ maxWorkoutDate }: DayCarouselProps) {
         day.weekIndex !== currentWeekIndex
       ) {
         const newWeekStart = startOfWeek(day.date).toISOString().split("T")[0];
-        setWeekStart(newWeekStart);
+        if (day.weekIndex > currentWeekIndex) {
+          setWeekStart(newWeekStart);
+        } else {
+          setTimeout(() => {
+            setWeekStart(newWeekStart);
+          }, 300);
+        }
       }
     };
 

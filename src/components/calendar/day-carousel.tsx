@@ -1,25 +1,31 @@
+import * as React from "react";
+import { ButtonGroup } from "@/components/ui/button-group";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselToToday,
 } from "@/components/ui/carousel";
-import { useCalendar } from "@/hooks/use-calendar";
+import { useCalendarNav } from "@/hooks/use-calendar-nav";
+import { useDayOfWeek } from "@/hooks/use-day-of-week";
 import { cn, getCalendarDays, isSameDay, startOfWeek } from "@/lib/utils";
-import { ButtonGroup } from "../ui/button-group";
 
 export function DayCarousel() {
-  const { selectedDayDate, setSelectedDay, setWeekStart } = useCalendar();
+  const { setWeekStart } = useCalendarNav();
+  const { dayOfWeek, setDayOfWeek } = useDayOfWeek();
 
   const calendarDays = getCalendarDays(new Date());
   const startIndex = calendarDays.days.find((day) =>
     isSameDay(day.date, new Date()),
   )?.weekIndex;
 
-  const handleSelectDay = (date: Date) => {
-    setSelectedDay(date.toISOString().split("T")[0]);
-    setWeekStart(startOfWeek(date).toISOString().split("T")[0]);
-  };
+  const handleSelectDay = React.useCallback(
+    (date: Date) => {
+      setWeekStart(startOfWeek(date).toISOString().split("T")[0]);
+      setDayOfWeek(date.getDay());
+    },
+    [setWeekStart, setDayOfWeek],
+  );
 
   return (
     <Carousel
@@ -35,31 +41,42 @@ export function DayCarousel() {
           onClick={() => handleSelectDay(new Date())}
         />
       </ButtonGroup>
-      <CarouselContent>
+      <CarouselContent className="ml-0">
         {calendarDays.days.map(({ date }) => {
-          const isSelected = isSameDay(selectedDayDate, date);
+          const isSelected = date.getDay() === dayOfWeek;
+          const isToday = isSameDay(new Date(), date);
 
           return (
             <CarouselItem className="basis-1/7" key={date.toISOString()}>
               <button
-                className="bg-card flex cursor-pointer flex-col items-center justify-center gap-0.5 rounded-full font-medium"
-                key={date.toISOString()}
+                className="flex cursor-pointer flex-col items-center gap-1 text-center"
                 onClick={() => handleSelectDay(date)}
                 type="button"
               >
-                <span className="text-[10px] opacity-70">
+                {/* Day label */}
+                <span className="text-muted-foreground text-[10px] font-medium">
                   {date.toLocaleString("default", {
                     weekday: "narrow",
                   })}
                 </span>
-                <span
-                  className={cn(
-                    "flex size-7 items-center justify-center rounded-full text-sm tabular-nums",
-                    isSelected ? "bg-primary text-primary-foreground" : "",
+                <div className="relative">
+                  {isToday && isSelected && (
+                    <div className="bg-primary absolute inset-0 rounded-full"></div>
                   )}
-                >
-                  {date.getDate()}
-                </span>
+                  {isSelected && !isToday && (
+                    <div className="bg-foreground absolute inset-0 rounded-full"></div>
+                  )}
+                  <div
+                    className={cn(
+                      "text-foreground relative flex size-6.5 items-center justify-center rounded-full text-xs font-semibold",
+                      isSelected && isToday ? "text-primary-foreground" : "",
+                      isToday && !isSelected ? "text-primary" : "",
+                      isSelected && !isToday ? "text-background" : "",
+                    )}
+                  >
+                    {date.getDate()}
+                  </div>
+                </div>
               </button>
             </CarouselItem>
           );

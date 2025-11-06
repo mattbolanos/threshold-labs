@@ -1,8 +1,8 @@
-import { useCalendar } from "@/hooks/use-calendar";
-import { cn, getWeekDays, isSameDay } from "../../lib/utils";
+import { useCalendarNav } from "@/hooks/use-calendar-nav";
+import { cn, getWeekDays, isSameDay } from "@/lib/utils";
 
-export function DayButtons() {
-  const { weekStartDate } = useCalendar();
+export function DayBlocks() {
+  const { weekStartDate } = useCalendarNav();
   const weekDays = getWeekDays(weekStartDate);
 
   return (
@@ -22,7 +22,7 @@ export function DayButtons() {
             </span>
             <span
               className={cn(
-                "mx-auto flex size-7 items-center justify-center rounded-full tabular-nums",
+                "mx-auto flex size-7 items-center justify-center rounded-full",
                 isToday ? "bg-primary text-primary-foreground" : "",
               )}
             >

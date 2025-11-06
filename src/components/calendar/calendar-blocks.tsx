@@ -1,18 +1,14 @@
 "use client";
 
-import { useCalendar } from "@/hooks/use-calendar";
-import {
-  addDays,
-  cn,
-  formatQueryDate,
-  getWeekDays,
-  isSameDay,
-} from "@/lib/utils";
+import { Block } from "@/components/block/block";
+import { useCalendarNav } from "@/hooks/use-calendar-nav";
+import { useDayOfWeek } from "@/hooks/use-day-of-week";
+import { addDays, cn, formatQueryDate, getWeekDays } from "@/lib/utils";
 import { api } from "@/trpc/react";
-import { Block } from "../block/block";
 
 export function CalendarBlocks() {
-  const { weekStartDate, selectedDayDate } = useCalendar();
+  const { weekStartDate } = useCalendarNav();
+  const { dayOfWeek } = useDayOfWeek();
 
   const [data] = api.internal.getWorkouts.useSuspenseQuery({
     from: formatQueryDate(weekStartDate),
@@ -29,7 +25,7 @@ export function CalendarBlocks() {
           (workout) => workout.workoutDate === dayString,
         );
 
-        const isSelected = isSameDay(selectedDayDate, day);
+        const isSelected = day.getDay() === dayOfWeek;
 
         return (
           <div
@@ -41,7 +37,7 @@ export function CalendarBlocks() {
           >
             {isSelected && (
               <span className="py-2 font-semibold md:hidden">
-                {selectedDayDate.toLocaleString("default", {
+                {day.toLocaleString("default", {
                   day: "numeric",
                   month: "short",
                   year: "numeric",

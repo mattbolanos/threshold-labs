@@ -1,13 +1,13 @@
 "use client";
 
-import { DayButtons } from "./day-buttons";
+import { DayBlocks } from "./day-blocks";
 import { DayCarousel } from "./day-carousel";
 
 export function CalendarDays() {
   return (
     <>
       <DayCarousel />
-      <DayButtons />
+      <DayBlocks />
     </>
   );
 }

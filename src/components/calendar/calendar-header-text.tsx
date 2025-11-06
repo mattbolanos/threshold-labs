@@ -1,12 +1,12 @@
 "use client";
 
-import { useCalendar } from "@/hooks/use-calendar";
-import { formatWeekRangeLabel } from "@/lib/utils";
+import { useCalendarNav } from "@/hooks/use-calendar-nav";
+import { formatWeekRangeLabel, startOfWeek } from "@/lib/utils";
 
 export function CalendarHeaderText() {
-  const { selectedDayDate } = useCalendar();
+  const { weekStartDate } = useCalendarNav();
 
-  const headerLabel = formatWeekRangeLabel(selectedDayDate);
+  const headerLabel = formatWeekRangeLabel(startOfWeek(weekStartDate));
 
   return (
     <div className="flex flex-col">

@@ -1,12 +1,19 @@
 "use client";
 
+import * as React from "react";
 import { DayBlocks } from "./day-blocks";
 import { DayCarousel } from "./day-carousel";
 
-export function CalendarDays() {
+interface CalendarDaysProps {
+  maxWorkoutDatePromise: Promise<string | undefined>;
+}
+
+export function CalendarDays({ maxWorkoutDatePromise }: CalendarDaysProps) {
+  const maxWorkoutDate = React.use(maxWorkoutDatePromise);
+
   return (
     <>
-      <DayCarousel />
+      <DayCarousel maxWorkoutDate={maxWorkoutDate} />
       <DayBlocks />
     </>
   );

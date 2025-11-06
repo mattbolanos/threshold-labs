@@ -3,6 +3,7 @@ import { CalendarArrows } from "@/components/calendar/calendar-arrows";
 import { CalendarBlocks } from "@/components/calendar/calendar-blocks";
 import { CalendarDays } from "@/components/calendar/calendar-days";
 import { CalendarHeaderText } from "@/components/calendar/calendar-header-text";
+import { api } from "@/trpc/server";
 
 export default function Home() {
   return (
@@ -10,12 +11,16 @@ export default function Home() {
       <div className="flex items-center justify-between px-1">
         <Suspense fallback={<div>Loading...</div>}>
           <CalendarHeaderText />
-          <CalendarArrows />
+          <CalendarArrows
+            maxWorkoutDatePromise={api.internal.getMaxWorkoutDate()}
+          />
         </Suspense>
       </div>
       <div className="flex flex-col gap-2">
         <Suspense fallback={<div>Loading...</div>}>
-          <CalendarDays />
+          <CalendarDays
+            maxWorkoutDatePromise={api.internal.getMaxWorkoutDate()}
+          />
         </Suspense>
         <Suspense fallback={<div>Loading...</div>}>
           <CalendarBlocks />

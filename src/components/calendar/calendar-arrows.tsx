@@ -1,13 +1,25 @@
 "use client";
 
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
+import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { useCalendarNav } from "@/hooks/use-calendar-nav";
+import { addDays } from "@/lib/utils";
 
-export function CalendarArrows() {
-  const { addWeektoStart, jumpToToday, subtractWeekfromStart } =
+interface CalendarArrowsProps {
+  maxWorkoutDatePromise: Promise<string | undefined>;
+}
+
+export function CalendarArrows({ maxWorkoutDatePromise }: CalendarArrowsProps) {
+  const maxWorkoutDate = React.use(maxWorkoutDatePromise);
+  const { addWeektoStart, jumpToToday, subtractWeekfromStart, weekStartDate } =
     useCalendarNav();
+
+  const canGoForward = React.useMemo(() => {
+    if (!maxWorkoutDate) return false;
+    return new Date(maxWorkoutDate) > addDays(weekStartDate, 7);
+  }, [maxWorkoutDate, weekStartDate]);
 
   return (
     <ButtonGroup>
@@ -38,6 +50,7 @@ export function CalendarArrows() {
         <Button
           aria-label="Go Forward"
           className="hidden md:inline-flex"
+          disabled={!canGoForward}
           onMouseDown={addWeektoStart}
           size="icon-sm"
           variant="ghost"

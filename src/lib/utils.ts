@@ -85,29 +85,21 @@ export function formatQueryDate(date: Date): string {
   return date.toISOString().split("T")[0];
 }
 
-export function getCalendarDays(
-  anchorDate: Date,
-  weekPadding: number = 6,
-): {
-  lowerBound: Date;
-  upperBound: Date;
-  days: {
-    date: Date;
-    weekIndex: number;
-  }[];
-} {
+export function getCalendarDays(anchorDate: Date): {
+  date: Date;
+  weekIndex: number;
+}[] {
   const days = [];
 
-  // Find the Sunday at or before the anchor date
-  const startDate = new Date(anchorDate);
-  const dayOfWeek = startDate.getDay();
-  startDate.setDate(anchorDate.getDate() - dayOfWeek);
+  // Upper bound is the end of the week containing the anchor date
+  const upperBound = addDays(anchorDate, 6 - anchorDate.getDay());
 
-  // Go back weekPadding weeks
-  const lowerBound = addDays(startDate, -weekPadding * 7);
-
-  // Go forward weekPadding weeks (from the Sunday of anchor week)
-  const upperBound = addDays(startDate, (weekPadding + 1) * 7 - 1);
+  // Lower bound is 60 days before the anchor date, adjusted to start on Sunday
+  const lowerBoundBeforeAdjustment = addDays(upperBound, -60);
+  const lowerBound = addDays(
+    lowerBoundBeforeAdjustment,
+    -lowerBoundBeforeAdjustment.getDay(),
+  );
 
   // Generate all days from lower bound to upper bound
   const currentDate = new Date(lowerBound);
@@ -120,11 +112,7 @@ export function getCalendarDays(
     currentDate.setDate(currentDate.getDate() + 1);
   }
 
-  return {
-    days,
-    lowerBound,
-    upperBound,
-  };
+  return days;
 }
 
 export function getMonthDateRange(date: Date): {

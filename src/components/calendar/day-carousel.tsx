@@ -11,15 +11,20 @@ import { useCalendarNav } from "@/hooks/use-calendar-nav";
 import { useDayOfWeek } from "@/hooks/use-day-of-week";
 import { cn, getCalendarDays, isSameDay, startOfWeek } from "@/lib/utils";
 
-export function DayCarousel() {
+interface DayCarouselProps {
+  maxWorkoutDate: string | undefined;
+}
+
+export function DayCarousel({ maxWorkoutDate }: DayCarouselProps) {
   const { setWeekStart, subtractWeekfromStart, addWeektoStart, weekStartDate } =
     useCalendarNav();
   const { dayOfWeek, setDayOfWeek } = useDayOfWeek();
 
-  const calendarDays = getCalendarDays(new Date());
+  const calendarDays = getCalendarDays(
+    maxWorkoutDate ? new Date(`${maxWorkoutDate}T00:00:00`) : new Date(),
+  );
   const startIndex =
-    calendarDays.days.find((day) => isSameDay(day.date, new Date()))
-      ?.weekIndex ?? 0;
+    calendarDays.find((day) => isSameDay(day.date, new Date()))?.weekIndex ?? 0;
 
   const handleSelectDay = (date: Date) => {
     setWeekStart(startOfWeek(date).toISOString().split("T")[0]);
@@ -28,9 +33,9 @@ export function DayCarousel() {
 
   const currentWeekIndex = React.useMemo(
     () =>
-      calendarDays.days.find((day) => isSameDay(day.date, weekStartDate))
+      calendarDays.find((day) => isSameDay(day.date, weekStartDate))
         ?.weekIndex ?? 0,
-    [calendarDays.days, weekStartDate],
+    [calendarDays, weekStartDate],
   );
 
   const emblaApiRef = React.useRef<CarouselApi | null>(null);
@@ -47,27 +52,25 @@ export function DayCarousel() {
       api.scrollTo(currentWeekIndex);
     };
 
-    const handleSelect = () => {
+    const handleSettle = () => {
       const index = api.selectedScrollSnap();
       if (index !== currentWeekIndex) {
-        setTimeout(() => {
-          if (index < currentWeekIndex) {
-            subtractWeekfromStart();
-          } else {
-            addWeektoStart();
-          }
-        }, 600);
+        if (index < currentWeekIndex) {
+          subtractWeekfromStart();
+        } else {
+          addWeektoStart();
+        }
       }
     };
 
     api.on("init", scrollToCurrentWeek);
     api.on("reInit", scrollToCurrentWeek);
-    api.on("select", handleSelect);
+    api.on("settle", handleSettle);
 
     return () => {
       api.off("init", scrollToCurrentWeek);
       api.off("reInit", scrollToCurrentWeek);
-      api.off("select", handleSelect);
+      api.off("settle", handleSettle);
     };
   }, [currentWeekIndex, subtractWeekfromStart, addWeektoStart]);
 
@@ -88,7 +91,7 @@ export function DayCarousel() {
         />
       </ButtonGroup>
       <CarouselContent className="ml-0">
-        {calendarDays.days.map(({ date }) => {
+        {calendarDays.map(({ date }) => {
           const isSelected = date.getDay() === dayOfWeek;
           const isToday = isSameDay(new Date(), date);
 

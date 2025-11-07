@@ -28,38 +28,39 @@ interface BlockProps {
   className?: string;
 }
 
-export function Block({ workout, className }: BlockProps) {
-  const BaseCard = () => (
-    <Card
-      className={cn(className, "sm:hover:bg-muted/80 w-full cursor-pointer")}
-    >
-      <CardContent className="flex flex-col items-start gap-3 text-left">
-        <CardTitle className="flex items-start gap-2 pb-1">
-          <span className="text-[15px] leading-snug">
-            {workout.workoutType}
-          </span>
-        </CardTitle>
-        <span className="text-sm tabular-nums">
-          {formatMinutesToTime(workout.trainingMinutes)}
+const BaseCard = ({ workout, className }: BlockProps) => (
+  <Card className={cn(className, "sm:hover:bg-muted/80 w-full cursor-pointer")}>
+    <CardContent className="flex flex-col items-start gap-3 text-left">
+      <CardTitle className="flex min-w-0 items-start gap-2 pb-1">
+        <span className="line-clamp-2 text-[15px] leading-snug lg:line-clamp-none">
+          {workout.workoutType}
         </span>
-        <div className="flex items-center gap-2">
-          <span className="text-sm tabular-nums">{workout.rpe} RPE</span>
-          <CircularProgress size={24} strokeWidth={3} value={workout.rpe} />
-        </div>
-        <span className="text-sm tabular-nums">
-          {workout.subjectiveTrainingLoad.toFixed(1)} STL
-        </span>
-      </CardContent>
-    </Card>
-  );
+      </CardTitle>
+      <span className="text-sm tabular-nums">
+        {formatMinutesToTime(workout.trainingMinutes)}
+      </span>
+      <div className="flex items-center gap-2">
+        <span className="text-sm tabular-nums">{workout.rpe} RPE</span>
+        <CircularProgress size={24} strokeWidth={3} value={workout.rpe} />
+      </div>
+      <span className="text-sm tabular-nums">
+        {workout.subjectiveTrainingLoad.toFixed(1)} STL
+      </span>
+    </CardContent>
+  </Card>
+);
 
+export function Block({ workout, className }: BlockProps) {
   const Content = () => <BlockContent workout={workout} />;
+  const CardTrigger = () => (
+    <BaseCard className={className} workout={workout} />
+  );
 
   return (
     <>
       <Dialog>
         <DialogTrigger className="hidden sm:inline-flex">
-          <BaseCard />
+          <CardTrigger />
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
@@ -70,7 +71,7 @@ export function Block({ workout, className }: BlockProps) {
       </Dialog>
       <Drawer>
         <DrawerTrigger className="inline-flex sm:hidden">
-          <BaseCard />
+          <CardTrigger />
         </DrawerTrigger>
         <DrawerContent>
           <DrawerHeader>

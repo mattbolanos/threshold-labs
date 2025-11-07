@@ -34,7 +34,7 @@ export default function RootLayout({
         )}
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} min-h-full antialiased`}
       >
         <main>
           <div className="mx-auto max-w-[1350px] p-5 pb-20 sm:p-8 sm:pt-20">

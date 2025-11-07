@@ -10,6 +10,7 @@ import {
   isSameDay,
 } from "@/lib/utils";
 import { api } from "@/trpc/react";
+import { BlocksSummary } from "../block/summary";
 
 export function CalendarBlocks() {
   const { weekStartDate } = useCalendarNav();
@@ -22,7 +23,15 @@ export function CalendarBlocks() {
   const weekDays = getWeekDays(weekStartDate);
 
   return (
-    <div className="grid max-h-[76svh] grid-cols-1 gap-4 overflow-y-auto md:max-h-none md:grid-cols-7 md:gap-2">
+    <div className="grid max-h-[74svh] grid-cols-1 gap-4 overflow-y-auto lg:max-h-none lg:grid-cols-7 lg:gap-2">
+      <BlocksSummary className="mb-2 lg:hidden" workouts={data} />
+      {data.length === 0 && (
+        <div className="flex items-center justify-center pt-14 lg:col-span-7 lg:pt-20">
+          <span className="text-muted-foreground text-lg lg:text-xl">
+            No workouts this week, yet...
+          </span>
+        </div>
+      )}
       {weekDays.map((day) => {
         const dayString = formatQueryDate(day);
         const dayWorkouts = data.filter(
@@ -32,10 +41,16 @@ export function CalendarBlocks() {
         const isToday = isSameDay(new Date(), day);
 
         return (
-          <div className="flex flex-col" key={dayString}>
+          <div
+            className={cn(
+              "flex-col",
+              dayWorkouts.length === 0 ? "hidden lg:flex" : "flex px-1 lg:px-0",
+            )}
+            key={dayString}
+          >
             <h3
               className={cn(
-                "bg-background sticky top-0 z-10 pb-3 text-sm font-semibold md:hidden",
+                "bg-background sticky top-0 z-10 pb-3 text-sm font-semibold lg:hidden",
                 isToday && "text-primary",
               )}
             >

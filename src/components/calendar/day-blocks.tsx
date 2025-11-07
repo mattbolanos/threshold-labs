@@ -1,3 +1,5 @@
+"use client";
+
 import { useCalendarNav } from "@/hooks/use-calendar-nav";
 import { cn, getWeekDays, isSameDay } from "@/lib/utils";
 
@@ -6,7 +8,7 @@ export function DayBlocks() {
   const weekDays = getWeekDays(weekStartDate);
 
   return (
-    <div className="hidden grid-cols-7 gap-2 md:grid">
+    <div className="hidden grid-cols-7 gap-2 lg:grid">
       {weekDays.map((day) => {
         const isToday = isSameDay(new Date(), day);
 

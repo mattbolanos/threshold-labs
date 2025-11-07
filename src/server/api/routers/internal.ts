@@ -1,19 +1,9 @@
-import { and, desc, gte, lte } from "drizzle-orm";
+import { and, gte, lte, max, min } from "drizzle-orm";
 import { z } from "zod";
 import { workouts } from "@/lib/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
 export const internalRouter = createTRPCRouter({
-  getMaxWorkoutDate: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.db.query.workouts
-      .findFirst({
-        columns: {
-          workoutDate: true,
-        },
-        orderBy: [desc(workouts.workoutDate)],
-      })
-      .then((rows) => rows?.workoutDate);
-  }),
   getWorkouts: protectedProcedure
     .input(
       z.object({
@@ -29,4 +19,14 @@ export const internalRouter = createTRPCRouter({
         ),
       });
     }),
+  getWorkoutsDateRange: protectedProcedure.query(async ({ ctx }) => {
+    return await ctx.db
+      .select({
+        maxWorkoutDate: max(workouts.workoutDate),
+        minWorkoutDate: min(workouts.workoutDate),
+      })
+      .from(workouts)
+      .limit(1)
+      .then((rows) => rows[0]);
+  }),
 });

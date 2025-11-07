@@ -9,7 +9,7 @@ export function CalendarHeaderText() {
   const headerLabel = formatWeekRangeLabel(startOfWeek(weekStartDate));
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col pl-1">
       <span className="flex items-center gap-1 text-sm font-medium tabular-nums">
         {headerLabel} • Cycle 18
       </span>

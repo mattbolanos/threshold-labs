@@ -9,11 +9,16 @@ import { addDays, formatQueryDate } from "@/lib/utils";
 import { api } from "@/trpc/react";
 
 interface CalendarArrowsProps {
-  maxWorkoutDatePromise: Promise<string | undefined>;
+  workoutsDateRangePromise: Promise<{
+    maxWorkoutDate: string | null;
+    minWorkoutDate: string | null;
+  }>;
 }
 
-export function CalendarArrows({ maxWorkoutDatePromise }: CalendarArrowsProps) {
-  const maxWorkoutDate = React.use(maxWorkoutDatePromise);
+export function CalendarArrows({
+  workoutsDateRangePromise,
+}: CalendarArrowsProps) {
+  const workoutsDateRange = React.use(workoutsDateRangePromise);
   const { addWeektoStart, jumpToToday, subtractWeekfromStart, weekStartDate } =
     useCalendarNav();
 
@@ -23,16 +28,20 @@ export function CalendarArrows({ maxWorkoutDatePromise }: CalendarArrowsProps) {
     to: formatQueryDate(addDays(weekStartDate, -1)),
   });
 
-  const canGoForward = !maxWorkoutDate
+  const canGoForward = !workoutsDateRange.maxWorkoutDate
     ? false
-    : new Date(maxWorkoutDate) > addDays(weekStartDate, 7);
+    : new Date(workoutsDateRange.maxWorkoutDate) > addDays(weekStartDate, 6);
+
+  const canGoBack = !workoutsDateRange.minWorkoutDate
+    ? false
+    : new Date(workoutsDateRange.minWorkoutDate) < addDays(weekStartDate, -6);
 
   return (
-    <ButtonGroup>
-      <ButtonGroup>
+    <ButtonGroup className="flex w-full justify-center lg:w-fit lg:justify-end">
+      <ButtonGroup className="mr-auto hidden lg:flex">
         <Button
           aria-label="Go Back"
-          className="hidden md:inline-flex"
+          disabled={!canGoBack}
           onMouseDown={subtractWeekfromStart}
           size="icon-sm"
           variant="ghost"
@@ -40,11 +49,21 @@ export function CalendarArrows({ maxWorkoutDatePromise }: CalendarArrowsProps) {
           <ArrowLeftIcon className="size-5" />
         </Button>
       </ButtonGroup>
+      <ButtonGroup className="mr-auto lg:hidden">
+        <Button
+          aria-label="Go Back"
+          disabled={!canGoBack}
+          onMouseDown={subtractWeekfromStart}
+          size="icon-sm"
+          variant="outline"
+        >
+          <ArrowLeftIcon className="size-5" />
+        </Button>
+      </ButtonGroup>
 
-      <ButtonGroup>
+      <ButtonGroup className="hidden lg:flex">
         <Button
           aria-label="Go to Today"
-          className="hidden md:inline-flex"
           onMouseDown={jumpToToday}
           size="sm"
           variant="ghost"
@@ -52,14 +71,33 @@ export function CalendarArrows({ maxWorkoutDatePromise }: CalendarArrowsProps) {
           Today
         </Button>
       </ButtonGroup>
-      <ButtonGroup>
+      <ButtonGroup className="lg:hidden">
+        <Button
+          aria-label="Go to This Week"
+          onMouseDown={jumpToToday}
+          size="sm"
+        >
+          This Week
+        </Button>
+      </ButtonGroup>
+      <ButtonGroup className="ml-auto hidden lg:flex">
         <Button
           aria-label="Go Forward"
-          className="hidden md:inline-flex"
           disabled={!canGoForward}
           onMouseDown={addWeektoStart}
           size="icon-sm"
           variant="ghost"
+        >
+          <ArrowRightIcon className="size-5" />
+        </Button>
+      </ButtonGroup>
+      <ButtonGroup className="ml-auto lg:hidden">
+        <Button
+          aria-label="Go Forward"
+          disabled={!canGoForward}
+          onMouseDown={addWeektoStart}
+          size="icon-sm"
+          variant="outline"
         >
           <ArrowRightIcon className="size-5" />
         </Button>

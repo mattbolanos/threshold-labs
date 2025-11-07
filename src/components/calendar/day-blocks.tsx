@@ -8,7 +8,7 @@ export function DayBlocks() {
   const weekDays = getWeekDays(weekStartDate);
 
   return (
-    <div className="hidden grid-cols-7 gap-2 lg:grid">
+    <div className="hidden grid-cols-7 gap-2 md:grid">
       {weekDays.map((day) => {
         const isToday = isSameDay(new Date(), day);
 

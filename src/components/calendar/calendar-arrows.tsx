@@ -37,8 +37,8 @@ export function CalendarArrows({
     : new Date(workoutsDateRange.minWorkoutDate) < addDays(weekStartDate, -6);
 
   return (
-    <ButtonGroup className="flex w-full justify-center lg:w-fit lg:justify-end">
-      <ButtonGroup className="mr-auto hidden lg:flex">
+    <ButtonGroup className="flex w-full justify-center md:w-fit md:justify-end">
+      <ButtonGroup className="mr-auto hidden md:flex">
         <Button
           aria-label="Go Back"
           disabled={!canGoBack}
@@ -49,7 +49,7 @@ export function CalendarArrows({
           <ArrowLeftIcon className="size-5" />
         </Button>
       </ButtonGroup>
-      <ButtonGroup className="mr-auto lg:hidden">
+      <ButtonGroup className="mr-auto md:hidden">
         <Button
           aria-label="Go Back"
           disabled={!canGoBack}
@@ -61,7 +61,7 @@ export function CalendarArrows({
         </Button>
       </ButtonGroup>
 
-      <ButtonGroup className="hidden lg:flex">
+      <ButtonGroup className="hidden md:flex">
         <Button
           aria-label="Go to Today"
           onMouseDown={jumpToToday}
@@ -71,7 +71,7 @@ export function CalendarArrows({
           Today
         </Button>
       </ButtonGroup>
-      <ButtonGroup className="lg:hidden">
+      <ButtonGroup className="md:hidden">
         <Button
           aria-label="Go to This Week"
           onMouseDown={jumpToToday}
@@ -80,7 +80,7 @@ export function CalendarArrows({
           This Week
         </Button>
       </ButtonGroup>
-      <ButtonGroup className="ml-auto hidden lg:flex">
+      <ButtonGroup className="ml-auto hidden md:flex">
         <Button
           aria-label="Go Forward"
           disabled={!canGoForward}
@@ -91,7 +91,7 @@ export function CalendarArrows({
           <ArrowRightIcon className="size-5" />
         </Button>
       </ButtonGroup>
-      <ButtonGroup className="ml-auto lg:hidden">
+      <ButtonGroup className="ml-auto md:hidden">
         <Button
           aria-label="Go Forward"
           disabled={!canGoForward}

@@ -46,7 +46,7 @@ export function CalendarBlocks() {
       })}
 
       {/* Mobile view */}
-      <ScrollArea className="h-[75svh] p-3 lg:hidden">
+      <ScrollArea className="h-[670px] p-3 lg:hidden">
         <BlocksSummary className="mb-2" workouts={data} />
         {data.length === 0 && <EmptyBlocks className="lg:hidden" />}
         <div className="flex flex-col gap-6 pt-4">
@@ -68,7 +68,7 @@ export function CalendarBlocks() {
               >
                 <h3
                   className={cn(
-                    "bg-background/80 sticky top-0 z-10 pb-3 text-sm font-semibold backdrop-blur-md",
+                    "bg-background sticky top-0 z-10 pb-3 text-sm font-semibold",
                     isToday && "text-primary",
                   )}
                 >

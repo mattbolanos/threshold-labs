@@ -26,6 +26,7 @@ export function CalendarBlocks() {
 
   return (
     <div className="lg:grid lg:grid-cols-7 lg:gap-2">
+      {/* Desktop view */}
       {data.length === 0 && (
         <EmptyBlocks className="col-span-7 hidden lg:flex" />
       )}
@@ -43,7 +44,9 @@ export function CalendarBlocks() {
           </div>
         );
       })}
-      <ScrollArea className="h-[79svh] p-3 lg:hidden">
+
+      {/* Mobile view */}
+      <ScrollArea className="h-[75svh] p-3 lg:hidden">
         <BlocksSummary className="mb-2" workouts={data} />
         {data.length === 0 && <EmptyBlocks className="lg:hidden" />}
         <div className="flex flex-col gap-6 pt-4">

@@ -70,7 +70,7 @@ export function Block({ workout, className }: BlockProps) {
         </DialogContent>
       </Dialog>
       <Drawer>
-        <DrawerTrigger className="inline-flex focus-visible:outline-none sm:hidden">
+        <DrawerTrigger className="inline-flex sm:hidden">
           <CardTrigger />
         </DrawerTrigger>
         <DrawerContent>

@@ -12,9 +12,16 @@ function Drawer({
 }
 
 function DrawerTrigger({
+  className,
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Trigger>) {
-  return <DrawerPrimitive.Trigger data-slot="drawer-trigger" {...props} />;
+  return (
+    <DrawerPrimitive.Trigger
+      className={cn("focus-visible:outline-none", className)}
+      data-slot="drawer-trigger"
+      {...props}
+    />
+  );
 }
 
 function DrawerPortal({

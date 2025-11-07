@@ -46,7 +46,7 @@ export function CalendarBlocks() {
       })}
 
       {/* Mobile view */}
-      <ScrollArea className="h-[80svh] p-3 lg:hidden">
+      <ScrollArea className="h-[78svh] p-3 lg:hidden">
         <BlocksSummary className="mb-2" workouts={data} />
         {data.length === 0 && <EmptyBlocks className="lg:hidden" />}
         <div className="flex flex-col gap-6 pt-4">

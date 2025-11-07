@@ -114,12 +114,3 @@ export function getCalendarDays(anchorDate: Date): {
 
   return days;
 }
-
-export function getMonthDateRange(date: Date): {
-  from: Date;
-  to: Date;
-} {
-  const from = addDays(new Date(date.getFullYear(), date.getMonth(), 1), -8);
-  const to = addDays(new Date(date.getFullYear(), date.getMonth() + 1, 0), 8);
-  return { from, to };
-}

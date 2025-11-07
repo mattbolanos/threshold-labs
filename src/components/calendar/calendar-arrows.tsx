@@ -5,7 +5,8 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { useCalendarNav } from "@/hooks/use-calendar-nav";
-import { addDays } from "@/lib/utils";
+import { addDays, formatQueryDate } from "@/lib/utils";
+import { api } from "@/trpc/react";
 
 interface CalendarArrowsProps {
   maxWorkoutDatePromise: Promise<string | undefined>;
@@ -16,10 +17,15 @@ export function CalendarArrows({ maxWorkoutDatePromise }: CalendarArrowsProps) {
   const { addWeektoStart, jumpToToday, subtractWeekfromStart, weekStartDate } =
     useCalendarNav();
 
-  const canGoForward = React.useMemo(() => {
-    if (!maxWorkoutDate) return false;
-    return new Date(maxWorkoutDate) > addDays(weekStartDate, 7);
-  }, [maxWorkoutDate, weekStartDate]);
+  // prefetch last week
+  api.internal.getWorkouts.usePrefetchQuery({
+    from: formatQueryDate(addDays(weekStartDate, -7)),
+    to: formatQueryDate(addDays(weekStartDate, -1)),
+  });
+
+  const canGoForward = !maxWorkoutDate
+    ? false
+    : new Date(maxWorkoutDate) > addDays(weekStartDate, 7);
 
   return (
     <ButtonGroup>

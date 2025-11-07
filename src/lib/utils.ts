@@ -84,3 +84,33 @@ export function formatWeekRangeLabel(
 export function formatQueryDate(date: Date): string {
   return date.toISOString().split("T")[0];
 }
+
+export function getCalendarDays(anchorDate: Date): {
+  date: Date;
+  weekIndex: number;
+}[] {
+  const days = [];
+
+  // Upper bound is the end of the week containing the anchor date
+  const upperBound = addDays(anchorDate, 6 - anchorDate.getDay());
+
+  // Lower bound is 60 days before the anchor date, adjusted to start on Sunday
+  const lowerBoundBeforeAdjustment = addDays(upperBound, -60);
+  const lowerBound = addDays(
+    lowerBoundBeforeAdjustment,
+    -lowerBoundBeforeAdjustment.getDay(),
+  );
+
+  // Generate all days from lower bound to upper bound
+  const currentDate = new Date(lowerBound);
+  let weekIndex = 0;
+  while (currentDate <= upperBound) {
+    days.push({ date: new Date(currentDate), weekIndex });
+    if (currentDate.getDay() === 6) {
+      weekIndex++;
+    }
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  return days;
+}

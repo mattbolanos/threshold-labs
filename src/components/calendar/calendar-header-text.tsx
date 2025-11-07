@@ -1,15 +1,15 @@
 "use client";
 
-import { useWeekStart } from "@/hooks/use-week-start";
+import { useCalendarNav } from "@/hooks/use-calendar-nav";
 import { formatWeekRangeLabel } from "@/lib/utils";
 
 export function CalendarHeaderText() {
-  const { weekStartDate } = useWeekStart();
+  const { weekStartDate } = useCalendarNav();
 
   const headerLabel = formatWeekRangeLabel(weekStartDate);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col pl-1">
       <span className="flex items-center gap-1 text-sm font-medium tabular-nums">
         {headerLabel} • Cycle 18
       </span>

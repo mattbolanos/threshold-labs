@@ -1,7 +1,7 @@
 import { parseAsString, useQueryState } from "nuqs";
 import { addWeeks, startOfWeek } from "@/lib/utils";
 
-export function useWeekStart() {
+export function useCalendarNav() {
   const today = new Date();
 
   const [weekStart, setWeekStart] = useQueryState(
@@ -28,6 +28,7 @@ export function useWeekStart() {
     jumpToToday,
     setWeekStart,
     subtractWeekfromStart,
+    today,
     weekStartDate,
   };
 }

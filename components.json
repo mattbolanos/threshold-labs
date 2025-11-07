@@ -8,7 +8,9 @@
     "utils": "@/lib/utils"
   },
   "iconLibrary": "lucide",
-  "registries": {},
+  "registries": {
+    "@skiper-ui": "https://skiper-ui.com/registry/{name}.json"
+  },
   "rsc": true,
   "style": "new-york",
   "tailwind": {

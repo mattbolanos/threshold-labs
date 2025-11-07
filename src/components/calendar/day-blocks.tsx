@@ -1,23 +1,20 @@
 "use client";
 
-import { useWeekStart } from "@/hooks/use-week-start";
+import { useCalendarNav } from "@/hooks/use-calendar-nav";
 import { cn, getWeekDays, isSameDay } from "@/lib/utils";
 
-export function CalendarDays() {
-  const { weekStartDate } = useWeekStart();
-
+export function DayBlocks() {
+  const { weekStartDate } = useCalendarNav();
   const weekDays = getWeekDays(weekStartDate);
 
-  const today = new Date();
-
   return (
-    <div className="grid grid-cols-7 gap-2">
+    <div className="hidden grid-cols-7 gap-2 md:grid">
       {weekDays.map((day) => {
-        const isToday = isSameDay(today, day);
+        const isToday = isSameDay(new Date(), day);
 
         return (
           <div
-            className="bg-card col-span-1 flex flex-col items-center justify-center rounded-md border py-1 font-medium"
+            className="bg-card col-span-1 mx-auto flex w-full flex-col items-center justify-center rounded-md border py-1 text-center font-medium"
             key={day.toISOString()}
           >
             <span className="text-xs opacity-70">
@@ -27,7 +24,7 @@ export function CalendarDays() {
             </span>
             <span
               className={cn(
-                "flex size-7 items-center justify-center rounded-full tabular-nums",
+                "mx-auto flex size-7 items-center justify-center rounded-full",
                 isToday ? "bg-primary text-primary-foreground" : "",
               )}
             >

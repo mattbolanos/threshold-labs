@@ -14,7 +14,7 @@ export function DayBlocks() {
 
         return (
           <div
-            className="bg-card col-span-1 mx-auto w-full flex-col items-center justify-center rounded-md border py-1 text-center font-medium"
+            className="bg-card col-span-1 mx-auto flex w-full flex-col items-center justify-center rounded-md border py-1 text-center font-medium"
             key={day.toISOString()}
           >
             <span className="text-xs opacity-70">

@@ -80,7 +80,7 @@ export function Block({ workout, className }: BlockProps) {
           <Content />
           <DrawerFooter>
             <DrawerClose asChild>
-              <Button>Close</Button>
+              <Button size="lg">Close</Button>
             </DrawerClose>
           </DrawerFooter>
         </DrawerContent>

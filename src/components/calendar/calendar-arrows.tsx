@@ -37,7 +37,7 @@ export function CalendarArrows({
     : new Date(workoutsDateRange.minWorkoutDate) < addDays(weekStartDate, -6);
 
   return (
-    <ButtonGroup className="flex w-full justify-center md:w-fit md:justify-end">
+    <ButtonGroup>
       <ButtonGroup className="mr-auto hidden md:flex">
         <Button
           aria-label="Go Back"
@@ -74,8 +74,10 @@ export function CalendarArrows({
       <ButtonGroup className="md:hidden">
         <Button
           aria-label="Go to This Week"
+          className="text-xs"
           onMouseDown={jumpToToday}
           size="sm"
+          variant="outline"
         >
           This Week
         </Button>

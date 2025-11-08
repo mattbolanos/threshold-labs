@@ -70,7 +70,7 @@ export function BlocksSummary({ workouts, className }: BlocksSummaryProps) {
   const hasRowing = totalRowKs > 0;
 
   return (
-    <Card className={cn(className, "bg-muted/60 py-0")}>
+    <Card className={cn(className, "bg-muted/50 py-0")}>
       <CardContent>
         <Accordion collapsible type="single">
           <AccordionItem value="item-1">

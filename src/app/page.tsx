@@ -11,7 +11,7 @@ export default function Home() {
     <div className="bg-background route-padding-y">
       {/* Header */}
       <div className="bg-background sticky top-0 z-20">
-        <div className="flex flex-col justify-between gap-4 px-5 py-3 sm:py-4 md:flex-row md:items-center md:px-8">
+        <div className="flex items-center justify-between gap-4 px-5 py-2 sm:py-4 md:flex-row md:px-8">
           <Suspense fallback={<div>Loading...</div>}>
             <CalendarHeaderText />
             <CalendarArrows

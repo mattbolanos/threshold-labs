@@ -176,3 +176,7 @@
     }
   }
 }
+
+.route-padding-y {
+  @apply pt-10 pb-14 md:pt-20 md:pb-18;
+}

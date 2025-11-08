@@ -8,8 +8,7 @@ import { api } from "@/trpc/server";
 
 export default function Home() {
   return (
-    <div className="bg-background">
-      <div />
+    <div className="bg-background route-padding-y">
       {/* Header */}
       <div className="bg-background sticky top-0 z-20">
         <div className="flex flex-col justify-between gap-4 px-5 py-3 sm:py-4 md:flex-row md:items-center md:px-8">

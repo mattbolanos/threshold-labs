@@ -5,10 +5,12 @@ import { CalendarHeaderText } from "@/components/calendar/calendar-header-text";
 import { DayBlocks } from "@/components/calendar/day-blocks";
 import { Separator } from "@/components/ui/separator";
 import { api } from "@/trpc/server";
+import { ComboChartSingleAxisExample } from "../components/chart/test-chart";
 
 export default function Home() {
   return (
     <div className="bg-background route-padding-y">
+      <ComboChartSingleAxisExample />
       {/* Header */}
       <div className="bg-background sticky top-0 z-20">
         <div className="flex items-center justify-between gap-4 px-5 py-2 sm:py-4 md:flex-row md:px-8">

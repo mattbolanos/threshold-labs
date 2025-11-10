@@ -359,7 +359,7 @@ const Legend = React.forwardRef<HTMLOListElement, LegendProps>((props, ref) => {
             // base
             "absolute top-0 right-0 bottom-0 flex h-full items-center justify-center pr-1",
             // background color
-            "bg-white dark:bg-gray-950",
+            "bg-card",
           )}
         >
           <ScrollButton
@@ -486,7 +486,7 @@ const ChartTooltip = ({
           // border color
           "border-gray-200 dark:border-gray-800",
           // background color
-          "bg-white dark:bg-gray-950",
+          "bg-card",
         )}
       >
         <div className={cn("border-b border-inherit px-4 py-2")}>
@@ -928,7 +928,29 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                 )}
               </YAxis>
             ) : null}
-
+            {showLegend ? (
+              <RechartsLegend
+                content={({ payload }) =>
+                  ChartLegend(
+                    { payload },
+                    barCategoryColors,
+                    lineCategoryColors,
+                    setLegendHeight,
+                    activeLegend,
+                    hasOnValueChange
+                      ? (clickedLegendItem: string) =>
+                          onCategoryClick(clickedLegendItem)
+                      : undefined,
+                    enableLegendSlider,
+                    legendPosition,
+                    mergedBarSeries.yAxisWidth,
+                    mergedLineSeries.yAxisWidth,
+                  )
+                }
+                height={legendHeight}
+                verticalAlign="top"
+              />
+            ) : null}
             <Tooltip
               animationDuration={100}
               content={({ active, payload, label }) => {
@@ -988,29 +1010,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
               }}
               wrapperStyle={{ outline: "none" }}
             />
-            {showLegend ? (
-              <RechartsLegend
-                content={({ payload }) =>
-                  ChartLegend(
-                    { payload },
-                    barCategoryColors,
-                    lineCategoryColors,
-                    setLegendHeight,
-                    activeLegend,
-                    hasOnValueChange
-                      ? (clickedLegendItem: string) =>
-                          onCategoryClick(clickedLegendItem)
-                      : undefined,
-                    enableLegendSlider,
-                    legendPosition,
-                    mergedBarSeries.yAxisWidth,
-                    mergedLineSeries.yAxisWidth,
-                  )
-                }
-                height={legendHeight}
-                verticalAlign="top"
-              />
-            ) : null}
+
             {mergedBarSeries.categories.map((category) => (
               <Bar
                 className={cn(

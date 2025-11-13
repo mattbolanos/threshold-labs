@@ -14,7 +14,7 @@ export const workouts = thlab.table(
   {
     burpees: integer("burpees"),
     cardioMinutes: integer("cardio_minutes").notNull(),
-    cycle: integer("cycle").notNull(),
+    cycle: date("cycle").notNull(),
     id: text("id").primaryKey().notNull(),
     notes: text("notes"),
     rpe: real("rpe").notNull(),

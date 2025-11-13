@@ -13,7 +13,7 @@ export default function Home() {
   return (
     <div className="bg-background route-padding-y flex flex-col gap-4">
       <div className="grid gap-4 px-5 md:px-8 lg:grid-cols-2">
-        <Card className="gap-0">
+        <Card className="@container/card w-full gap-0">
           <Suspense fallback={<div>Loading...</div>}>
             <RunMixChart
               initialDataPromise={api.internal.getRunVolumeMix({})}

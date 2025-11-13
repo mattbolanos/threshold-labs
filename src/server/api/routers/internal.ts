@@ -1,4 +1,3 @@
-import { addWeeks, startOfWeek } from "date-fns";
 import { and, gte, lte, max, min, sql, sum } from "drizzle-orm";
 import { z } from "zod";
 import { workouts } from "@/lib/db/schema";
@@ -8,19 +7,23 @@ export const internalRouter = createTRPCRouter({
   getRunVolumeMix: protectedProcedure
     .input(
       z.object({
-        from: z.string().optional(),
+        from: z.string(),
         to: z.string().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const defaultLowerBound = addWeeks(startOfWeek(new Date()), -1);
-      const where =
-        input.from && input.to
-          ? and(
-              gte(workouts.workoutDate, input.from),
-              lte(workouts.workoutDate, input.to),
-            )
-          : undefined;
+      const whereConditions = [];
+
+      if (input.from && input.to) {
+        whereConditions.push(
+          and(
+            gte(workouts.workoutDate, input.from),
+            lte(workouts.workoutDate, input.to),
+          ),
+        );
+      } else {
+        whereConditions.push(gte(workouts.workoutDate, input.from));
+      }
 
       return await ctx.db
         .select({
@@ -33,7 +36,7 @@ export const internalRouter = createTRPCRouter({
           vo2Miles: sum(workouts.vo2Miles),
         })
         .from(workouts)
-        .where(where)
+        .where(and(...whereConditions))
         .groupBy(workouts.cycle)
         .orderBy(workouts.cycle);
     }),

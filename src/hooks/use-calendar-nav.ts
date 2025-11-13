@@ -6,7 +6,9 @@ export function useCalendarNav() {
 
   const [weekStart, setWeekStart] = useQueryState(
     "weekStart",
-    parseAsString.withDefault(startOfWeek(today).toISOString().split("T")[0]),
+    parseAsString.withDefault(
+      startOfWeek(today, { weekStartsOn: 1 }).toISOString().split("T")[0],
+    ),
   );
 
   const weekStartDate = new Date(`${weekStart}T00:00:00`);
@@ -20,7 +22,9 @@ export function useCalendarNav() {
   };
 
   const jumpToToday = () => {
-    setWeekStart(startOfWeek(today).toISOString().split("T")[0]);
+    setWeekStart(
+      startOfWeek(today, { weekStartsOn: 1 }).toISOString().split("T")[0],
+    );
   };
 
   return {

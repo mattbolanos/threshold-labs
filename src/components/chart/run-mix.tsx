@@ -2,21 +2,25 @@
 
 import * as React from "react";
 import type { DateRange } from "react-day-picker";
+import { DEFAULT_RUN_MIX_RANGE } from "@/app/constants";
 import {
   CardAction,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { BarChart } from "@/components/ui/chart/bar-chart";
+import { useChartState } from "@/hooks/use-chart-state";
 import { getColorClassName } from "@/lib/chart-utils";
 import type { RunVolumeMixOutput } from "@/server/api/types";
+import { api } from "@/trpc/react";
 import { CalendarFilter } from "./calendar-filter";
 import { createTooltip } from "./tooltip";
 
 const RUN_MIX_CATEGORIES = [
-  "easyMiles",
   "speedMiles",
+  "easyMiles",
   "tempoMiles",
   "thresholdMiles",
   "vo2Miles",
@@ -100,21 +104,25 @@ const RunMixTooltip = createTooltip(
   },
 );
 
-interface RunMixProps {
-  initialDataPromise: Promise<RunVolumeMixOutput>;
-}
+export function RunMixChart() {
+  const { runMixRange, setRunMixRange } = useChartState();
 
-export function RunMixChart({ initialDataPromise }: RunMixProps) {
-  const initialData = React.use(initialDataPromise);
-
-  const [range, setRange] = React.useState<DateRange | undefined>(undefined);
+  const [data] = api.internal.getRunVolumeMix.useSuspenseQuery({
+    from: runMixRange.from,
+    to: runMixRange.to ?? undefined,
+  });
 
   return (
     <>
-      <CardHeader className="px-6 py-2">
+      <CardHeader className="mb-1 flex flex-col pl-4 @md/card:grid">
         <CardTitle>Run Volume Mix</CardTitle>
+        <CardDescription>Total miles run split by category.</CardDescription>
         <CardAction>
-          <CalendarFilter range={range} setRange={setRange} />
+          <CalendarFilter
+            defaultRange={DEFAULT_RUN_MIX_RANGE}
+            range={runMixRange}
+            setRange={setRunMixRange}
+          />
         </CardAction>
       </CardHeader>
 
@@ -124,7 +132,7 @@ export function RunMixChart({ initialDataPromise }: RunMixProps) {
           categories={[...RUN_MIX_CATEGORIES]}
           categoryLabels={RUN_MIX_CATEGORY_LABELS}
           customTooltip={RunMixTooltip}
-          data={initialData}
+          data={data}
           index="cycle"
           type="stacked"
           xAxisLabel="Cycle"

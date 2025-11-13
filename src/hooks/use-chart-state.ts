@@ -1,16 +1,15 @@
 import { parseAsJson, useQueryState } from "nuqs";
 import { z } from "zod";
-import { DEFAULT_RUN_MIX_RANGE } from "@/app/constants";
 
 const dateRangeSchema = z.object({
-  from: z.string(),
-  to: z.string(),
+  from: z.string().optional(),
+  to: z.string().optional(),
 });
 
 export function useChartState() {
   const [runMixRange, setRunMixRange] = useQueryState(
     "runMixRange",
-    parseAsJson(dateRangeSchema).withDefault(DEFAULT_RUN_MIX_RANGE),
+    parseAsJson(dateRangeSchema),
   );
 
   return {

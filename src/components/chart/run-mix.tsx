@@ -1,8 +1,5 @@
 "use client";
 
-import * as React from "react";
-import type { DateRange } from "react-day-picker";
-import { DEFAULT_RUN_MIX_RANGE } from "@/app/constants";
 import {
   CardAction,
   CardContent,
@@ -13,7 +10,6 @@ import {
 import { BarChart } from "@/components/ui/chart/bar-chart";
 import { useChartState } from "@/hooks/use-chart-state";
 import { getColorClassName } from "@/lib/chart-utils";
-import type { RunVolumeMixOutput } from "@/server/api/types";
 import { api } from "@/trpc/react";
 import { CalendarFilter } from "./calendar-filter";
 import { createTooltip } from "./tooltip";
@@ -108,8 +104,8 @@ export function RunMixChart() {
   const { runMixRange, setRunMixRange } = useChartState();
 
   const [data] = api.internal.getRunVolumeMix.useSuspenseQuery({
-    from: runMixRange.from,
-    to: runMixRange.to ?? undefined,
+    from: runMixRange?.from ?? undefined,
+    to: runMixRange?.to ?? undefined,
   });
 
   return (
@@ -118,17 +114,13 @@ export function RunMixChart() {
         <CardTitle>Run Volume Mix</CardTitle>
         <CardDescription>Total miles run split by category.</CardDescription>
         <CardAction>
-          <CalendarFilter
-            defaultRange={DEFAULT_RUN_MIX_RANGE}
-            range={runMixRange}
-            setRange={setRunMixRange}
-          />
+          <CalendarFilter range={runMixRange} setRange={setRunMixRange} />
         </CardAction>
       </CardHeader>
 
       <CardContent>
         <BarChart
-          barCategoryGap={12}
+          barCategoryGap={8}
           categories={[...RUN_MIX_CATEGORIES]}
           categoryLabels={RUN_MIX_CATEGORY_LABELS}
           customTooltip={RunMixTooltip}

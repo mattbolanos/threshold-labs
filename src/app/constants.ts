@@ -24,7 +24,7 @@ export const WORKOUT_TYPES = [
 
 export const DEFAULT_RUN_MIX_RANGE = {
   from: formatQueryDate(
-    addWeeks(startOfWeek(new Date(), { weekStartsOn: 1 }), -20),
+    addWeeks(startOfWeek(new Date(), { weekStartsOn: 1 }), -18),
   ),
   to: formatQueryDate(new Date()),
 };

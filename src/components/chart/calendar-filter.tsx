@@ -13,36 +13,31 @@ import {
 import { cn, formatQueryDate } from "@/lib/utils";
 
 interface Range {
-  from: string;
-  to: string;
+  from?: string | undefined;
+  to?: string | undefined;
 }
 interface CalendarFilterProps {
-  range: Range;
-  setRange: (range: Range) => void;
-  defaultRange: Range;
+  range: Range | null;
+  setRange: (range: Range | null) => void;
 }
 
-export function CalendarFilter({
-  range,
-  setRange,
-  defaultRange,
-}: CalendarFilterProps) {
+export function CalendarFilter({ range, setRange }: CalendarFilterProps) {
   const [localRange, setLocalRange] = React.useState<DateRange | undefined>({
-    from: new Date(range.from),
-    to: new Date(range.to),
+    from: range?.from ? new Date(range.from) : undefined,
+    to: range?.to ? new Date(range.to) : undefined,
   });
   const [open, setOpen] = React.useState(false);
 
   const handleApply = () => {
     setRange({
-      from: formatQueryDate(localRange?.from ?? new Date()),
-      to: formatQueryDate(localRange?.to ?? new Date()),
+      from: localRange?.from ? formatQueryDate(localRange.from) : "",
+      to: localRange?.to ? formatQueryDate(localRange.to) : "",
     });
     setOpen(false);
   };
 
   const handleClear = () => {
-    setRange(defaultRange);
+    setRange(null);
     setLocalRange(undefined);
     setOpen(false);
   };

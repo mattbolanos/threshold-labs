@@ -1,5 +1,6 @@
 import { and, gte, lte, max, min, sql, sum } from "drizzle-orm";
 import { z } from "zod";
+import { DEFAULT_RUN_MIX_RANGE } from "@/app/constants";
 import { workouts } from "@/lib/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
@@ -7,7 +8,7 @@ export const internalRouter = createTRPCRouter({
   getRunVolumeMix: protectedProcedure
     .input(
       z.object({
-        from: z.string(),
+        from: z.string().optional(),
         to: z.string().optional(),
       }),
     )
@@ -22,7 +23,9 @@ export const internalRouter = createTRPCRouter({
           ),
         );
       } else {
-        whereConditions.push(gte(workouts.workoutDate, input.from));
+        whereConditions.push(
+          gte(workouts.workoutDate, DEFAULT_RUN_MIX_RANGE.from),
+        );
       }
 
       return await ctx.db

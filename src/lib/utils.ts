@@ -30,7 +30,7 @@ export function startOfWeek(date: Date): Date {
   );
   const currentDay = normalized.getDay();
 
-  const diff = (currentDay + 7) % 7;
+  const diff = currentDay === 0 ? 6 : currentDay - 1;
   const start = new Date(normalized);
   start.setDate(start.getDate() - diff);
   return start;

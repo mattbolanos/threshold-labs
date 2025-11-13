@@ -1,11 +1,12 @@
 "use client";
 
+import { addDays } from "date-fns";
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { useCalendarNav } from "@/hooks/use-calendar-nav";
-import { addDays, formatQueryDate } from "@/lib/utils";
+import { formatQueryDate } from "@/lib/utils";
 import { api } from "@/trpc/react";
 
 interface CalendarArrowsProps {

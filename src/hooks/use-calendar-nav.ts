@@ -1,5 +1,5 @@
+import { addWeeks, startOfWeek } from "date-fns";
 import { parseAsString, useQueryState } from "nuqs";
-import { addWeeks, startOfWeek } from "@/lib/utils";
 
 export function useCalendarNav() {
   const today = new Date();

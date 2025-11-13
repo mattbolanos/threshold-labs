@@ -1,7 +1,7 @@
+import { addWeeks, startOfWeek } from "date-fns";
 import { and, gte, lte, max, min, sql, sum } from "drizzle-orm";
 import { z } from "zod";
 import { workouts } from "@/lib/db/schema";
-import { addWeeks, startOfWeek } from "@/lib/utils";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
 export const internalRouter = createTRPCRouter({

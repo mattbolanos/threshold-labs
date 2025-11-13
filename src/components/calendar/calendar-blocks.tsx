@@ -1,16 +1,11 @@
 "use client";
 
+import { addDays, isSameDay } from "date-fns";
 import { Block } from "@/components/block/block";
 import { EmptyBlocks } from "@/components/block/empty-blocks";
 import { BlocksSummary } from "@/components/block/summary";
 import { useCalendarNav } from "@/hooks/use-calendar-nav";
-import {
-  addDays,
-  cn,
-  formatQueryDate,
-  getWeekDays,
-  isSameDay,
-} from "@/lib/utils";
+import { cn, formatQueryDate, getWeekDays } from "@/lib/utils";
 import { api } from "@/trpc/react";
 
 export function CalendarBlocks() {

@@ -332,7 +332,11 @@ const Legend = React.forwardRef<HTMLOListElement, LegendProps>((props, ref) => {
         </div>
       )}
       <ol
-        className={cn("relative overflow-hidden pl-4.5", className)}
+        className={cn(
+          "relative overflow-hidden pl-4.5",
+          !chartTitle && "ml-auto pl-0",
+          className,
+        )}
         ref={ref}
         {...other}
       >

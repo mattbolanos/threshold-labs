@@ -1,9 +1,17 @@
 "use client";
 
 import * as React from "react";
+import type { DateRange } from "react-day-picker";
+import {
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { BarChart } from "@/components/ui/chart/bar-chart";
 import { getColorClassName } from "@/lib/chart-utils";
 import type { RunVolumeMixOutput } from "@/server/api/types";
+import { CalendarFilter } from "./calendar-filter";
 import { createTooltip } from "./tooltip";
 
 const RUN_MIX_CATEGORIES = [
@@ -99,24 +107,36 @@ interface RunMixProps {
 export function RunMixChart({ initialDataPromise }: RunMixProps) {
   const initialData = React.use(initialDataPromise);
 
+  const [range, setRange] = React.useState<DateRange | undefined>(undefined);
+
   return (
-    <BarChart
-      barCategoryGap={12}
-      categories={[...RUN_MIX_CATEGORIES]}
-      categoryLabels={RUN_MIX_CATEGORY_LABELS}
-      chartTitle="Run Volume Mix"
-      customTooltip={RunMixTooltip}
-      data={initialData}
-      index="cycle"
-      type="stacked"
-      xAxisLabel="Cycle"
-      xTicksFormatter={(value) =>
-        new Date(value).toLocaleDateString("en-US", {
-          day: "numeric",
-          month: "short",
-          timeZone: "UTC",
-        })
-      }
-    />
+    <>
+      <CardHeader className="px-6 py-2">
+        <CardTitle>Run Volume Mix</CardTitle>
+        <CardAction>
+          <CalendarFilter range={range} setRange={setRange} />
+        </CardAction>
+      </CardHeader>
+
+      <CardContent>
+        <BarChart
+          barCategoryGap={12}
+          categories={[...RUN_MIX_CATEGORIES]}
+          categoryLabels={RUN_MIX_CATEGORY_LABELS}
+          customTooltip={RunMixTooltip}
+          data={initialData}
+          index="cycle"
+          type="stacked"
+          xAxisLabel="Cycle"
+          xTicksFormatter={(value) =>
+            new Date(value).toLocaleDateString("en-US", {
+              day: "numeric",
+              month: "short",
+              timeZone: "UTC",
+            })
+          }
+        />
+      </CardContent>
+    </>
   );
 }

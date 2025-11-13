@@ -5,6 +5,38 @@ import { workouts } from "@/lib/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
 export const internalRouter = createTRPCRouter({
+  getRollingLoad: protectedProcedure
+    .input(
+      z.object({
+        from: z.string(),
+        to: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const whereConditions = [];
+
+      if (input.from && input.to) {
+        whereConditions.push(
+          and(
+            gte(workouts.workoutDate, input.from),
+            lte(workouts.workoutDate, input.to),
+          ),
+        );
+      } else {
+        whereConditions.push(
+          gte(workouts.workoutDate, DEFAULT_RUN_MIX_RANGE.from),
+        );
+      }
+
+      return await ctx.db
+        .select({
+          cycle: workouts.cycle,
+          totalTrainingMinutes: sum(workouts.trainingMinutes),
+        })
+        .from(workouts)
+        .where(and(...whereConditions));
+    }),
+
   getRunVolumeMix: protectedProcedure
     .input(
       z.object({
@@ -31,7 +63,9 @@ export const internalRouter = createTRPCRouter({
       return await ctx.db
         .select({
           cycle: workouts.cycle,
-          easyMiles: sql<number>`coalesce(sum(${workouts.totalRunMiles}), 0) - coalesce(sum(${workouts.speedMiles}), 0) - coalesce(sum(${workouts.tempoMiles}), 0) - coalesce(sum(${workouts.thresholdMiles}), 0) - coalesce(sum(${workouts.vo2Miles}), 0)`,
+          easyMiles: sql<number>`
+            coalesce(sum(${workouts.totalRunMiles}), 0) - coalesce(sum(${workouts.speedMiles}), 0) - 
+            coalesce(sum(${workouts.tempoMiles}), 0) - coalesce(sum(${workouts.thresholdMiles}), 0) - coalesce(sum(${workouts.vo2Miles}), 0)`,
           speedMiles: sum(workouts.speedMiles),
           tempoMiles: sum(workouts.tempoMiles),
           thresholdMiles: sum(workouts.thresholdMiles),

@@ -1,6 +1,6 @@
 "use client";
 
-import { ComboChart } from "@/components/ui/combo-chart";
+import { ComboChart } from "@/components/ui/chart/combo-chart";
 
 const chartdata = [
   {

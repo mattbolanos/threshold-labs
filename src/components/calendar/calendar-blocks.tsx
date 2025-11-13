@@ -26,7 +26,9 @@ export function CalendarBlocks() {
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-7 md:gap-2">
       <BlocksSummary className="mb-1 md:hidden" workouts={data} />
-      {data.length === 0 && <EmptyBlocks className="md:col-span-7" />}
+      {data.length === 0 && (
+        <EmptyBlocks className="w-full md:col-span-7 md:mt-2" />
+      )}
       {weekDays.map((day) => {
         const dayString = formatQueryDate(day);
         const dayWorkouts = data.filter(

@@ -3,6 +3,7 @@ import { CalendarArrows } from "@/components/calendar/calendar-arrows";
 import { CalendarBlocks } from "@/components/calendar/calendar-blocks";
 import { CalendarHeaderText } from "@/components/calendar/calendar-header-text";
 import { DayBlocks } from "@/components/calendar/day-blocks";
+import { RunMixChart } from "@/components/chart/run-mix";
 import { ComboChartSingleAxisExample } from "@/components/chart/test-chart";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -14,7 +15,11 @@ export default function Home() {
       <div className="grid gap-4 px-5 md:px-8 lg:grid-cols-2">
         <Card>
           <CardContent>
-            <ComboChartSingleAxisExample />
+            <Suspense fallback={<div>Loading...</div>}>
+              <RunMixChart
+                initialDataPromise={api.internal.getRunVolumeMix()}
+              />
+            </Suspense>
           </CardContent>
         </Card>
         <Card>

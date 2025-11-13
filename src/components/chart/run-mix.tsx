@@ -1,17 +1,9 @@
 "use client";
 
-import {
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { BarChart } from "@/components/ui/chart/bar-chart";
 import { useChartState } from "@/hooks/use-chart-state";
 import { getColorClassName } from "@/lib/chart-utils";
 import { api } from "@/trpc/react";
-import { CalendarFilter } from "./calendar-filter";
 import { createTooltip } from "./tooltip";
 
 const RUN_MIX_CATEGORIES = [
@@ -101,42 +93,30 @@ const RunMixTooltip = createTooltip(
 );
 
 export function RunMixChart() {
-  const { runMixRange, setRunMixRange } = useChartState();
+  const { range } = useChartState();
 
   const [data] = api.internal.getRunVolumeMix.useSuspenseQuery({
-    from: runMixRange?.from ?? undefined,
-    to: runMixRange?.to ?? undefined,
+    from: range?.from ?? undefined,
+    to: range?.to ?? undefined,
   });
 
   return (
-    <>
-      <CardHeader className="mb-1 flex flex-col pl-4 @md/card:grid">
-        <CardTitle>Run Volume Mix</CardTitle>
-        <CardDescription>Total miles run split by category.</CardDescription>
-        <CardAction>
-          <CalendarFilter range={runMixRange} setRange={setRunMixRange} />
-        </CardAction>
-      </CardHeader>
-
-      <CardContent>
-        <BarChart
-          barCategoryGap={8}
-          categories={[...RUN_MIX_CATEGORIES]}
-          categoryLabels={RUN_MIX_CATEGORY_LABELS}
-          customTooltip={RunMixTooltip}
-          data={data}
-          index="cycle"
-          type="stacked"
-          xAxisLabel="Cycle"
-          xTicksFormatter={(value) =>
-            new Date(value).toLocaleDateString("en-US", {
-              day: "numeric",
-              month: "short",
-              timeZone: "UTC",
-            })
-          }
-        />
-      </CardContent>
-    </>
+    <BarChart
+      barCategoryGap={8}
+      categories={[...RUN_MIX_CATEGORIES]}
+      categoryLabels={RUN_MIX_CATEGORY_LABELS}
+      customTooltip={RunMixTooltip}
+      data={data}
+      index="cycle"
+      type="stacked"
+      xAxisLabel="Cycle"
+      xTicksFormatter={(value) =>
+        new Date(value).toLocaleDateString("en-US", {
+          day: "numeric",
+          month: "short",
+          timeZone: "UTC",
+        })
+      }
+    />
   );
 }

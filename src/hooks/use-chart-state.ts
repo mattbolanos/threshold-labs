@@ -7,13 +7,13 @@ const dateRangeSchema = z.object({
 });
 
 export function useChartState() {
-  const [runMixRange, setRunMixRange] = useQueryState(
-    "runMixRange",
+  const [range, setRange] = useQueryState(
+    "range",
     parseAsJson(dateRangeSchema),
   );
 
   return {
-    runMixRange,
-    setRunMixRange,
+    range,
+    setRange,
   };
 }

@@ -126,6 +126,10 @@
   @apply pt-10 pb-14 md:pt-20 md:pb-18;
 }
 
+.route-padding-x {
+  @apply px-5 md:px-8;
+}
+
 .recharts-surface {
   @apply outline-none focus-within:outline-none focus:outline-none focus-visible:outline-none;
 }

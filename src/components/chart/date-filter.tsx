@@ -16,12 +16,13 @@ interface Range {
   from?: string | undefined;
   to?: string | undefined;
 }
-interface CalendarFilterProps {
+
+interface DateFilterProps {
   range: Range | null;
   setRange: (range: Range | null) => void;
 }
 
-export function CalendarFilter({ range, setRange }: CalendarFilterProps) {
+export function DateFilter({ range, setRange }: DateFilterProps) {
   const [localRange, setLocalRange] = React.useState<DateRange | undefined>({
     from: range?.from ? new Date(range.from) : undefined,
     to: range?.to ? new Date(range.to) : undefined,
@@ -64,6 +65,7 @@ export function CalendarFilter({ range, setRange }: CalendarFilterProps) {
           defaultMonth={new Date()}
           fixedWeeks
           mode="range"
+          numberOfMonths={2}
           onSelect={setLocalRange}
           selected={localRange}
           showOutsideDays

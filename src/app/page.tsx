@@ -22,6 +22,7 @@ export default function Home() {
       <Suspense fallback={<div>Loading...</div>}>
         <ChartControls />
       </Suspense>
+      {/* Charts */}
       <div className="route-padding-x grid gap-4 lg:grid-cols-2">
         <Card className="@container/card w-full gap-0">
           <CardHeader className="flex flex-col pl-4 @md/card:grid">
@@ -43,6 +44,7 @@ export default function Home() {
           </CardContent>
         </Card>
       </div>
+
       {/* CalendarHeader */}
       <div className="bg-background sticky top-0 z-20">
         <div className="route-padding-x flex items-center justify-between gap-4 py-2 sm:py-4 md:flex-row">

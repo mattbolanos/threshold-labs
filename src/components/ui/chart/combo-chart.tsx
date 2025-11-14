@@ -1149,6 +1149,8 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                     />
                   );
                 }}
+                animationDuration={700}
+                animationEasing="ease-in"
                 className={cn(
                   getColorClassName(
                     lineCategoryColors.get(
@@ -1207,7 +1209,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                   }
                   return <React.Fragment key={index}></React.Fragment>;
                 }}
-                isAnimationActive={false}
+                isAnimationActive={true}
                 key={`${category}-line-id`}
                 name={category}
                 onClick={(props: any, event) => {

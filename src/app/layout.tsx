@@ -37,7 +37,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} min-h-full antialiased`}
       >
         <main>
-          <div className="mx-auto max-w-[1320px]">
+          <div className="overscroll-contain mx-auto max-w-[1320px]">
             <Providers>{children}</Providers>
           </div>
         </main>

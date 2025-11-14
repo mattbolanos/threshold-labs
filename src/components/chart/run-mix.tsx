@@ -1,9 +1,11 @@
 "use client";
 
+import React from "react";
 import { BarChart } from "@/components/ui/chart/bar-chart";
 import { useChartState } from "@/hooks/use-chart-state";
 import { getColorClassName } from "@/lib/chart-utils";
 import { api } from "@/trpc/react";
+import type { RunVolumeMixOutput } from "../../server/api/types";
 import { createTooltip } from "./tooltip";
 
 const RUN_MIX_CATEGORIES = [
@@ -92,13 +94,23 @@ const RunMixTooltip = createTooltip(
   },
 );
 
-export function RunMixChart() {
-  const { range } = useChartState();
+interface RunMixChartProps {
+  initialDataPromise: Promise<RunVolumeMixOutput>;
+}
 
-  const [data] = api.internal.getRunVolumeMix.useSuspenseQuery({
-    from: range?.from ?? undefined,
-    to: range?.to ?? undefined,
-  });
+export function RunMixChart({ initialDataPromise }: RunMixChartProps) {
+  const { range } = useChartState();
+  const initialData = React.use(initialDataPromise);
+
+  const [data] = api.internal.getRunVolumeMix.useSuspenseQuery(
+    {
+      from: range?.from ?? undefined,
+      to: range?.to ?? undefined,
+    },
+    {
+      initialData: range === null ? initialData : undefined,
+    },
+  );
 
   return (
     <BarChart

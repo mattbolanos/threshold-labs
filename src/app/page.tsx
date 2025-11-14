@@ -33,7 +33,9 @@ export default function Home() {
           </CardHeader>
           <CardContent>
             <Suspense fallback={<div>Loading...</div>}>
-              <RunMixChart />
+              <RunMixChart
+                initialDataPromise={api.internal.getRunVolumeMix({})}
+              />
             </Suspense>
           </CardContent>
         </Card>

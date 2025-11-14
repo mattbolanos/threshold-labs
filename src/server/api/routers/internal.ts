@@ -1,4 +1,4 @@
-import { and, gte, lte, max, min, sql, sum } from "drizzle-orm";
+import { and, gte, lte, max, min, sql } from "drizzle-orm";
 import { z } from "zod";
 import { DEFAULT_RUN_MIX_RANGE } from "@/app/constants";
 import { workouts } from "@/lib/db/schema";
@@ -8,8 +8,8 @@ export const internalRouter = createTRPCRouter({
   getRollingLoad: protectedProcedure
     .input(
       z.object({
-        from: z.string(),
-        to: z.string(),
+        from: z.string().optional(),
+        to: z.string().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -31,10 +31,13 @@ export const internalRouter = createTRPCRouter({
       return await ctx.db
         .select({
           cycle: workouts.cycle,
-          totalTrainingMinutes: sum(workouts.trainingMinutes),
+          stl: sql<number>`sum(${workouts.subjectiveTrainingLoad})`,
+          trueTrainingHours: sql<number>`sum(${workouts.trainingMinutes}) / 60`,
         })
         .from(workouts)
-        .where(and(...whereConditions));
+        .where(and(...whereConditions))
+        .groupBy(workouts.cycle)
+        .orderBy(workouts.cycle);
     }),
 
   getRunVolumeMix: protectedProcedure
@@ -66,11 +69,11 @@ export const internalRouter = createTRPCRouter({
           easyMiles: sql<number>`
             coalesce(sum(${workouts.totalRunMiles}), 0) - coalesce(sum(${workouts.speedMiles}), 0) - 
             coalesce(sum(${workouts.tempoMiles}), 0) - coalesce(sum(${workouts.thresholdMiles}), 0) - coalesce(sum(${workouts.vo2Miles}), 0)`,
-          speedMiles: sum(workouts.speedMiles),
-          tempoMiles: sum(workouts.tempoMiles),
-          thresholdMiles: sum(workouts.thresholdMiles),
-          totalMiles: sum(workouts.totalRunMiles),
-          vo2Miles: sum(workouts.vo2Miles),
+          speedMiles: sql<number>`sum(${workouts.speedMiles})`,
+          tempoMiles: sql<number>`sum(${workouts.tempoMiles})`,
+          thresholdMiles: sql<number>`sum(${workouts.thresholdMiles})`,
+          totalMiles: sql<number>`sum(${workouts.totalRunMiles})`,
+          vo2Miles: sql<number>`sum(${workouts.vo2Miles})`,
         })
         .from(workouts)
         .where(and(...whereConditions))

@@ -125,7 +125,7 @@ const LegendItem = ({
       <span
         aria-hidden={true}
         className={cn(
-          "size-2 shrink-0 rounded-xs",
+          "size-2.5 shrink-0 rounded-xs",
           getColorClassName(color, "bg"),
           activeLegend && activeLegend !== dataKey
             ? "opacity-40"
@@ -220,7 +220,6 @@ interface LegendProps extends React.OlHTMLAttributes<HTMLOListElement> {
   onClickLegendItem?: (category: string, color: string) => void;
   activeLegend?: string;
   enableLegendSlider?: boolean;
-  chartTitle?: string;
 }
 
 type HasScrollProps = {
@@ -231,7 +230,6 @@ type HasScrollProps = {
 const Legend = React.forwardRef<HTMLOListElement, LegendProps>((props, ref) => {
   const {
     items,
-    chartTitle,
     className,
     onClickLegendItem,
     activeLegend,
@@ -325,74 +323,63 @@ const Legend = React.forwardRef<HTMLOListElement, LegendProps>((props, ref) => {
   }, [checkScroll, enableLegendSlider]);
 
   return (
-    <div className="mb-2 flex w-full flex-col items-start justify-start">
-      {chartTitle && (
-        <div className="text-muted-foreground pl-6 text-left text-lg font-medium">
-          {chartTitle}
-        </div>
-      )}
-      <ol
+    <ol
+      className={cn("relative overflow-hidden", className)}
+      ref={ref}
+      {...other}
+    >
+      <div
         className={cn(
-          "relative overflow-hidden pl-4.5",
-          !chartTitle && "ml-auto pl-0",
-          className,
+          "flex h-full",
+          enableLegendSlider
+            ? hasScroll?.right || hasScroll?.left
+              ? "snap-mandatory items-center overflow-auto pr-12 pl-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              : ""
+            : "flex-wrap",
         )}
-        ref={ref}
-        {...other}
+        ref={scrollableRef}
+        // biome-ignore lint/a11y/noNoninteractiveTabindex: <tremor>
+        tabIndex={0}
       >
+        {items.map(({ dataKey, label, color }) => (
+          <LegendItem
+            activeLegend={activeLegend}
+            color={color}
+            dataKey={dataKey}
+            key={`item-${dataKey}`}
+            label={label}
+            onClick={onClickLegendItem}
+          />
+        ))}
+      </div>
+      {enableLegendSlider && (hasScroll?.right || hasScroll?.left) ? (
         <div
           className={cn(
-            "flex h-full",
-            enableLegendSlider
-              ? hasScroll?.right || hasScroll?.left
-                ? "snap-mandatory items-center overflow-auto pr-12 pl-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                : ""
-              : "flex-wrap",
+            // base
+            "absolute top-0 right-0 bottom-0 flex h-full items-center justify-center pr-1",
+            // background color
+            "bg-white dark:bg-gray-950",
           )}
-          ref={scrollableRef}
-          // biome-ignore lint/a11y/noNoninteractiveTabindex: <tremor>
-          tabIndex={0}
         >
-          {items.map(({ dataKey, label, color }) => (
-            <LegendItem
-              activeLegend={activeLegend}
-              color={color}
-              dataKey={dataKey}
-              key={`item-${dataKey}`}
-              label={label}
-              onClick={onClickLegendItem}
-            />
-          ))}
+          <ScrollButton
+            disabled={!hasScroll?.left}
+            icon={ChevronLeftIcon}
+            onClick={() => {
+              setIsKeyDowned(null);
+              scrollToTest("left");
+            }}
+          />
+          <ScrollButton
+            disabled={!hasScroll?.right}
+            icon={ChevronRightIcon}
+            onClick={() => {
+              setIsKeyDowned(null);
+              scrollToTest("right");
+            }}
+          />
         </div>
-        {enableLegendSlider && (hasScroll?.right || hasScroll?.left) ? (
-          <div
-            className={cn(
-              // base
-              "absolute top-0 right-0 bottom-0 flex h-full items-center justify-center pr-1",
-              // background color
-              "bg-white dark:bg-gray-950",
-            )}
-          >
-            <ScrollButton
-              disabled={!hasScroll?.left}
-              icon={ChevronLeftIcon}
-              onClick={() => {
-                setIsKeyDowned(null);
-                scrollToTest("left");
-              }}
-            />
-            <ScrollButton
-              disabled={!hasScroll?.right}
-              icon={ChevronRightIcon}
-              onClick={() => {
-                setIsKeyDowned(null);
-                scrollToTest("right");
-              }}
-            />
-          </div>
-        ) : null}
-      </ol>
-    </div>
+      ) : null}
+    </ol>
   );
 });
 
@@ -403,11 +390,9 @@ const ChartLegend = (
   categoryColors: Map<string, AvailableChartColorsKeys>,
   setLegendHeight: React.Dispatch<React.SetStateAction<number>>,
   activeLegend: string | undefined,
-  chartTitle?: string,
   onClick?: (category: string, color: string) => void,
   enableLegendSlider?: boolean,
   legendPosition?: "left" | "center" | "right",
-  yAxisWidth?: number,
   categoryLabelMap?: Map<string, string>,
 ) => {
   // biome-ignore lint/correctness/useHookAtTopLevel: <tremor>
@@ -433,25 +418,20 @@ const ChartLegend = (
     };
   });
 
-  const paddingLeft =
-    legendPosition === "left" && yAxisWidth ? yAxisWidth - 8 : 0;
-
   return (
     <div
       className={cn(
         "flex items-center",
         { "justify-center": legendPosition === "center" },
         {
-          "justify-start": legendPosition === "left",
+          "justify-start pl-1.5": legendPosition === "left",
         },
         { "justify-end": legendPosition === "right" },
       )}
       ref={legendRef}
-      style={{ paddingLeft: paddingLeft }}
     >
       <Legend
         activeLegend={activeLegend}
-        chartTitle={chartTitle}
         enableLegendSlider={enableLegendSlider}
         items={legendItems}
         onClickLegendItem={onClick}
@@ -570,7 +550,6 @@ interface BarChartProps extends React.HTMLAttributes<HTMLDivElement> {
   data: Record<string, any>[];
   index: string;
   categories: string[];
-  chartTitle?: string;
   categoryLabels?: Partial<Record<string, string>>;
   colors?: AvailableChartColorsKeys[];
   valueFormatter?: (value: number) => string;
@@ -606,7 +585,6 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
       data = [],
       categories = [],
       index,
-      chartTitle,
       categoryLabels,
       colors = AvailableChartColors,
       valueFormatter = (value: number) => value.toString(),
@@ -844,14 +822,12 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
                     categoryColors,
                     setLegendHeight,
                     activeLegend,
-                    chartTitle,
                     hasOnValueChange
                       ? (clickedLegendItem: string) =>
                           onCategoryClick(clickedLegendItem)
                       : undefined,
                     enableLegendSlider,
                     legendPosition,
-                    yAxisWidth,
                     categoryLabelMap,
                   )
                 }

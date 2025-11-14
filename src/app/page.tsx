@@ -4,15 +4,9 @@ import { CalendarBlocks } from "@/components/calendar/calendar-blocks";
 import { CalendarHeaderText } from "@/components/calendar/calendar-header-text";
 import { DayBlocks } from "@/components/calendar/day-blocks";
 import { ChartControls } from "@/components/chart/controls";
+import { RollingLoadChart } from "@/components/chart/rolling-load";
 import { RunMixChart } from "@/components/chart/run-mix";
-import { ComboChartSingleAxisExample } from "@/components/chart/test-chart";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { api } from "@/trpc/server";
 
@@ -25,11 +19,8 @@ export default function Home() {
       {/* Charts */}
       <div className="route-padding-x grid gap-4 lg:grid-cols-2">
         <Card className="@container/card w-full gap-0">
-          <CardHeader className="flex flex-col pl-4 @md/card:grid">
+          <CardHeader className="flex flex-col pl-6 @md/card:grid">
             <CardTitle>Run Volume Mix</CardTitle>
-            <CardDescription>
-              Total miles run split by category.
-            </CardDescription>
           </CardHeader>
           <CardContent>
             <Suspense fallback={<div>Loading...</div>}>
@@ -40,9 +31,16 @@ export default function Home() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="@container/card w-full gap-0">
+          <CardHeader className="flex flex-col pl-6 @md/card:grid">
+            <CardTitle>Training Load</CardTitle>
+          </CardHeader>
           <CardContent>
-            <ComboChartSingleAxisExample />
+            <Suspense fallback={<div>Loading...</div>}>
+              <RollingLoadChart
+                initialDataPromise={api.internal.getRollingLoad({})}
+              />
+            </Suspense>
           </CardContent>
         </Card>
       </div>

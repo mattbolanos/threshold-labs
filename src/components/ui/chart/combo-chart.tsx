@@ -88,6 +88,7 @@ const renderShape = (
 
 interface LegendItemProps {
   name: string;
+  label: string;
   color?: AvailableChartColorsKeys;
   onClick?: (name: string, color: AvailableChartColorsKeys) => void;
   activeLegend?: string;
@@ -96,6 +97,7 @@ interface LegendItemProps {
 
 const LegendItem = ({
   name,
+  label,
   color = "gray",
   onClick,
   activeLegend,
@@ -125,9 +127,9 @@ const LegendItem = ({
       <span
         aria-hidden={true}
         className={cn(
-          { "size-2 rounded-xs": chartType === "bar" },
+          { "size-2.5 rounded-xs": chartType === "bar" },
           {
-            "h-[3px] w-3.5 shrink-0 rounded-full": chartType === "line",
+            "h-1 w-4 shrink-0 rounded-full": chartType === "line",
           },
           "shrink-0",
           colorClass,
@@ -145,7 +147,7 @@ const LegendItem = ({
           activeLegend && activeLegend !== name ? "opacity-40" : "opacity-100",
         )}
       >
-        {name}
+        {label}
       </p>
     </li>
   );
@@ -210,7 +212,7 @@ const ScrollButton = ({ icon, onClick, disabled }: ScrollButtonProps) => {
 };
 
 interface LegendProps extends React.OlHTMLAttributes<HTMLOListElement> {
-  categories: { name: string; chartType: "bar" | "line" }[];
+  categories: { name: string; label?: string; chartType: "bar" | "line" }[];
   barCategoryColors: Map<string, AvailableChartColorsKeys>;
   lineCategoryColors: Map<string, AvailableChartColorsKeys>;
   onClickLegendItem?: (
@@ -347,6 +349,7 @@ const Legend = React.forwardRef<HTMLOListElement, LegendProps>((props, ref) => {
               color={category.chartType === "bar" ? barColor : lineColor}
               // biome-ignore lint/suspicious/noArrayIndexKey: <tremor>
               key={`item-${index}`}
+              label={category.label ?? category.name}
               name={category.name}
               onClick={onClickLegendItem}
             />
@@ -395,8 +398,9 @@ const ChartLegend = (
   onClick?: (category: string, color: AvailableChartColorsKeys) => void,
   enableLegendSlider?: boolean,
   legendPosition?: "left" | "center" | "right",
-  barYAxisWidth?: number,
   lineYAxisWidth?: number,
+  barCategoryLabelMap?: Map<string, string>,
+  lineCategoryLabelMap?: Map<string, string>,
 ) => {
   // biome-ignore lint/correctness/useHookAtTopLevel: <tremor>
   const legendRef = React.useRef<HTMLDivElement>(null);
@@ -410,8 +414,22 @@ const ChartLegend = (
 
   const filteredPayload = payload.filter((item: any) => item.type !== "none");
 
-  const paddingLeft =
-    legendPosition === "left" && barYAxisWidth ? barYAxisWidth - 8 : 0;
+  const legendItems = filteredPayload.map((entry: any) => {
+    const dataKey = entry.dataKey as string;
+    const isBar = entry.type === "rect" || barCategoryColors.has(dataKey);
+    const chartType: "bar" | "line" = isBar ? "bar" : "line";
+    const label =
+      (chartType === "bar"
+        ? barCategoryLabelMap?.get(dataKey)
+        : lineCategoryLabelMap?.get(dataKey)) ?? entry.value;
+
+    return {
+      chartType,
+      label,
+      name: dataKey,
+    };
+  });
+
   const paddingRight =
     (legendPosition === "right" || legendPosition === undefined) &&
     lineYAxisWidth
@@ -424,20 +442,17 @@ const ChartLegend = (
         "flex items-center",
         { "justify-center": legendPosition === "center" },
         {
-          "justify-start": legendPosition === "left",
+          "justify-start pl-1.5": legendPosition === "left",
         },
         { "justify-end": legendPosition === "right" },
       )}
       ref={legendRef}
-      style={{ paddingLeft: paddingLeft, paddingRight: paddingRight }}
+      style={{ paddingRight: paddingRight }}
     >
       <Legend
         activeLegend={activeLegend}
         barCategoryColors={barCategoryColors}
-        categories={filteredPayload.map((entry: any) => ({
-          chartType: entry.type === "rect" ? "bar" : entry.type,
-          name: entry.value,
-        }))}
+        categories={legendItems}
         enableLegendSlider={enableLegendSlider}
         lineCategoryColors={lineCategoryColors}
         onClickLegendItem={onClick}
@@ -457,6 +472,7 @@ type PayloadItem = {
   barColor: AvailableChartColorsKeys;
   lineColor: AvailableChartColorsKeys;
   chartType: "bar" | "line";
+  dataKey: string;
   type: string;
   payload: any;
 };
@@ -465,6 +481,7 @@ interface ChartTooltipProps {
   active: boolean | undefined;
   payload: PayloadItem[];
   label: string;
+  labelFormatter?: (label: string) => string;
   barValueFormatter?: (value: number) => string;
   lineValueFormatter?: (value: number) => string;
 }
@@ -473,6 +490,7 @@ const ChartTooltip = ({
   active,
   payload,
   label,
+  labelFormatter,
   barValueFormatter = (value: number): string => value.toString(),
   lineValueFormatter = (value: number): string => value.toString(),
 }: ChartTooltipProps) => {
@@ -498,7 +516,7 @@ const ChartTooltip = ({
               "text-gray-900 dark:text-gray-50",
             )}
           >
-            {label}
+            {labelFormatter ? labelFormatter(label) : label}
           </p>
         </div>
         <div className={cn("space-y-1 px-4 py-2")}>
@@ -514,9 +532,9 @@ const ChartTooltip = ({
                     <span
                       aria-hidden="true"
                       className={cn(
-                        { "size-2 rounded-xs": chartType === "bar" },
+                        { "size-3 rounded-xs": chartType === "bar" },
                         {
-                          "h-[3px] w-3.5 shrink-0 rounded-full":
+                          "h-1 w-3.5 shrink-0 rounded-full":
                             chartType === "line",
                         },
                         "shrink-0",
@@ -575,6 +593,7 @@ type ComboChartEventProps = BaseEventProps | null | undefined;
 
 type ChartSeries = {
   categories: string[];
+  categoryLabels?: Partial<Record<string, string>>;
   colors?: AvailableChartColorsKeys[];
   valueFormatter?: (value: number) => string;
   showYAxis?: boolean;
@@ -591,6 +610,7 @@ interface ComboChartProps extends React.HTMLAttributes<HTMLDivElement> {
   index: string;
   startEndOnly?: boolean;
   showXAxis?: boolean;
+  xTicksFormatter?: (value: number | string) => string;
   xAxisLabel?: string;
   showGridLines?: boolean;
   intervalType?: "preserveStartEnd" | "equidistantPreserveStart";
@@ -609,6 +629,7 @@ interface ComboChartProps extends React.HTMLAttributes<HTMLDivElement> {
   lineSeries?: ChartSeries & {
     connectNulls?: boolean;
   };
+  tooltipLabelFormatter?: (label: string) => string;
 }
 
 const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
@@ -617,12 +638,15 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
       allowDecimals: true,
       autoMinValue: false,
       categories: [],
+      categoryLabels: undefined,
       colors: AvailableChartColors,
       maxValue: undefined,
       minValue: undefined,
       showYAxis: true,
+      tooltipLabelFormatter: undefined,
       type: "default",
       valueFormatter: (value: number) => value.toString(),
+      xTicksFormatter: undefined,
       yAxisLabel: undefined,
       yAxisWidth: 56,
     };
@@ -648,7 +672,8 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
       tickGap = 5,
       xAxisLabel,
       enableBiaxial = false,
-
+      tooltipLabelFormatter,
+      xTicksFormatter,
       barSeries = defaultBarSeries,
       lineSeries = defaultLineSeries,
       tooltipCallback,
@@ -692,6 +717,26 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
       mergedLineSeries.categories,
       mergedLineSeries.colors ?? AvailableChartColors,
     );
+    const barCategoryLabelMap = React.useMemo(() => {
+      const map = new Map<string, string>();
+      mergedBarSeries.categories.forEach((category) => {
+        map.set(
+          category,
+          mergedBarSeries.categoryLabels?.[category] ?? category,
+        );
+      });
+      return map;
+    }, [mergedBarSeries.categories, mergedBarSeries.categoryLabels]);
+    const lineCategoryLabelMap = React.useMemo(() => {
+      const map = new Map<string, string>();
+      mergedLineSeries.categories.forEach((category) => {
+        map.set(
+          category,
+          mergedLineSeries.categoryLabels?.[category] ?? category,
+        );
+      });
+      return map;
+    }, [mergedLineSeries.categories, mergedLineSeries.categoryLabels]);
     const [activeBar, setActiveBar] = React.useState<any | undefined>(
       undefined,
     );
@@ -816,6 +861,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                 className={cn("stroke-gray-200 stroke-1 dark:stroke-gray-800")}
                 horizontal={true}
                 vertical={false}
+                yAxisId={enableBiaxial ? "left" : undefined}
               />
             ) : null}
             <XAxis
@@ -839,6 +885,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
               tick={{
                 transform: "translate(0, 6)",
               }}
+              tickFormatter={xTicksFormatter ? xTicksFormatter : undefined}
               tickLine={false}
               ticks={
                 startEndOnly
@@ -943,8 +990,9 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                       : undefined,
                     enableLegendSlider,
                     legendPosition,
-                    mergedBarSeries.yAxisWidth,
                     mergedLineSeries.yAxisWidth,
+                    barCategoryLabelMap,
+                    lineCategoryLabelMap,
                   )
                 }
                 height={legendHeight}
@@ -959,10 +1007,15 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                       barColor: barCategoryColors.get(
                         item.dataKey,
                       ) as AvailableChartColorsKeys,
-                      category: item.dataKey,
-                      chartType: barCategoryColors.get(item.dataKey)
+                      category:
+                        (barCategoryColors.has(item.dataKey)
+                          ? barCategoryLabelMap?.get(item.dataKey)
+                          : lineCategoryLabelMap?.get(item.dataKey)) ??
+                        item.dataKey,
+                      chartType: barCategoryColors.has(item.dataKey)
                         ? "bar"
                         : ("line" as PayloadItem["chartType"]),
+                      dataKey: item.dataKey,
                       index: item.payload[index],
                       lineColor: lineCategoryColors.get(
                         item.dataKey,
@@ -996,6 +1049,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                       active={active}
                       barValueFormatter={mergedBarSeries.valueFormatter}
                       label={label as string}
+                      labelFormatter={tooltipLabelFormatter}
                       lineValueFormatter={mergedLineSeries.valueFormatter}
                       payload={cleanPayload}
                     />
@@ -1054,7 +1108,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                     strokeOpacity={0}
                     strokeWidth={12}
                     tooltipType="none"
-                    type="linear"
+                    type="monotone"
                     yAxisId={enableBiaxial ? "right" : undefined}
                   />
                 ))
@@ -1169,8 +1223,8 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                     ? 0.3
                     : 1
                 }
-                strokeWidth={2}
-                type="linear"
+                strokeWidth={3}
+                type="monotone"
                 yAxisId={enableBiaxial ? "right" : undefined}
               />
             ))}

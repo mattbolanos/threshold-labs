@@ -1,11 +1,11 @@
 "use client";
 
-import React from "react";
+import * as React from "react";
 import { BarChart } from "@/components/ui/chart/bar-chart";
 import { useChartState } from "@/hooks/use-chart-state";
 import { getColorClassName } from "@/lib/chart-utils";
+import type { RunVolumeMixOutput } from "@/server/api/types";
 import { api } from "@/trpc/react";
-import type { RunVolumeMixOutput } from "../../server/api/types";
 import { createTooltip } from "./tooltip";
 
 const RUN_MIX_CATEGORIES = [
@@ -114,12 +114,12 @@ export function RunMixChart({ initialDataPromise }: RunMixChartProps) {
 
   return (
     <BarChart
-      barCategoryGap={8}
       categories={[...RUN_MIX_CATEGORIES]}
       categoryLabels={RUN_MIX_CATEGORY_LABELS}
       customTooltip={RunMixTooltip}
       data={data}
       index="cycle"
+      legendPosition="left"
       type="stacked"
       xAxisLabel="Cycle"
       xTicksFormatter={(value) =>

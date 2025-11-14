@@ -1,3 +1,4 @@
+import { addWeeks, startOfWeek } from "date-fns";
 import {
   BikeIcon,
   CloudIcon,
@@ -8,6 +9,7 @@ import {
   ShipIcon,
   ZapIcon,
 } from "lucide-react";
+import { formatQueryDate } from "@/lib/utils";
 
 export const WORKOUT_TYPES = [
   { icon: FootprintsIcon, title: "Aerobic Run" },
@@ -19,3 +21,10 @@ export const WORKOUT_TYPES = [
   { icon: ShipIcon, title: "Row Intervals + Finisher" },
   { icon: ZapIcon, title: "Ski Metcon" },
 ] as const;
+
+export const DEFAULT_RUN_MIX_RANGE = {
+  from: formatQueryDate(
+    addWeeks(startOfWeek(new Date(), { weekStartsOn: 1 }), -18),
+  ),
+  to: formatQueryDate(new Date()),
+};

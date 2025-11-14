@@ -1,7 +1,8 @@
 "use client";
 
+import { isSameDay } from "date-fns";
 import { useCalendarNav } from "@/hooks/use-calendar-nav";
-import { cn, getWeekDays, isSameDay } from "@/lib/utils";
+import { cn, getWeekDays } from "@/lib/utils";
 
 export function DayBlocks() {
   const { weekStartDate } = useCalendarNav();

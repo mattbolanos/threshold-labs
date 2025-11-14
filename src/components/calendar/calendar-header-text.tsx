@@ -10,9 +10,7 @@ export function CalendarHeaderText() {
 
   return (
     <div className="flex flex-col pl-1">
-      <span className="flex items-center gap-1 text-sm font-medium tabular-nums">
-        {headerLabel} • Cycle 18
-      </span>
+      <span className="text-sm font-medium tabular-nums">{headerLabel}</span>
       <span className="text-muted-foreground hidden text-sm md:flex">
         Click on a block to view more details
       </span>

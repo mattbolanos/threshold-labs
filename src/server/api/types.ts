@@ -4,3 +4,5 @@ import type { appRouter } from "./root";
 type RouterOutputs = inferRouterOutputs<typeof appRouter>;
 
 export type WorkoutsOutput = RouterOutputs["internal"]["getWorkouts"];
+export type RunVolumeMixOutput = RouterOutputs["internal"]["getRunVolumeMix"];
+export type RollingLoadOutput = RouterOutputs["internal"]["getRollingLoad"];

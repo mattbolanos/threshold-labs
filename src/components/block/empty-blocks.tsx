@@ -5,6 +5,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { cn } from "@/lib/utils";
 
 interface EmptyBlocksProps {
   className?: string;
@@ -12,7 +13,9 @@ interface EmptyBlocksProps {
 
 export function EmptyBlocks({ className }: EmptyBlocksProps) {
   return (
-    <Empty className={className}>
+    <Empty
+      className={cn("bg-accent/40 mx-auto border-2 border-dashed", className)}
+    >
       <EmptyHeader>
         <EmptyMedia variant="icon">
           <DumbbellIcon />

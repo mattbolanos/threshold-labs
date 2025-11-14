@@ -1,16 +1,11 @@
 "use client";
 
+import { addDays, isSameDay } from "date-fns";
 import { Block } from "@/components/block/block";
 import { EmptyBlocks } from "@/components/block/empty-blocks";
 import { BlocksSummary } from "@/components/block/summary";
 import { useCalendarNav } from "@/hooks/use-calendar-nav";
-import {
-  addDays,
-  cn,
-  formatQueryDate,
-  getWeekDays,
-  isSameDay,
-} from "@/lib/utils";
+import { cn, formatQueryDate, getWeekDays } from "@/lib/utils";
 import { api } from "@/trpc/react";
 
 export function CalendarBlocks() {
@@ -26,7 +21,9 @@ export function CalendarBlocks() {
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-7 md:gap-2">
       <BlocksSummary className="mb-1 md:hidden" workouts={data} />
-      {data.length === 0 && <EmptyBlocks className="md:col-span-7" />}
+      {data.length === 0 && (
+        <EmptyBlocks className="w-full md:col-span-7 md:mt-2" />
+      )}
       {weekDays.map((day) => {
         const dayString = formatQueryDate(day);
         const dayWorkouts = data.filter(

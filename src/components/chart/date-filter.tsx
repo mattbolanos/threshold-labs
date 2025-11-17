@@ -29,20 +29,6 @@ export function DateFilter({ range, setRange }: DateFilterProps) {
   });
   const [open, setOpen] = React.useState(false);
 
-  const handleApply = () => {
-    setRange({
-      from: localRange?.from ? formatQueryDate(localRange.from) : "",
-      to: localRange?.to ? formatQueryDate(localRange.to) : "",
-    });
-    setOpen(false);
-  };
-
-  const handleClear = () => {
-    setRange(null);
-    setLocalRange(undefined);
-    setOpen(false);
-  };
-
   return (
     <Popover onOpenChange={setOpen} open={open}>
       <PopoverTrigger asChild>
@@ -71,10 +57,27 @@ export function DateFilter({ range, setRange }: DateFilterProps) {
           showOutsideDays
         />
         <div className="flex justify-end gap-2 p-2">
-          <Button onMouseDown={handleClear} variant="outline">
+          <Button
+            onMouseDown={() => {
+              setRange(null);
+              setLocalRange(undefined);
+              setOpen(false);
+            }}
+            variant="outline"
+          >
             Clear
           </Button>
-          <Button onMouseDown={handleApply}>Apply</Button>
+          <Button
+            onMouseDown={() => {
+              setRange({
+                from: localRange?.from ? formatQueryDate(localRange.from) : "",
+                to: localRange?.to ? formatQueryDate(localRange.to) : "",
+              });
+              setOpen(false);
+            }}
+          >
+            Apply
+          </Button>
         </div>
       </PopoverContent>
     </Popover>

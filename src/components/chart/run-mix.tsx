@@ -59,9 +59,10 @@ const RunMixTooltip = createTooltip(
             "en-US",
             {
               maximumFractionDigits: 1,
-              minimumFractionDigits: 0,
+              minimumFractionDigits: 1,
             },
           );
+
           const totalMiles = payloadItem.payload?.totalMiles || 1;
           const percentage = (
             (Number(payloadItem.value) / totalMiles) *

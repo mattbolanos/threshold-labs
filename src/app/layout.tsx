@@ -34,12 +34,10 @@ export default function RootLayout({
         )}
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-full antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} bg-background text-foreground min-h-full overscroll-y-contain antialiased`}
       >
         <main>
-          <div className="overscroll-contain mx-auto max-w-[1320px]">
-            <Providers>{children}</Providers>
-          </div>
+          <Providers>{children}</Providers>
         </main>
       </body>
     </html>

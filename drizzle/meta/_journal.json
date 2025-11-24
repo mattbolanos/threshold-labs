@@ -22,6 +22,13 @@
       "when": 1763075085659,
       "tag": "0002_yummy_magdalene",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1763945010449,
+      "tag": "0003_strong_black_crow",
+      "breakpoints": true
     }
   ]
 }

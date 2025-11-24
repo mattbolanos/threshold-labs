@@ -30,14 +30,14 @@ export const internalRouter = createTRPCRouter({
 
       return await ctx.db
         .select({
-          cycle: workouts.cycle,
           stl: sql<number>`sum(${workouts.subjectiveTrainingLoad})`,
           trueTrainingHours: sql<number>`sum(${workouts.trainingMinutes}) / 60`,
+          week: workouts.week,
         })
         .from(workouts)
         .where(and(...whereConditions))
-        .groupBy(workouts.cycle)
-        .orderBy(workouts.cycle);
+        .groupBy(workouts.week)
+        .orderBy(workouts.week);
     }),
 
   getRunVolumeMix: protectedProcedure
@@ -65,8 +65,7 @@ export const internalRouter = createTRPCRouter({
 
       return await ctx.db
         .select({
-          cycle: workouts.cycle,
-          easyMiles: sql<number>`
+          aerobicMiles: sql<number>`
             coalesce(sum(${workouts.totalRunMiles}), 0) - coalesce(sum(${workouts.speedMiles}), 0) - 
             coalesce(sum(${workouts.tempoMiles}), 0) - coalesce(sum(${workouts.thresholdMiles}), 0) - coalesce(sum(${workouts.vo2Miles}), 0)`,
           speedMiles: sql<number>`sum(${workouts.speedMiles})`,
@@ -74,11 +73,12 @@ export const internalRouter = createTRPCRouter({
           thresholdMiles: sql<number>`sum(${workouts.thresholdMiles})`,
           totalMiles: sql<number>`sum(${workouts.totalRunMiles})`,
           vo2Miles: sql<number>`sum(${workouts.vo2Miles})`,
+          week: workouts.week,
         })
         .from(workouts)
         .where(and(...whereConditions))
-        .groupBy(workouts.cycle)
-        .orderBy(workouts.cycle);
+        .groupBy(workouts.week)
+        .orderBy(workouts.week);
     }),
 
   getWorkouts: protectedProcedure

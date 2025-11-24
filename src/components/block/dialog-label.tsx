@@ -13,7 +13,7 @@ export function DialogLabel({ Icon, label, labelClassName }: DialogLabelProps) {
   return (
     <div
       className={cn(
-        "text-muted-foreground md:hover:bg-muted flex h-9 w-46 shrink-0 cursor-default items-center rounded-sm px-2 transition-colors md:w-40",
+        "text-muted-foreground md:hover:bg-muted flex h-9 w-46 shrink-0 cursor-default items-center rounded-sm px-2 transition-colors md:w-44",
         labelClassName,
       )}
       title={label}

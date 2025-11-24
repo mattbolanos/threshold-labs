@@ -10,7 +10,7 @@ import { createTooltip } from "./tooltip";
 
 const RUN_MIX_CATEGORIES = [
   "speedMiles",
-  "easyMiles",
+  "aerobicMiles",
   "tempoMiles",
   "thresholdMiles",
   "vo2Miles",
@@ -19,7 +19,7 @@ const RUN_MIX_CATEGORIES = [
 type RunMixCategory = (typeof RUN_MIX_CATEGORIES)[number];
 
 const RUN_MIX_CATEGORY_LABELS: Record<RunMixCategory, string> = {
-  easyMiles: "Easy Miles",
+  aerobicMiles: "Aerobic Miles",
   speedMiles: "Speed Miles",
   tempoMiles: "Tempo Miles",
   thresholdMiles: "Threshold Miles",
@@ -59,9 +59,10 @@ const RunMixTooltip = createTooltip(
             "en-US",
             {
               maximumFractionDigits: 1,
-              minimumFractionDigits: 0,
+              minimumFractionDigits: 1,
             },
           );
+
           const totalMiles = payloadItem.payload?.totalMiles || 1;
           const percentage = (
             (Number(payloadItem.value) / totalMiles) *
@@ -118,10 +119,10 @@ export function RunMixChart({ initialDataPromise }: RunMixChartProps) {
       categoryLabels={RUN_MIX_CATEGORY_LABELS}
       customTooltip={RunMixTooltip}
       data={data}
-      index="cycle"
+      index="week"
       legendPosition="left"
       type="stacked"
-      xAxisLabel="Cycle"
+      xAxisLabel="Week"
       xTicksFormatter={(value) =>
         new Date(value).toLocaleDateString("en-US", {
           day: "numeric",

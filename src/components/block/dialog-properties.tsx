@@ -42,9 +42,9 @@ export const dialogProperties: DialogPropertyConfig[] = [
     label: "Date",
   },
   {
-    getValue: (workout) => workout.cycle,
+    getValue: (workout) => workout.week,
     Icon: RefreshCcwIcon,
-    label: "Cycle",
+    label: "Week",
   },
   {
     getValue: (workout) => formatMinutesToTime(workout.trainingMinutes),
@@ -64,7 +64,7 @@ export const dialogProperties: DialogPropertyConfig[] = [
   {
     getValue: (workout) => workout.subjectiveTrainingLoad,
     Icon: WeightIcon,
-    label: "STL",
+    label: "Subjective Training Load",
   },
   {
     getValue: (workout) => formatMinutesToTime(workout.cardioMinutes),

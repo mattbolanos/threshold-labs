@@ -29,24 +29,34 @@ export function getWeekDays(weekStart: Date): Date[] {
 export function formatWeekRangeLabel(
   weekStart: Date,
   locale: string = "default",
+  showDays: boolean = false,
 ): string {
   const weekEnd = addDays(weekStart, 6);
   const sameYear = weekStart.getFullYear() === weekEnd.getFullYear();
   const sameMonth = sameYear && weekStart.getMonth() === weekEnd.getMonth();
 
-  const fmt = new Intl.DateTimeFormat(locale, { month: "short" });
+  const monthOptions = showDays
+    ? { day: "numeric" as const, month: "short" as const }
+    : { month: "short" as const };
+  const fmt = new Intl.DateTimeFormat(locale, monthOptions);
   const startMonth = fmt.format(weekStart);
   const endMonth = fmt.format(weekEnd);
   const startYear = weekStart.getFullYear();
   const endYear = weekEnd.getFullYear();
 
   if (sameYear && sameMonth) {
-    return `${startMonth} ${startYear}`;
+    return showDays
+      ? `${startMonth} - ${endMonth}, ${startYear}`
+      : `${startMonth} ${startYear}`;
   }
   if (sameYear) {
-    return `${startMonth} - ${endMonth} ${startYear}`;
+    return showDays
+      ? `${startMonth} - ${endMonth}, ${startYear}`
+      : `${startMonth} - ${endMonth} ${startYear}`;
   }
-  return `${startMonth} ${startYear} - ${endMonth} ${endYear}`;
+  return showDays
+    ? `${startMonth}, ${startYear} - ${endMonth}, ${endYear}`
+    : `${startMonth} ${startYear} - ${endMonth} ${endYear}`;
 }
 
 export function formatQueryDate(date: Date): string {

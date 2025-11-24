@@ -1,0 +1,1 @@
+ALTER TABLE "thlab"."workouts" RENAME COLUMN "cycle" TO "week";

@@ -14,7 +14,6 @@ export const workouts = thlab.table(
   {
     burpees: integer("burpees"),
     cardioMinutes: real("cardio_minutes").notNull(),
-    cycle: date("cycle").notNull(),
     id: text("id").primaryKey().notNull(),
     notes: text("notes"),
     rpe: real("rpe").notNull(),
@@ -29,6 +28,7 @@ export const workouts = thlab.table(
     trainingMinutes: real("training_minutes").notNull(),
     vo2Miles: real("vo2_miles"),
     wallballs: integer("wallballs"),
+    week: date("week").notNull(),
     workoutDate: date("workout_date").notNull(),
     workoutPlan: text("workout_plan").notNull(),
     workoutType: text("workout_type").notNull(),

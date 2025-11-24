@@ -12,7 +12,7 @@ import { api } from "@/trpc/server";
 
 export default function Home() {
   return (
-    <div className="bg-background route-padding-y flex flex-col gap-4">
+    <div className="bg-background route-padding-y mx-auto flex max-w-7xl flex-col gap-4">
       <Suspense fallback={<div>Loading...</div>}>
         <ChartControls />
       </Suspense>

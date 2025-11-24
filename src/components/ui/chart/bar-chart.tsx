@@ -682,12 +682,12 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
 
     return (
       <div
-        className={cn("h-80 w-full", className)}
+        className={cn("h-64 w-full sm:h-80", className)}
         ref={forwardedRef}
         tremor-id="tremor-raw"
         {...other}
       >
-        <ResponsiveContainer>
+        <ResponsiveContainer debounce={150}>
           <RechartsBarChart
             barCategoryGap={barCategoryGap}
             data={data}
@@ -723,7 +723,7 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
                 "text-xs",
                 // text fill
                 "fill-gray-500 dark:fill-gray-500",
-                { "mt-4": layout !== "vertical" },
+                { "mt-3": layout !== "vertical" },
               )}
               fill=""
               hide={!showXAxis}

@@ -39,12 +39,12 @@ export function RollingLoadChart({
       }}
       data={data}
       enableBiaxial={true}
-      index="cycle"
+      index="week"
       legendPosition="left"
       lineSeries={{
         categories: ["stl"],
         categoryLabels: {
-          stl: "STL",
+          stl: "Subjective Training Load",
         },
         colors: ["blue"],
       }}
@@ -52,7 +52,7 @@ export function RollingLoadChart({
       tooltipLabelFormatter={(label) => {
         return `Week of ${label}`;
       }}
-      xAxisLabel="Cycle"
+      xAxisLabel="Week"
       xTicksFormatter={(value) =>
         new Date(value).toLocaleDateString("en-US", {
           day: "numeric",

@@ -831,12 +831,12 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
 
     return (
       <div
-        className={cn("h-80 w-full", className)}
+        className={cn("h-64 w-full sm:h-80", className)}
         ref={forwardedRef}
         tremor-id="tremor-raw"
         {...other}
       >
-        <ResponsiveContainer>
+        <ResponsiveContainer debounce={150}>
           <RechartsComposedChart
             data={data}
             margin={{
@@ -868,7 +868,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
               axisLine={false}
               className={cn(
                 // base
-                "mt-4 text-xs",
+                "mt-3 text-xs",
                 // text fill
                 "fill-gray-500 dark:fill-gray-500",
               )}

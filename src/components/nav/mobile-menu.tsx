@@ -3,37 +3,48 @@
 import Link from "next/link";
 import * as React from "react";
 import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { SITE_ROUTES } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 export function MobileMenu() {
   const [open, setOpen] = React.useState(false);
+  const isMobile = useIsMobile();
 
-  const toggle = () => {
+  const toggleOpen = () => {
     if (typeof document !== "undefined") {
       document.body.style.overflow = open ? "scroll" : "hidden";
     }
     setOpen(!open);
   };
 
+  React.useEffect(() => {
+    if (!isMobile && open) {
+      if (typeof document !== "undefined") {
+        document.body.style.overflow = "scroll";
+      }
+      setOpen(false);
+    }
+  }, [isMobile, open]);
+
   return (
     <>
       <Button
-        className="group flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-full md:hidden"
-        onMouseDown={toggle}
+        className="group flex cursor-pointer flex-col items-center justify-center gap-1 rounded-full md:hidden"
+        onMouseDown={toggleOpen}
         size="icon-sm"
         variant="outline"
       >
         <div
           className={cn(
-            "bg-foreground h-[1.5px] w-[14px] transition-transform duration-200",
-            open && "translate-y-[3.5px] scale-110 -rotate-45",
+            "bg-foreground h-0.5 w-[14px] transition-transform duration-200",
+            open && "translate-y-[3px] scale-105 -rotate-45",
           )}
         />
         <div
           className={cn(
-            "bg-foreground h-[1.5px] w-[14px] transition-transform duration-200",
-            open && "-translate-y-[3.5px] scale-110 rotate-45",
+            "bg-foreground h-0.5 w-[14px] transition-transform duration-200",
+            open && "-translate-y-[3px] scale-105 rotate-45",
           )}
         />
       </Button>

@@ -1,12 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
-import { SITE_ROUTES } from "@/lib/routes";
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-} from "./ui/navigation-menu";
+} from "@/components/ui/navigation-menu";
+import { SITE_ROUTES } from "@/lib/routes";
+import { NavUser } from "./nav-user";
 
 export function NavBar() {
   return (
@@ -37,6 +38,7 @@ export function NavBar() {
             </NavigationMenuList>
           </NavigationMenu>
         </div>
+        <NavUser />
       </div>
     </header>
   );

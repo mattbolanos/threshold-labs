@@ -6,7 +6,6 @@ interface SiteRoute {
 }
 
 export const SITE_ROUTES: SiteRoute[] = [
-  { href: "/", label: "Home" },
   { href: "/partnerships", label: "Partnerships" },
   { href: "/news", label: "Newsletter" },
   { href: "/lab", label: "The Lab" },

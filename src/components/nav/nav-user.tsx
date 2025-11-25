@@ -19,7 +19,7 @@ interface NavUserProps {
 export function NavUser({ imageUrl, initials, username }: NavUserProps) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger asChild className="max-md:hidden">
         <Avatar className="cursor-pointer transition-[opacity,transform] duration-150 ease-in-out hover:scale-105 hover:opacity-85">
           <AvatarImage alt="User avatar" src={imageUrl} />
           <AvatarFallback>{initials}</AvatarFallback>

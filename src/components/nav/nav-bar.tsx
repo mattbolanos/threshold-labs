@@ -7,16 +7,18 @@ import {
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 import { SITE_ROUTES } from "@/lib/routes";
+import { MobileMenu } from "./mobile-menu";
 import { NavUser } from "./nav-user";
 
 export function NavBar() {
   return (
-    <header className="bg-background sticky top-0 z-10 border-b px-4 md:px-6">
-      <div className="mx-auto flex h-12 w-full max-w-7xl items-center justify-between gap-4 md:h-14">
+    <header className="bg-background sticky top-0 z-10 w-full border-b px-4 md:px-6">
+      <nav className="mx-auto flex h-12 w-full max-w-7xl items-center justify-between gap-4 md:h-14">
         <div className="flex items-center gap-6">
-          <Link href="/">
+          <Link href="/" prefetch>
             <Image
               alt="Threshold Lab"
+              className="size-20 md:size-25"
               height={100}
               src="/logo.svg"
               width={100}
@@ -31,7 +33,9 @@ export function NavBar() {
                     asChild
                     className="text-muted-foreground hover:text-primary transition-color py-1.5 font-medium duration-150 ease-in-out"
                   >
-                    <Link href={link.href}>{link.label}</Link>
+                    <Link href={link.href} prefetch>
+                      {link.label}
+                    </Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
               ))}
@@ -43,7 +47,9 @@ export function NavBar() {
           initials="SP"
           username="Stephen Pelkofer"
         />
-      </div>
+        {/* mobile */}
+        <MobileMenu />
+      </nav>
     </header>
   );
 }

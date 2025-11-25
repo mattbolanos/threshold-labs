@@ -38,7 +38,11 @@ export function NavBar() {
             </NavigationMenuList>
           </NavigationMenu>
         </div>
-        <NavUser />
+        <NavUser
+          imageUrl="/stephen-avatar.jpg"
+          initials="SP"
+          username="Stephen Pelkofer"
+        />
       </div>
     </header>
   );

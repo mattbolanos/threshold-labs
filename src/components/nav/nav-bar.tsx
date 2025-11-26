@@ -43,6 +43,7 @@ export function NavBar() {
           </NavigationMenu>
         </div>
         <NavUser
+          email="stephen@thresholdlab.com"
           imageUrl="/stephen-avatar.jpg"
           initials="SP"
           username="Stephen Pelkofer"

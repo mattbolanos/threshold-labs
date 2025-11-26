@@ -2,10 +2,14 @@
 
 import Link from "next/link";
 import * as React from "react";
+import { ThemeToggle } from "@/components/theme/toggle";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SITE_ROUTES } from "@/lib/routes";
 import { cn } from "@/lib/utils";
+
+const ITEM_CLASS =
+  "hover:bg-accent text-muted-foreground hover:text-foreground flex h-13 cursor-pointer items-center rounded-md px-2.5 text-base transition-colors duration-100";
 
 export function MobileMenu() {
   const [open, setOpen] = React.useState(false);
@@ -50,19 +54,25 @@ export function MobileMenu() {
       </Button>
       {open && (
         <div className="animate-in fade-out bg-background fixed inset-0 z-20 mt-12.5 overflow-y-auto transition-opacity duration-200">
-          <ul className="p-2 pt-4">
+          <ul className="p-2.5 pt-4">
             {SITE_ROUTES.map((route) => (
-              <li
-                className="hover:bg-accent text-muted-foreground hover:text-foreground flex h-12 cursor-pointer items-center rounded-md px-2.5 text-base transition-colors duration-100"
-                key={route.href}
-              >
+              <li className={ITEM_CLASS} key={route.href}>
                 <Link href={route.href} prefetch>
                   {route.label}
                 </Link>
               </li>
             ))}
-            <li className="hover:bg-accent text-muted-foreground hover:text-foreground flex h-12 cursor-pointer items-center rounded-md px-2.5 text-base transition-colors duration-100">
+            <li className={ITEM_CLASS}>
               <Link href="/">Home Page</Link>
+            </li>
+            <li
+              className={cn(
+                ITEM_CLASS,
+                "hover:text-muted-foreground focus:text-muted-foreground cursor-default justify-between hover:bg-transparent focus:bg-transparent",
+              )}
+            >
+              <span>Theme</span>
+              <ThemeToggle />
             </li>
           </ul>
         </div>

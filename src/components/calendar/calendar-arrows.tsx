@@ -2,15 +2,25 @@
 
 import { addDays } from "date-fns";
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
+import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { useCalendarNav } from "@/hooks/use-calendar-nav";
 import { formatQueryDate } from "@/lib/utils";
 import { api } from "@/trpc/react";
 
-export function CalendarArrows() {
-  const [workoutsDateRange] =
-    api.internal.getWorkoutsDateRange.useSuspenseQuery();
+interface CalendarArrowsProps {
+  workoutsDateRangePromise: Promise<{
+    minWorkoutDate: string | null;
+    maxWorkoutDate: string | null;
+  }>;
+}
+
+export function CalendarArrows({
+  workoutsDateRangePromise,
+}: CalendarArrowsProps) {
+  const workoutsDateRange = React.use(workoutsDateRangePromise);
+
   const { addWeektoStart, jumpToToday, subtractWeekfromStart, weekStartDate } =
     useCalendarNav();
 

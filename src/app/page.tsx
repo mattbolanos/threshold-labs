@@ -8,16 +8,17 @@ import { ChartControls } from "@/components/chart/controls";
 import { InfoPopover } from "@/components/chart/info-popover";
 import { RollingLoadChart } from "@/components/chart/rolling-load";
 import { RunMixChart } from "@/components/chart/run-mix";
+import { CalendarHeaderSkeleton } from "@/components/skeletons/calendar-header";
 import { ChartSkeleton } from "@/components/skeletons/chart";
+import { ChartControlsSkeleton } from "@/components/skeletons/chart-controls";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { api } from "@/trpc/server";
-import { CalendarHeaderSkeleton } from "../components/skeletons/calendar-header";
 
 export default function Home() {
   return (
     <div className="bg-background route-padding-y mx-auto flex max-w-7xl flex-col gap-4">
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<ChartControlsSkeleton />}>
         <ChartControls />
       </Suspense>
       {/* Charts */}
@@ -62,7 +63,9 @@ export default function Home() {
         <div className="route-padding-x flex items-center justify-between gap-4 py-2 sm:py-4 md:flex-row">
           <Suspense fallback={<CalendarHeaderSkeleton />}>
             <CalendarHeaderText />
-            <CalendarArrows />
+            <CalendarArrows
+              workoutsDateRangePromise={api.internal.getWorkoutsDateRange()}
+            />
           </Suspense>
         </div>
         <Separator className="data-[orientation=horizontal]:h-0.5 md:hidden" />

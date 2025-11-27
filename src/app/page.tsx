@@ -11,6 +11,7 @@ import { RunMixChart } from "@/components/chart/run-mix";
 import { CalendarHeaderSkeleton } from "@/components/skeletons/calendar-header";
 import { ChartSkeleton } from "@/components/skeletons/chart";
 import { ChartControlsSkeleton } from "@/components/skeletons/chart-controls";
+import { DayBlocksSkeleton } from "@/components/skeletons/day-blocks";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { api } from "@/trpc/server";
@@ -60,7 +61,7 @@ export default function Home() {
 
       {/* CalendarHeader */}
       <div className="bg-background">
-        <div className="route-padding-x flex items-center justify-between gap-4 py-2 sm:py-4 md:flex-row">
+        <div className="route-padding-x flex items-center justify-between gap-4 py-2 md:flex-row">
           <Suspense fallback={<CalendarHeaderSkeleton />}>
             <CalendarHeaderText />
             <CalendarArrows
@@ -72,7 +73,7 @@ export default function Home() {
       </div>
 
       <div className="route-padding-x mt-4 flex flex-col gap-2 md:mt-0">
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<DayBlocksSkeleton />}>
           <DayBlocks />
         </Suspense>
         <Suspense fallback={<div>Loading...</div>}>

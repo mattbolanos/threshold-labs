@@ -8,9 +8,11 @@ import { ChartControls } from "@/components/chart/controls";
 import { InfoPopover } from "@/components/chart/info-popover";
 import { RollingLoadChart } from "@/components/chart/rolling-load";
 import { RunMixChart } from "@/components/chart/run-mix";
+import { ChartSkeleton } from "@/components/skeletons/chart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { api } from "@/trpc/server";
+import { CalendarHeaderSkeleton } from "../components/skeletons/calendar-header";
 
 export default function Home() {
   return (
@@ -20,7 +22,7 @@ export default function Home() {
       </Suspense>
       {/* Charts */}
       <div className="route-padding-x grid gap-4 lg:grid-cols-2">
-        <Card className="w-full gap-0">
+        <Card className="w-full gap-0 overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between pl-6">
             <CardTitle>Run Volume Mix</CardTitle>
             <InfoPopover
@@ -29,7 +31,7 @@ export default function Home() {
             />
           </CardHeader>
           <CardContent>
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<ChartSkeleton />}>
               <RunMixChart
                 initialDataPromise={api.internal.getRunVolumeMix({})}
               />
@@ -37,7 +39,7 @@ export default function Home() {
           </CardContent>
         </Card>
 
-        <Card className="w-full gap-0">
+        <Card className="w-full gap-0 overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between pl-6">
             <CardTitle>Training Load</CardTitle>
             <InfoPopover
@@ -46,7 +48,7 @@ export default function Home() {
             />
           </CardHeader>
           <CardContent>
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<ChartSkeleton />}>
               <RollingLoadChart
                 initialDataPromise={api.internal.getRollingLoad({})}
               />
@@ -58,11 +60,9 @@ export default function Home() {
       {/* CalendarHeader */}
       <div className="bg-background">
         <div className="route-padding-x flex items-center justify-between gap-4 py-2 sm:py-4 md:flex-row">
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={<CalendarHeaderSkeleton />}>
             <CalendarHeaderText />
-            <CalendarArrows
-              workoutsDateRangePromise={api.internal.getWorkoutsDateRange()}
-            />
+            <CalendarArrows />
           </Suspense>
         </div>
         <Separator className="data-[orientation=horizontal]:h-0.5 md:hidden" />

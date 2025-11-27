@@ -836,7 +836,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
         tremor-id="tremor-raw"
         {...other}
       >
-        <ResponsiveContainer debounce={150}>
+        <ResponsiveContainer>
           <RechartsComposedChart
             data={data}
             margin={{

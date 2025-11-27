@@ -27,7 +27,7 @@ export function InfoPopover({
     <Popover>
       <PopoverTrigger asChild>
         <Button
-          className="data-[state=open]:bg-accent"
+          className="data-[state=open]:bg-accent data-[state=open]:text-foreground text-muted-foreground hover:text-foreground"
           size="icon-sm"
           variant="ghost"
         >

@@ -1,9 +1,11 @@
 import { Suspense } from "react";
+import { ROLLING_LOAD_DEFINITIONS, RUN_MIX_DEFINITIONS } from "@/app/constants";
 import { CalendarArrows } from "@/components/calendar/calendar-arrows";
 import { CalendarBlocks } from "@/components/calendar/calendar-blocks";
 import { CalendarHeaderText } from "@/components/calendar/calendar-header-text";
 import { DayBlocks } from "@/components/calendar/day-blocks";
 import { ChartControls } from "@/components/chart/controls";
+import { InfoPopover } from "@/components/chart/info-popover";
 import { RollingLoadChart } from "@/components/chart/rolling-load";
 import { RunMixChart } from "@/components/chart/run-mix";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,9 +20,13 @@ export default function Home() {
       </Suspense>
       {/* Charts */}
       <div className="route-padding-x grid gap-4 lg:grid-cols-2">
-        <Card className="@container/card w-full gap-0">
-          <CardHeader className="flex flex-col pl-6 @md/card:grid">
+        <Card className="w-full gap-0">
+          <CardHeader className="flex flex-row items-center justify-between pl-6">
             <CardTitle>Run Volume Mix</CardTitle>
+            <InfoPopover
+              definitions={RUN_MIX_DEFINITIONS}
+              title="Run Volume Mix"
+            />
           </CardHeader>
           <CardContent>
             <Suspense fallback={<div>Loading...</div>}>
@@ -31,9 +37,13 @@ export default function Home() {
           </CardContent>
         </Card>
 
-        <Card className="@container/card w-full gap-0">
-          <CardHeader className="flex flex-col pl-6 @md/card:grid">
+        <Card className="w-full gap-0">
+          <CardHeader className="flex flex-row items-center justify-between pl-6">
             <CardTitle>Training Load</CardTitle>
+            <InfoPopover
+              definitions={ROLLING_LOAD_DEFINITIONS}
+              title="Training Load"
+            />
           </CardHeader>
           <CardContent>
             <Suspense fallback={<div>Loading...</div>}>

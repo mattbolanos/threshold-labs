@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { RUN_MIX_CATEGORY_LABELS, type RunMixCategory } from "@/app/constants";
 import { BarChart } from "@/components/ui/chart/bar-chart";
 import { useChartState } from "@/hooks/use-chart-state";
 import { getColorClassName } from "@/lib/chart-utils";
@@ -8,28 +9,13 @@ import type { RunVolumeMixOutput } from "@/server/api/types";
 import { api } from "@/trpc/react";
 import { createTooltip } from "./tooltip";
 
-const RUN_MIX_CATEGORIES = [
-  "speedMiles",
-  "aerobicMiles",
-  "tempoMiles",
-  "thresholdMiles",
-  "vo2Miles",
-] as const;
-
-type RunMixCategory = (typeof RUN_MIX_CATEGORIES)[number];
-
-const RUN_MIX_CATEGORY_LABELS: Record<RunMixCategory, string> = {
-  aerobicMiles: "Aerobic Miles",
-  speedMiles: "Speed Miles",
-  tempoMiles: "Tempo Miles",
-  thresholdMiles: "Threshold Miles",
-  vo2Miles: "VO2 Miles",
-};
-
 const RunMixTooltip = createTooltip(
-  RUN_MIX_CATEGORIES.map((dataKey) => ({
+  Object.keys(RUN_MIX_CATEGORY_LABELS).map((dataKey) => ({
     dataKey,
-    label: RUN_MIX_CATEGORY_LABELS[dataKey].replace(" Miles", ""),
+    label: RUN_MIX_CATEGORY_LABELS[dataKey as RunMixCategory].replace(
+      " Miles",
+      "",
+    ),
   })),
   {
     formatLabelTitle: (value) => `Week of ${value}`,
@@ -115,7 +101,7 @@ export function RunMixChart({ initialDataPromise }: RunMixChartProps) {
 
   return (
     <BarChart
-      categories={[...RUN_MIX_CATEGORIES]}
+      categories={[...Object.keys(RUN_MIX_CATEGORY_LABELS)]}
       categoryLabels={RUN_MIX_CATEGORY_LABELS}
       customTooltip={RunMixTooltip}
       data={data}

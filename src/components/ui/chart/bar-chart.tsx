@@ -687,7 +687,7 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
         tremor-id="tremor-raw"
         {...other}
       >
-        <ResponsiveContainer debounce={150}>
+        <ResponsiveContainer>
           <RechartsBarChart
             barCategoryGap={barCategoryGap}
             data={data}

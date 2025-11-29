@@ -11,15 +11,16 @@ import { api } from "@/trpc/react";
 
 interface CalendarArrowsProps {
   workoutsDateRangePromise: Promise<{
-    maxWorkoutDate: string | null;
     minWorkoutDate: string | null;
+    maxWorkoutDate: string | null;
   }>;
 }
 
-export function CalendarArrows({
+export function WeekNavigation({
   workoutsDateRangePromise,
 }: CalendarArrowsProps) {
   const workoutsDateRange = React.use(workoutsDateRangePromise);
+
   const { addWeektoStart, jumpToToday, subtractWeekfromStart, weekStartDate } =
     useCalendarNav();
 
@@ -67,7 +68,7 @@ export function CalendarArrows({
           aria-label="Go to Today"
           onMouseDown={jumpToToday}
           size="sm"
-          variant="ghost"
+          variant="outline"
         >
           Today
         </Button>

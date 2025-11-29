@@ -1,6 +1,6 @@
 import { and, gte, lte, max, min, sql } from "drizzle-orm";
 import { z } from "zod";
-import { DEFAULT_RUN_MIX_RANGE } from "@/app/constants";
+import { DEFAULT_CHART_RANGE } from "@/app/constants";
 import { workouts } from "@/lib/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
@@ -24,7 +24,7 @@ export const internalRouter = createTRPCRouter({
         );
       } else {
         whereConditions.push(
-          gte(workouts.workoutDate, DEFAULT_RUN_MIX_RANGE.from),
+          gte(workouts.workoutDate, DEFAULT_CHART_RANGE.from),
         );
       }
 
@@ -59,7 +59,7 @@ export const internalRouter = createTRPCRouter({
         );
       } else {
         whereConditions.push(
-          gte(workouts.workoutDate, DEFAULT_RUN_MIX_RANGE.from),
+          gte(workouts.workoutDate, DEFAULT_CHART_RANGE.from),
         );
       }
 

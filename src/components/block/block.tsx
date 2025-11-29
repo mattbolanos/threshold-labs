@@ -30,8 +30,8 @@ interface BlockProps {
 const BaseCard = ({ workout, className }: BlockProps) => (
   <Card className={cn(className, "sm:hover:bg-muted/80 w-full cursor-pointer")}>
     <CardContent className="flex flex-col items-start gap-3 text-left">
-      <CardTitle className="flex min-w-0 items-start gap-2 pb-1">
-        <span className="line-clamp-2 text-[15px] leading-snug lg:line-clamp-none">
+      <CardTitle className="flex min-w-0 items-start gap-2">
+        <span className="line-clamp-2 text-base leading-snug lg:line-clamp-none">
           {workout.workoutType}
         </span>
       </CardTitle>

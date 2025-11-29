@@ -8,7 +8,7 @@ import { useCalendarNav } from "@/hooks/use-calendar-nav";
 import { cn, formatQueryDate, getWeekDays } from "@/lib/utils";
 import { api } from "@/trpc/react";
 
-export function CalendarBlocks() {
+export function WeekBlocks() {
   const { weekStartDate } = useCalendarNav();
 
   const [data] = api.internal.getWorkouts.useSuspenseQuery({

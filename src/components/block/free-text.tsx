@@ -1,9 +1,9 @@
-interface DialogFreeTextProps {
+interface FreeTextProps {
   text: string | null;
   title: string;
 }
 
-export function DialogFreeText({ text, title }: DialogFreeTextProps) {
+export function FreeText({ text, title }: FreeTextProps) {
   if (!text) return null;
 
   return (

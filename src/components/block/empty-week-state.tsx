@@ -7,11 +7,11 @@ import {
 } from "@/components/ui/empty";
 import { cn } from "@/lib/utils";
 
-interface EmptyBlocksProps {
+interface EmptyWeekStateProps {
   className?: string;
 }
 
-export function EmptyBlocks({ className }: EmptyBlocksProps) {
+export function EmptyWeekState({ className }: EmptyWeekStateProps) {
   return (
     <Empty
       className={cn("bg-accent/40 mx-auto border-2 border-dashed", className)}

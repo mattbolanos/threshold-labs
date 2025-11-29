@@ -3,13 +3,17 @@
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface DialogLabelProps {
+interface PropertyLabelProps {
   Icon: LucideIcon;
   label: string;
   labelClassName?: string;
 }
 
-export function DialogLabel({ Icon, label, labelClassName }: DialogLabelProps) {
+export function PropertyLabel({
+  Icon,
+  label,
+  labelClassName,
+}: PropertyLabelProps) {
   return (
     <div
       className={cn(

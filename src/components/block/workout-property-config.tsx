@@ -23,13 +23,13 @@ import type { WorkoutsOutput } from "@/server/api/types";
 
 type Workout = WorkoutsOutput[number];
 
-interface DialogPropertyConfig {
+interface WorkoutPropertyConfig {
   Icon: LucideIcon;
   label: string;
   getValue: (workout: Workout) => string | ReactNode | null | number;
 }
 
-export const dialogProperties: DialogPropertyConfig[] = [
+export const WORKOUT_PROPERTY_CONFIG: WorkoutPropertyConfig[] = [
   {
     getValue: (workout) =>
       new Date(workout.workoutDate).toLocaleDateString("en-US", {

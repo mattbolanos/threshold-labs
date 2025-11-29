@@ -1,9 +1,9 @@
 import { Suspense } from "react";
 import { ROLLING_LOAD_DEFINITIONS, RUN_MIX_DEFINITIONS } from "@/app/constants";
-import { CalendarArrows } from "@/components/calendar/calendar-arrows";
-import { CalendarBlocks } from "@/components/calendar/calendar-blocks";
-import { CalendarHeaderText } from "@/components/calendar/calendar-header-text";
-import { Days } from "@/components/calendar/days";
+import { DayHeaders } from "@/components/calendar/day-headers";
+import { WeekBlocks } from "@/components/calendar/week-blocks";
+import { WeekNavigation } from "@/components/calendar/week-navigation";
+import { WeekRangeLabel } from "@/components/calendar/week-range-label";
 import { ChartControls } from "@/components/chart/controls";
 import { InfoPopover } from "@/components/chart/info-popover";
 import { RollingLoadChart } from "@/components/chart/rolling-load";
@@ -64,8 +64,8 @@ export default function Home() {
       <div className="bg-background">
         <div className="route-padding-x flex items-center justify-between gap-4 py-2 md:flex-row">
           <Suspense fallback={<CalendarHeaderSkeleton />}>
-            <CalendarHeaderText />
-            <CalendarArrows
+            <WeekRangeLabel />
+            <WeekNavigation
               workoutsDateRangePromise={api.internal.getWorkoutsDateRange()}
             />
           </Suspense>
@@ -75,10 +75,10 @@ export default function Home() {
 
       <div className="route-padding-x mt-4 flex flex-col gap-2 md:mt-0">
         <Suspense fallback={<DayBlocksSkeleton />}>
-          <Days />
+          <DayHeaders />
         </Suspense>
         <Suspense fallback={<CalendarBlocksSkeleton />}>
-          <CalendarBlocks />
+          <WeekBlocks />
         </Suspense>
       </div>
     </div>

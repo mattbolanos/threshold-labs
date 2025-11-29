@@ -16,7 +16,7 @@ interface CalendarArrowsProps {
   }>;
 }
 
-export function CalendarArrows({
+export function WeekNavigation({
   workoutsDateRangePromise,
 }: CalendarArrowsProps) {
   const workoutsDateRange = React.use(workoutsDateRangePromise);

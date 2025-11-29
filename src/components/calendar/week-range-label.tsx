@@ -3,7 +3,7 @@
 import { useCalendarNav } from "@/hooks/use-calendar-nav";
 import { formatWeekRangeLabel } from "@/lib/utils";
 
-export function CalendarHeaderText() {
+export function WeekRangeLabel() {
   const { weekStartDate } = useCalendarNav();
 
   const headerLabel = formatWeekRangeLabel(weekStartDate);

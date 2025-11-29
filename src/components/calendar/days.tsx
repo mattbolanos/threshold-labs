@@ -4,7 +4,7 @@ import { isSameDay } from "date-fns";
 import { useCalendarNav } from "@/hooks/use-calendar-nav";
 import { cn, getWeekDays } from "@/lib/utils";
 
-export function DayBlocks() {
+export function Days() {
   const { weekStartDate } = useCalendarNav();
   const weekDays = getWeekDays(weekStartDate);
 

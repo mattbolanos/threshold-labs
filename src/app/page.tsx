@@ -3,11 +3,12 @@ import { ROLLING_LOAD_DEFINITIONS, RUN_MIX_DEFINITIONS } from "@/app/constants";
 import { CalendarArrows } from "@/components/calendar/calendar-arrows";
 import { CalendarBlocks } from "@/components/calendar/calendar-blocks";
 import { CalendarHeaderText } from "@/components/calendar/calendar-header-text";
-import { DayBlocks } from "@/components/calendar/day-blocks";
+import { Days } from "@/components/calendar/days";
 import { ChartControls } from "@/components/chart/controls";
 import { InfoPopover } from "@/components/chart/info-popover";
 import { RollingLoadChart } from "@/components/chart/rolling-load";
 import { RunMixChart } from "@/components/chart/run-mix";
+import { CalendarBlocksSkeleton } from "@/components/skeletons/calendar-blocks";
 import { CalendarHeaderSkeleton } from "@/components/skeletons/calendar-header";
 import { ChartSkeleton } from "@/components/skeletons/chart";
 import { ChartControlsSkeleton } from "@/components/skeletons/chart-controls";
@@ -18,7 +19,7 @@ import { api } from "@/trpc/server";
 
 export default function Home() {
   return (
-    <div className="bg-background route-padding-y mx-auto flex max-w-7xl flex-col gap-4">
+    <div className="bg-background route-padding-y mx-auto flex max-w-[1340px] flex-col gap-4">
       <Suspense fallback={<ChartControlsSkeleton />}>
         <ChartControls />
       </Suspense>
@@ -74,9 +75,9 @@ export default function Home() {
 
       <div className="route-padding-x mt-4 flex flex-col gap-2 md:mt-0">
         <Suspense fallback={<DayBlocksSkeleton />}>
-          <DayBlocks />
+          <Days />
         </Suspense>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<CalendarBlocksSkeleton />}>
           <CalendarBlocks />
         </Suspense>
       </div>

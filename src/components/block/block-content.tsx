@@ -1,8 +1,8 @@
 import { Separator } from "@/components/ui/separator";
+import { WORKOUT_PROPERTY_CONFIG } from "@/components/workouts/workout-property-config";
 import type { WorkoutsOutput } from "@/server/api/types";
 import { FreeText } from "./free-text";
 import { PropertyRow } from "./property-row";
-import { WORKOUT_PROPERTY_CONFIG } from "./workout-property-config";
 
 interface BlockContentProps {
   workout: WorkoutsOutput[number];

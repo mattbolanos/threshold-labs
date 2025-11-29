@@ -32,7 +32,7 @@ const BaseCard = ({ workout, className }: BlockProps) => (
     <CardContent className="flex flex-col items-start gap-3 text-left">
       <CardTitle className="flex min-w-0 items-start gap-2">
         <span className="line-clamp-2 text-base leading-snug lg:line-clamp-none">
-          {workout.workoutType}
+          {workout.title}
         </span>
       </CardTitle>
       <span className="text-sm tabular-nums">
@@ -56,7 +56,7 @@ export function Block({ workout, className }: BlockProps) {
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{workout.workoutType}</DialogTitle>
+            <DialogTitle>{workout.title}</DialogTitle>
           </DialogHeader>
           <Content />
         </DialogContent>
@@ -67,7 +67,7 @@ export function Block({ workout, className }: BlockProps) {
         </DrawerTrigger>
         <DrawerContent>
           <DrawerHeader>
-            <DrawerTitle>{workout.workoutType}</DrawerTitle>
+            <DrawerTitle>{workout.title}</DrawerTitle>
           </DrawerHeader>
           <Content />
           <DrawerFooter>

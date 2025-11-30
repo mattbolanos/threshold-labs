@@ -21,7 +21,7 @@ export const TAG_CONFIG: TagConfig[] = [
   },
   {
     color:
-      "dark:text-foreground dark:bg-emerald-700 bg-emerald-500/20 text-emerald-700",
+      "dark:text-foreground dark:bg-emerald-800 bg-emerald-500/20 text-emerald-700",
     icon: HeartIcon,
     tag: "Aerobic Run",
   },

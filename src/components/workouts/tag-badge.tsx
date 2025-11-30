@@ -14,7 +14,7 @@ export function TagBadge({ tag, className }: TagBadgeProps) {
   return (
     <Badge
       className={cn(
-        "truncate rounded-[6px] px-1.5 py-0 text-sm font-normal",
+        "truncate rounded-[6px] border-0 px-1.5 py-0 text-[13px] font-medium",
         tagConfig.color,
         className,
       )}

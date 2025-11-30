@@ -18,17 +18,19 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { TagBadge } from "@/components/workouts/tag-badge";
+import { TAG_CONFIG, type TagConfig } from "@/components/workouts/tag-config";
 import { cn, formatMinutesToTime } from "@/lib/utils";
 import type { WorkoutsOutput } from "@/server/api/types";
-import { TagBadge } from "../workouts/tag-badge";
 import { BlockContent } from "./block-content";
 
 interface BlockProps {
   workout: WorkoutsOutput[number];
+  tagConfig: TagConfig | undefined;
   className?: string;
 }
 
-const BaseCard = ({ workout, className }: BlockProps) => (
+const BaseCard = ({ workout, tagConfig, className }: BlockProps) => (
   <Card
     className={cn(
       className,
@@ -36,7 +38,15 @@ const BaseCard = ({ workout, className }: BlockProps) => (
     )}
   >
     <CardContent className="flex flex-col items-start gap-3 text-left">
-      <CardTitle className="flex min-w-0 items-start gap-2">
+      <CardTitle className="flex min-w-0 items-center gap-1.5">
+        {tagConfig?.icon && (
+          <tagConfig.icon
+            className={cn(
+              "stroke-2.5 size-5 shrink-0 self-start md:size-4.5",
+              tagConfig.iconColor,
+            )}
+          />
+        )}
         <span className="line-clamp-2 text-[15px] leading-snug font-medium lg:line-clamp-none">
           {workout.title}
         </span>
@@ -55,8 +65,10 @@ const BaseCard = ({ workout, className }: BlockProps) => (
 
 export function Block({ workout, className }: BlockProps) {
   const Content = () => <BlockContent workout={workout} />;
+  const tagConfig = TAG_CONFIG.find((t) => t.tag === workout.tags[0]);
+
   const CardTrigger = () => (
-    <BaseCard className={className} workout={workout} />
+    <BaseCard className={className} tagConfig={tagConfig} workout={workout} />
   );
 
   return (
@@ -67,7 +79,17 @@ export function Block({ workout, className }: BlockProps) {
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{workout.title}</DialogTitle>
+            <DialogTitle className="flex items-center gap-1.5">
+              {tagConfig?.icon && (
+                <tagConfig.icon
+                  className={cn(
+                    "stroke-2.5 size-6 shrink-0 self-start",
+                    tagConfig.iconColor,
+                  )}
+                />
+              )}
+              <span className="text-left leading-snug">{workout.title}</span>
+            </DialogTitle>
           </DialogHeader>
           <Content />
         </DialogContent>
@@ -78,7 +100,17 @@ export function Block({ workout, className }: BlockProps) {
         </DrawerTrigger>
         <DrawerContent>
           <DrawerHeader>
-            <DrawerTitle>{workout.title}</DrawerTitle>
+            <DrawerTitle className="flex items-center gap-1.5">
+              {tagConfig?.icon && (
+                <tagConfig.icon
+                  className={cn(
+                    "stroke-2.5 size-5.5 shrink-0 self-start",
+                    tagConfig.iconColor,
+                  )}
+                />
+              )}
+              <span className="text-left leading-snug">{workout.title}</span>
+            </DrawerTitle>
           </DrawerHeader>
           <Content />
           <DrawerFooter>

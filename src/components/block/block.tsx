@@ -26,7 +26,7 @@ import { BlockContent } from "./block-content";
 
 interface BlockProps {
   workout: WorkoutsOutput[number];
-  tagConfig: TagConfig | undefined;
+  tagConfig?: TagConfig | undefined;
   className?: string;
 }
 

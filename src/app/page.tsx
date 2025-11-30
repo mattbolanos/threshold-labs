@@ -19,7 +19,7 @@ import { api } from "@/trpc/server";
 
 export default function Home() {
   return (
-    <div className="bg-background route-padding-y mx-auto flex max-w-[1340px] flex-col gap-4">
+    <div className="bg-background route-padding-y mx-auto flex max-w-[var(--max-app-width)] flex-col gap-4">
       <Suspense fallback={<ChartControlsSkeleton />}>
         <ChartControls />
       </Suspense>

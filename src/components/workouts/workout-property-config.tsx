@@ -12,6 +12,7 @@ import {
   RabbitIcon,
   RefreshCcwIcon,
   RocketIcon,
+  TagIcon,
   TimerIcon,
   WeightIcon,
   WindIcon,
@@ -20,6 +21,7 @@ import type { ReactNode } from "react";
 import { CircularProgress } from "@/components/ui/circular-progress";
 import { formatMinutesToTime } from "@/lib/utils";
 import type { WorkoutsOutput } from "@/server/api/types";
+import { TagBadge } from "./tag-badge";
 
 type Workout = WorkoutsOutput[number];
 
@@ -45,6 +47,17 @@ export const WORKOUT_PROPERTY_CONFIG: WorkoutPropertyConfig[] = [
     getValue: (workout) => workout.week,
     Icon: RefreshCcwIcon,
     label: "Week",
+  },
+  {
+    getValue: (workout) => (
+      <div className="flex flex-wrap items-center gap-2">
+        {workout.tags.map((tag) => (
+          <TagBadge key={tag} tag={tag} />
+        ))}
+      </div>
+    ),
+    Icon: TagIcon,
+    label: "Tags",
   },
   {
     getValue: (workout) => formatMinutesToTime(workout.trainingMinutes),

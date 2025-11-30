@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/drawer";
 import { cn, formatMinutesToTime } from "@/lib/utils";
 import type { WorkoutsOutput } from "@/server/api/types";
+import { TagBadge } from "../workouts/tag-badge";
 import { BlockContent } from "./block-content";
 
 interface BlockProps {
@@ -28,16 +29,26 @@ interface BlockProps {
 }
 
 const BaseCard = ({ workout, className }: BlockProps) => (
-  <Card className={cn(className, "sm:hover:bg-muted/80 w-full cursor-pointer")}>
+  <Card
+    className={cn(
+      className,
+      "sm:hover:bg-muted/80 w-full cursor-pointer overflow-hidden",
+    )}
+  >
     <CardContent className="flex flex-col items-start gap-3 text-left">
       <CardTitle className="flex min-w-0 items-start gap-2">
-        <span className="line-clamp-2 text-base leading-snug lg:line-clamp-none">
+        <span className="line-clamp-2 text-[15px] leading-snug font-medium lg:line-clamp-none">
           {workout.title}
         </span>
       </CardTitle>
       <span className="text-sm tabular-nums">
         {formatMinutesToTime(workout.trainingMinutes)}
       </span>
+      <div className="flex flex-wrap items-center gap-2">
+        {workout.tags.map((tag) => (
+          <TagBadge key={tag} tag={tag} />
+        ))}
+      </div>
     </CardContent>
   </Card>
 );

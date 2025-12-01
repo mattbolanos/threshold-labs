@@ -1,4 +1,4 @@
-import { DumbbellIcon } from "lucide-react";
+import { IconBarbell } from "@tabler/icons-react";
 import {
   Empty,
   EmptyHeader,
@@ -18,7 +18,7 @@ export function EmptyWeekState({ className }: EmptyWeekStateProps) {
     >
       <EmptyHeader>
         <EmptyMedia variant="icon">
-          <DumbbellIcon />
+          <IconBarbell />
         </EmptyMedia>
       </EmptyHeader>
       <EmptyTitle>No workouts this week, yet...</EmptyTitle>

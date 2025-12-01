@@ -1,4 +1,4 @@
-import { InfoIcon } from "lucide-react";
+import { IconInfoCircle } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -31,7 +31,7 @@ export function InfoPopover({
           size="icon-sm"
           variant="ghost"
         >
-          <InfoIcon className="size-5" />
+          <IconInfoCircle className="size-5" />
           <span className="sr-only">View definitions</span>
         </Button>
       </PopoverTrigger>

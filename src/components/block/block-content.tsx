@@ -15,9 +15,8 @@ export function BlockContent({ workout }: BlockContentProps) {
     <div className="space-y-1 overflow-y-auto px-2 md:-ms-1.5 md:px-0">
       {WORKOUT_PROPERTY_CONFIG.map((property) => (
         <PropertyRow
-          Icon={property.Icon}
           key={property.label}
-          label={property.label}
+          label={{ icon: property.icon, title: property.label }}
           value={property.getValue(workout)}
         />
       ))}

@@ -1,22 +1,22 @@
-import type { LucideIcon } from "lucide-react";
 import {
-  BikeIcon,
-  BrickWallIcon,
-  Calendar1Icon,
-  CupSodaIcon,
-  FlameIcon,
-  FootprintsIcon,
-  GaugeIcon,
-  HeartIcon,
-  KayakIcon,
-  RabbitIcon,
-  RefreshCcwIcon,
-  RocketIcon,
-  TagIcon,
-  TimerIcon,
-  WeightIcon,
-  WindIcon,
-} from "lucide-react";
+  IconBike,
+  IconBolt,
+  IconBrain,
+  IconBrandSpeedtest,
+  IconCalendar,
+  IconCalendarWeek,
+  IconGauge,
+  IconHeart,
+  IconKayak,
+  IconLungs,
+  IconMetronome,
+  IconRoad,
+  IconRocket,
+  IconStopwatch,
+  IconTags,
+  IconWall,
+  type TablerIcon,
+} from "@tabler/icons-react";
 import type { ReactNode } from "react";
 import { CircularProgress } from "@/components/ui/circular-progress";
 import { formatMinutesToTime } from "@/lib/utils";
@@ -26,7 +26,7 @@ import { TagBadge } from "./tag-badge";
 type Workout = WorkoutsOutput[number];
 
 interface WorkoutPropertyConfig {
-  Icon: LucideIcon;
+  icon: TablerIcon;
   label: string;
   getValue: (workout: Workout) => string | ReactNode | null | number;
 }
@@ -40,12 +40,12 @@ export const WORKOUT_PROPERTY_CONFIG: WorkoutPropertyConfig[] = [
         timeZone: "UTC",
         year: "numeric",
       }),
-    Icon: Calendar1Icon,
+    icon: IconCalendar,
     label: "Date",
   },
   {
     getValue: (workout) => workout.week,
-    Icon: RefreshCcwIcon,
+    icon: IconCalendarWeek,
     label: "Week",
   },
   {
@@ -56,12 +56,12 @@ export const WORKOUT_PROPERTY_CONFIG: WorkoutPropertyConfig[] = [
         ))}
       </div>
     ),
-    Icon: TagIcon,
+    icon: IconTags,
     label: "Tags",
   },
   {
     getValue: (workout) => formatMinutesToTime(workout.trainingMinutes),
-    Icon: TimerIcon,
+    icon: IconStopwatch,
     label: "Training mins",
   },
   {
@@ -71,62 +71,62 @@ export const WORKOUT_PROPERTY_CONFIG: WorkoutPropertyConfig[] = [
         <CircularProgress size={24} strokeWidth={3} value={workout.rpe} />
       </div>
     ),
-    Icon: FlameIcon,
+    icon: IconGauge,
     label: "RPE",
   },
   {
     getValue: (workout) => workout.subjectiveTrainingLoad,
-    Icon: WeightIcon,
+    icon: IconBrain,
     label: "Subjective training load",
   },
   {
     getValue: (workout) => formatMinutesToTime(workout.cardioMinutes),
-    Icon: HeartIcon,
+    icon: IconHeart,
     label: "Cardio mins",
   },
   {
     getValue: (workout) => workout.totalRunMiles,
-    Icon: FootprintsIcon,
+    icon: IconRoad,
     label: "Run mi",
   },
   {
     getValue: (workout) => workout.thresholdMiles,
-    Icon: GaugeIcon,
+    icon: IconBrandSpeedtest,
     label: "Threshold mi",
   },
   {
     getValue: (workout) => workout.tempoMiles,
-    Icon: RabbitIcon,
+    icon: IconMetronome,
     label: "Tempo mi",
   },
   {
     getValue: (workout) => workout.vo2Miles,
-    Icon: WindIcon,
+    icon: IconLungs,
     label: "VO2 mi",
   },
   {
     getValue: (workout) => workout.speedMiles,
-    Icon: RocketIcon,
+    icon: IconRocket,
     label: "Speed mi",
   },
   {
     getValue: (workout) => workout.totalBikeMiles,
-    Icon: BikeIcon,
+    icon: IconBike,
     label: "Bike mi",
   },
   {
     getValue: (workout) => workout.totalRowKs,
-    Icon: KayakIcon,
+    icon: IconKayak,
     label: "Row km",
   },
   {
     getValue: (workout) => workout.burpees,
-    Icon: CupSodaIcon,
+    icon: IconBolt,
     label: "Burpees",
   },
   {
     getValue: (workout) => workout.wallballs,
-    Icon: BrickWallIcon,
+    icon: IconWall,
     label: "Wallballs",
   },
 ];

@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarIcon } from "lucide-react";
+import { IconCalendarWeek } from "@tabler/icons-react";
 import * as React from "react";
 import type { DateRange } from "react-day-picker";
 import { Button } from "@/components/ui/button";
@@ -39,7 +39,7 @@ export function DateFilter({ range, setRange }: DateFilterProps) {
           )}
           variant="outline"
         >
-          <CalendarIcon />
+          <IconCalendarWeek />
           {range?.from && range?.to
             ? `${new Date(range.from).toLocaleDateString()} - ${new Date(range.to).toLocaleDateString()}`
             : "Select Date Range"}

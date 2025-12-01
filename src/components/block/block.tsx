@@ -42,7 +42,7 @@ const BaseCard = ({ workout, tagConfig, className }: BlockProps) => (
         {tagConfig?.icon && (
           <tagConfig.icon
             className={cn(
-              "stroke-2.5 size-5 shrink-0 self-start md:size-4.5",
+              "stroke-2.5 size-5 shrink-0 self-start",
               tagConfig.iconColor,
             )}
           />

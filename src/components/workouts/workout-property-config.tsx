@@ -77,7 +77,7 @@ export const WORKOUT_PROPERTY_CONFIG: WorkoutPropertyConfig[] = [
   {
     getValue: (workout) => workout.subjectiveTrainingLoad,
     Icon: WeightIcon,
-    label: "Subjective Training Load",
+    label: "Subjective training load",
   },
   {
     getValue: (workout) => formatMinutesToTime(workout.cardioMinutes),

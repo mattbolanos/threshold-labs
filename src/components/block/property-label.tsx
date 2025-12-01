@@ -17,7 +17,7 @@ export function PropertyLabel({
   return (
     <div
       className={cn(
-        "text-muted-foreground md:hover:bg-muted flex h-9 w-46 shrink-0 cursor-default items-center rounded-sm px-2 transition-colors md:w-44",
+        "text-muted-foreground md:hover:bg-muted flex h-9 w-46 shrink-0 cursor-default items-center rounded-sm px-2 transition-colors md:w-48",
         labelClassName,
       )}
       title={label}

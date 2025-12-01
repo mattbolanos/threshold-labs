@@ -6,7 +6,9 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatMinutesToTime(minutes: number): string {
+export function formatMinutesToTime(minutes: number | null): string | null {
+  if (minutes === null) return null;
+
   const totalSeconds = Math.round(minutes * 60);
   const hours = Math.floor(totalSeconds / 3600);
   const remainingSeconds = totalSeconds % 3600;

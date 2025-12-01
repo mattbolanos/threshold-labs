@@ -1,7 +1,7 @@
 "use client";
 
+import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
 import { addDays } from "date-fns";
-import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
@@ -48,7 +48,7 @@ export function WeekNavigation({
           size="icon-sm"
           variant="ghost"
         >
-          <ArrowLeftIcon className="size-5" />
+          <IconArrowNarrowLeft className="size-5" />
         </Button>
       </ButtonGroup>
       <ButtonGroup className="mr-auto md:hidden">
@@ -59,7 +59,7 @@ export function WeekNavigation({
           size="icon-sm"
           variant="outline"
         >
-          <ArrowLeftIcon className="size-5" />
+          <IconArrowNarrowLeft className="size-5" />
         </Button>
       </ButtonGroup>
 
@@ -92,7 +92,7 @@ export function WeekNavigation({
           size="icon-sm"
           variant="ghost"
         >
-          <ArrowRightIcon className="size-5" />
+          <IconArrowNarrowRight className="size-5" />
         </Button>
       </ButtonGroup>
       <ButtonGroup className="ml-auto md:hidden">
@@ -103,7 +103,7 @@ export function WeekNavigation({
           size="icon-sm"
           variant="outline"
         >
-          <ArrowRightIcon className="size-5" />
+          <IconArrowNarrowRight className="size-5" />
         </Button>
       </ButtonGroup>
     </ButtonGroup>

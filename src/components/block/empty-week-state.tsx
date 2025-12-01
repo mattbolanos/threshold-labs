@@ -1,4 +1,4 @@
-import { DumbbellIcon } from "lucide-react";
+import { IconBarbell } from "@tabler/icons-react";
 import {
   Empty,
   EmptyHeader,
@@ -7,18 +7,18 @@ import {
 } from "@/components/ui/empty";
 import { cn } from "@/lib/utils";
 
-interface EmptyBlocksProps {
+interface EmptyWeekStateProps {
   className?: string;
 }
 
-export function EmptyBlocks({ className }: EmptyBlocksProps) {
+export function EmptyWeekState({ className }: EmptyWeekStateProps) {
   return (
     <Empty
       className={cn("bg-accent/40 mx-auto border-2 border-dashed", className)}
     >
       <EmptyHeader>
         <EmptyMedia variant="icon">
-          <DumbbellIcon />
+          <IconBarbell />
         </EmptyMedia>
       </EmptyHeader>
       <EmptyTitle>No workouts this week, yet...</EmptyTitle>

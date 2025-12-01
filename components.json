@@ -7,10 +7,6 @@
     "ui": "@/components/ui",
     "utils": "@/lib/utils"
   },
-  "iconLibrary": "lucide",
-  "registries": {
-    "@skiper-ui": "https://skiper-ui.com/registry/{name}.json"
-  },
   "rsc": true,
   "style": "new-york",
   "tailwind": {

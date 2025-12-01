@@ -13,7 +13,7 @@ import { NavUser } from "./nav-user";
 export function NavBar() {
   return (
     <header className="bg-background sticky top-0 z-10 w-full border-b">
-      <nav className="route-padding-x mx-auto flex h-12 w-full max-w-[1340px] items-center justify-between gap-4 md:h-14">
+      <nav className="route-padding-x mx-auto flex h-12 w-full max-w-[var(--max-app-width)] items-center justify-between gap-4 md:h-14">
         <div className="flex items-center gap-6">
           <Link href="/" prefetch>
             <Image

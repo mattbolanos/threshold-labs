@@ -1,0 +1,1 @@
+ALTER TABLE "thlab"."workouts" ALTER COLUMN "cardio_minutes" DROP NOT NULL;

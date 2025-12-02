@@ -1,4 +1,4 @@
-import { SettingsIcon } from "lucide-react";
+import { IconSettings } from "@tabler/icons-react";
 import { ThemeToggle } from "@/components/theme/toggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -37,7 +37,7 @@ export function NavUser({ email, imageUrl, initials, username }: NavUserProps) {
         </MenuItem>
         <Separator className="my-1" />
         <MenuItem>
-          <SettingsIcon />
+          <IconSettings />
           Account Settings
         </MenuItem>
       </PopoverContent>

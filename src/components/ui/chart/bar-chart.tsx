@@ -2,7 +2,7 @@
 
 "use client";
 
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import React from "react";
 import {
   Bar,
@@ -363,7 +363,7 @@ const Legend = React.forwardRef<HTMLOListElement, LegendProps>((props, ref) => {
         >
           <ScrollButton
             disabled={!hasScroll?.left}
-            icon={ChevronLeftIcon}
+            icon={IconChevronLeft}
             onClick={() => {
               setIsKeyDowned(null);
               scrollToTest("left");
@@ -371,7 +371,7 @@ const Legend = React.forwardRef<HTMLOListElement, LegendProps>((props, ref) => {
           />
           <ScrollButton
             disabled={!hasScroll?.right}
-            icon={ChevronRightIcon}
+            icon={IconChevronRight}
             onClick={() => {
               setIsKeyDowned(null);
               scrollToTest("right");
@@ -687,7 +687,7 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
         tremor-id="tremor-raw"
         {...other}
       >
-        <ResponsiveContainer>
+        <ResponsiveContainer debounce={300}>
           <RechartsBarChart
             barCategoryGap={barCategoryGap}
             data={data}

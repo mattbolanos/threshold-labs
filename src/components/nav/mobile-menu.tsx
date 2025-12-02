@@ -53,7 +53,7 @@ export function MobileMenu() {
         />
       </Button>
       {open && (
-        <div className="animate-in fade-out bg-background fixed inset-0 z-20 mt-12.5 overflow-y-auto transition-opacity duration-200">
+        <div className="animate-in fade-out bg-background fixed inset-0 z-20 mt-12.25 overflow-y-auto transition-opacity duration-200">
           <ul className="p-2.5 pt-4">
             {SITE_ROUTES.map((route) => (
               <li className={ITEM_CLASS} key={route.href}>

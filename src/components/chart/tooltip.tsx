@@ -112,7 +112,7 @@ export function createTooltip(
       : label;
 
     return (
-      <div className="bg-popover w-56 rounded-lg border text-sm shadow-xs dark:border-gray-800 dark:bg-black/5">
+      <div className="bg-card w-56 rounded-lg border text-sm shadow-xs dark:border-gray-800">
         <p className="mb-2 px-3 pt-2 font-medium">{labelTitle}</p>
         <Separator />
         <div className="flex flex-col space-y-2 p-3 py-2">{innerContent}</div>

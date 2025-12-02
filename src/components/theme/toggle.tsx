@@ -1,11 +1,11 @@
 "use client";
 
 import {
-  LaptopMinimalIcon,
-  type LucideIcon,
-  MoonIcon,
-  SunIcon,
-} from "lucide-react";
+  IconDeviceLaptop,
+  IconMoonStars,
+  IconSunHigh,
+  type TablerIcon,
+} from "@tabler/icons-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
@@ -14,10 +14,10 @@ type Theme = "light" | "system" | "dark";
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
 
-  const options: { value: Theme; icon: LucideIcon }[] = [
-    { icon: SunIcon, value: "light" },
-    { icon: LaptopMinimalIcon, value: "system" },
-    { icon: MoonIcon, value: "dark" },
+  const options: { value: Theme; icon: TablerIcon }[] = [
+    { icon: IconSunHigh, value: "light" },
+    { icon: IconDeviceLaptop, value: "system" },
+    { icon: IconMoonStars, value: "dark" },
   ];
 
   return (

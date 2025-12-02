@@ -1,4 +1,4 @@
-import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
+import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -20,12 +20,12 @@ export function CalendarHeaderSkeleton({ className }: { className?: string }) {
       <ButtonGroup>
         <ButtonGroup className="mr-auto hidden md:flex">
           <Button aria-label="Go Back" size="icon-sm" variant="ghost">
-            <ArrowLeftIcon className="size-5" />
+            <IconArrowNarrowLeft className="size-5" />
           </Button>
         </ButtonGroup>
         <ButtonGroup className="mr-auto md:hidden">
           <Button aria-label="Go Back" size="icon-sm" variant="outline">
-            <ArrowLeftIcon className="size-5" />
+            <IconArrowNarrowLeft className="size-5" />
           </Button>
         </ButtonGroup>
 
@@ -51,7 +51,7 @@ export function CalendarHeaderSkeleton({ className }: { className?: string }) {
             size="icon-sm"
             variant="ghost"
           >
-            <ArrowRightIcon className="size-5" />
+            <IconArrowNarrowRight className="size-5" />
           </Button>
         </ButtonGroup>
         <ButtonGroup className="ml-auto md:hidden">
@@ -61,7 +61,7 @@ export function CalendarHeaderSkeleton({ className }: { className?: string }) {
             size="icon-sm"
             variant="outline"
           >
-            <ArrowRightIcon className="size-5" />
+            <IconArrowNarrowRight className="size-5" />
           </Button>
         </ButtonGroup>
       </ButtonGroup>

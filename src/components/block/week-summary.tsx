@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import type { WorkoutsOutput } from "@/server/api/types";
 
-interface BlocksSummaryProps {
+interface WeekSummaryProps {
   workouts: WorkoutsOutput;
   className?: string;
 }
@@ -33,7 +33,7 @@ function StatRow({
   );
 }
 
-export function BlocksSummary({ workouts, className }: BlocksSummaryProps) {
+export function WeekSummary({ workouts, className }: WeekSummaryProps) {
   const totalWorkouts = workouts.length;
   const totalTrainingMinutes = workouts.reduce(
     (sum, w) => sum + (w.trainingMinutes || 0),

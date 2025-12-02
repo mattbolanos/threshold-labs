@@ -18,34 +18,57 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { TagBadge } from "@/components/workouts/tag-badge";
+import { TAG_CONFIG, type TagConfig } from "@/components/workouts/tag-config";
 import { cn, formatMinutesToTime } from "@/lib/utils";
 import type { WorkoutsOutput } from "@/server/api/types";
 import { BlockContent } from "./block-content";
 
 interface BlockProps {
   workout: WorkoutsOutput[number];
+  tagConfig?: TagConfig | undefined;
   className?: string;
 }
 
-const BaseCard = ({ workout, className }: BlockProps) => (
-  <Card className={cn(className, "sm:hover:bg-muted/80 w-full cursor-pointer")}>
+const BaseCard = ({ workout, tagConfig, className }: BlockProps) => (
+  <Card
+    className={cn(
+      className,
+      "sm:hover:bg-muted/80 w-full cursor-pointer overflow-hidden",
+    )}
+  >
     <CardContent className="flex flex-col items-start gap-3 text-left">
-      <CardTitle className="flex min-w-0 items-start gap-2">
-        <span className="line-clamp-2 text-base leading-snug lg:line-clamp-none">
+      <CardTitle className="flex min-w-0 items-center gap-1.5">
+        {tagConfig?.icon && (
+          <tagConfig.icon
+            className={cn(
+              "stroke-2.5 size-5 shrink-0 self-start",
+              tagConfig.iconColor,
+            )}
+          />
+        )}
+        <span className="line-clamp-2 text-[15px] leading-snug font-medium lg:line-clamp-none">
           {workout.title}
         </span>
       </CardTitle>
       <span className="text-sm tabular-nums">
         {formatMinutesToTime(workout.trainingMinutes)}
       </span>
+      <div className="flex flex-wrap items-center gap-2">
+        {workout.tags.map((tag) => (
+          <TagBadge key={tag} tag={tag} />
+        ))}
+      </div>
     </CardContent>
   </Card>
 );
 
 export function Block({ workout, className }: BlockProps) {
   const Content = () => <BlockContent workout={workout} />;
+  const tagConfig = TAG_CONFIG.find((t) => t.tag === workout.tags[0]);
+
   const CardTrigger = () => (
-    <BaseCard className={className} workout={workout} />
+    <BaseCard className={className} tagConfig={tagConfig} workout={workout} />
   );
 
   return (
@@ -56,7 +79,17 @@ export function Block({ workout, className }: BlockProps) {
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{workout.title}</DialogTitle>
+            <DialogTitle className="flex items-center gap-1.5">
+              {tagConfig?.icon && (
+                <tagConfig.icon
+                  className={cn(
+                    "stroke-2.5 size-6 shrink-0 self-start",
+                    tagConfig.iconColor,
+                  )}
+                />
+              )}
+              <span className="text-left leading-snug">{workout.title}</span>
+            </DialogTitle>
           </DialogHeader>
           <Content />
         </DialogContent>
@@ -67,7 +100,17 @@ export function Block({ workout, className }: BlockProps) {
         </DrawerTrigger>
         <DrawerContent>
           <DrawerHeader>
-            <DrawerTitle>{workout.title}</DrawerTitle>
+            <DrawerTitle className="flex items-center gap-1.5">
+              {tagConfig?.icon && (
+                <tagConfig.icon
+                  className={cn(
+                    "stroke-2.5 size-5.5 shrink-0 self-start",
+                    tagConfig.iconColor,
+                  )}
+                />
+              )}
+              <span className="text-left leading-snug">{workout.title}</span>
+            </DrawerTitle>
           </DrawerHeader>
           <Content />
           <DrawerFooter>

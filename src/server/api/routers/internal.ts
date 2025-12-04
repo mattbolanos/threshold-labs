@@ -30,7 +30,9 @@ export const internalRouter = createTRPCRouter({
 
       return await ctx.db
         .select({
-          stl: sql<number>`sum(${workouts.subjectiveTrainingLoad})`,
+          stl: sql<number>`
+            sum(${workouts.rpe} * (${workouts.trainingMinutes} / 10) * 
+            case when ${workouts.totalRunMiles} > 0 then 1.1 else 1 end)`,
           trueTrainingHours: sql<number>`sum(${workouts.trainingMinutes}) / 60`,
           week: workouts.week,
         })

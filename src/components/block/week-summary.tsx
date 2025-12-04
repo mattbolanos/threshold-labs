@@ -5,7 +5,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { calculateSTL, cn } from "@/lib/utils";
 import type { WorkoutsOutput } from "@/server/api/types";
 
 interface WeekSummaryProps {
@@ -47,27 +47,18 @@ export function WeekSummary({ workouts, className }: WeekSummaryProps) {
     (sum, w) => sum + (w.totalBikeMiles || 0),
     0,
   );
+  const totalSkiKs = workouts.reduce((sum, w) => sum + (w.totalSkiKs || 0), 0);
   const totalRowKs = workouts.reduce((sum, w) => sum + (w.totalRowKs || 0), 0);
-  const avgRPE =
-    workouts.length > 0
-      ? (
-          workouts.reduce((sum, w) => sum + (w.rpe || 0), 0) / workouts.length
-        ).toFixed(1)
-      : 0;
-
-  const avgSubjectiveLoad =
-    workouts.length > 0
-      ? (
-          workouts.reduce(
-            (sum, w) => sum + (w.subjectiveTrainingLoad || 0),
-            0,
-          ) / workouts.length
-        ).toFixed(1)
-      : 0;
+  const totalSubjectiveTrainingLoad = workouts.reduce(
+    (sum, w) => sum + calculateSTL(w.rpe, w.trainingMinutes, w.totalRunMiles),
+    0,
+  );
 
   const hasRunning = totalRunMiles > 0;
   const hasBiking = totalBikeMiles > 0;
   const hasRowing = totalRowKs > 0;
+  const hasSkiing = totalSkiKs > 0;
+  const hasActivity = hasRunning || hasBiking || hasRowing || hasSkiing;
 
   return (
     <Card className={cn(className, "bg-muted/50 py-0")}>
@@ -88,25 +79,24 @@ export function WeekSummary({ workouts, className }: WeekSummaryProps) {
             </AccordionTrigger>
             <AccordionContent className="space-y-2 pt-4">
               <div className="space-y-0">
-                <h4 className="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase">
+                <h4 className="mb-2 text-xs font-semibold tracking-wide uppercase">
                   Overview
                 </h4>
                 <StatRow label="Total Workouts" value={totalWorkouts} />
                 <StatRow
                   label="Training Time"
-                  unit="min"
-                  value={Math.round(totalTrainingMinutes)}
+                  unit="hrs"
+                  value={(totalTrainingMinutes / 60).toFixed(1)}
                 />
-                <StatRow label="Avg RPE" value={avgRPE} />
                 <StatRow
-                  label="Avg Subjective Load"
-                  value={avgSubjectiveLoad}
+                  label="Total Subjective Load"
+                  value={totalSubjectiveTrainingLoad.toFixed(1)}
                 />
               </div>
 
-              {(hasRunning || hasBiking || hasRowing) && (
+              {hasActivity && (
                 <div className="space-y-0 pt-2">
-                  <h4 className="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase">
+                  <h4 className="mb-2 text-xs font-semibold tracking-wide uppercase">
                     Activity
                   </h4>
                   {hasRunning && (
@@ -128,6 +118,13 @@ export function WeekSummary({ workouts, className }: WeekSummaryProps) {
                       label="Rowing"
                       unit="km"
                       value={totalRowKs.toFixed(1)}
+                    />
+                  )}
+                  {hasSkiing && (
+                    <StatRow
+                      label="Skiing"
+                      unit="km"
+                      value={totalSkiKs.toFixed(1)}
                     />
                   )}
                 </div>

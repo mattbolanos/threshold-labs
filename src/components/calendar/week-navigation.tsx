@@ -40,7 +40,7 @@ export function WeekNavigation({
 
   return (
     <ButtonGroup>
-      <ButtonGroup className="mr-auto hidden md:flex">
+      <ButtonGroup className="mr-auto hidden lg:flex">
         <Button
           aria-label="Go Back"
           disabled={!canGoBack}
@@ -51,7 +51,7 @@ export function WeekNavigation({
           <IconArrowNarrowLeft className="size-5" />
         </Button>
       </ButtonGroup>
-      <ButtonGroup className="mr-auto md:hidden">
+      <ButtonGroup className="mr-auto lg:hidden">
         <Button
           aria-label="Go Back"
           disabled={!canGoBack}
@@ -63,7 +63,7 @@ export function WeekNavigation({
         </Button>
       </ButtonGroup>
 
-      <ButtonGroup className="hidden md:flex">
+      <ButtonGroup className="hidden lg:flex">
         <Button
           aria-label="Go to Today"
           onMouseDown={jumpToToday}
@@ -73,7 +73,7 @@ export function WeekNavigation({
           Today
         </Button>
       </ButtonGroup>
-      <ButtonGroup className="md:hidden">
+      <ButtonGroup className="lg:hidden">
         <Button
           aria-label="Go to This Week"
           className="text-xs"
@@ -84,7 +84,7 @@ export function WeekNavigation({
           This Week
         </Button>
       </ButtonGroup>
-      <ButtonGroup className="ml-auto hidden md:flex">
+      <ButtonGroup className="ml-auto hidden lg:flex">
         <Button
           aria-label="Go Forward"
           disabled={!canGoForward}
@@ -95,7 +95,7 @@ export function WeekNavigation({
           <IconArrowNarrowRight className="size-5" />
         </Button>
       </ButtonGroup>
-      <ButtonGroup className="ml-auto md:hidden">
+      <ButtonGroup className="ml-auto lg:hidden">
         <Button
           aria-label="Go Forward"
           disabled={!canGoForward}

@@ -62,7 +62,7 @@ export default function Home() {
 
       {/* CalendarHeader */}
       <div className="bg-background">
-        <div className="route-padding-x flex items-center justify-between gap-4 py-2 md:flex-row">
+        <div className="route-padding-x flex items-center justify-between gap-4 py-2 lg:flex-row">
           <Suspense fallback={<CalendarHeaderSkeleton />}>
             <WeekRangeLabel />
             <WeekNavigation
@@ -70,10 +70,10 @@ export default function Home() {
             />
           </Suspense>
         </div>
-        <Separator className="data-[orientation=horizontal]:h-0.5 md:hidden" />
+        <Separator className="data-[orientation=horizontal]:h-0.5 lg:hidden" />
       </div>
 
-      <div className="route-padding-x mt-4 flex flex-col gap-2 md:mt-0">
+      <div className="route-padding-x mt-4 flex flex-col gap-2 lg:mt-0">
         <Suspense fallback={<DayBlocksSkeleton />}>
           <DayHeaders />
         </Suspense>

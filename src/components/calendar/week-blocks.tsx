@@ -19,10 +19,10 @@ export function WeekBlocks() {
   const weekDays = getWeekDays(weekStartDate);
 
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-7 md:gap-2">
-      <WeekSummary className="mb-1 md:hidden" workouts={data} />
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-7 lg:gap-2">
+      <WeekSummary className="mb-1 lg:hidden" workouts={data} />
       {data.length === 0 && (
-        <EmptyWeekState className="w-full md:col-span-7 md:mt-2" />
+        <EmptyWeekState className="w-full lg:col-span-7 lg:mt-2" />
       )}
       {weekDays.map((day) => {
         const dayString = formatQueryDate(day);
@@ -41,7 +41,7 @@ export function WeekBlocks() {
           >
             <h3
               className={cn(
-                "pb-2 text-sm font-semibold md:hidden",
+                "pb-2 text-sm font-semibold lg:hidden",
                 isToday && "text-primary",
               )}
             >

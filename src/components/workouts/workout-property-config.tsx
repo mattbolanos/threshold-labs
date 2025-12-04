@@ -90,14 +90,14 @@ export const WORKOUT_PROPERTY_CONFIG: WorkoutPropertyConfig[] = [
     label: "Run mi",
   },
   {
-    getValue: (workout) => workout.thresholdMiles,
+    getValue: (workout) => workout.lt2Miles,
     icon: IconBrandSpeedtest,
-    label: "Threshold mi",
+    label: "LT2 mi",
   },
   {
-    getValue: (workout) => workout.tempoMiles,
+    getValue: (workout) => workout.lt1Miles,
     icon: IconMetronome,
-    label: "Tempo mi",
+    label: "LT1 mi",
   },
   {
     getValue: (workout) => workout.vo2Miles,

@@ -67,10 +67,10 @@ export const internalRouter = createTRPCRouter({
         .select({
           aerobicMiles: sql<number>`
             coalesce(sum(${workouts.totalRunMiles}), 0) - coalesce(sum(${workouts.speedMiles}), 0) - 
-            coalesce(sum(${workouts.tempoMiles}), 0) - coalesce(sum(${workouts.thresholdMiles}), 0) - coalesce(sum(${workouts.vo2Miles}), 0)`,
+            coalesce(sum(${workouts.lt1Miles}), 0) - coalesce(sum(${workouts.lt2Miles}), 0) - coalesce(sum(${workouts.vo2Miles}), 0)`,
+          lt1Miles: sql<number>`sum(${workouts.lt1Miles})`,
+          lt2Miles: sql<number>`sum(${workouts.lt2Miles})`,
           speedMiles: sql<number>`sum(${workouts.speedMiles})`,
-          tempoMiles: sql<number>`sum(${workouts.tempoMiles})`,
-          thresholdMiles: sql<number>`sum(${workouts.thresholdMiles})`,
           totalMiles: sql<number>`sum(${workouts.totalRunMiles})`,
           vo2Miles: sql<number>`sum(${workouts.vo2Miles})`,
           week: workouts.week,

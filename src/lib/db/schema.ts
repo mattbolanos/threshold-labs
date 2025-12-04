@@ -20,7 +20,6 @@ export const workouts = thlab.table(
     notes: text("notes"),
     rpe: real("rpe").notNull(),
     speedMiles: real("speed_miles"),
-    subjectiveTrainingLoad: real("subjective_training_load").notNull(),
     tags: text("tags").array().notNull().default([]),
     title: text("title").notNull(),
     totalBikeMiles: real("total_bike_miles"),

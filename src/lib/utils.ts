@@ -64,3 +64,12 @@ export function formatWeekRangeLabel(
 export function formatQueryDate(date: Date): string {
   return date.toISOString().split("T")[0];
 }
+
+export function calculateSTL(
+  rpe: number,
+  trainingMinutes: number,
+  totalRunMiles: number | null,
+): number {
+  const runMultiplier = totalRunMiles !== null && totalRunMiles > 0 ? 1.1 : 1;
+  return rpe * (trainingMinutes / 10) * runMultiplier;
+}

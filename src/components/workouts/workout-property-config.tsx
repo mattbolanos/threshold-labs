@@ -19,7 +19,7 @@ import {
 } from "@tabler/icons-react";
 import type { ReactNode } from "react";
 import { CircularProgress } from "@/components/ui/circular-progress";
-import { formatMinutesToTime } from "@/lib/utils";
+import { calculateSTL, formatMinutesToTime } from "@/lib/utils";
 import type { WorkoutsOutput } from "@/server/api/types";
 import { TagBadge } from "./tag-badge";
 
@@ -75,7 +75,12 @@ export const WORKOUT_PROPERTY_CONFIG: WorkoutPropertyConfig[] = [
     label: "RPE",
   },
   {
-    getValue: (workout) => workout.subjectiveTrainingLoad,
+    getValue: (workout) =>
+      calculateSTL(
+        workout.rpe,
+        workout.trainingMinutes,
+        workout.totalRunMiles,
+      ).toFixed(1),
     icon: IconBrain,
     label: "Subjective training load",
   },

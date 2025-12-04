@@ -18,9 +18,16 @@ export function NavBar() {
           <Link href="/" prefetch>
             <Image
               alt="Threshold Lab"
-              className="size-20 md:size-25"
+              className="size-20 md:size-25 dark:hidden"
               height={100}
-              src="/logo.svg"
+              src="/wordmark-light.svg"
+              width={100}
+            />
+            <Image
+              alt="Threshold Lab"
+              className="hidden size-20 md:size-25 dark:block"
+              height={100}
+              src="/wordmark-dark.svg"
               width={100}
             />
           </Link>

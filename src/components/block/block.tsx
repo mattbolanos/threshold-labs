@@ -22,6 +22,7 @@ import { TagBadge } from "@/components/workouts/tag-badge";
 import { TAG_CONFIG, type TagConfig } from "@/components/workouts/tag-config";
 import { cn, formatMinutesToTime } from "@/lib/utils";
 import type { WorkoutsOutput } from "@/server/api/types";
+import { CircularProgress } from "../ui/circular-progress";
 import { BlockContent } from "./block-content";
 
 interface BlockProps {
@@ -47,13 +48,21 @@ const BaseCard = ({ workout, tagConfig, className }: BlockProps) => (
             )}
           />
         )}
-        <span className="line-clamp-2 text-[15px] leading-snug font-medium lg:line-clamp-none">
+        <span className="leading-snug font-medium lg:text-[15px]">
           {workout.title}
         </span>
       </CardTitle>
-      <span className="text-sm tabular-nums">
-        {formatMinutesToTime(workout.trainingMinutes)}
-      </span>
+      <div className="flex items-center gap-1">
+        <span className="text-sm tabular-nums">
+          {formatMinutesToTime(workout.trainingMinutes)}
+        </span>
+        <CircularProgress
+          showLabel
+          size={28}
+          strokeWidth={3}
+          value={workout.rpe}
+        />
+      </div>
       <div className="flex flex-wrap items-center gap-2">
         {workout.tags.map((tag) => (
           <TagBadge key={tag} tag={tag} />

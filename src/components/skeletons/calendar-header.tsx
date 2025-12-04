@@ -6,35 +6,35 @@ import { cn } from "@/lib/utils";
 
 export function CalendarHeaderSkeleton({ className }: { className?: string }) {
   return (
-    <div className="flex w-full items-center justify-between gap-4 md:flex-row">
+    <div className="flex w-full items-center justify-between gap-4 lg:flex-row">
       <div className={cn("flex flex-col gap-1 pl-1", className)}>
         {/* Desktop header label */}
-        <Skeleton className="hidden h-4 w-20 md:block" />
+        <Skeleton className="hidden h-4 w-20 lg:block" />
         {/* Mobile header label */}
-        <Skeleton className="h-5 w-32 md:hidden" />
+        <Skeleton className="h-5 w-32 lg:hidden" />
         {/* Helper text */}
-        <span className="text-muted-foreground hidden text-sm md:flex">
+        <span className="text-muted-foreground hidden text-sm lg:flex">
           Click on a block to view more details
         </span>
       </div>
       <ButtonGroup>
-        <ButtonGroup className="mr-auto hidden md:flex">
+        <ButtonGroup className="mr-auto hidden lg:flex">
           <Button aria-label="Go Back" size="icon-sm" variant="ghost">
             <IconArrowNarrowLeft className="size-5" />
           </Button>
         </ButtonGroup>
-        <ButtonGroup className="mr-auto md:hidden">
+        <ButtonGroup className="mr-auto lg:hidden">
           <Button aria-label="Go Back" size="icon-sm" variant="outline">
             <IconArrowNarrowLeft className="size-5" />
           </Button>
         </ButtonGroup>
 
-        <ButtonGroup className="hidden md:flex">
+        <ButtonGroup className="hidden lg:flex">
           <Button aria-label="Go to Today" size="sm" variant="outline">
             Today
           </Button>
         </ButtonGroup>
-        <ButtonGroup className="md:hidden">
+        <ButtonGroup className="lg:hidden">
           <Button
             aria-label="Go to This Week"
             className="text-xs"
@@ -44,7 +44,7 @@ export function CalendarHeaderSkeleton({ className }: { className?: string }) {
             This Week
           </Button>
         </ButtonGroup>
-        <ButtonGroup className="ml-auto hidden md:flex">
+        <ButtonGroup className="ml-auto hidden lg:flex">
           <Button
             aria-label="Go Forward"
             disabled
@@ -54,7 +54,7 @@ export function CalendarHeaderSkeleton({ className }: { className?: string }) {
             <IconArrowNarrowRight className="size-5" />
           </Button>
         </ButtonGroup>
-        <ButtonGroup className="ml-auto md:hidden">
+        <ButtonGroup className="ml-auto lg:hidden">
           <Button
             aria-label="Go Forward"
             disabled

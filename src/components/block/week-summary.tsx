@@ -58,6 +58,7 @@ export function WeekSummary({ workouts, className }: WeekSummaryProps) {
   const hasBiking = totalBikeMiles > 0;
   const hasRowing = totalRowKs > 0;
   const hasSkiing = totalSkiKs > 0;
+  const hasActivity = hasRunning || hasBiking || hasRowing || hasSkiing;
 
   return (
     <Card className={cn(className, "bg-muted/50 py-0")}>
@@ -93,7 +94,7 @@ export function WeekSummary({ workouts, className }: WeekSummaryProps) {
                 />
               </div>
 
-              {(hasRunning || hasBiking || hasRowing) && (
+              {hasActivity && (
                 <div className="space-y-0 pt-2">
                   <h4 className="mb-2 text-xs font-semibold tracking-wide uppercase">
                     Activity

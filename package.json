@@ -53,7 +53,8 @@
     "dev": "next dev --turbopack",
     "format": "biome format --write",
     "lint": "biome check",
-    "start": "next start"
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
   },
   "version": "0.1.0"
 }

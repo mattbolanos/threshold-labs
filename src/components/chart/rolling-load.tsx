@@ -46,7 +46,7 @@ export function RollingLoadChart({
         categoryLabels: {
           stl: "Subjective Training Load",
         },
-        colors: ["blue"],
+        colors: ["chart-5"],
       }}
       showGridLines
       tooltipLabelFormatter={(label) => {

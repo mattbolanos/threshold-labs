@@ -98,7 +98,7 @@ interface LegendItemProps {
 const LegendItem = ({
   name,
   label,
-  color = "gray",
+  color = "chart-1",
   onClick,
   activeLegend,
   chartType,

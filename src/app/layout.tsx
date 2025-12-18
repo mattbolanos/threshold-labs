@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono, Manrope } from "next/font/google";
+import { Figtree, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { NavBar } from "@/components/nav/nav-bar";
 import { Providers } from "./providers";
 
-const manrope = Manrope({
+const figtree = Figtree({
   subsets: ["latin"],
-  variable: "--font-manrope",
+  variable: "--font-figtree",
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -26,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      className={`${manrope.variable} ${jetbrainsMono.variable}`}
+      className={`${figtree.variable} ${jetbrainsMono.variable}`}
       lang="en"
       suppressHydrationWarning
     >

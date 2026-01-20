@@ -21,12 +21,12 @@ import {
 import { TagBadge } from "@/components/workouts/tag-badge";
 import { TAG_CONFIG, type TagConfig } from "@/components/workouts/tag-config";
 import { cn, formatMinutesToTime } from "@/lib/utils";
-import type { WorkoutsOutput } from "@/server/api/types";
+import type { Doc } from "../../../convex/_generated/dataModel";
 import { CircularProgress } from "../ui/circular-progress";
 import { BlockContent } from "./block-content";
 
 interface BlockProps {
-  workout: WorkoutsOutput[number];
+  workout: Doc<"workouts">;
   tagConfig?: TagConfig | undefined;
   className?: string;
 }

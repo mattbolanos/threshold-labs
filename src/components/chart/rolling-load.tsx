@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "convex/react";
+import { ChartSkeleton } from "@/components/skeletons/chart";
 import { ComboChart } from "@/components/ui/chart/combo-chart";
 import { useChartState } from "@/hooks/use-chart-state";
 import { api } from "../../../convex/_generated/api";
@@ -13,6 +14,11 @@ export function RollingLoadChart() {
     to: range?.to ?? undefined,
   });
 
+  // Loading state - show skeleton while data is undefined
+  if (data === undefined) {
+    return <ChartSkeleton />;
+  }
+
   return (
     <ComboChart
       barSeries={{
@@ -24,7 +30,7 @@ export function RollingLoadChart() {
           return `${value.toFixed(1)}`;
         },
       }}
-      data={data ?? []}
+      data={data}
       enableBiaxial={true}
       index="week"
       legendPosition="left"
@@ -34,6 +40,9 @@ export function RollingLoadChart() {
           stl: "Subjective Training Load",
         },
         colors: ["chart-3"],
+        valueFormatter: (value) => {
+          return `${value.toFixed(1)}`;
+        },
       }}
       showGridLines
       tooltipLabelFormatter={(label) => {

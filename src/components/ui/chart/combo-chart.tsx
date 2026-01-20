@@ -625,9 +625,11 @@ interface ComboChartProps extends React.HTMLAttributes<HTMLDivElement> {
   customTooltip?: React.ComponentType<TooltipProps>;
   barSeries: ChartSeries & {
     type?: "default" | "stacked";
+    valueFormatter?: (value: number) => string;
   };
   lineSeries?: ChartSeries & {
     connectNulls?: boolean;
+    valueFormatter?: (value: number) => string;
   };
   tooltipLabelFormatter?: (label: string) => string;
 }

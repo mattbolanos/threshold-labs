@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { ROLLING_LOAD_DEFINITIONS, RUN_MIX_DEFINITIONS } from "@/app/constants";
 import { DayHeaders } from "@/components/calendar/day-headers";
 import { WeekBlocks } from "@/components/calendar/week-blocks";
@@ -8,20 +7,13 @@ import { ChartControls } from "@/components/chart/controls";
 import { InfoPopover } from "@/components/chart/info-popover";
 import { RollingLoadChart } from "@/components/chart/rolling-load";
 import { RunMixChart } from "@/components/chart/run-mix";
-import { CalendarBlocksSkeleton } from "@/components/skeletons/calendar-blocks";
-import { CalendarHeaderSkeleton } from "@/components/skeletons/calendar-header";
-import { ChartSkeleton } from "@/components/skeletons/chart";
-import { ChartControlsSkeleton } from "@/components/skeletons/chart-controls";
-import { DayBlocksSkeleton } from "@/components/skeletons/day-blocks";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
 export default function Home() {
   return (
     <div className="bg-background route-padding-y mx-auto flex max-w-[var(--max-app-width)] flex-col gap-4">
-      <Suspense fallback={<ChartControlsSkeleton />}>
-        <ChartControls />
-      </Suspense>
+      <ChartControls />
       {/* Charts */}
       <div className="route-padding-x grid gap-4 lg:grid-cols-2">
         <Card className="w-full gap-0 overflow-hidden">
@@ -33,9 +25,7 @@ export default function Home() {
             />
           </CardHeader>
           <CardContent>
-            <Suspense fallback={<ChartSkeleton />}>
-              <RunMixChart />
-            </Suspense>
+            <RunMixChart />
           </CardContent>
         </Card>
 
@@ -48,9 +38,7 @@ export default function Home() {
             />
           </CardHeader>
           <CardContent>
-            <Suspense fallback={<ChartSkeleton />}>
-              <RollingLoadChart />
-            </Suspense>
+            <RollingLoadChart />
           </CardContent>
         </Card>
       </div>
@@ -58,21 +46,15 @@ export default function Home() {
       {/* CalendarHeader */}
       <div className="bg-background">
         <div className="route-padding-x flex items-center justify-between gap-4 py-2 lg:flex-row">
-          <Suspense fallback={<CalendarHeaderSkeleton />}>
-            <WeekRangeLabel />
-            <WeekNavigation />
-          </Suspense>
+          <WeekRangeLabel />
+          <WeekNavigation />
         </div>
         <Separator className="data-[orientation=horizontal]:h-0.5 lg:hidden" />
       </div>
 
       <div className="route-padding-x mt-4 flex flex-col gap-2 lg:mt-0">
-        <Suspense fallback={<DayBlocksSkeleton />}>
-          <DayHeaders />
-        </Suspense>
-        <Suspense fallback={<CalendarBlocksSkeleton />}>
-          <WeekBlocks />
-        </Suspense>
+        <DayHeaders />
+        <WeekBlocks />
       </div>
     </div>
   );

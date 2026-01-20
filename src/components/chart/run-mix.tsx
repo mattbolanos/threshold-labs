@@ -2,6 +2,7 @@
 
 import { useQuery } from "convex/react";
 import { RUN_MIX_CATEGORY_LABELS, type RunMixCategory } from "@/app/constants";
+import { ChartSkeleton } from "@/components/skeletons/chart";
 import { BarChart } from "@/components/ui/chart/bar-chart";
 import { useChartState } from "@/hooks/use-chart-state";
 import { getColorClassName } from "@/lib/chart-utils";
@@ -16,12 +17,17 @@ export function RunMixChart() {
     to: range?.to ?? undefined,
   });
 
+  // Loading state - show skeleton while data is undefined
+  if (data === undefined) {
+    return <ChartSkeleton />;
+  }
+
   return (
     <BarChart
       categories={[...Object.keys(RUN_MIX_CATEGORY_LABELS)]}
       categoryLabels={RUN_MIX_CATEGORY_LABELS}
       customTooltip={RunMixTooltip}
-      data={data ?? []}
+      data={data}
       index="week"
       legendPosition="left"
       type="stacked"

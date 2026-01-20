@@ -1,17 +1,18 @@
 "use client";
 
+import { useQuery } from "convex/react";
 import { addDays, isSameDay } from "date-fns";
 import { Block } from "@/components/block/block";
 import { EmptyWeekState } from "@/components/block/empty-week-state";
 import { WeekSummary } from "@/components/block/week-summary";
 import { useCalendarNav } from "@/hooks/use-calendar-nav";
 import { cn, formatQueryDate, getWeekDays } from "@/lib/utils";
-import { api } from "@/trpc/react";
+import { api } from "../../../convex/_generated/api";
 
 export function WeekBlocks() {
   const { weekStartDate } = useCalendarNav();
 
-  const [data] = api.internal.getWorkouts.useSuspenseQuery({
+  const data = useQuery(api.workouts.getWorkouts, {
     from: formatQueryDate(weekStartDate),
     to: formatQueryDate(addDays(weekStartDate, 6)),
   });
@@ -21,12 +22,12 @@ export function WeekBlocks() {
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-7 lg:gap-2">
       <WeekSummary className="mb-1 lg:hidden" workouts={data} />
-      {data.length === 0 && (
+      {data?.length === 0 && (
         <EmptyWeekState className="w-full lg:col-span-7 lg:mt-2" />
       )}
       {weekDays.map((day) => {
         const dayString = formatQueryDate(day);
-        const dayWorkouts = data.filter(
+        const dayWorkouts = data?.filter(
           (workout) => workout.workoutDate === dayString,
         );
         const isToday = isSameDay(new Date(), day);
@@ -35,7 +36,7 @@ export function WeekBlocks() {
           <div
             className={cn(
               "flex-col",
-              dayWorkouts.length === 0 ? "hidden" : "flex gap-2",
+              dayWorkouts?.length === 0 ? "hidden" : "flex gap-2",
             )}
             key={dayString}
           >
@@ -53,8 +54,8 @@ export function WeekBlocks() {
               })}
             </h3>
             <div className="flex flex-col gap-2">
-              {dayWorkouts.map((workout) => (
-                <Block key={workout.id} workout={workout} />
+              {dayWorkouts?.map((workout) => (
+                <Block key={workout._id.toString()} workout={workout} />
               ))}
             </div>
           </div>

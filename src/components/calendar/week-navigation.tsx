@@ -1,42 +1,28 @@
 "use client";
 
 import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
+import { useQuery } from "convex/react";
 import { addDays } from "date-fns";
-import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { useCalendarNav } from "@/hooks/use-calendar-nav";
-import { formatQueryDate } from "@/lib/utils";
-import { api } from "@/trpc/react";
+import { api } from "../../../convex/_generated/api";
 
-interface CalendarArrowsProps {
-  workoutsDateRangePromise: Promise<{
-    minWorkoutDate: string | null;
-    maxWorkoutDate: string | null;
-  }>;
-}
-
-export function WeekNavigation({
-  workoutsDateRangePromise,
-}: CalendarArrowsProps) {
-  const workoutsDateRange = React.use(workoutsDateRangePromise);
+export function WeekNavigation() {
+  const workoutsDateRange = useQuery(api.workouts.getWorkoutsDateRange);
 
   const { addWeektoStart, jumpToToday, subtractWeekfromStart, weekStartDate } =
     useCalendarNav();
 
-  // prefetch last week
-  api.internal.getWorkouts.usePrefetchQuery({
-    from: formatQueryDate(addDays(weekStartDate, -7)),
-    to: formatQueryDate(addDays(weekStartDate, -1)),
-  });
-
-  const canGoForward = !workoutsDateRange.maxWorkoutDate
+  const canGoForward = !workoutsDateRange?.maxWorkoutDate
     ? false
-    : new Date(workoutsDateRange.maxWorkoutDate) > addDays(weekStartDate, 6);
+    : new Date(workoutsDateRange?.maxWorkoutDate?.workoutDate) >
+      addDays(weekStartDate, 6);
 
-  const canGoBack = !workoutsDateRange.minWorkoutDate
+  const canGoBack = !workoutsDateRange?.minWorkoutDate
     ? false
-    : new Date(workoutsDateRange.minWorkoutDate) < addDays(weekStartDate, -6);
+    : new Date(workoutsDateRange?.minWorkoutDate?.workoutDate) <
+      addDays(weekStartDate, -6);
 
   return (
     <ButtonGroup>

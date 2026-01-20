@@ -6,10 +6,11 @@ import {
 } from "@/components/ui/accordion";
 import { Card, CardContent } from "@/components/ui/card";
 import { calculateSTL, cn } from "@/lib/utils";
-import type { WorkoutsOutput } from "@/server/api/types";
+import type { Doc } from "../../../convex/_generated/dataModel";
 
+type Workouts = Doc<"workouts">;
 interface WeekSummaryProps {
-  workouts: WorkoutsOutput;
+  workouts: Workouts[] | undefined;
   className?: string;
 }
 
@@ -34,6 +35,7 @@ function StatRow({
 }
 
 export function WeekSummary({ workouts, className }: WeekSummaryProps) {
+  if (!workouts) return null;
   const totalWorkouts = workouts.length;
   const totalTrainingMinutes = workouts.reduce(
     (sum, w) => sum + (w.trainingMinutes || 0),
@@ -50,7 +52,8 @@ export function WeekSummary({ workouts, className }: WeekSummaryProps) {
   const totalSkiKs = workouts.reduce((sum, w) => sum + (w.totalSkiKs || 0), 0);
   const totalRowKs = workouts.reduce((sum, w) => sum + (w.totalRowKs || 0), 0);
   const totalSubjectiveTrainingLoad = workouts.reduce(
-    (sum, w) => sum + calculateSTL(w.rpe, w.trainingMinutes, w.totalRunMiles),
+    (sum, w) =>
+      sum + calculateSTL(w.rpe, w.trainingMinutes, w.totalRunMiles ?? null),
     0,
   );
 

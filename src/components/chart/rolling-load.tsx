@@ -1,30 +1,17 @@
 "use client";
 
-import * as React from "react";
+import { useQuery } from "convex/react";
 import { ComboChart } from "@/components/ui/chart/combo-chart";
 import { useChartState } from "@/hooks/use-chart-state";
-import type { RollingLoadOutput } from "@/server/api/types";
-import { api } from "@/trpc/react";
+import { api } from "../../../convex/_generated/api";
 
-interface RollingLoadChartProps {
-  initialDataPromise: Promise<RollingLoadOutput>;
-}
-
-export function RollingLoadChart({
-  initialDataPromise,
-}: RollingLoadChartProps) {
+export function RollingLoadChart() {
   const { range } = useChartState();
-  const initialData = React.use(initialDataPromise);
 
-  const [data] = api.internal.getRollingLoad.useSuspenseQuery(
-    {
-      from: range?.from ?? undefined,
-      to: range?.to ?? undefined,
-    },
-    {
-      initialData: range === null ? initialData : undefined,
-    },
-  );
+  const data = useQuery(api.workouts.getRollingLoad, {
+    from: range?.from ?? undefined,
+    to: range?.to ?? undefined,
+  });
 
   return (
     <ComboChart
@@ -37,7 +24,7 @@ export function RollingLoadChart({
           return `${value.toFixed(1)}`;
         },
       }}
-      data={data}
+      data={data ?? []}
       enableBiaxial={true}
       index="week"
       legendPosition="left"

@@ -15,7 +15,6 @@ import { ChartControlsSkeleton } from "@/components/skeletons/chart-controls";
 import { DayBlocksSkeleton } from "@/components/skeletons/day-blocks";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { api } from "@/trpc/server";
 
 export default function Home() {
   return (
@@ -35,9 +34,7 @@ export default function Home() {
           </CardHeader>
           <CardContent>
             <Suspense fallback={<ChartSkeleton />}>
-              <RunMixChart
-                initialDataPromise={api.internal.getRunVolumeMix({})}
-              />
+              <RunMixChart />
             </Suspense>
           </CardContent>
         </Card>
@@ -52,9 +49,7 @@ export default function Home() {
           </CardHeader>
           <CardContent>
             <Suspense fallback={<ChartSkeleton />}>
-              <RollingLoadChart
-                initialDataPromise={api.internal.getRollingLoad({})}
-              />
+              <RollingLoadChart />
             </Suspense>
           </CardContent>
         </Card>
@@ -65,9 +60,7 @@ export default function Home() {
         <div className="route-padding-x flex items-center justify-between gap-4 py-2 lg:flex-row">
           <Suspense fallback={<CalendarHeaderSkeleton />}>
             <WeekRangeLabel />
-            <WeekNavigation
-              workoutsDateRangePromise={api.internal.getWorkoutsDateRange()}
-            />
+            <WeekNavigation />
           </Suspense>
         </div>
         <Separator className="data-[orientation=horizontal]:h-0.5 lg:hidden" />

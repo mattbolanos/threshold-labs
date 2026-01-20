@@ -1,3 +1,5 @@
+"use client";
+
 import { ConvexProvider } from "convex/react";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { ThemeProvider } from "@/components/theme/theme-provider";

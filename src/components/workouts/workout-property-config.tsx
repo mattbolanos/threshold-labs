@@ -20,10 +20,10 @@ import {
 import type { ReactNode } from "react";
 import { CircularProgress } from "@/components/ui/circular-progress";
 import { calculateSTL, formatMinutesToTime } from "@/lib/utils";
-import type { WorkoutsOutput } from "@/server/api/types";
+import type { Doc } from "../../../convex/_generated/dataModel";
 import { TagBadge } from "./tag-badge";
 
-type Workout = WorkoutsOutput[number];
+type Workout = Doc<"workouts">;
 
 interface WorkoutPropertyConfig {
   icon: TablerIcon;
@@ -79,13 +79,13 @@ export const WORKOUT_PROPERTY_CONFIG: WorkoutPropertyConfig[] = [
       calculateSTL(
         workout.rpe,
         workout.trainingMinutes,
-        workout.totalRunMiles,
+        workout.totalRunMiles ?? null,
       ).toFixed(1),
     icon: IconBrain,
     label: "Subjective training load",
   },
   {
-    getValue: (workout) => formatMinutesToTime(workout.cardioMinutes),
+    getValue: (workout) => formatMinutesToTime(workout.cardioMinutes ?? null),
     icon: IconHeart,
     label: "Cardio mins",
   },

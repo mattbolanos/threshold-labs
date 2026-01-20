@@ -1,13 +1,47 @@
 "use client";
 
-import * as React from "react";
+import { useQuery } from "convex/react";
 import { RUN_MIX_CATEGORY_LABELS, type RunMixCategory } from "@/app/constants";
+import { ChartSkeleton } from "@/components/skeletons/chart";
 import { BarChart } from "@/components/ui/chart/bar-chart";
 import { useChartState } from "@/hooks/use-chart-state";
 import { getColorClassName } from "@/lib/chart-utils";
-import type { RunVolumeMixOutput } from "@/server/api/types";
-import { api } from "@/trpc/react";
+import { api } from "../../../convex/_generated/api";
 import { createTooltip } from "./tooltip";
+
+export function RunMixChart() {
+  const { range } = useChartState();
+
+  const data = useQuery(api.workouts.getRunVolumeMix, {
+    from: range?.from ?? undefined,
+    to: range?.to ?? undefined,
+  });
+
+  // Loading state - show skeleton while data is undefined
+  if (data === undefined) {
+    return <ChartSkeleton />;
+  }
+
+  return (
+    <BarChart
+      categories={[...Object.keys(RUN_MIX_CATEGORY_LABELS)]}
+      categoryLabels={RUN_MIX_CATEGORY_LABELS}
+      customTooltip={RunMixTooltip}
+      data={data}
+      index="week"
+      legendPosition="left"
+      type="stacked"
+      xAxisLabel="Week"
+      xTicksFormatter={(value) =>
+        new Date(value).toLocaleDateString("en-US", {
+          day: "numeric",
+          month: "short",
+          timeZone: "UTC",
+        })
+      }
+    />
+  );
+}
 
 const RunMixTooltip = createTooltip(
   Object.keys(RUN_MIX_CATEGORY_LABELS).map((dataKey) => ({
@@ -80,42 +114,3 @@ const RunMixTooltip = createTooltip(
     },
   },
 );
-
-interface RunMixChartProps {
-  initialDataPromise: Promise<RunVolumeMixOutput>;
-}
-
-export function RunMixChart({ initialDataPromise }: RunMixChartProps) {
-  const { range } = useChartState();
-  const initialData = React.use(initialDataPromise);
-
-  const [data] = api.internal.getRunVolumeMix.useSuspenseQuery(
-    {
-      from: range?.from ?? undefined,
-      to: range?.to ?? undefined,
-    },
-    {
-      initialData: range === null ? initialData : undefined,
-    },
-  );
-
-  return (
-    <BarChart
-      categories={[...Object.keys(RUN_MIX_CATEGORY_LABELS)]}
-      categoryLabels={RUN_MIX_CATEGORY_LABELS}
-      customTooltip={RunMixTooltip}
-      data={data}
-      index="week"
-      legendPosition="left"
-      type="stacked"
-      xAxisLabel="Week"
-      xTicksFormatter={(value) =>
-        new Date(value).toLocaleDateString("en-US", {
-          day: "numeric",
-          month: "short",
-          timeZone: "UTC",
-        })
-      }
-    />
-  );
-}

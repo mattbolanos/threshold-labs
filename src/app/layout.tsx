@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Figtree, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { Suspense } from "react";
 import { NavBar } from "@/components/nav/nav-bar";
 import { Providers } from "./providers";
 
@@ -42,7 +43,7 @@ export default function RootLayout({
         <main>
           <Providers>
             <NavBar />
-            {children}
+            <Suspense>{children}</Suspense>
           </Providers>
         </main>
       </body>

@@ -1,11 +1,11 @@
 import { Separator } from "@/components/ui/separator";
 import { WORKOUT_PROPERTY_CONFIG } from "@/components/workouts/workout-property-config";
-import type { WorkoutsOutput } from "@/server/api/types";
+import type { Doc } from "../../../convex/_generated/dataModel";
 import { FreeText } from "./free-text";
 import { PropertyRow } from "./property-row";
 
 interface BlockContentProps {
-  workout: WorkoutsOutput[number];
+  workout: Doc<"workouts">;
 }
 
 export function BlockContent({ workout }: BlockContentProps) {
@@ -25,7 +25,7 @@ export function BlockContent({ workout }: BlockContentProps) {
           <Separator />
           <div className="space-y-6 sm:space-y-8">
             <FreeText text={workout.workoutPlan} title="Plan" />
-            <FreeText text={workout.notes} title="Notes" />
+            <FreeText text={workout.notes ?? ""} title="Notes" />
           </div>
         </div>
       )}

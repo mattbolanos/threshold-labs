@@ -1,30 +1,23 @@
 "use client";
 
-import * as React from "react";
+import { useQuery } from "convex/react";
+import { ChartSkeleton } from "@/components/skeletons/chart";
 import { ComboChart } from "@/components/ui/chart/combo-chart";
 import { useChartState } from "@/hooks/use-chart-state";
-import type { RollingLoadOutput } from "@/server/api/types";
-import { api } from "@/trpc/react";
+import { api } from "../../../convex/_generated/api";
 
-interface RollingLoadChartProps {
-  initialDataPromise: Promise<RollingLoadOutput>;
-}
-
-export function RollingLoadChart({
-  initialDataPromise,
-}: RollingLoadChartProps) {
+export function RollingLoadChart() {
   const { range } = useChartState();
-  const initialData = React.use(initialDataPromise);
 
-  const [data] = api.internal.getRollingLoad.useSuspenseQuery(
-    {
-      from: range?.from ?? undefined,
-      to: range?.to ?? undefined,
-    },
-    {
-      initialData: range === null ? initialData : undefined,
-    },
-  );
+  const data = useQuery(api.workouts.getRollingLoad, {
+    from: range?.from ?? undefined,
+    to: range?.to ?? undefined,
+  });
+
+  // Loading state - show skeleton while data is undefined
+  if (data === undefined) {
+    return <ChartSkeleton />;
+  }
 
   return (
     <ComboChart
@@ -47,6 +40,9 @@ export function RollingLoadChart({
           stl: "Subjective Training Load",
         },
         colors: ["chart-3"],
+        valueFormatter: (value) => {
+          return `${value.toFixed(1)}`;
+        },
       }}
       showGridLines
       tooltipLabelFormatter={(label) => {

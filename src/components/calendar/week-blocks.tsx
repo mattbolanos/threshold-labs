@@ -1,22 +1,29 @@
 "use client";
 
+import { useQuery } from "convex/react";
 import { addDays, isSameDay } from "date-fns";
 import { Block } from "@/components/block/block";
 import { EmptyWeekState } from "@/components/block/empty-week-state";
 import { WeekSummary } from "@/components/block/week-summary";
+import { CalendarBlocksSkeleton } from "@/components/skeletons/calendar-blocks";
 import { useCalendarNav } from "@/hooks/use-calendar-nav";
 import { cn, formatQueryDate, getWeekDays } from "@/lib/utils";
-import { api } from "@/trpc/react";
+import { api } from "../../../convex/_generated/api";
 
 export function WeekBlocks() {
   const { weekStartDate } = useCalendarNav();
 
-  const [data] = api.internal.getWorkouts.useSuspenseQuery({
+  const data = useQuery(api.workouts.getWorkouts, {
     from: formatQueryDate(weekStartDate),
     to: formatQueryDate(addDays(weekStartDate, 6)),
   });
 
   const weekDays = getWeekDays(weekStartDate);
+
+  // Loading state - show skeleton while data is undefined
+  if (data === undefined) {
+    return <CalendarBlocksSkeleton />;
+  }
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-7 lg:gap-2">
@@ -54,7 +61,7 @@ export function WeekBlocks() {
             </h3>
             <div className="flex flex-col gap-2">
               {dayWorkouts.map((workout) => (
-                <Block key={workout.id} workout={workout} />
+                <Block key={workout._id.toString()} workout={workout} />
               ))}
             </div>
           </div>

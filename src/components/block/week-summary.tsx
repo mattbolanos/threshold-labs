@@ -35,7 +35,23 @@ function StatRow({
 }
 
 export function WeekSummary({ workouts, className }: WeekSummaryProps) {
-  if (!workouts) return null;
+  if (!workouts)
+    return (
+      <Card className={cn(className, "bg-muted/50 py-0")}>
+        <CardContent>
+          <Accordion collapsible type="single">
+            <AccordionItem value="item-1">
+              <AccordionTrigger className="hover:no-underline" disabled>
+                <div className="flex flex-1 items-center justify-between pr-2 text-left">
+                  <span>Week Summary</span>
+                </div>
+              </AccordionTrigger>
+            </AccordionItem>
+          </Accordion>
+        </CardContent>
+      </Card>
+    );
+
   const totalWorkouts = workouts.length;
   const totalTrainingMinutes = workouts.reduce(
     (sum, w) => sum + (w.trainingMinutes || 0),

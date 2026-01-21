@@ -5,7 +5,6 @@ import { addDays, isSameDay } from "date-fns";
 import { Block } from "@/components/block/block";
 import { EmptyWeekState } from "@/components/block/empty-week-state";
 import { WeekSummary } from "@/components/block/week-summary";
-import { CalendarBlocksSkeleton } from "@/components/skeletons/calendar-blocks";
 import { useCalendarNav } from "@/hooks/use-calendar-nav";
 import { cn, formatQueryDate, getWeekDays } from "@/lib/utils";
 import { api } from "../../../convex/_generated/api";
@@ -20,29 +19,25 @@ export function WeekBlocks() {
 
   const weekDays = getWeekDays(weekStartDate);
 
-  // Loading state - show skeleton while data is undefined
-  if (data === undefined) {
-    return <CalendarBlocksSkeleton />;
-  }
-
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-7 lg:gap-2">
       <WeekSummary className="mb-1 lg:hidden" workouts={data} />
-      {data.length === 0 && (
+      {data?.length === 0 && data !== undefined && (
         <EmptyWeekState className="w-full lg:col-span-7 lg:mt-2" />
       )}
-      {weekDays.map((day) => {
+      {weekDays.map((day, index) => {
         const dayString = formatQueryDate(day);
-        const dayWorkouts = data.filter(
+        const dayWorkouts = data?.filter(
           (workout) => workout.workoutDate === dayString,
         );
         const isToday = isSameDay(new Date(), day);
+        const isMonday = index === 0;
 
         return (
           <div
             className={cn(
-              "flex-col",
-              dayWorkouts.length === 0 ? "hidden" : "flex gap-2",
+              "min-h-[300px] flex-col gap-2 lg:min-h-[400px]",
+              data === undefined && !isMonday ? "hidden lg:flex" : "flex",
             )}
             key={dayString}
           >
@@ -60,7 +55,7 @@ export function WeekBlocks() {
               })}
             </h3>
             <div className="flex flex-col gap-2">
-              {dayWorkouts.map((workout) => (
+              {dayWorkouts?.map((workout) => (
                 <Block key={workout._id.toString()} workout={workout} />
               ))}
             </div>

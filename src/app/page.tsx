@@ -52,7 +52,7 @@ export default function Home() {
         <Separator className="data-[orientation=horizontal]:h-0.5 lg:hidden" />
       </div>
 
-      <div className="route-padding-x mt-4 flex flex-col gap-2 lg:mt-0">
+      <div className="route-padding-x mt-4 flex min-h-[300px] flex-col gap-2 lg:mt-0 lg:min-h-[450px]">
         <DayHeaders />
         <WeekBlocks />
       </div>

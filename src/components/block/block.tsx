@@ -83,7 +83,7 @@ export function Block({ workout, className }: BlockProps) {
   return (
     <>
       <Dialog>
-        <DialogTrigger className="hidden sm:inline-flex">
+        <DialogTrigger className="hidden w-full sm:inline-flex">
           <CardTrigger />
         </DialogTrigger>
         <DialogContent>
@@ -104,7 +104,7 @@ export function Block({ workout, className }: BlockProps) {
         </DialogContent>
       </Dialog>
       <Drawer>
-        <DrawerTrigger className="inline-flex sm:hidden">
+        <DrawerTrigger className="inline-flex w-full sm:hidden">
           <CardTrigger />
         </DrawerTrigger>
         <DrawerContent>

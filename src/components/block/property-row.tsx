@@ -8,7 +8,7 @@ interface PropertyRowProps {
     icon: TablerIcon;
     title: string;
   };
-  value: string | ReactNode | null;
+  value: string | ReactNode | null | undefined;
   labelClassName?: string;
 }
 
@@ -17,7 +17,7 @@ export function PropertyRow({
   value,
   labelClassName,
 }: PropertyRowProps) {
-  if (value === null) return null;
+  if (value === null || value === undefined) return null;
 
   return (
     <div className="flex items-center justify-start gap-8">

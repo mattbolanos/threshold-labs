@@ -1,5 +1,12 @@
 import { relations } from "drizzle-orm";
-import { boolean, index, pgSchema, text, timestamp } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  index,
+  pgSchema,
+  text,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
 
 const thlab = pgSchema("thlab");
 
@@ -93,3 +100,15 @@ export const accountRelations = relations(account, ({ one }) => ({
     references: [user.id],
   }),
 }));
+
+export const clients = thlab.table(
+  "clients",
+  {
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    email: text("email").notNull().unique(),
+    id: uuid("id").defaultRandom().primaryKey(),
+    isActive: boolean("is_active").default(true).notNull(),
+    name: text("name"),
+  },
+  (table) => [index("clients_email_idx").on(table.email)],
+);

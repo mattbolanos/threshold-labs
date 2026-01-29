@@ -6,7 +6,6 @@ import {
   IconMailX,
 } from "@tabler/icons-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,7 +24,6 @@ export function SignUpForm() {
   const [error, setError] = useState<ErrorState>(null);
   const [pending, startPending] = useTransition();
   const [googlePending, startGooglePending] = useTransition();
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,8 +48,8 @@ export function SignUpForm() {
             });
           },
           onSuccess: () => {
-            router.refresh();
-            router.push("/");
+            // Hard navigation to ensure fresh cookie read by server
+            window.location.href = "/";
           },
         },
       );

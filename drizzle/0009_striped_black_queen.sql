@@ -1,0 +1,1 @@
+DROP TABLE "thlab"."workouts" CASCADE;

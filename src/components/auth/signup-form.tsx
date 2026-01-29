@@ -50,6 +50,7 @@ export function SignUpForm() {
             });
           },
           onSuccess: () => {
+            router.refresh();
             router.push("/");
           },
         },

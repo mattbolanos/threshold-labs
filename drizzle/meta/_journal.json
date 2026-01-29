@@ -64,6 +64,27 @@
       "when": 1764817284820,
       "tag": "0008_cool_dracula",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1769656736294,
+      "tag": "0009_striped_black_queen",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1769656785197,
+      "tag": "0010_steep_starhawk",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1769656887548,
+      "tag": "0011_far_tattoo",
+      "breakpoints": true
     }
   ]
 }

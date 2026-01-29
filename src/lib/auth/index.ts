@@ -48,7 +48,7 @@ export const checkAuth = async () => {
   });
 
   if (!session) {
-    return redirect("/login");
+    redirect("/login");
   }
 
   return session;

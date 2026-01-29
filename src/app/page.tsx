@@ -9,8 +9,11 @@ import { RollingLoadChart } from "@/components/chart/rolling-load";
 import { RunMixChart } from "@/components/chart/run-mix";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { checkAuth } from "@/lib/auth";
 
-export default function Home() {
+export default async function Home() {
+  await checkAuth();
+
   return (
     <div className="bg-background route-padding-y mx-auto flex max-w-[var(--max-app-width)] flex-col gap-4">
       <ChartControls />

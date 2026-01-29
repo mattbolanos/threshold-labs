@@ -5,6 +5,7 @@ import {
   IconLoader2,
   IconMailX,
 } from "@tabler/icons-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
@@ -100,12 +101,12 @@ export function SignUpForm() {
           </Button>
           <p className="text-muted-foreground mt-4 text-sm">
             Already have an account?{" "}
-            <a
+            <Link
               className="text-foreground font-medium underline-offset-4 transition-colors hover:underline"
               href="/login"
             >
               Sign in
-            </a>
+            </Link>
           </p>
         </div>
       </div>

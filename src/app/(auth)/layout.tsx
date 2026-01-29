@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   description: "Access your Threshold Lab account",
-  title: "Sign In | Threshold Lab",
 };
 
 export default function AuthLayout({

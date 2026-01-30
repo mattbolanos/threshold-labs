@@ -47,7 +47,7 @@ export function LoginForm() {
 
     await authClient.signIn.social({
       callbackURL: "/",
-      errorCallbackURL: "/login?error=google",
+      errorCallbackURL: `${window.location.origin}/unauthorized`,
       provider: "google",
     });
   };

@@ -1,27 +1,17 @@
 "use client";
 
-import {
-  IconBrandGoogleFilled,
-  IconLoader2,
-  IconMailX,
-} from "@tabler/icons-react";
-import Link from "next/link";
+import { IconBrandGoogleFilled, IconLoader2 } from "@tabler/icons-react";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth/auth-client";
 
-type ErrorState = {
-  type: "generic" | "not-invited";
-  message: string;
-} | null;
-
 export function SignUpForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<ErrorState>(null);
+  const [error, setError] = useState<string | null>(null);
   const [pending, startPending] = useTransition();
   const [googlePending, startGooglePending] = useTransition();
 
@@ -39,13 +29,14 @@ export function SignUpForm() {
         },
         {
           onError: (ctx) => {
-            const message = ctx.error.message || "Failed to create account";
             const isNotInvited = ctx.error.status === 422;
 
-            setError({
-              message,
-              type: isNotInvited ? "not-invited" : "generic",
-            });
+            if (isNotInvited) {
+              window.location.href = `/unauthorized?email=${encodeURIComponent(email)}`;
+              return;
+            }
+
+            setError(ctx.error.message || "Failed to create account");
           },
           onSuccess: () => {
             // Hard navigation to ensure fresh cookie read by server
@@ -61,56 +52,12 @@ export function SignUpForm() {
     startGooglePending(async () => {
       await authClient.signIn.social({
         callbackURL: "/",
-        errorCallbackURL: "/signup?error=google",
+        errorCallbackURL: `${window.location.origin}/unauthorized`,
         newUserCallbackURL: "/",
         provider: "google",
       });
     });
   };
-
-  // Show prominent "not invited" state
-  if (error?.type === "not-invited") {
-    return (
-      <div className="bg-card/80 rounded-2xl border p-8 shadow-xl shadow-black/5 backdrop-blur-sm">
-        <div className="flex flex-col items-center text-center">
-          <div className="bg-destructive/10 mb-4 flex size-14 items-center justify-center rounded-full">
-            <IconMailX className="text-destructive size-7" />
-          </div>
-          <h2 className="text-lg font-semibold">No Invitation Found</h2>
-          <p className="text-muted-foreground mt-2 text-sm">
-            The email{" "}
-            <span className="text-foreground font-medium">{email}</span> is not
-            on the invite list.
-          </p>
-          <div className="bg-muted/50 mt-5 w-full rounded-lg p-4 text-left text-sm">
-            <p className="font-medium">What to do next:</p>
-            <ul className="text-muted-foreground mt-2 list-inside list-disc space-y-1">
-              <li>Contact your coach to request an invitation</li>
-              <li>Make sure you&apos;re using the email your coach has</li>
-              <li>Check for typos in your email address</li>
-            </ul>
-          </div>
-          <Button
-            className="mt-6 w-full"
-            onClick={() => setError(null)}
-            size="lg"
-            variant="outline"
-          >
-            Try a Different Email
-          </Button>
-          <p className="text-muted-foreground mt-4 text-sm">
-            Already have an account?{" "}
-            <Link
-              className="text-foreground font-medium underline-offset-4 transition-colors hover:underline"
-              href="/login"
-            >
-              Sign in
-            </Link>
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <>
@@ -168,13 +115,13 @@ export function SignUpForm() {
             </p>
           </div>
 
-          {error?.type === "generic" && (
+          {error && (
             <div
               aria-live="polite"
               className="bg-destructive/10 text-destructive rounded-lg px-4 py-3 text-sm"
               role="alert"
             >
-              {error.message}
+              {error}
             </div>
           )}
 

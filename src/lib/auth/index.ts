@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
@@ -19,7 +19,10 @@ export const auth = betterAuth({
             .select({ id: clients.id })
             .from(clients)
             .where(
-              and(eq(clients.email, user.email), eq(clients.isActive, true)),
+              and(
+                sql`lower(${clients.email}) = lower(${user.email.trim()})`,
+                eq(clients.isActive, true),
+              ),
             );
 
           if (isAllowed.length === 0) {

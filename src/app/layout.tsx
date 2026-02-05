@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { Figtree, JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono, Outfit } from "next/font/google";
 import "./globals.css";
 import { Suspense } from "react";
 import { NavBar } from "@/components/nav/nav-bar";
 import { Providers } from "./providers";
 
-const figtree = Figtree({
+const outfit = Outfit({
   subsets: ["latin"],
-  variable: "--font-figtree",
+  variable: "--font-outfit",
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      className={`${figtree.variable} ${jetbrainsMono.variable}`}
+      className={`${outfit.variable} ${jetbrainsMono.variable}`}
       lang="en"
       suppressHydrationWarning
     >

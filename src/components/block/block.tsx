@@ -35,35 +35,35 @@ const BaseCard = ({ workout, tagConfig, className }: BlockProps) => (
   <Card
     className={cn(
       className,
-      "sm:hover:bg-muted/80 w-full cursor-pointer overflow-hidden",
+      "group/block sm:hover:bg-accent/60 w-full cursor-pointer overflow-hidden transition-colors duration-150",
     )}
   >
-    <CardContent className="flex flex-col items-start gap-3 text-left">
+    <CardContent className="flex flex-col items-start gap-2.5 text-left">
       <CardTitle className="flex min-w-0 items-center gap-1.5">
         {tagConfig?.icon && (
           <tagConfig.icon
             className={cn(
-              "stroke-2.5 size-5 shrink-0 self-start",
+              "stroke-2.5 size-4.5 shrink-0 self-start",
               tagConfig.iconColor,
             )}
           />
         )}
-        <span className="leading-snug font-medium lg:text-[15px]">
+        <span className="text-sm leading-snug font-medium">
           {workout.title}
         </span>
       </CardTitle>
-      <div className="flex items-center gap-1">
-        <span className="text-sm tabular-nums">
+      <div className="flex items-center gap-1.5">
+        <span className="font-mono text-xs tabular-nums tracking-tight">
           {formatMinutesToTime(workout.trainingMinutes)}
         </span>
         <CircularProgress
           showLabel
-          size={28}
-          strokeWidth={3}
+          size={26}
+          strokeWidth={2.5}
           value={workout.rpe}
         />
       </div>
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-1.5">
         {workout.tags.map((tag) => (
           <TagBadge key={tag} tag={tag} />
         ))}

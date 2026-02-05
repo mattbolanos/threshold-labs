@@ -62,18 +62,20 @@ export function SignUpForm() {
   return (
     <>
       {/* Invite-only notice */}
-      <div className="border-primary/20 bg-primary/5 mb-4 rounded-xl border px-4 py-3 text-center text-sm">
+      <div className="border-primary/20 bg-primary/5 mb-4 flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm">
+        <div className="bg-primary/20 flex size-5 items-center justify-center rounded">
+          <div className="bg-primary size-1.5 rounded-full" />
+        </div>
         <span className="font-medium">Invite Only</span>
-        <span className="text-muted-foreground mx-2">|</span>
-        <span className="text-muted-foreground">
-          Registration requires a coach invitation
+        <span className="text-muted-foreground text-xs">
+          Coach invitation required
         </span>
       </div>
 
       {/* Form Card */}
-      <div className="bg-card/80 rounded-2xl border p-8 shadow-xl shadow-black/5 backdrop-blur-sm">
-        <form className="space-y-5" onSubmit={handleSubmit}>
-          <div className="space-y-2">
+      <div className="bg-card/85 rounded-xl border p-7 shadow-xl shadow-black/[0.03] backdrop-blur-sm dark:shadow-black/20">
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          <div className="space-y-1.5">
             <Label htmlFor="name">Full Name</Label>
             <Input
               autoComplete="name"
@@ -86,7 +88,7 @@ export function SignUpForm() {
             />
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="email">Email</Label>
             <Input
               autoComplete="email"
@@ -99,7 +101,7 @@ export function SignUpForm() {
             />
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="password">Password</Label>
             <Input
               autoComplete="new-password"
@@ -126,7 +128,7 @@ export function SignUpForm() {
           )}
 
           <Button
-            className="w-full text-black"
+            className="w-full font-semibold tracking-wide"
             disabled={pending}
             size="lg"
             type="submit"
@@ -142,13 +144,13 @@ export function SignUpForm() {
           </Button>
         </form>
 
-        <div className="relative my-6">
+        <div className="relative my-5">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-card text-muted-foreground px-3">
-              Or continue with
+            <span className="bg-card text-muted-foreground px-3 tracking-widest">
+              Or
             </span>
           </div>
         </div>
@@ -167,8 +169,8 @@ export function SignUpForm() {
             </>
           ) : (
             <>
-              <IconBrandGoogleFilled className="size-5" />
-              <span>Google</span>
+              <IconBrandGoogleFilled className="size-4" />
+              <span>Continue with Google</span>
             </>
           )}
         </Button>
@@ -176,7 +178,7 @@ export function SignUpForm() {
         <p className="text-muted-foreground mt-6 text-center text-sm">
           Already have an account?{" "}
           <a
-            className="text-foreground font-medium underline-offset-4 transition-colors hover:underline"
+            className="text-primary font-medium underline-offset-4 transition-colors hover:underline"
             href="/login"
           >
             Sign in

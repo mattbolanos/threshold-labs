@@ -12,7 +12,7 @@ import { NavUser } from "./nav-user";
 
 export function NavBar() {
   return (
-    <header className="bg-background sticky top-0 z-40 w-full border-b">
+    <header className="bg-background/95 section-slash sticky top-0 z-40 w-full border-b backdrop-blur-sm">
       <nav className="route-padding-x mx-auto flex h-12 w-full max-w-[var(--max-app-width)] items-center justify-between gap-4 md:h-14">
         <div className="flex items-center gap-6">
           <Link href="/" prefetch>
@@ -33,12 +33,12 @@ export function NavBar() {
           </Link>
           {/* desktop */}
           <NavigationMenu className="max-md:hidden">
-            <NavigationMenuList className="gap-2">
+            <NavigationMenuList className="gap-1">
               {SITE_ROUTES.map((link) => (
                 <NavigationMenuItem key={link.href}>
                   <NavigationMenuLink
                     asChild
-                    className="text-muted-foreground hover:text-primary transition-color py-1.5 font-medium duration-150 ease-in-out"
+                    className="text-muted-foreground hover:text-foreground rounded-md px-3 py-1.5 text-sm font-medium transition-colors duration-150 ease-in-out"
                   >
                     <Link href={link.href} prefetch>
                       {link.label}

@@ -10,28 +10,42 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="route-padding-x relative flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden py-10">
-      {/* Subtle grid pattern background */}
+    <div className="noise-texture route-padding-x relative flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden py-10">
+      {/* Diagonal slash lines — athletic motif */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-[0.03] dark:opacity-[0.04]"
+        className="pointer-events-none absolute inset-0 opacity-[0.025] dark:opacity-[0.035]"
         style={{
-          backgroundImage: `
-            linear-gradient(to right, currentColor 1px, transparent 1px),
-            linear-gradient(to bottom, currentColor 1px, transparent 1px)
-          `,
-          backgroundSize: "64px 64px",
+          backgroundImage: `repeating-linear-gradient(
+            -55deg,
+            transparent,
+            transparent 40px,
+            currentColor 40px,
+            currentColor 41px
+          )`,
         }}
       />
 
-      {/* Gradient orbs */}
+      {/* Top-right accent glow — primary color bleed */}
       <div
         aria-hidden="true"
-        className="bg-foreground/8 absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full blur-3xl"
+        className="bg-primary/8 dark:bg-primary/6 absolute -top-32 -right-32 h-[500px] w-[500px] rounded-full blur-[120px]"
+      />
+
+      {/* Bottom-left subtle anchor */}
+      <div
+        aria-hidden="true"
+        className="bg-foreground/4 absolute -bottom-48 -left-48 h-[400px] w-[400px] rounded-full blur-[100px]"
+      />
+
+      {/* Geometric corner accents */}
+      <div
+        aria-hidden="true"
+        className="border-primary/15 absolute top-8 left-8 h-16 w-16 border-t-2 border-l-2"
       />
       <div
         aria-hidden="true"
-        className="bg-foreground/5 absolute -bottom-40 -left-40 h-[500px] w-[500px] rounded-full blur-3xl"
+        className="border-primary/15 absolute right-8 bottom-8 h-16 w-16 border-r-2 border-b-2"
       />
 
       {children}

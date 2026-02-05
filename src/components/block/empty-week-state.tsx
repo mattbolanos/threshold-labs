@@ -14,14 +14,14 @@ interface EmptyWeekStateProps {
 export function EmptyWeekState({ className }: EmptyWeekStateProps) {
   return (
     <Empty
-      className={cn("bg-accent/40 mx-auto border-2 border-dashed", className)}
+      className={cn("bg-muted/30 mx-auto border border-dashed", className)}
     >
       <EmptyHeader>
         <EmptyMedia variant="icon">
           <IconBarbell />
         </EmptyMedia>
       </EmptyHeader>
-      <EmptyTitle>No workouts this week, yet...</EmptyTitle>
+      <EmptyTitle>Rest week — no workouts scheduled</EmptyTitle>
     </Empty>
   );
 }

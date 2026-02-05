@@ -53,9 +53,9 @@ export function LoginForm() {
   };
 
   return (
-    <div className="bg-card/80 rounded-2xl border p-8 shadow-xl shadow-black/5 backdrop-blur-sm">
-      <form className="space-y-5" onSubmit={handleSubmit}>
-        <div className="space-y-2">
+    <div className="bg-card/85 rounded-xl border p-7 shadow-xl shadow-black/[0.03] backdrop-blur-sm dark:shadow-black/20">
+      <form className="space-y-4" onSubmit={handleSubmit}>
+        <div className="space-y-1.5">
           <Label htmlFor="email">Email</Label>
           <Input
             autoComplete="email"
@@ -68,7 +68,7 @@ export function LoginForm() {
           />
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <Label htmlFor="password">Password</Label>
           <Input
             autoComplete="current-password"
@@ -92,7 +92,7 @@ export function LoginForm() {
         )}
 
         <Button
-          className="w-full text-black"
+          className="w-full font-semibold tracking-wide"
           disabled={isLoading || isGoogleLoading}
           size="lg"
           type="submit"
@@ -108,13 +108,13 @@ export function LoginForm() {
         </Button>
       </form>
 
-      <div className="relative my-6">
+      <div className="relative my-5">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-card text-muted-foreground px-3">
-            Or continue with
+          <span className="bg-card text-muted-foreground px-3 tracking-widest">
+            Or
           </span>
         </div>
       </div>
@@ -133,8 +133,8 @@ export function LoginForm() {
           </>
         ) : (
           <>
-            <IconBrandGoogleFilled className="size-5" />
-            <span>Google</span>
+            <IconBrandGoogleFilled className="size-4" />
+            <span>Continue with Google</span>
           </>
         )}
       </Button>
@@ -142,7 +142,7 @@ export function LoginForm() {
       <p className="text-muted-foreground mt-6 text-center text-sm">
         Don&apos;t have an account?{" "}
         <Link
-          className="text-foreground font-medium underline-offset-4 transition-colors hover:underline"
+          className="text-primary font-medium underline-offset-4 transition-colors hover:underline"
           href="/signup"
         >
           Sign up

@@ -1,0 +1,1 @@
+ALTER TABLE "thlab"."user" ADD COLUMN "role" text DEFAULT 'client' NOT NULL;

@@ -17,6 +17,10 @@ export const user = thlab.table("user", {
   id: text("id").primaryKey(),
   image: text("image"),
   name: text("name").notNull(),
+  role: text("role")
+    .default("client")
+    .$type<"admin" | "client" | "coach">()
+    .notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
     .$onUpdate(() => /* @__PURE__ */ new Date())

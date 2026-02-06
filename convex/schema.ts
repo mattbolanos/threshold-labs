@@ -2,6 +2,12 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
+  clients: defineTable({
+    email: v.string(),
+    emailLower: v.string(),
+    isActive: v.boolean(),
+    name: v.optional(v.string()),
+  }).index("by_email_lower", ["emailLower"]),
   workouts: defineTable({
     burpees: v.optional(v.number()),
     cardioMinutes: v.optional(v.number()),

@@ -3,6 +3,7 @@ import { JetBrains_Mono, Outfit } from "next/font/google";
 import "./globals.css";
 import { Suspense } from "react";
 import { NavBar } from "@/components/nav/nav-bar";
+import { getToken } from "@/lib/auth-server";
 import { Providers } from "./providers";
 
 const outfit = Outfit({
@@ -19,6 +20,17 @@ export const metadata: Metadata = {
   description: "Train Smarter. Race Faster.",
   title: "Threshold Lab",
 };
+
+async function AppShell({ children }: { children: React.ReactNode }) {
+  const token = await getToken();
+
+  return (
+    <Providers initialToken={token}>
+      <NavBar />
+      <Suspense>{children}</Suspense>
+    </Providers>
+  );
+}
 
 export default function RootLayout({
   children,
@@ -41,10 +53,9 @@ export default function RootLayout({
       </head>
       <body className="bg-background text-foreground min-h-full overscroll-y-contain antialiased">
         <main>
-          <Providers>
-            <NavBar />
-            <Suspense>{children}</Suspense>
-          </Providers>
+          <Suspense fallback={<Providers>{null}</Providers>}>
+            <AppShell>{children}</AppShell>
+          </Suspense>
         </main>
       </body>
     </html>

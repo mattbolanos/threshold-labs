@@ -8,20 +8,33 @@ import { InfoPopover } from "@/components/chart/info-popover";
 import { RollingLoadChart } from "@/components/chart/rolling-load";
 import { RunMixChart } from "@/components/chart/run-mix";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { checkAuth } from "@/lib/auth";
 
 export default async function Home() {
   await checkAuth();
 
   return (
-    <div className="bg-background route-padding-y mx-auto flex max-w-[var(--max-app-width)] flex-col gap-4">
-      <ChartControls />
+    <div className="bg-background route-padding-y mx-auto flex max-w-[var(--max-app-width)] flex-col gap-6">
+      {/* Performance Section Header */}
+      <div className="route-padding-x flex items-end justify-between">
+        <div>
+          <p className="text-muted-foreground text-xs font-medium uppercase tracking-[0.15em]">
+            Performance
+          </p>
+          <h2 className="text-lg font-semibold tracking-tight">
+            Training Overview
+          </h2>
+        </div>
+        <ChartControls />
+      </div>
+
       {/* Charts */}
       <div className="route-padding-x grid gap-4 lg:grid-cols-2">
         <Card className="w-full gap-0 overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between pl-6">
-            <CardTitle>Run Volume Mix</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between pl-5">
+            <CardTitle className="text-sm font-medium">
+              Run Volume Mix
+            </CardTitle>
             <InfoPopover
               definitions={RUN_MIX_DEFINITIONS}
               title="Run Volume Mix"
@@ -33,8 +46,8 @@ export default async function Home() {
         </Card>
 
         <Card className="w-full gap-0 overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between pl-6">
-            <CardTitle>Training Load</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between pl-5">
+            <CardTitle className="text-sm font-medium">Training Load</CardTitle>
             <InfoPopover
               definitions={ROLLING_LOAD_DEFINITIONS}
               title="Training Load"
@@ -46,18 +59,23 @@ export default async function Home() {
         </Card>
       </div>
 
-      {/* CalendarHeader */}
-      <div className="bg-background">
-        <div className="route-padding-x flex items-center justify-between gap-4 py-2 lg:flex-row">
+      {/* Calendar Section */}
+      <div className="route-padding-x mt-2 flex items-end justify-between">
+        <div>
+          <p className="text-muted-foreground text-xs font-medium uppercase tracking-[0.15em]">
+            Schedule
+          </p>
           <WeekRangeLabel />
-          <WeekNavigation />
         </div>
-        <Separator className="data-[orientation=horizontal]:h-0.5 lg:hidden" />
+        <WeekNavigation />
       </div>
 
-      <div className="route-padding-x mt-4 flex min-h-[300px] flex-col gap-2 lg:mt-0 lg:min-h-[450px]">
-        <DayHeaders />
-        <WeekBlocks />
+      <div className="route-padding-x border-primary/20 relative border-t pt-4">
+        <div className="bg-primary/40 absolute top-0 left-5 h-0.5 w-16 md:left-8" />
+        <div className="flex min-h-[300px] flex-col gap-2 lg:min-h-[450px]">
+          <DayHeaders />
+          <WeekBlocks />
+        </div>
       </div>
     </div>
   );

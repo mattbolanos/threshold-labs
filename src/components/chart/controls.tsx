@@ -7,7 +7,7 @@ export function ChartControls() {
   const { range, setRange } = useChartState();
 
   return (
-    <div className="route-padding-x flex items-center justify-end">
+    <div className="flex items-center">
       <DateFilter range={range} setRange={setRange} />
     </div>
   );

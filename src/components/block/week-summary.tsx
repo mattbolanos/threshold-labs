@@ -24,11 +24,15 @@ function StatRow({
   unit?: string;
 }) {
   return (
-    <div className="border-border flex items-center justify-between border-b py-2 last:border-b-0">
+    <div className="border-border/60 flex items-center justify-between border-b py-2 last:border-b-0">
       <span className="text-muted-foreground text-sm">{label}</span>
       <div className="flex items-baseline gap-1">
         <span className="font-semibold tabular-nums">{value}</span>
-        {unit && <span className="text-muted-foreground text-xs">{unit}</span>}
+        {unit && (
+          <span className="text-muted-foreground font-mono text-[10px] uppercase">
+            {unit}
+          </span>
+        )}
       </div>
     </div>
   );
@@ -37,13 +41,13 @@ function StatRow({
 export function WeekSummary({ workouts, className }: WeekSummaryProps) {
   if (!workouts)
     return (
-      <Card className={cn(className, "bg-muted/50 py-0")}>
+      <Card className={cn(className, "bg-muted/40 py-0")}>
         <CardContent>
           <Accordion collapsible type="single">
             <AccordionItem value="item-1">
               <AccordionTrigger className="hover:no-underline" disabled>
                 <div className="flex flex-1 items-center justify-between pr-2 text-left">
-                  <span>Week Summary</span>
+                  <span className="text-sm font-medium">Week Summary</span>
                 </div>
               </AccordionTrigger>
             </AccordionItem>
@@ -80,7 +84,7 @@ export function WeekSummary({ workouts, className }: WeekSummaryProps) {
   const hasActivity = hasRunning || hasBiking || hasRowing || hasSkiing;
 
   return (
-    <Card className={cn(className, "bg-muted/50 py-0")}>
+    <Card className={cn(className, "bg-muted/40 py-0")}>
       <CardContent>
         <Accordion collapsible type="single">
           <AccordionItem value="item-1">
@@ -89,8 +93,8 @@ export function WeekSummary({ workouts, className }: WeekSummaryProps) {
               disabled={totalWorkouts === 0}
             >
               <div className="flex flex-1 items-center justify-between pr-2 text-left">
-                <span>Week Summary</span>
-                <span className="text-muted-foreground tabular-nums">
+                <span className="text-sm font-medium">Week Summary</span>
+                <span className="text-muted-foreground font-mono text-xs tabular-nums">
                   {totalWorkouts}{" "}
                   {workouts.length === 1 ? "workout" : "workouts"}
                 </span>
@@ -98,7 +102,7 @@ export function WeekSummary({ workouts, className }: WeekSummaryProps) {
             </AccordionTrigger>
             <AccordionContent className="space-y-2 pt-4">
               <div className="space-y-0">
-                <h4 className="mb-2 text-xs font-semibold tracking-wide uppercase">
+                <h4 className="text-muted-foreground mb-2 text-[10px] font-semibold tracking-[0.15em] uppercase">
                   Overview
                 </h4>
                 <StatRow label="Total Workouts" value={totalWorkouts} />
@@ -115,7 +119,7 @@ export function WeekSummary({ workouts, className }: WeekSummaryProps) {
 
               {hasActivity && (
                 <div className="space-y-0 pt-2">
-                  <h4 className="mb-2 text-xs font-semibold tracking-wide uppercase">
+                  <h4 className="text-muted-foreground mb-2 text-[10px] font-semibold tracking-[0.15em] uppercase">
                     Activity
                   </h4>
                   {hasRunning && (

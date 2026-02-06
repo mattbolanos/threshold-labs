@@ -15,17 +15,22 @@ export function DayHeaders() {
 
         return (
           <div
-            className="bg-card col-span-1 mx-auto flex w-full flex-col items-center justify-center rounded-md border py-1 text-center font-medium"
+            className={cn(
+              "col-span-1 mx-auto flex w-full flex-col items-center justify-center rounded-lg py-1.5 text-center font-medium transition-colors",
+              isToday
+                ? "bg-primary/8 border-primary/20 border"
+                : "bg-card border",
+            )}
             key={day.toISOString()}
           >
-            <span className="text-xs opacity-70">
+            <span className="text-muted-foreground text-[11px] font-medium uppercase tracking-wider">
               {day.toLocaleString("default", {
                 weekday: "short",
               })}
             </span>
             <span
               className={cn(
-                "mx-auto flex size-7 items-center justify-center rounded-full",
+                "mx-auto flex size-7 items-center justify-center rounded-full text-sm font-semibold",
                 isToday ? "bg-primary text-primary-foreground" : "",
               )}
             >

@@ -21,7 +21,7 @@ export function EmptyWeekState({ className }: EmptyWeekStateProps) {
           <IconBarbell />
         </EmptyMedia>
       </EmptyHeader>
-      <EmptyTitle>Rest week — no workouts scheduled</EmptyTitle>
+      <EmptyTitle>No workouts this week, yet...</EmptyTitle>
     </Empty>
   );
 }

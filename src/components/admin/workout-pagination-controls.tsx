@@ -1,5 +1,5 @@
-import { useId } from "react";
 import type { Table } from "@tanstack/react-table";
+import { useId } from "react";
 import { Button } from "@/components/ui/button";
 import type { Workout } from "./workout-form-utils";
 
@@ -32,10 +32,7 @@ export function WorkoutPaginationControls({
         Showing {start}-{end} of {totalFilteredCount} workouts
       </p>
       <div className="flex flex-wrap items-center gap-2">
-        <label
-          className="text-muted-foreground text-xs"
-          htmlFor={pageSizeId}
-        >
+        <label className="text-muted-foreground text-xs" htmlFor={pageSizeId}>
           Rows
         </label>
         <select

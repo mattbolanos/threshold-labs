@@ -9,7 +9,6 @@ import { WeekSummary } from "@/components/block/week-summary";
 import { useCalendarNav } from "@/hooks/use-calendar-nav";
 import { cn, formatQueryDate, getWeekDays } from "@/lib/utils";
 import { api } from "../../../convex/_generated/api";
-import { WeekSkeleton } from "./week-skeleton";
 
 // Shared spring config for organic feel
 const springConfig = {
@@ -85,6 +84,8 @@ export function WeekBlocks() {
   // Calculate card index for staggered animation across all days
   let globalCardIndex = 0;
 
+  if (data === undefined) return;
+
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-7 lg:gap-2">
       <WeekSummary
@@ -93,18 +94,7 @@ export function WeekBlocks() {
         workouts={data}
       />
       <AnimatePresence mode="wait">
-        {data === undefined ? (
-          <motion.div
-            animate={{ opacity: 1 }}
-            className="contents"
-            exit={{ opacity: 0 }}
-            initial={{ opacity: 0 }}
-            key="skeleton"
-            transition={{ duration: 0.15 }}
-          >
-            <WeekSkeleton />
-          </motion.div>
-        ) : data.length === 0 ? (
+        {data.length === 0 ? (
           <motion.div
             animate="visible"
             className="w-full lg:col-span-7 lg:mt-2"

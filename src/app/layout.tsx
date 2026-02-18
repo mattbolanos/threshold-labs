@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono, Outfit } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { Suspense } from "react";
 import { NavBar } from "@/components/nav/nav-bar";
@@ -45,9 +46,10 @@ export default function RootLayout({
     >
       <head>
         {process.env.NODE_ENV === "development" && (
-          <script
+          <Script
             crossOrigin="anonymous"
             src="//unpkg.com/react-scan/dist/auto.global.js"
+            strategy="beforeInteractive"
           />
         )}
       </head>

@@ -1,6 +1,7 @@
 "use client";
 
 import { IconBrandGoogleFilled, IconLoader2 } from "@tabler/icons-react";
+import Link from "next/link";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -177,12 +178,13 @@ export function SignUpForm() {
 
         <p className="text-muted-foreground mt-6 text-center text-sm">
           Already have an account?{" "}
-          <a
+          <Link
             className="text-primary font-medium underline-offset-4 transition-colors hover:underline"
             href="/login"
+            prefetch
           >
             Sign in
-          </a>
+          </Link>
         </p>
       </div>
     </>

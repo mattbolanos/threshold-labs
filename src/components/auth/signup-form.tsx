@@ -125,10 +125,7 @@ export function SignUpForm() {
 
       {/* Form Card */}
       <div className="bg-card/85 rounded-xl border p-7 shadow-xl shadow-black/[0.03] backdrop-blur-sm dark:shadow-black/20">
-        <form
-          action={handleSignupSubmit}
-          className="space-y-4"
-        >
+        <form action={handleSignupSubmit} className="space-y-4">
           <form.Field
             name="name"
             validators={{

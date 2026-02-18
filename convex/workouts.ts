@@ -191,6 +191,22 @@ export const setWorkoutVisibility = mutation({
   },
 });
 
+export const getWorkoutById = query({
+  args: {
+    workoutId: v.id("workouts"),
+  },
+  handler: async (ctx, { workoutId }) => {
+    await assertAdmin(ctx);
+    const workout = await ctx.db.get(workoutId);
+
+    if (!workout) {
+      return null;
+    }
+
+    return workout;
+  },
+});
+
 export const getWorkoutsForAdmin = query({
   args: {
     includeHidden: v.optional(v.boolean()),

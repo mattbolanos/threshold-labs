@@ -309,3 +309,23 @@ export function formatDateLabel(workoutDate: string) {
 export function isValidFilterValue(value: string | null): value is FilterValue {
   return value === "all" || value === "visible" || value === "hidden";
 }
+
+export const METRIC_ROWS: Array<{
+  key: keyof Workout;
+  label: string;
+  unit?: string;
+}> = [
+  { key: "trainingMinutes", label: "Training", unit: "min" },
+  { key: "rpe", label: "RPE" },
+  { key: "cardioMinutes", label: "Cardio", unit: "min" },
+  { key: "totalRunMiles", label: "Run", unit: "mi" },
+  { key: "lt1Miles", label: "LT1", unit: "mi" },
+  { key: "lt2Miles", label: "LT2", unit: "mi" },
+  { key: "vo2Miles", label: "VO2", unit: "mi" },
+  { key: "speedMiles", label: "Speed", unit: "mi" },
+  { key: "totalBikeMiles", label: "Bike", unit: "mi" },
+  { key: "totalSkiKs", label: "Ski", unit: "k" },
+  { key: "totalRowKs", label: "Row", unit: "k" },
+  { key: "burpees", label: "Burpees" },
+  { key: "wallballs", label: "Wallballs" },
+];

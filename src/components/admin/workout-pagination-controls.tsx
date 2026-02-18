@@ -1,3 +1,4 @@
+import { useId } from "react";
 import type { Table } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import type { Workout } from "./workout-form-utils";
@@ -13,19 +14,17 @@ export function WorkoutPaginationControls({
   table,
   totalFilteredCount,
 }: WorkoutPaginationControlsProps) {
-  const start =
-    totalFilteredCount === 0
-      ? 0
-      : table.getState().pagination.pageIndex *
-          table.getState().pagination.pageSize +
-        1;
+  const pageSizeId = useId();
+  const {
+    pagination: { pageIndex, pageSize },
+  } = table.getState();
+  const rowCount = table.getRowModel().rows.length;
+  const pageCount = Math.max(table.getPageCount(), 1);
+  const start = totalFilteredCount === 0 ? 0 : pageIndex * pageSize + 1;
   const end =
     totalFilteredCount === 0
       ? 0
-      : Math.min(
-          start + table.getRowModel().rows.length - 1,
-          totalFilteredCount,
-        );
+      : Math.min(start + rowCount - 1, totalFilteredCount);
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border px-3 py-2">
@@ -35,15 +34,15 @@ export function WorkoutPaginationControls({
       <div className="flex flex-wrap items-center gap-2">
         <label
           className="text-muted-foreground text-xs"
-          htmlFor="workout-page-size"
+          htmlFor={pageSizeId}
         >
           Rows
         </label>
         <select
           className="bg-background min-h-11 rounded-md border px-2 text-sm"
-          id="workout-page-size"
+          id={pageSizeId}
           onChange={(event) => table.setPageSize(Number(event.target.value))}
-          value={table.getState().pagination.pageSize}
+          value={pageSize}
         >
           {pageSizeOptions.map((option) => (
             <option key={option} value={option}>
@@ -70,8 +69,7 @@ export function WorkoutPaginationControls({
           Next
         </Button>
         <p className="text-muted-foreground w-20 text-center text-xs sm:text-sm">
-          Page {table.getState().pagination.pageIndex + 1}/
-          {Math.max(table.getPageCount(), 1)}
+          Page {pageIndex + 1}/{pageCount}
         </p>
       </div>
     </div>

@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminPage() {
+  "use no memo";
   await checkAuth();
   const preloadedUserQuery = await preloadAuthQuery(api.auth.getCurrentUser);
 

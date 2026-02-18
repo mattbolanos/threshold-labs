@@ -11,7 +11,7 @@ type TooltipValueFormatter = (args: {
   payload: TooltipPayloadItem;
 }) => ReactNode;
 
-export type TooltipCategoryConfig = {
+type TooltipCategoryConfig = {
   dataKey: string;
   label?: string;
   valueFormatter?: TooltipValueFormatter;
@@ -22,9 +22,7 @@ type TooltipRenderContentParams = {
   categories: TooltipCategoryConfig[];
 };
 
-export type TooltipRenderContent = (
-  args: TooltipRenderContentParams,
-) => ReactNode;
+type TooltipRenderContent = (args: TooltipRenderContentParams) => ReactNode;
 
 type TooltipRenderOptions = {
   formatLabelTitle?: (value: string | number) => string;

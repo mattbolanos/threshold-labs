@@ -26,6 +26,8 @@ import {
 } from "@/lib/chart-utils";
 import { cn } from "@/lib/utils";
 
+const defaultValueFormatter = (value: number): string => value.toString();
+
 //#region Shape
 
 function deepEqual<T>(obj1: T, obj2: T): boolean {
@@ -492,11 +494,10 @@ const ChartTooltip = ({
           </p>
         </div>
         <div className={cn("space-y-1 px-4 py-2")}>
-          {payload.map(({ value, category, color }, index) => (
+          {payload.map(({ value, category, color }) => (
             <div
               className="flex items-center justify-between space-x-8"
-              // biome-ignore lint/suspicious/noArrayIndexKey: <tremor>
-              key={`id-${index}`}
+              key={`${category}-${color}`}
             >
               <div className="flex items-center space-x-2">
                 <span
@@ -587,7 +588,7 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
       index,
       categoryLabels,
       colors = AvailableChartColors,
-      valueFormatter = (value: number) => value.toString(),
+      valueFormatter = defaultValueFormatter,
       startEndOnly = false,
       showXAxis = true,
       xTicksFormatter,
@@ -683,8 +684,8 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
     return (
       <div
         className={cn("h-64 w-full sm:h-80", className)}
+        data-tremor-id="tremor-raw"
         ref={forwardedRef}
-        tremor-id="tremor-raw"
         {...other}
       >
         <ResponsiveContainer debounce={300}>

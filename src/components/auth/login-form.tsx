@@ -3,24 +3,63 @@
 import { IconBrandGoogleFilled, IconLoader2 } from "@tabler/icons-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useReducer } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
 
+type State = {
+  email: string;
+  error: string | null;
+  isGoogleLoading: boolean;
+  isLoading: boolean;
+  password: string;
+};
+
+type Action =
+  | { type: "SET_EMAIL"; payload: string }
+  | { type: "SET_PASSWORD"; payload: string }
+  | { type: "SET_ERROR"; payload: string | null }
+  | { type: "START_LOADING" }
+  | { type: "STOP_LOADING" }
+  | { type: "START_GOOGLE_LOADING" };
+
+const initialState: State = {
+  email: "",
+  error: null,
+  isGoogleLoading: false,
+  isLoading: false,
+  password: "",
+};
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case "SET_EMAIL":
+      return { ...state, email: action.payload };
+    case "SET_PASSWORD":
+      return { ...state, password: action.payload };
+    case "SET_ERROR":
+      return { ...state, error: action.payload };
+    case "START_LOADING":
+      return { ...state, error: null, isLoading: true };
+    case "STOP_LOADING":
+      return { ...state, isLoading: false };
+    case "START_GOOGLE_LOADING":
+      return { ...state, error: null, isGoogleLoading: true };
+    default:
+      return state;
+  }
+}
+
 export function LoginForm() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { email, password, error, isLoading, isGoogleLoading } = state;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setIsLoading(true);
+    dispatch({ type: "START_LOADING" });
 
     await authClient.signIn.email(
       {
@@ -30,8 +69,11 @@ export function LoginForm() {
       },
       {
         onError: (ctx) => {
-          setError(ctx.error.message || "Invalid email or password");
-          setIsLoading(false);
+          dispatch({
+            payload: ctx.error.message || "Invalid email or password",
+            type: "SET_ERROR",
+          });
+          dispatch({ type: "STOP_LOADING" });
         },
         onSuccess: () => {
           router.push("/");
@@ -42,8 +84,7 @@ export function LoginForm() {
   };
 
   const handleGoogleSignIn = async () => {
-    setError(null);
-    setIsGoogleLoading(true);
+    dispatch({ type: "START_GOOGLE_LOADING" });
 
     await authClient.signIn.social({
       callbackURL: "/",
@@ -60,7 +101,9 @@ export function LoginForm() {
           <Input
             autoComplete="email"
             id="email"
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) =>
+              dispatch({ payload: e.target.value, type: "SET_EMAIL" })
+            }
             placeholder="athlete@example.com"
             required
             type="email"
@@ -73,7 +116,9 @@ export function LoginForm() {
           <Input
             autoComplete="current-password"
             id="password"
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) =>
+              dispatch({ payload: e.target.value, type: "SET_PASSWORD" })
+            }
             placeholder="Enter your password"
             required
             type="password"

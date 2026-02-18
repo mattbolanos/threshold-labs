@@ -15,15 +15,7 @@ if (!convexSiteUrl) {
   );
 }
 
-export const {
-  handler,
-  preloadAuthQuery,
-  isAuthenticated,
-  getToken,
-  fetchAuthQuery,
-  fetchAuthMutation,
-  fetchAuthAction,
-} = convexBetterAuthNextJs({
+export const { handler, isAuthenticated, getToken } = convexBetterAuthNextJs({
   convexSiteUrl,
   convexUrl,
 });

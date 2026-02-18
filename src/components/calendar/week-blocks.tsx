@@ -2,7 +2,14 @@
 
 import { useQuery } from "convex/react";
 import { addDays, isSameDay } from "date-fns";
-import { AnimatePresence, motion, type Variants } from "framer-motion";
+import {
+  AnimatePresence,
+  domAnimation,
+  LazyMotion,
+  m,
+  useReducedMotion,
+  type Variants,
+} from "framer-motion";
 import { Block } from "@/components/block/block";
 import { EmptyWeekState } from "@/components/block/empty-week-state";
 import { WeekSummary } from "@/components/block/week-summary";
@@ -71,8 +78,27 @@ const emptyStateVariants = {
   },
 };
 
+const reducedContainerVariants = {
+  exit: { opacity: 0 },
+  hidden: { opacity: 0 },
+  visible: { opacity: 1 },
+};
+
+const reducedCardVariants = {
+  exit: { opacity: 0 },
+  hidden: { opacity: 0 },
+  visible: { opacity: 1 },
+};
+
+const reducedEmptyStateVariants = {
+  exit: { opacity: 0 },
+  hidden: { opacity: 0 },
+  visible: { opacity: 1 },
+};
+
 export function WeekBlocks() {
   const { weekStartDate } = useCalendarNav();
+  const shouldReduceMotion = useReducedMotion();
 
   const data = useQuery(api.workouts.getWorkouts, {
     from: formatQueryDate(weekStartDate),
@@ -81,91 +107,123 @@ export function WeekBlocks() {
 
   const weekDays = getWeekDays(weekStartDate);
 
-  // Calculate card index for staggered animation across all days
-  let globalCardIndex = 0;
+  const containerAnimationVariants = shouldReduceMotion
+    ? reducedContainerVariants
+    : containerVariants;
+  const cardAnimationVariants = shouldReduceMotion
+    ? reducedCardVariants
+    : cardVariants;
+  const emptyAnimationVariants = shouldReduceMotion
+    ? reducedEmptyStateVariants
+    : emptyStateVariants;
 
-  if (data === undefined) return;
+  if (data === undefined) return null;
+
+  const workoutsByDay = data.reduce<Record<string, typeof data>>(
+    (acc, workout) => {
+      const dayWorkouts = acc[workout.workoutDate] ?? [];
+      dayWorkouts.push(workout);
+      acc[workout.workoutDate] = dayWorkouts;
+      return acc;
+    },
+    {},
+  );
+
+  const dayStartIndices = weekDays.reduce<Record<string, number>>(
+    (acc, day, index) => {
+      const dayString = formatQueryDate(day);
+
+      if (index === 0) {
+        acc[dayString] = 0;
+        return acc;
+      }
+
+      const previousDay = weekDays[index - 1];
+      const previousDayString = formatQueryDate(previousDay);
+      const previousDayCount = workoutsByDay[previousDayString]?.length ?? 0;
+      acc[dayString] = (acc[previousDayString] ?? 0) + previousDayCount;
+      return acc;
+    },
+    {},
+  );
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-7 lg:gap-2">
-      <WeekSummary
-        className="mb-1 lg:hidden"
-        key={weekStartDate.toISOString()}
-        workouts={data}
-      />
-      <AnimatePresence mode="wait">
-        {data.length === 0 ? (
-          <motion.div
-            animate="visible"
-            className="w-full lg:col-span-7 lg:mt-2"
-            exit="exit"
-            initial="hidden"
-            key="empty"
-            variants={emptyStateVariants}
-          >
-            <EmptyWeekState />
-          </motion.div>
-        ) : (
-          <motion.div
-            animate="visible"
-            className="contents w-full"
-            exit="exit"
-            initial="hidden"
-            key={weekStartDate.toISOString()}
-            variants={containerVariants}
-          >
-            {weekDays.map((day) => {
-              const dayString = formatQueryDate(day);
-              const dayWorkouts = data.filter(
-                (workout) => workout.workoutDate === dayString,
-              );
-              const isToday = isSameDay(new Date(), day);
+    <LazyMotion features={domAnimation}>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-7 lg:gap-2">
+        <WeekSummary
+          className="mb-1 lg:hidden"
+          key={weekStartDate.toISOString()}
+          workouts={data}
+        />
+        <AnimatePresence mode="wait">
+          {data.length === 0 ? (
+            <m.div
+              animate="visible"
+              className="w-full lg:col-span-7 lg:mt-2"
+              exit="exit"
+              initial="hidden"
+              key="empty"
+              variants={emptyAnimationVariants}
+            >
+              <EmptyWeekState />
+            </m.div>
+          ) : (
+            <m.div
+              animate="visible"
+              className="contents w-full"
+              exit="exit"
+              initial="hidden"
+              key={weekStartDate.toISOString()}
+              variants={containerAnimationVariants}
+            >
+              {weekDays.map((day) => {
+                const dayString = formatQueryDate(day);
+                const dayWorkouts = workoutsByDay[dayString] ?? [];
+                const isToday = isSameDay(new Date(), day);
+                const dayStartIndex = dayStartIndices[dayString] ?? 0;
 
-              // Track starting index for this day's cards
-              const dayStartIndex = globalCardIndex;
-              globalCardIndex += dayWorkouts.length;
-
-              return (
-                <motion.div
-                  className={cn("w-full flex-col gap-2")}
-                  key={dayString}
-                  variants={{
-                    exit: { opacity: 0 },
-                    hidden: { opacity: 0 },
-                    visible: { opacity: 1 },
-                  }}
-                >
-                  <h3
-                    className={cn(
-                      "pb-2 text-sm font-semibold lg:hidden",
-                      isToday && "text-primary",
-                    )}
+                return (
+                  <m.div
+                    className={cn("w-full flex-col gap-2")}
+                    key={dayString}
+                    variants={{
+                      exit: { opacity: 0 },
+                      hidden: { opacity: 0 },
+                      visible: { opacity: 1 },
+                    }}
                   >
-                    {day.toLocaleDateString("en-US", {
-                      day: "numeric",
-                      month: "short",
-                      weekday: "long",
-                      year: "numeric",
-                    })}
-                  </h3>
-                  <div className="flex w-full flex-col gap-2">
-                    {dayWorkouts.map((workout, workoutIndex) => (
-                      <motion.div
-                        className="w-full"
-                        custom={dayStartIndex + workoutIndex}
-                        key={workout._id.toString()}
-                        variants={cardVariants as Variants}
-                      >
-                        <Block className="w-full" workout={workout} />
-                      </motion.div>
-                    ))}
-                  </div>
-                </motion.div>
-              );
-            })}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+                    <h3
+                      className={cn(
+                        "pb-2 text-sm font-semibold lg:hidden",
+                        isToday && "text-primary",
+                      )}
+                    >
+                      {day.toLocaleDateString("en-US", {
+                        day: "numeric",
+                        month: "short",
+                        weekday: "long",
+                        year: "numeric",
+                      })}
+                    </h3>
+                    <div className="flex w-full flex-col gap-2">
+                      {dayWorkouts.map((workout, workoutIndex) => (
+                        <m.div
+                          className="w-full"
+                          custom={dayStartIndex + workoutIndex}
+                          key={workout._id.toString()}
+                          variants={cardAnimationVariants as Variants}
+                        >
+                          <Block className="w-full" workout={workout} />
+                        </m.div>
+                      ))}
+                    </div>
+                  </m.div>
+                );
+              })}
+            </m.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </LazyMotion>
   );
 }

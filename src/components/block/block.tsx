@@ -73,18 +73,17 @@ const BaseCard = ({ workout, tagConfig, className }: BlockProps) => (
 );
 
 export function Block({ workout, className }: BlockProps) {
-  const Content = () => <BlockContent workout={workout} />;
   const tagConfig = TAG_CONFIG.find((t) => t.tag === workout.tags[0]);
-
-  const CardTrigger = () => (
-    <BaseCard className={className} tagConfig={tagConfig} workout={workout} />
-  );
 
   return (
     <>
       <Dialog>
         <DialogTrigger className="hidden w-full sm:inline-flex">
-          <CardTrigger />
+          <BaseCard
+            className={className}
+            tagConfig={tagConfig}
+            workout={workout}
+          />
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
@@ -100,12 +99,16 @@ export function Block({ workout, className }: BlockProps) {
               <span className="text-left leading-snug">{workout.title}</span>
             </DialogTitle>
           </DialogHeader>
-          <Content />
+          <BlockContent workout={workout} />
         </DialogContent>
       </Dialog>
       <Drawer>
         <DrawerTrigger className="inline-flex w-full sm:hidden">
-          <CardTrigger />
+          <BaseCard
+            className={className}
+            tagConfig={tagConfig}
+            workout={workout}
+          />
         </DrawerTrigger>
         <DrawerContent>
           <DrawerHeader>
@@ -121,7 +124,7 @@ export function Block({ workout, className }: BlockProps) {
               <span className="text-left leading-snug">{workout.title}</span>
             </DrawerTitle>
           </DrawerHeader>
-          <Content />
+          <BlockContent workout={workout} />
           <DrawerFooter>
             <DrawerClose asChild>
               <Button size="lg">Close</Button>

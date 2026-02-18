@@ -1,4 +1,4 @@
-export type ColorUtility = "bg" | "stroke" | "fill" | "text";
+type ColorUtility = "bg" | "stroke" | "fill" | "text";
 
 export const chartColors = {
   "chart-1": {

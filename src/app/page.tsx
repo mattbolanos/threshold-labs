@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { ROLLING_LOAD_DEFINITIONS, RUN_MIX_DEFINITIONS } from "@/app/constants";
 import { DayHeaders } from "@/components/calendar/day-headers";
 import { WeekBlocks } from "@/components/calendar/week-blocks";
@@ -9,6 +10,12 @@ import { RollingLoadChart } from "@/components/chart/rolling-load";
 import { RunMixChart } from "@/components/chart/run-mix";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { checkAuth } from "@/lib/auth";
+
+export const metadata: Metadata = {
+  description:
+    "Review your training overview with run mix, load trends, and weekly workout schedule.",
+  title: "Training Overview | Threshold Lab",
+};
 
 export default async function Home() {
   await checkAuth();

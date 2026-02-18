@@ -29,6 +29,8 @@ import {
 } from "@/lib/chart-utils";
 import { cn } from "@/lib/utils";
 
+const defaultValueFormatter = (value: number): string => value.toString();
+
 //#region Shape
 function deepEqual<T>(obj1: T, obj2: T): boolean {
   if (obj1 === obj2) return true;
@@ -339,7 +341,7 @@ const Legend = React.forwardRef<HTMLOListElement, LegendProps>((props, ref) => {
         )}
         ref={scrollableRef}
       >
-        {categories.map((category, index) => {
+        {categories.map((category) => {
           const barColor = barCategoryColors.get(category.name);
           const lineColor = lineCategoryColors.get(category.name);
           return (
@@ -347,8 +349,7 @@ const Legend = React.forwardRef<HTMLOListElement, LegendProps>((props, ref) => {
               activeLegend={activeLegend}
               chartType={category.chartType}
               color={category.chartType === "bar" ? barColor : lineColor}
-              // biome-ignore lint/suspicious/noArrayIndexKey: <tremor>
-              key={`item-${index}`}
+              key={`${category.chartType}-${category.name}`}
               label={category.label ?? category.name}
               name={category.name}
               onClick={onClickLegendItem}
@@ -491,8 +492,8 @@ const ChartTooltip = ({
   payload,
   label,
   labelFormatter,
-  barValueFormatter = (value: number): string => value.toString(),
-  lineValueFormatter = (value: number): string => value.toString(),
+  barValueFormatter = defaultValueFormatter,
+  lineValueFormatter = defaultValueFormatter,
 }: ChartTooltipProps) => {
   if (active && payload && payload.length) {
     const filteredPayload = payload.filter((item: any) => item.type !== "none");
@@ -521,11 +522,17 @@ const ChartTooltip = ({
         </div>
         <div className={cn("space-y-1 px-4 py-2")}>
           {filteredPayload.map(
-            ({ value, category, barColor, lineColor, chartType }, index) => (
+            ({
+              value,
+              category,
+              barColor,
+              lineColor,
+              chartType,
+              dataKey,
+            }) => (
               <div
                 className="flex items-center justify-between space-x-8"
-                // biome-ignore lint/suspicious/noArrayIndexKey: <tremor>
-                key={`id-${index}`}
+                key={`${chartType}-${category}-${dataKey}`}
               >
                 <div className="flex items-center space-x-2">
                   <div className="flex w-5 items-center justify-center">
@@ -647,7 +654,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
       showYAxis: true,
       tooltipLabelFormatter: undefined,
       type: "default",
-      valueFormatter: (value: number) => value.toString(),
+      valueFormatter: defaultValueFormatter,
       xTicksFormatter: undefined,
       yAxisLabel: undefined,
       yAxisWidth: 56,
@@ -834,8 +841,8 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
     return (
       <div
         className={cn("h-64 w-full sm:h-80", className)}
+        data-tremor-id="tremor-raw"
         ref={forwardedRef}
-        tremor-id="tremor-raw"
         {...other}
       >
         <ResponsiveContainer debounce={300}>
@@ -1175,6 +1182,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                     dataKey,
                     index,
                   } = props;
+                  const pointKey = `${String(dataKey)}-${String(cxCoord)}-${String(cyCoord)}`;
 
                   if (
                     (hasOnlyOneValueForKey(data, category) &&
@@ -1200,7 +1208,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                         cx={cxCoord}
                         cy={cyCoord}
                         fill=""
-                        key={index}
+                        key={pointKey}
                         r={5}
                         stroke={stroke}
                         strokeLinecap={strokeLinecap}
@@ -1209,7 +1217,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                       />
                     );
                   }
-                  return <React.Fragment key={index}></React.Fragment>;
+                  return <React.Fragment key={pointKey}></React.Fragment>;
                 }}
                 isAnimationActive={true}
                 key={`${category}-line-id`}

@@ -1,10 +1,8 @@
-import { addWeeks, startOfWeek } from "date-fns";
 import {
   type AvailableChartColorsKeys,
   chartColors,
   getColorClassName,
 } from "@/lib/chart-utils";
-import { formatQueryDate } from "@/lib/utils";
 
 export type RunMixCategory =
   | "aerobicMiles"
@@ -12,13 +10,6 @@ export type RunMixCategory =
   | "lt1Miles"
   | "lt2Miles"
   | "vo2Miles";
-
-export const DEFAULT_CHART_RANGE = {
-  from: formatQueryDate(
-    addWeeks(startOfWeek(new Date(), { weekStartsOn: 1 }), -18),
-  ),
-  to: formatQueryDate(new Date()),
-};
 
 export const RUN_MIX_CATEGORY_LABELS: Record<RunMixCategory, string> = {
   aerobicMiles: "Aerobic Miles",

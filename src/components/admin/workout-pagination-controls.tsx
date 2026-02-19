@@ -1,6 +1,7 @@
 import type { Table } from "@tanstack/react-table";
 import { useId } from "react";
 import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "../ui/button-group";
 import type { Workout } from "./workout-form-utils";
 
 type WorkoutPaginationControlsProps = {
@@ -47,24 +48,24 @@ export function WorkoutPaginationControls({
             </option>
           ))}
         </select>
-        <Button
-          className="min-h-11"
-          disabled={!table.getCanPreviousPage()}
-          onClick={() => table.previousPage()}
-          type="button"
-          variant="outline"
-        >
-          Previous
-        </Button>
-        <Button
-          className="min-h-11"
-          disabled={!table.getCanNextPage()}
-          onClick={() => table.nextPage()}
-          type="button"
-          variant="outline"
-        >
-          Next
-        </Button>
+        <ButtonGroup>
+          <Button
+            disabled={!table.getCanPreviousPage()}
+            onClick={() => table.previousPage()}
+            type="button"
+            variant="outline"
+          >
+            Previous
+          </Button>
+          <Button
+            disabled={!table.getCanNextPage()}
+            onClick={() => table.nextPage()}
+            type="button"
+            variant="outline"
+          >
+            Next
+          </Button>
+        </ButtonGroup>
         <p className="text-muted-foreground w-20 text-center text-xs sm:text-sm">
           Page {pageIndex + 1}/{pageCount}
         </p>

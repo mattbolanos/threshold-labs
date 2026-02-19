@@ -7,12 +7,13 @@ import {
   IconLoader2,
   IconPlus,
 } from "@tabler/icons-react";
+import { useForm } from "@tanstack/react-form";
 import type { Preloaded } from "convex/react";
 import { useMutation, useQuery } from "convex/react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { redirect, useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import type { api } from "../../../convex/_generated/api";
@@ -23,6 +24,7 @@ import {
   EMPTY_WORKOUT_FORM,
   toWorkoutFormState,
   validateWorkoutForm,
+  type Workout,
   type WorkoutFormState,
 } from "./workout-form-utils";
 
@@ -79,37 +81,41 @@ function CreateWorkoutForm() {
   const router = useRouter();
   const createWorkout = useMutation(convexApi.workouts.createWorkout);
 
-  const [form, setForm] = useState<WorkoutFormState>(EMPTY_WORKOUT_FORM);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleFieldChange = <K extends keyof WorkoutFormState>(
+  const form = useForm({
+    defaultValues: EMPTY_WORKOUT_FORM,
+    onSubmit: async ({ value }) => {
+      setErrorMessage(null);
+
+      const validation = validateWorkoutForm(value);
+      if (!validation.workout) {
+        setErrorMessage(validation.errors[0] ?? "Please fix form errors.");
+        return;
+      }
+
+      try {
+        await withMinimumDuration(
+          createWorkout({ workout: validation.workout }),
+        );
+        router.push("/admin");
+      } catch (error) {
+        setErrorMessage(
+          error instanceof Error ? error.message : "Failed to create workout.",
+        );
+      }
+    },
+  });
+
+  const handleCreateSubmit = async () => {
+    await form.handleSubmit();
+  };
+
+  const setWorkoutField = <K extends keyof WorkoutFormState>(
     field: K,
     value: WorkoutFormState[K],
   ) => {
-    setForm((previous) => ({ ...previous, [field]: value }));
-  };
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setErrorMessage(null);
-
-    const validation = validateWorkoutForm(form);
-    if (!validation.workout) {
-      setErrorMessage(validation.errors[0] ?? "Please fix form errors.");
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      await withMinimumDuration(createWorkout({ workout: validation.workout }));
-      router.push("/admin");
-    } catch (error) {
-      setErrorMessage(
-        error instanceof Error ? error.message : "Failed to create workout.",
-      );
-      setIsSubmitting(false);
-    }
+    form.setFieldValue(field as never, value as never);
   };
 
   return (
@@ -126,7 +132,7 @@ function CreateWorkoutForm() {
 
       {errorMessage ? (
         <div
-          className="route-padding-x bg-destructive/10 text-destructive rounded-lg border border-destructive/30 px-4 py-3 text-sm"
+          className="route-padding-x bg-destructive/10 text-destructive border-destructive/30 rounded-lg border px-4 py-3 text-sm"
           role="alert"
         >
           {errorMessage}
@@ -147,40 +153,51 @@ function CreateWorkoutForm() {
 
       <div className="route-padding-x border-primary/20 relative border-t pt-4">
         <div className="bg-primary/40 absolute top-0 left-5 h-0.5 w-16 md:left-8" />
-        <form className="mx-auto max-w-4xl space-y-5" onSubmit={handleSubmit}>
-          <WorkoutEditorFields
-            form={form}
-            idPrefix="create-workout"
-            onChange={handleFieldChange}
-          />
+        <form
+          action={handleCreateSubmit}
+          className="mx-auto max-w-4xl space-y-5"
+        >
+          <form.Subscribe selector={(state) => state.values}>
+            {(values) => (
+              <WorkoutEditorFields
+                form={values}
+                idPrefix="create-workout"
+                onChange={setWorkoutField}
+              />
+            )}
+          </form.Subscribe>
 
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            <Button
-              className="min-h-11"
-              onClick={() => router.push("/admin")}
-              type="button"
-              variant="ghost"
-            >
-              Cancel
-            </Button>
-            <Button
-              className="min-h-11 min-w-36"
-              disabled={isSubmitting}
-              type="submit"
-            >
-              {isSubmitting ? (
-                <>
-                  <IconLoader2 aria-hidden className="animate-spin" />
-                  <span>Creating…</span>
-                </>
-              ) : (
-                <>
-                  <IconPlus aria-hidden />
-                  <span>Create Workout</span>
-                </>
-              )}
-            </Button>
-          </div>
+          <form.Subscribe selector={(state) => state.isSubmitting}>
+            {(isSubmitting) => (
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                <Button
+                  className="min-h-11"
+                  onClick={() => router.push("/admin")}
+                  type="button"
+                  variant="ghost"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="min-h-11 min-w-36"
+                  disabled={isSubmitting}
+                  type="submit"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <IconLoader2 aria-hidden className="animate-spin" />
+                      <span>Creating…</span>
+                    </>
+                  ) : (
+                    <>
+                      <IconPlus aria-hidden />
+                      <span>Create Workout</span>
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
+          </form.Subscribe>
         </form>
       </div>
     </motion.div>
@@ -188,65 +205,9 @@ function CreateWorkoutForm() {
 }
 
 function EditWorkoutForm({ workoutId }: { workoutId: string }) {
-  const router = useRouter();
-  const updateWorkout = useMutation(convexApi.workouts.updateWorkout);
-
   const workout = useQuery(convexApi.workouts.getWorkoutById, {
     workoutId: workoutId as Id<"workouts">,
   });
-
-  const initializedForRef = useRef<string | null>(null);
-  const [form, setForm] = useState<WorkoutFormState | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [showSaved, setShowSaved] = useState(false);
-
-  // Seed form state once when workout first arrives
-  if (workout && initializedForRef.current !== workoutId) {
-    initializedForRef.current = workoutId;
-    setForm(toWorkoutFormState(workout));
-  }
-
-  const handleFieldChange = <K extends keyof WorkoutFormState>(
-    field: K,
-    value: WorkoutFormState[K],
-  ) => {
-    setForm((previous) => {
-      if (!previous) return previous;
-      return { ...previous, [field]: value };
-    });
-  };
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setErrorMessage(null);
-
-    if (!workout || !form) return;
-
-    const validation = validateWorkoutForm(form);
-    if (!validation.workout) {
-      setErrorMessage(validation.errors[0] ?? "Please fix form errors.");
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      await withMinimumDuration(
-        updateWorkout({
-          workout: validation.workout,
-          workoutId: workout._id,
-        }),
-      );
-      setIsSubmitting(false);
-      setShowSaved(true);
-      setTimeout(() => setShowSaved(false), 2000);
-    } catch (error) {
-      setErrorMessage(
-        error instanceof Error ? error.message : "Failed to update workout.",
-      );
-      setIsSubmitting(false);
-    }
-  };
 
   if (workout === undefined) {
     return (
@@ -297,7 +258,53 @@ function EditWorkoutForm({ workoutId }: { workoutId: string }) {
     );
   }
 
-  const activeForm = form ?? toWorkoutFormState(workout);
+  return <LoadedEditWorkoutForm key={workoutId} workout={workout} />;
+}
+
+function LoadedEditWorkoutForm({ workout }: { workout: Workout }) {
+  const router = useRouter();
+  const updateWorkout = useMutation(convexApi.workouts.updateWorkout);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showSaved, setShowSaved] = useState(false);
+
+  const form = useForm({
+    defaultValues: toWorkoutFormState(workout),
+    onSubmit: async ({ value }) => {
+      setErrorMessage(null);
+
+      const validation = validateWorkoutForm(value);
+      if (!validation.workout) {
+        setErrorMessage(validation.errors[0] ?? "Please fix form errors.");
+        return;
+      }
+
+      try {
+        await withMinimumDuration(
+          updateWorkout({
+            workout: validation.workout,
+            workoutId: workout._id,
+          }),
+        );
+        setShowSaved(true);
+        setTimeout(() => setShowSaved(false), 2000);
+      } catch (error) {
+        setErrorMessage(
+          error instanceof Error ? error.message : "Failed to update workout.",
+        );
+      }
+    },
+  });
+
+  const handleEditSubmit = async () => {
+    await form.handleSubmit();
+  };
+
+  const setWorkoutField = <K extends keyof WorkoutFormState>(
+    field: K,
+    value: WorkoutFormState[K],
+  ) => {
+    form.setFieldValue(field as never, value as never);
+  };
 
   return (
     <motion.div {...fadeIn} className="flex w-full flex-col gap-6">
@@ -313,7 +320,7 @@ function EditWorkoutForm({ workoutId }: { workoutId: string }) {
 
       {errorMessage ? (
         <div
-          className="route-padding-x bg-destructive/10 text-destructive rounded-lg border border-destructive/30 px-4 py-3 text-sm"
+          className="route-padding-x bg-destructive/10 text-destructive border-destructive/30 rounded-lg border px-4 py-3 text-sm"
           role="alert"
         >
           {errorMessage}
@@ -334,65 +341,75 @@ function EditWorkoutForm({ workoutId }: { workoutId: string }) {
 
       <div className="route-padding-x border-primary/20 relative border-t pt-4">
         <div className="bg-primary/40 absolute top-0 left-5 h-0.5 w-16 md:left-8" />
-        <form className="mx-auto max-w-4xl space-y-5" onSubmit={handleSubmit}>
-          <div className="space-y-2">
-            <Label
-              className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-md border px-3 py-2"
-              htmlFor="edit-hidden"
-            >
-              <input
-                checked={activeForm.isHidden}
-                id="edit-hidden"
-                onChange={(event) =>
-                  handleFieldChange("isHidden", event.target.checked)
-                }
-                type="checkbox"
-              />
-              <span>Hidden Workout</span>
-            </Label>
-            <p className="text-muted-foreground text-xs">
-              Hidden workouts are excluded from all user-facing queries.
-            </p>
-          </div>
+        <form action={handleEditSubmit} className="mx-auto max-w-4xl space-y-5">
+          <form.Subscribe selector={(state) => state.values}>
+            {(values) => (
+              <>
+                <div className="space-y-2">
+                  <Label
+                    className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-md border px-3 py-2"
+                    htmlFor="edit-hidden"
+                  >
+                    <input
+                      checked={values.isHidden}
+                      id="edit-hidden"
+                      onChange={(event) =>
+                        setWorkoutField("isHidden", event.target.checked)
+                      }
+                      type="checkbox"
+                    />
+                    <span>Hidden Workout</span>
+                  </Label>
+                  <p className="text-muted-foreground text-xs">
+                    Hidden workouts are excluded from all user-facing queries.
+                  </p>
+                </div>
 
-          <WorkoutEditorFields
-            form={activeForm}
-            idPrefix="edit-workout"
-            onChange={handleFieldChange}
-          />
+                <WorkoutEditorFields
+                  form={values}
+                  idPrefix="edit-workout"
+                  onChange={setWorkoutField}
+                />
+              </>
+            )}
+          </form.Subscribe>
 
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            <Button
-              className="min-h-11"
-              onClick={() => router.push("/admin")}
-              type="button"
-              variant="ghost"
-            >
-              Cancel
-            </Button>
-            <Button
-              className="min-h-11 min-w-36"
-              disabled={isSubmitting}
-              type="submit"
-            >
-              {showSaved ? (
-                <>
-                  <IconCheck aria-hidden />
-                  <span>Saved</span>
-                </>
-              ) : isSubmitting ? (
-                <>
-                  <IconLoader2 aria-hidden className="animate-spin" />
-                  <span>Saving…</span>
-                </>
-              ) : (
-                <>
-                  <IconCheck aria-hidden />
-                  <span>Save Changes</span>
-                </>
-              )}
-            </Button>
-          </div>
+          <form.Subscribe selector={(state) => state.isSubmitting}>
+            {(isSubmitting) => (
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                <Button
+                  className="min-h-11"
+                  onClick={() => router.push("/admin")}
+                  type="button"
+                  variant="ghost"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="min-h-11 min-w-36"
+                  disabled={isSubmitting}
+                  type="submit"
+                >
+                  {showSaved ? (
+                    <>
+                      <IconCheck aria-hidden />
+                      <span>Saved</span>
+                    </>
+                  ) : isSubmitting ? (
+                    <>
+                      <IconLoader2 aria-hidden className="animate-spin" />
+                      <span>Saving…</span>
+                    </>
+                  ) : (
+                    <>
+                      <IconCheck aria-hidden />
+                      <span>Save Changes</span>
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
+          </form.Subscribe>
         </form>
       </div>
     </motion.div>

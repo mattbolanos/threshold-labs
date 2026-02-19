@@ -1,3 +1,4 @@
+import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
 import type { Table } from "@tanstack/react-table";
 import { useId } from "react";
 import { Button } from "@/components/ui/button";
@@ -52,18 +53,20 @@ export function WorkoutPaginationControls({
           <Button
             disabled={!table.getCanPreviousPage()}
             onClick={() => table.previousPage()}
+            size="icon"
             type="button"
             variant="outline"
           >
-            Previous
+            <IconArrowNarrowLeft className="size-5" />
           </Button>
           <Button
             disabled={!table.getCanNextPage()}
             onClick={() => table.nextPage()}
+            size="icon"
             type="button"
             variant="outline"
           >
-            Next
+            <IconArrowNarrowRight className="size-5" />
           </Button>
         </ButtonGroup>
         <p className="text-muted-foreground w-20 text-center text-xs sm:text-sm">

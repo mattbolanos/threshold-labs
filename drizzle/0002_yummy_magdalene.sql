@@ -1,1 +1,0 @@
-ALTER TABLE "thlab"."workouts" ALTER COLUMN "cardio_minutes" SET DATA TYPE real;

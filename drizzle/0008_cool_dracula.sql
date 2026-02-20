@@ -1,1 +1,0 @@
-ALTER TABLE "thlab"."workouts" DROP COLUMN "subjective_training_load";

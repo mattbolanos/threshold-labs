@@ -1,1 +1,0 @@
-ALTER TABLE "thlab"."workouts" ADD COLUMN "tags" text[] DEFAULT '{}' NOT NULL;

@@ -7,9 +7,7 @@ export default defineSchema({
     emailLower: v.string(),
     isActive: v.boolean(),
     name: v.optional(v.string()),
-    role: v.optional(
-      v.union(v.literal("admin"), v.literal("client"), v.literal("coach")),
-    ),
+    role: v.union(v.literal("admin"), v.literal("client"), v.literal("coach")),
   }).index("by_email_lower", ["emailLower"]),
 
   workouts: defineTable({

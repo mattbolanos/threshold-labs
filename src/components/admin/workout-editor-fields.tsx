@@ -12,6 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { TAG_CONFIG } from "@/components/workouts/tag-config";
 import { cn } from "@/lib/utils";
 import {
   METRIC_FIELD_CONFIG,
@@ -133,22 +134,35 @@ export function WorkoutEditorFields({
         </div>
 
         <div className="space-y-1.5 sm:col-span-2">
-          <Label htmlFor={`${idPrefix}-tags`}>
+          <Label>
             Tags <span className="text-destructive">*</span>
           </Label>
-          <Input
-            autoComplete="off"
-            className="min-h-11"
-            id={`${idPrefix}-tags`}
-            name={`${idPrefix}-tags`}
-            onChange={(event) => onChange("tags", event.target.value)}
-            placeholder="Aerobic Run, Strength…"
-            required
-            value={form.tags}
-          />
-          <p className="text-muted-foreground text-xs">
-            Separate tags with commas.
-          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {TAG_CONFIG.map((tagConfig) => {
+              const isSelected = form.tags.includes(tagConfig.tag);
+              return (
+                <button
+                  className={cn(
+                    "inline-flex items-center gap-1 rounded-[6px] border px-2 py-1 text-[13px] font-medium transition-colors",
+                    isSelected
+                      ? cn("border-transparent", tagConfig.color)
+                      : "border-border text-muted-foreground hover:bg-muted",
+                  )}
+                  key={tagConfig.tag}
+                  onClick={() => {
+                    const next = isSelected
+                      ? form.tags.filter((t) => t !== tagConfig.tag)
+                      : [...form.tags, tagConfig.tag];
+                    onChange("tags", next);
+                  }}
+                  type="button"
+                >
+                  <tagConfig.icon aria-hidden className="size-3.5" />
+                  {tagConfig.tag}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <div className="space-y-1.5 sm:col-span-2">

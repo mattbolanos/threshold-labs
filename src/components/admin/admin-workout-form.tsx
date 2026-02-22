@@ -286,7 +286,8 @@ function LoadedEditWorkoutForm({ workout }: { workout: Workout }) {
           }),
         );
         setShowSaved(true);
-        setTimeout(() => setShowSaved(false), 2000);
+        await wait(1000);
+        router.push("/admin");
       } catch (error) {
         setErrorMessage(
           error instanceof Error ? error.message : "Failed to update workout.",
@@ -374,8 +375,13 @@ function LoadedEditWorkoutForm({ workout }: { workout: Workout }) {
             )}
           </form.Subscribe>
 
-          <form.Subscribe selector={(state) => state.isSubmitting}>
-            {(isSubmitting) => (
+          <form.Subscribe
+            selector={(state) => ({
+              isDirty: state.isDirty,
+              isSubmitting: state.isSubmitting,
+            })}
+          >
+            {({ isDirty, isSubmitting }) => (
               <div className="flex flex-wrap items-center justify-end gap-2">
                 <Button
                   className="min-h-11"
@@ -387,13 +393,13 @@ function LoadedEditWorkoutForm({ workout }: { workout: Workout }) {
                 </Button>
                 <Button
                   className="min-h-11 min-w-36"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !isDirty || showSaved}
                   type="submit"
                 >
                   {showSaved ? (
                     <>
                       <IconCheck aria-hidden />
-                      <span>Saved</span>
+                      <span>Saved!</span>
                     </>
                   ) : isSubmitting ? (
                     <>

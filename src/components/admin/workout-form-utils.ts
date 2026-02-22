@@ -11,7 +11,7 @@ export type WorkoutFormState = {
   notes: string;
   rpe: string;
   speedMiles: string;
-  tags: string;
+  tags: string[];
   title: string;
   totalBikeMiles: string;
   totalRowKs: string;
@@ -124,7 +124,7 @@ export const EMPTY_WORKOUT_FORM: WorkoutFormState = {
   notes: "",
   rpe: "",
   speedMiles: "",
-  tags: "",
+  tags: [],
   title: "",
   totalBikeMiles: "",
   totalRowKs: "",
@@ -148,7 +148,7 @@ export function toWorkoutFormState(workout: Workout): WorkoutFormState {
     notes: workout.notes ?? "",
     rpe: workout.rpe?.toString() ?? "",
     speedMiles: workout.speedMiles?.toString() ?? "",
-    tags: Array.isArray(workout.tags) ? workout.tags.join(", ") : "",
+    tags: Array.isArray(workout.tags) ? workout.tags : [],
     title: workout.title ?? "",
     totalBikeMiles: workout.totalBikeMiles?.toString() ?? "",
     totalRowKs: workout.totalRowKs?.toString() ?? "",
@@ -226,10 +226,7 @@ export function validateWorkoutForm(form: WorkoutFormState) {
     errors.push("Workout plan is required.");
   }
 
-  const tags = (form.tags ?? "")
-    .split(",")
-    .map((tag) => tag.trim())
-    .filter((tag) => tag.length > 0);
+  const tags = form.tags ?? [];
   if (tags.length === 0) {
     errors.push("At least one tag is required.");
   }

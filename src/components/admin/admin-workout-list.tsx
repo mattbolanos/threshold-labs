@@ -19,6 +19,7 @@ import { parseAsInteger, parseAsString, useQueryState } from "nuqs";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import type { api } from "../../../convex/_generated/api";
 import { api as convexApi } from "../../../convex/_generated/api";
 import { ButtonGroup } from "../ui/button-group";
@@ -479,7 +480,12 @@ export const AdminWorkoutList = ({
                         <tr key={headerGroup.id}>
                           {headerGroup.headers.map((header) => (
                             <th
-                              className="text-muted-foreground px-3 py-2 text-left text-xs font-semibold tracking-wide"
+                              className={cn(
+                                "text-muted-foreground px-3 py-2 text-xs font-semibold tracking-wide",
+                                header.column.columnDef.header === "Actions"
+                                  ? "text-center"
+                                  : "text-left",
+                              )}
                               key={header.id}
                             >
                               {header.isPlaceholder

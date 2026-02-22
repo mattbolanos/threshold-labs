@@ -13,7 +13,13 @@ export const isClientAllowedForSignup = internalQuery({
       .withIndex("by_email_lower", (q) => q.eq("emailLower", normalizedEmail))
       .first();
 
-    return Boolean(client?.isActive);
+    if (!client?.isActive) {
+      return null;
+    }
+
+    return {
+      role: client.role ?? "client",
+    };
   },
 });
 
@@ -29,8 +35,11 @@ export const upsertClientInvite = mutation({
     email: v.string(),
     isActive: v.optional(v.boolean()),
     name: v.optional(v.string()),
+    role: v.optional(
+      v.union(v.literal("admin"), v.literal("client"), v.literal("coach")),
+    ),
   },
-  handler: async (ctx, { email, isActive, name }) => {
+  handler: async (ctx, { email, isActive, name, role }) => {
     const normalizedEmail = email.trim().toLowerCase();
     const existing = await ctx.db
       .query("clients")
@@ -42,6 +51,7 @@ export const upsertClientInvite = mutation({
         email: email.trim(),
         isActive: isActive ?? existing.isActive,
         name,
+        role: role ?? existing.role ?? "client",
       });
       return existing._id;
     }
@@ -51,6 +61,7 @@ export const upsertClientInvite = mutation({
       emailLower: normalizedEmail,
       isActive: isActive ?? true,
       name,
+      role: role ?? "client",
     });
   },
 });

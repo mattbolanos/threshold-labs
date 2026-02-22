@@ -14,9 +14,11 @@ export default async function EditWorkoutPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  await checkAuth();
-  const { id } = await params;
-  const preloadedUserQuery = await preloadAuthQuery(api.auth.getCurrentUser);
+  const [, { id }, preloadedUserQuery] = await Promise.all([
+    checkAuth(),
+    params,
+    preloadAuthQuery(api.auth.getCurrentUser),
+  ]);
 
   return (
     <AdminWorkoutForm

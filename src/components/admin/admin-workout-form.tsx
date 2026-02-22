@@ -10,7 +10,7 @@ import {
 import { useForm } from "@tanstack/react-form";
 import type { Preloaded } from "convex/react";
 import { useMutation, useQuery } from "convex/react";
-import { motion } from "framer-motion";
+import { domAnimation, LazyMotion, m } from "framer-motion";
 import Link from "next/link";
 import { redirect, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -119,88 +119,92 @@ function CreateWorkoutForm() {
   };
 
   return (
-    <motion.div {...fadeIn} className="flex w-full flex-col gap-6">
-      <div className="route-padding-x">
-        <Link
-          className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm transition-colors"
-          href="/admin"
-        >
-          <IconArrowLeft aria-hidden className="size-4" />
-          Back to Workouts
-        </Link>
-      </div>
-
-      {errorMessage ? (
-        <div
-          className="route-padding-x bg-destructive/10 text-destructive border-destructive/30 rounded-lg border px-4 py-3 text-sm"
-          role="alert"
-        >
-          {errorMessage}
+    <LazyMotion features={domAnimation}>
+      <m.div {...fadeIn} className="flex w-full flex-col gap-6">
+        <div className="route-padding-x">
+          <Link
+            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm transition-colors"
+            href="/admin"
+          >
+            <IconArrowLeft aria-hidden className="size-4" />
+            Back to Workouts
+          </Link>
         </div>
-      ) : null}
 
-      <div className="route-padding-x flex items-end justify-between">
-        <div>
-          <p className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
-            Admin
-          </p>
-          <h2 className="text-lg font-semibold tracking-tight">New Workout</h2>
-          <p className="text-muted-foreground mt-0.5 text-xs">
-            Create a new workout record.
-          </p>
+        {errorMessage ? (
+          <div
+            className="route-padding-x bg-destructive/10 text-destructive border-destructive/30 rounded-lg border px-4 py-3 text-sm"
+            role="alert"
+          >
+            {errorMessage}
+          </div>
+        ) : null}
+
+        <div className="route-padding-x flex items-end justify-between">
+          <div>
+            <p className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
+              Admin
+            </p>
+            <h2 className="text-lg font-semibold tracking-tight">
+              New Workout
+            </h2>
+            <p className="text-muted-foreground mt-0.5 text-xs">
+              Create a new workout record.
+            </p>
+          </div>
         </div>
-      </div>
 
-      <div className="route-padding-x border-primary/20 relative border-t pt-4">
-        <div className="bg-primary/40 absolute top-0 left-5 h-0.5 w-16 md:left-8" />
-        <form
-          action={handleCreateSubmit}
-          className="mx-auto max-w-4xl space-y-5"
-        >
-          <form.Subscribe selector={(state) => state.values}>
-            {(values) => (
-              <WorkoutEditorFields
-                form={values}
-                idPrefix="create-workout"
-                onChange={setWorkoutField}
-              />
-            )}
-          </form.Subscribe>
+        <div className="route-padding-x border-primary/20 relative border-t pt-4">
+          <div className="bg-primary/40 absolute top-0 left-5 h-0.5 w-16 md:left-8" />
+          <form
+            action={handleCreateSubmit}
+            className="mx-auto max-w-4xl space-y-5"
+          >
+            <form.Subscribe selector={(state) => state.values}>
+              {(values) => (
+                <WorkoutEditorFields
+                  form={values}
+                  idPrefix="create-workout"
+                  onChange={setWorkoutField}
+                />
+              )}
+            </form.Subscribe>
 
-          <form.Subscribe selector={(state) => state.isSubmitting}>
-            {(isSubmitting) => (
-              <div className="flex flex-wrap items-center justify-end gap-2">
-                <Button
-                  className="min-h-11"
-                  onClick={() => router.push("/admin")}
-                  type="button"
-                  variant="ghost"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  className="min-h-11 min-w-36"
-                  disabled={isSubmitting}
-                  type="submit"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <IconLoader2 aria-hidden className="animate-spin" />
-                      <span>Creating…</span>
-                    </>
-                  ) : (
-                    <>
-                      <IconPlus aria-hidden />
-                      <span>Create Workout</span>
-                    </>
-                  )}
-                </Button>
-              </div>
-            )}
-          </form.Subscribe>
-        </form>
-      </div>
-    </motion.div>
+            <form.Subscribe selector={(state) => state.isSubmitting}>
+              {(isSubmitting) => (
+                <div className="flex flex-wrap items-center justify-end gap-2">
+                  <Button
+                    className="min-h-11"
+                    onClick={() => router.push("/admin")}
+                    type="button"
+                    variant="ghost"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className="min-h-11 min-w-36"
+                    disabled={isSubmitting}
+                    type="submit"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <IconLoader2 aria-hidden className="animate-spin" />
+                        <span>Creating…</span>
+                      </>
+                    ) : (
+                      <>
+                        <IconPlus aria-hidden />
+                        <span>Create Workout</span>
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
+            </form.Subscribe>
+          </form>
+        </div>
+      </m.div>
+    </LazyMotion>
   );
 }
 
@@ -308,116 +312,123 @@ function LoadedEditWorkoutForm({ workout }: { workout: Workout }) {
   };
 
   return (
-    <motion.div {...fadeIn} className="flex w-full flex-col gap-6">
-      <div className="route-padding-x">
-        <Link
-          className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm transition-colors"
-          href="/admin"
-        >
-          <IconArrowLeft aria-hidden className="size-4" />
-          Back to Workouts
-        </Link>
-      </div>
-
-      {errorMessage ? (
-        <div
-          className="route-padding-x bg-destructive/10 text-destructive border-destructive/30 rounded-lg border px-4 py-3 text-sm"
-          role="alert"
-        >
-          {errorMessage}
-        </div>
-      ) : null}
-
-      <div className="route-padding-x flex items-end justify-between">
-        <div>
-          <p className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
-            Admin
-          </p>
-          <h2 className="text-lg font-semibold tracking-tight">Edit Workout</h2>
-          <p className="text-muted-foreground mt-0.5 text-xs">
-            Update details for this workout entry.
-          </p>
-        </div>
-      </div>
-
-      <div className="route-padding-x border-primary/20 relative border-t pt-4">
-        <div className="bg-primary/40 absolute top-0 left-5 h-0.5 w-16 md:left-8" />
-        <form action={handleEditSubmit} className="mx-auto max-w-4xl space-y-5">
-          <form.Subscribe selector={(state) => state.values}>
-            {(values) => (
-              <>
-                <div className="space-y-2">
-                  <Label
-                    className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-md border px-3 py-2"
-                    htmlFor="edit-hidden"
-                  >
-                    <input
-                      checked={values.isHidden}
-                      id="edit-hidden"
-                      onChange={(event) =>
-                        setWorkoutField("isHidden", event.target.checked)
-                      }
-                      type="checkbox"
-                    />
-                    <span>Hidden Workout</span>
-                  </Label>
-                  <p className="text-muted-foreground text-xs">
-                    Hidden workouts are excluded from all user-facing queries.
-                  </p>
-                </div>
-
-                <WorkoutEditorFields
-                  form={values}
-                  idPrefix="edit-workout"
-                  onChange={setWorkoutField}
-                />
-              </>
-            )}
-          </form.Subscribe>
-
-          <form.Subscribe
-            selector={(state) => ({
-              isDirty: state.isDirty,
-              isSubmitting: state.isSubmitting,
-            })}
+    <LazyMotion features={domAnimation}>
+      <m.div {...fadeIn} className="flex w-full flex-col gap-6">
+        <div className="route-padding-x">
+          <Link
+            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm transition-colors"
+            href="/admin"
           >
-            {({ isDirty, isSubmitting }) => (
-              <div className="flex flex-wrap items-center justify-end gap-2">
-                <Button
-                  className="min-h-11"
-                  onClick={() => router.push("/admin")}
-                  type="button"
-                  variant="ghost"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  className="min-h-11 min-w-36"
-                  disabled={isSubmitting || !isDirty || showSaved}
-                  type="submit"
-                >
-                  {showSaved ? (
-                    <>
-                      <IconCheck aria-hidden />
-                      <span>Saved!</span>
-                    </>
-                  ) : isSubmitting ? (
-                    <>
-                      <IconLoader2 aria-hidden className="animate-spin" />
-                      <span>Saving…</span>
-                    </>
-                  ) : (
-                    <>
-                      <IconCheck aria-hidden />
-                      <span>Save Changes</span>
-                    </>
-                  )}
-                </Button>
-              </div>
-            )}
-          </form.Subscribe>
-        </form>
-      </div>
-    </motion.div>
+            <IconArrowLeft aria-hidden className="size-4" />
+            Back to Workouts
+          </Link>
+        </div>
+
+        {errorMessage ? (
+          <div
+            className="route-padding-x bg-destructive/10 text-destructive border-destructive/30 rounded-lg border px-4 py-3 text-sm"
+            role="alert"
+          >
+            {errorMessage}
+          </div>
+        ) : null}
+
+        <div className="route-padding-x flex items-end justify-between">
+          <div>
+            <p className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
+              Admin
+            </p>
+            <h2 className="text-lg font-semibold tracking-tight">
+              Edit Workout
+            </h2>
+            <p className="text-muted-foreground mt-0.5 text-xs">
+              Update details for this workout entry.
+            </p>
+          </div>
+        </div>
+
+        <div className="route-padding-x border-primary/20 relative border-t pt-4">
+          <div className="bg-primary/40 absolute top-0 left-5 h-0.5 w-16 md:left-8" />
+          <form
+            action={handleEditSubmit}
+            className="mx-auto max-w-4xl space-y-5"
+          >
+            <form.Subscribe selector={(state) => state.values}>
+              {(values) => (
+                <>
+                  <div className="space-y-2">
+                    <Label
+                      className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-md border px-3 py-2"
+                      htmlFor="edit-hidden"
+                    >
+                      <input
+                        checked={values.isHidden}
+                        id="edit-hidden"
+                        onChange={(event) =>
+                          setWorkoutField("isHidden", event.target.checked)
+                        }
+                        type="checkbox"
+                      />
+                      <span>Hidden Workout</span>
+                    </Label>
+                    <p className="text-muted-foreground text-xs">
+                      Hidden workouts are excluded from all user-facing queries.
+                    </p>
+                  </div>
+
+                  <WorkoutEditorFields
+                    form={values}
+                    idPrefix="edit-workout"
+                    onChange={setWorkoutField}
+                  />
+                </>
+              )}
+            </form.Subscribe>
+
+            <form.Subscribe
+              selector={(state) => ({
+                isDirty: state.isDirty,
+                isSubmitting: state.isSubmitting,
+              })}
+            >
+              {({ isDirty, isSubmitting }) => (
+                <div className="flex flex-wrap items-center justify-end gap-2">
+                  <Button
+                    className="min-h-11"
+                    onClick={() => router.push("/admin")}
+                    type="button"
+                    variant="ghost"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className="min-h-11 min-w-36"
+                    disabled={isSubmitting || !isDirty || showSaved}
+                    type="submit"
+                  >
+                    {showSaved ? (
+                      <>
+                        <IconCheck aria-hidden />
+                        <span>Saved!</span>
+                      </>
+                    ) : isSubmitting ? (
+                      <>
+                        <IconLoader2 aria-hidden className="animate-spin" />
+                        <span>Saving…</span>
+                      </>
+                    ) : (
+                      <>
+                        <IconCheck aria-hidden />
+                        <span>Save Changes</span>
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
+            </form.Subscribe>
+          </form>
+        </div>
+      </m.div>
+    </LazyMotion>
   );
 }

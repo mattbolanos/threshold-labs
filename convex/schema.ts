@@ -8,9 +8,11 @@ export default defineSchema({
     isActive: v.boolean(),
     name: v.optional(v.string()),
   }).index("by_email_lower", ["emailLower"]),
+
   workouts: defineTable({
     burpees: v.optional(v.number()),
     cardioMinutes: v.optional(v.number()),
+    isHidden: v.optional(v.boolean()),
     lt1Miles: v.optional(v.number()),
     lt2Miles: v.optional(v.number()),
     notes: v.optional(v.string()),

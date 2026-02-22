@@ -2,7 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
-  reactCompiler: true,
+  reactCompiler: {
+    compilationMode: "annotation",
+  },
   async rewrites() {
     return [
       {

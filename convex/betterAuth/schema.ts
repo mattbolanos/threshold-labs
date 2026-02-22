@@ -11,7 +11,7 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
-export const tables = {
+const tables = {
   account: defineTable({
     accessToken: v.optional(v.union(v.null(), v.string())),
     accessTokenExpiresAt: v.optional(v.union(v.null(), v.number())),

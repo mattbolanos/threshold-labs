@@ -18,6 +18,8 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
+  "use memo";
+
   await checkAuth();
 
   return (
@@ -25,7 +27,7 @@ export default async function Home() {
       {/* Performance Section Header */}
       <div className="route-padding-x flex items-end justify-between">
         <div>
-          <p className="text-muted-foreground text-xs font-medium uppercase tracking-[0.15em]">
+          <p className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
             Performance
           </p>
           <h2 className="text-lg font-semibold tracking-tight">
@@ -69,7 +71,7 @@ export default async function Home() {
       {/* Calendar Section */}
       <div className="route-padding-x mt-2 flex items-end justify-between">
         <div>
-          <p className="text-muted-foreground text-xs font-medium uppercase tracking-[0.15em]">
+          <p className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
             Schedule
           </p>
           <WeekRangeLabel />

@@ -522,14 +522,7 @@ const ChartTooltip = ({
         </div>
         <div className={cn("space-y-1 px-4 py-2")}>
           {filteredPayload.map(
-            ({
-              value,
-              category,
-              barColor,
-              lineColor,
-              chartType,
-              dataKey,
-            }) => (
+            ({ value, category, barColor, lineColor, chartType, dataKey }) => (
               <div
                 className="flex items-center justify-between space-x-8"
                 key={`${chartType}-${category}-${dataKey}`}

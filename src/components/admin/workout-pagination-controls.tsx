@@ -38,7 +38,7 @@ export function WorkoutPaginationControls({
           Rows
         </label>
         <select
-          className="bg-background min-h-11 rounded-md border px-2 text-sm"
+          className="bg-background h-9 rounded-md border px-2 text-sm"
           id={pageSizeId}
           onChange={(event) => table.setPageSize(Number(event.target.value))}
           value={pageSize}

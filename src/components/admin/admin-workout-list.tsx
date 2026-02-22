@@ -22,7 +22,10 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { api } from "../../../convex/_generated/api";
 import { api as convexApi } from "../../../convex/_generated/api";
+import { Badge } from "../ui/badge";
 import { ButtonGroup } from "../ui/button-group";
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from "../ui/empty";
+import { TagBadge } from "../workouts/tag-badge";
 import {
   FILTER_OPTIONS,
   FILTER_VALUES,
@@ -188,11 +191,13 @@ export const AdminWorkoutList = ({
     {
       accessorKey: "title",
       cell: ({ row }) => (
-        <div className="min-w-40">
+        <div className="min-w-40 space-y-1">
           <p className="font-medium">{row.original.title}</p>
-          <p className="text-muted-foreground text-xs">
-            {row.original.tags.join(", ")}
-          </p>
+          <div className="flex flex-wrap items-center gap-1">
+            {row.original.tags.map((tag) => (
+              <TagBadge className="text-[11px]" key={tag} tag={tag} />
+            ))}
+          </div>
         </div>
       ),
       header: "Title",
@@ -224,7 +229,9 @@ export const AdminWorkoutList = ({
       accessorKey: "isHidden",
       cell: ({ row }) => (
         <span className="whitespace-nowrap">
-          {row.original.isHidden ? "Hidden" : "Visible"}
+          <Badge variant={row.original.isHidden ? "destructive" : "default"}>
+            {row.original.isHidden ? "Hidden" : "Visible"}
+          </Badge>
         </span>
       ),
       header: "Visibility",
@@ -383,11 +390,18 @@ export const AdminWorkoutList = ({
               Loading workouts…
             </div>
           ) : filteredWorkouts.length === 0 ? (
-            <div className="text-muted-foreground py-6 text-sm">
-              {searchQuery.trim()
-                ? "No workouts match your search."
-                : "No workouts found for this filter."}
-            </div>
+            <Empty className="bg-muted/30 border border-dashed">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <IconSearch />
+                </EmptyMedia>
+              </EmptyHeader>
+              <EmptyTitle>
+                {searchQuery.trim()
+                  ? "No workouts match your search."
+                  : "No workouts found for this filter."}
+              </EmptyTitle>
+            </Empty>
           ) : (
             <>
               <WorkoutPaginationControls

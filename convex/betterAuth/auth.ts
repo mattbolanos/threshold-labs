@@ -23,7 +23,7 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
   const runAuthQuery = ctx.runQuery as unknown as (
     fn: unknown,
     args: { email: string },
-  ) => Promise<boolean>;
+  ) => Promise<{ role: "admin" | "client" | "coach" } | null>;
 
   return {
     appName: "Threshold Lab",
@@ -33,16 +33,21 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) => {
       user: {
         create: {
           before: async (user) => {
-            const isAllowed = await runAuthQuery(
+            const invite = await runAuthQuery(
               authApi.auth.isClientAllowedForSignup,
               { email: user.email.trim().toLowerCase() },
             );
 
-            if (!isAllowed) {
+            if (!invite) {
               throw new Error("You are not authorized to sign up.");
             }
 
-            return { data: user };
+            return {
+              data: {
+                ...user,
+                role: invite.role,
+              },
+            };
           },
         },
       },

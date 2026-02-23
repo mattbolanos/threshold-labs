@@ -9,7 +9,7 @@ export function FreeText({ text, title }: FreeTextProps) {
   return (
     <div className="space-y-1">
       <h3 className="font-semibold sm:text-lg">{title}</h3>
-      <div className="leading-snug">{text}</div>
+      <div className="whitespace-pre-line leading-snug">{text}</div>
     </div>
   );
 }

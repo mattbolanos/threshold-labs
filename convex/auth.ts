@@ -24,7 +24,7 @@ export const isClientAllowedForSignup = internalQuery({
     const normalizedEmail = email.trim().toLowerCase();
     const client = await ctx.db
       .query("clients")
-      .withIndex("by_email_lower", (q) => q.eq("emailLower", normalizedEmail))
+      .withIndex("by_email", (q) => q.eq("email", normalizedEmail))
       .first();
 
     if (!client?.isActive) {
@@ -63,12 +63,12 @@ export const upsertClientInvite = mutation({
 
     const existing = await ctx.db
       .query("clients")
-      .withIndex("by_email_lower", (q) => q.eq("emailLower", normalizedEmail))
+      .withIndex("by_email", (q) => q.eq("email", normalizedEmail))
       .first();
 
     if (existing) {
       await ctx.db.patch(existing._id, {
-        email: email.trim(),
+        email: normalizedEmail,
         isActive: isActive ?? existing.isActive,
         name: cleanedName,
         role: role ?? existing.role ?? "client",
@@ -77,8 +77,7 @@ export const upsertClientInvite = mutation({
     }
 
     return await ctx.db.insert("clients", {
-      email: email.trim(),
-      emailLower: normalizedEmail,
+      email: normalizedEmail,
       isActive: isActive ?? true,
       name: cleanedName,
       role: role ?? "client",

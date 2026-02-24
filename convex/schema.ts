@@ -4,11 +4,10 @@ import { v } from "convex/values";
 export default defineSchema({
   clients: defineTable({
     email: v.string(),
-    emailLower: v.string(),
     isActive: v.boolean(),
     name: v.optional(v.string()),
     role: v.union(v.literal("admin"), v.literal("client"), v.literal("coach")),
-  }).index("by_email_lower", ["emailLower"]),
+  }).index("by_email", ["email"]),
 
   workouts: defineTable({
     burpees: v.optional(v.number()),

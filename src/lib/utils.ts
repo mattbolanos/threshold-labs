@@ -73,3 +73,12 @@ export function calculateSTL(
   const runMultiplier = totalRunMiles !== null && totalRunMiles > 0 ? 1.1 : 1;
   return rpe * (trainingMinutes / 10) * runMultiplier;
 }
+
+export function formatWorkoutDate(date: Date): string {
+  return date.toLocaleDateString("en-US", {
+    day: "2-digit",
+    month: "short",
+    timeZone: "UTC",
+    year: "numeric",
+  });
+}

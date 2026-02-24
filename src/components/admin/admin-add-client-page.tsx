@@ -1,10 +1,9 @@
 "use client";
 
 import { usePreloadedAuthQuery } from "@convex-dev/better-auth/nextjs/client";
-import { IconArrowLeft } from "@tabler/icons-react";
 import type { Preloaded } from "convex/react";
-import Link from "next/link";
 import { redirect } from "next/navigation";
+import { AdminBackLink } from "@/components/admin/admin-back-link";
 import type { api } from "../../../convex/_generated/api";
 import { AdminClientInviteForm } from "./admin-client-invite-form";
 
@@ -28,13 +27,7 @@ export function AdminAddClientPage({
   return (
     <div className="flex w-full flex-col gap-6">
       <div className="route-padding-x">
-        <Link
-          className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm transition-colors"
-          href="/admin"
-        >
-          <IconArrowLeft aria-hidden className="size-4" />
-          Back to Workouts
-        </Link>
+        <AdminBackLink />
       </div>
 
       <div className="route-padding-x">

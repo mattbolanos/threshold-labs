@@ -290,19 +290,6 @@ export function validateWorkoutForm(form: WorkoutFormState) {
   };
 }
 
-export function formatDateLabel(workoutDate: string) {
-  const parsedDate = new Date(`${workoutDate}T00:00:00`);
-  if (Number.isNaN(parsedDate.getTime())) {
-    return workoutDate;
-  }
-
-  return parsedDate.toLocaleDateString("en-US", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
-
 export function isValidFilterValue(value: string | null): value is FilterValue {
   return value === "all" || value === "visible" || value === "hidden";
 }

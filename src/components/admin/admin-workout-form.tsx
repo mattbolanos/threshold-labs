@@ -1,19 +1,14 @@
 "use client";
 
 import { usePreloadedAuthQuery } from "@convex-dev/better-auth/nextjs/client";
-import {
-  IconArrowLeft,
-  IconCheck,
-  IconLoader2,
-  IconPlus,
-} from "@tabler/icons-react";
+import { IconCheck, IconLoader2, IconPlus } from "@tabler/icons-react";
 import { useForm } from "@tanstack/react-form";
 import type { Preloaded } from "convex/react";
 import { useMutation, useQuery } from "convex/react";
 import { domAnimation, LazyMotion, m } from "framer-motion";
-import Link from "next/link";
 import { redirect, useRouter } from "next/navigation";
 import { useState } from "react";
+import { AdminBackLink } from "@/components/admin/admin-back-link";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import type { api } from "../../../convex/_generated/api";
@@ -122,13 +117,7 @@ function CreateWorkoutForm() {
     <LazyMotion features={domAnimation}>
       <m.div {...fadeIn} className="flex w-full flex-col gap-6">
         <div className="route-padding-x">
-          <Link
-            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm transition-colors"
-            href="/admin"
-          >
-            <IconArrowLeft aria-hidden className="size-4" />
-            Back to Workouts
-          </Link>
+          <AdminBackLink />
         </div>
 
         {errorMessage ? (
@@ -217,13 +206,7 @@ function EditWorkoutForm({ workoutId }: { workoutId: string }) {
     return (
       <div className="flex w-full flex-col gap-6">
         <div className="route-padding-x">
-          <Link
-            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm transition-colors"
-            href="/admin"
-          >
-            <IconArrowLeft aria-hidden className="size-4" />
-            Back to Workouts
-          </Link>
+          <AdminBackLink />
         </div>
         <div className="route-padding-x">
           <p className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
@@ -239,13 +222,7 @@ function EditWorkoutForm({ workoutId }: { workoutId: string }) {
     return (
       <div className="flex w-full flex-col gap-6">
         <div className="route-padding-x">
-          <Link
-            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm transition-colors"
-            href="/admin"
-          >
-            <IconArrowLeft aria-hidden className="size-4" />
-            Back to Workouts
-          </Link>
+          <AdminBackLink />
         </div>
         <div className="route-padding-x">
           <p className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
@@ -315,13 +292,7 @@ function LoadedEditWorkoutForm({ workout }: { workout: Workout }) {
     <LazyMotion features={domAnimation}>
       <m.div {...fadeIn} className="flex w-full flex-col gap-6">
         <div className="route-padding-x">
-          <Link
-            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm transition-colors"
-            href="/admin"
-          >
-            <IconArrowLeft aria-hidden className="size-4" />
-            Back to Workouts
-          </Link>
+          <AdminBackLink />
         </div>
 
         {errorMessage ? (

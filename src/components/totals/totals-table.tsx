@@ -232,6 +232,8 @@ function TableSkeleton() {
 }
 
 export function TotalsTable() {
+  "use no memo";
+
   const { range } = useChartState();
 
   const data = useQuery(api.workouts.getWeeklyTotals, {

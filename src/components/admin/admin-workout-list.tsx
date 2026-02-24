@@ -9,7 +9,13 @@ import {
 } from "@tanstack/react-table";
 import type { Preloaded } from "convex/react";
 import { useMutation, useQuery } from "convex/react";
-import { AnimatePresence, domAnimation, LazyMotion, m } from "framer-motion";
+import {
+  AnimatePresence,
+  domAnimation,
+  LazyMotion,
+  m,
+  useReducedMotion,
+} from "framer-motion";
 import { redirect } from "next/navigation";
 import { parseAsInteger, parseAsString, useQueryState } from "nuqs";
 import { useCallback, useMemo, useState } from "react";
@@ -36,6 +42,11 @@ const fadeIn = {
   initial: { opacity: 0, y: 8 },
   transition: { duration: 0.2 },
 };
+const reducedFadeIn = {
+  animate: { opacity: 1 },
+  initial: { opacity: 0 },
+  transition: { duration: 0 },
+};
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -57,6 +68,7 @@ export const AdminWorkoutList = ({
   "use no memo";
 
   const user = usePreloadedAuthQuery(preloadedUserQuery);
+  const shouldReduceMotion = useReducedMotion();
   const workouts = useQuery(convexApi.workouts.getWorkoutsForAdmin, {
     includeHidden: true,
   });
@@ -167,9 +179,8 @@ export const AdminWorkoutList = ({
             ? error.message
             : "Failed to update visibility.",
         );
-      } finally {
-        setPendingVisibilityId(null);
       }
+      setPendingVisibilityId(null);
     },
     [setWorkoutVisibility],
   );
@@ -212,7 +223,10 @@ export const AdminWorkoutList = ({
 
   return (
     <LazyMotion features={domAnimation}>
-      <m.div {...fadeIn} className="flex w-full flex-col gap-6">
+      <m.div
+        {...(shouldReduceMotion ? reducedFadeIn : fadeIn)}
+        className="flex w-full flex-col gap-6"
+      >
         <div aria-atomic aria-live="polite" className="sr-only">
           {statusMessage || errorMessage || ""}
         </div>
@@ -220,12 +234,18 @@ export const AdminWorkoutList = ({
         <AnimatePresence>
           {errorMessage ? (
             <m.div
-              animate={{ opacity: 1, y: 0 }}
+              animate={
+                shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }
+              }
               className="route-padding-x bg-destructive/10 text-destructive border-destructive/30 rounded-lg border px-4 py-3 text-sm"
-              exit={{ opacity: 0, y: -4 }}
-              initial={{ opacity: 0, y: -4 }}
+              exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -4 }}
+              initial={
+                shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -4 }
+              }
               role="alert"
-              transition={{ duration: 0.15 }}
+              transition={
+                shouldReduceMotion ? { duration: 0 } : { duration: 0.15 }
+              }
             >
               {errorMessage}
             </m.div>

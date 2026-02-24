@@ -1242,4 +1242,4 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
 
 ComboChart.displayName = "ComboChart";
 
-export { ComboChart, type ComboChartEventProps, type TooltipProps };
+export { ComboChart, type TooltipProps };

@@ -5,7 +5,7 @@ import { IconCheck, IconLoader2, IconPlus } from "@tabler/icons-react";
 import { useForm } from "@tanstack/react-form";
 import type { Preloaded } from "convex/react";
 import { useMutation, useQuery } from "convex/react";
-import { domAnimation, LazyMotion, m } from "framer-motion";
+import { domAnimation, LazyMotion, m, useReducedMotion } from "framer-motion";
 import { redirect, useRouter } from "next/navigation";
 import { useState } from "react";
 import { AdminBackLink } from "@/components/admin/admin-back-link";
@@ -53,6 +53,11 @@ const fadeIn = {
   initial: { opacity: 0, y: 8 },
   transition: { duration: 0.2 },
 };
+const reducedFadeIn = {
+  animate: { opacity: 1 },
+  initial: { opacity: 0 },
+  transition: { duration: 0 },
+};
 
 export function AdminWorkoutForm(props: AdminWorkoutFormProps) {
   const user = usePreloadedAuthQuery(props.preloadedUserQuery);
@@ -73,6 +78,7 @@ export function AdminWorkoutForm(props: AdminWorkoutFormProps) {
 }
 
 function CreateWorkoutForm() {
+  const shouldReduceMotion = useReducedMotion();
   const router = useRouter();
   const createWorkout = useMutation(convexApi.workouts.createWorkout);
 
@@ -115,7 +121,10 @@ function CreateWorkoutForm() {
 
   return (
     <LazyMotion features={domAnimation}>
-      <m.div {...fadeIn} className="flex w-full flex-col gap-6">
+      <m.div
+        {...(shouldReduceMotion ? reducedFadeIn : fadeIn)}
+        className="flex w-full flex-col gap-6"
+      >
         <div className="route-padding-x">
           <AdminBackLink />
         </div>
@@ -243,6 +252,7 @@ function EditWorkoutForm({ workoutId }: { workoutId: string }) {
 }
 
 function LoadedEditWorkoutForm({ workout }: { workout: Workout }) {
+  const shouldReduceMotion = useReducedMotion();
   const router = useRouter();
   const updateWorkout = useMutation(convexApi.workouts.updateWorkout);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -290,7 +300,10 @@ function LoadedEditWorkoutForm({ workout }: { workout: Workout }) {
 
   return (
     <LazyMotion features={domAnimation}>
-      <m.div {...fadeIn} className="flex w-full flex-col gap-6">
+      <m.div
+        {...(shouldReduceMotion ? reducedFadeIn : fadeIn)}
+        className="flex w-full flex-col gap-6"
+      >
         <div className="route-padding-x">
           <AdminBackLink />
         </div>

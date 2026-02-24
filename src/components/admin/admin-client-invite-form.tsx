@@ -115,32 +115,31 @@ export function AdminClientInviteForm() {
     setEmailError(null);
     setIsSubmitting(true);
 
-    try {
-      await withMinimumDuration(
-        upsertClientInvite({
-          email: normalizedEmail,
-          isActive: form.isActive,
-          name: form.name.trim() || undefined,
-          role: form.role,
-        }),
-      );
-
-      setStatusMessage(
-        `${normalizedEmail} saved as ${selectedRole?.label ?? "Client"} (${form.isActive ? "active" : "paused"}).`,
-      );
-      setForm((prev) => ({
-        ...prev,
-        email: "",
-        name: "",
-      }));
-      emailInputRef.current?.focus();
-    } catch (error) {
-      setErrorMessage(
-        error instanceof Error ? error.message : "Failed to save invite.",
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
+    await withMinimumDuration(
+      upsertClientInvite({
+        email: normalizedEmail,
+        isActive: form.isActive,
+        name: form.name.trim() || undefined,
+        role: form.role,
+      }),
+    )
+      .then(() => {
+        setStatusMessage(
+          `${normalizedEmail} saved as ${selectedRole?.label ?? "Client"} (${form.isActive ? "active" : "paused"}).`,
+        );
+        setForm((prev) => ({
+          ...prev,
+          email: "",
+          name: "",
+        }));
+        emailInputRef.current?.focus();
+      })
+      .catch((error) => {
+        setErrorMessage(
+          error instanceof Error ? error.message : "Failed to save invite.",
+        );
+      });
+    setIsSubmitting(false);
   };
 
   return (

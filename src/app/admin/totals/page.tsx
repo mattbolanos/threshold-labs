@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ROLLING_LOAD_DEFINITIONS, RUN_MIX_DEFINITIONS } from "@/app/constants";
+import { AdminBackLink } from "@/components/admin/admin-back-link";
 import { ChartControls } from "@/components/chart/controls";
 import { InfoPopover } from "@/components/chart/info-popover";
 import { RollingLoadChart } from "@/components/chart/rolling-load";
@@ -20,6 +21,10 @@ export default async function TotalsPage() {
 
   return (
     <>
+      <div className="route-padding-x">
+        <AdminBackLink />
+      </div>
+
       <div className="route-padding-x flex items-end justify-between">
         <div>
           <p className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
@@ -35,9 +40,7 @@ export default async function TotalsPage() {
       <div className="route-padding-x grid gap-4 lg:grid-cols-2">
         <Card className="w-full gap-0 overflow-hidden lg:col-span-2">
           <CardHeader className="pl-5">
-            <CardTitle className="text-sm font-medium">
-              Weekly Totals
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Weekly Totals</CardTitle>
           </CardHeader>
           <CardContent className="px-0 pb-0">
             <TotalsTable />

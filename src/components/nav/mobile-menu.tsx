@@ -56,8 +56,11 @@ export function MobileMenu() {
         />
       </Button>
       {open && (
-        <div className="animate-in fade-out bg-background fixed inset-0 z-20 mt-12.25 overflow-y-auto transition-opacity duration-200">
+        <div className="bg-background animate-in fade-out fixed top-0 left-0 z-[99] mt-12.5 min-h-screen w-full overflow-y-auto transition-opacity duration-200">
           <ul className="p-2.5 pt-4">
+            <li className={ITEM_CLASS}>
+              <Link href="/">Home Page</Link>
+            </li>
             {SITE_ROUTES.map((route) => {
               if (route.isAdmin && user?.role !== "admin") {
                 return null;
@@ -70,9 +73,7 @@ export function MobileMenu() {
                 </li>
               );
             })}
-            <li className={ITEM_CLASS}>
-              <Link href="/">Home Page</Link>
-            </li>
+
             <li
               className={cn(
                 ITEM_CLASS,

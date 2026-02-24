@@ -5,6 +5,7 @@ import {
   IconLoader2,
   IconPlus,
   IconSearch,
+  IconTable,
   IconUserPlus,
 } from "@tabler/icons-react";
 import {
@@ -25,7 +26,7 @@ import { parseAsInteger, parseAsString, useQueryState } from "nuqs";
 import { useCallback, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { cn, formatWorkoutDate } from "@/lib/utils";
 import type { api } from "../../../convex/_generated/api";
 import { api as convexApi } from "../../../convex/_generated/api";
 import { Badge } from "../ui/badge";
@@ -43,7 +44,6 @@ import {
   FILTER_OPTIONS,
   FILTER_VALUES,
   type FilterValue,
-  formatDateLabel,
   isValidFilterValue,
   type Workout,
 } from "./workout-form-utils";
@@ -104,7 +104,7 @@ function getWorkoutColumns({
       accessorKey: "workoutDate",
       cell: ({ row }) => (
         <span className="whitespace-nowrap">
-          {formatDateLabel(row.original.workoutDate)}
+          {formatWorkoutDate(new Date(row.original.workoutDate))}
         </span>
       ),
       header: "Date",
@@ -249,34 +249,54 @@ function AdminWorkoutListView({
         <div className="route-padding-x flex items-end justify-between">
           <div>
             <p className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
-              Access
+              Tools
             </p>
             <h3 className="text-lg font-semibold tracking-tight">
-              Invite Manager
+              Quick Access
             </h3>
           </div>
         </div>
 
         <div className="route-padding-x border-primary/20 relative border-t pt-4">
           <div className="bg-primary/40 absolute top-0 left-5 h-0.5 w-16 md:left-8" />
-          <Card className="border-primary/20 bg-gradient-to-br from-card via-card to-muted/30 py-0 shadow-sm">
-            <CardHeader className="px-4 pt-4 md:px-5 md:pt-5">
-              <CardTitle className="text-base font-semibold tracking-tight">
-                Manage Client Invites
-              </CardTitle>
-              <CardDescription>
-                Invite setup now lives on a dedicated page.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="px-4 pb-4 md:px-5 md:pb-5">
-              <Button asChild className="min-h-11">
-                <Link href={{ pathname: "/admin/add-client" }}>
-                  <IconUserPlus aria-hidden />
-                  <span>Open Add Client</span>
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Card className="border-primary/20 from-card via-card to-muted/30 bg-gradient-to-br py-0 shadow-sm">
+              <CardHeader className="px-4 pt-4 md:px-5 md:pt-5">
+                <CardTitle className="text-base font-semibold tracking-tight">
+                  Manage Client Invites
+                </CardTitle>
+                <CardDescription>
+                  Create or update signup invites for clients and coaches.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="px-4 pb-4 md:px-5 md:pb-5">
+                <Button asChild className="min-h-11">
+                  <Link href={{ pathname: "/admin/add-client" }}>
+                    <IconUserPlus aria-hidden />
+                    <span>Open Add Client</span>
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+            <Card className="border-primary/20 from-card via-card to-muted/30 bg-gradient-to-br py-0 shadow-sm">
+              <CardHeader className="px-4 pt-4 md:px-5 md:pt-5">
+                <CardTitle className="text-base font-semibold tracking-tight">
+                  Weekly Totals
+                </CardTitle>
+                <CardDescription>
+                  View aggregated training metrics by week with charts.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="px-4 pb-4 md:px-5 md:pb-5">
+                <Button asChild className="min-h-11">
+                  <Link href={{ pathname: "/admin/totals" }}>
+                    <IconTable aria-hidden />
+                    <span>Open Totals</span>
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         <div className="route-padding-x flex items-end justify-between">
@@ -389,7 +409,8 @@ function WorkoutResults({
                 <div className="space-y-1">
                   <p className="text-sm font-semibold">{workout.title}</p>
                   <p className="text-muted-foreground text-xs">
-                    {formatDateLabel(workout.workoutDate)} • {workout.week}
+                    {formatWorkoutDate(new Date(workout.workoutDate))} •{" "}
+                    {workout.week}
                   </p>
                   <p className="text-muted-foreground text-xs">
                     RPE {workout.rpe} • {workout.trainingMinutes} min
@@ -547,7 +568,9 @@ export const AdminWorkoutList = ({
         const title = workout.title?.toLowerCase() ?? "";
         const tags = workout.tags?.join(", ").toLowerCase() ?? "";
         const week = workout.week?.toLowerCase() ?? "";
-        const date = formatDateLabel(workout.workoutDate).toLowerCase();
+        const date = formatWorkoutDate(
+          new Date(workout.workoutDate),
+        ).toLowerCase();
         const rawDate = workout.workoutDate?.toLowerCase() ?? "";
         return (
           title.includes(search) ||

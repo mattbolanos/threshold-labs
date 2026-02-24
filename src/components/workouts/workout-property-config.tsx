@@ -19,7 +19,11 @@ import {
 } from "@tabler/icons-react";
 import type { ReactNode } from "react";
 import { CircularProgress } from "@/components/ui/circular-progress";
-import { calculateSTL, formatMinutesToTime } from "@/lib/utils";
+import {
+  calculateSTL,
+  formatMinutesToTime,
+  formatWorkoutDate,
+} from "@/lib/utils";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { TagBadge } from "./tag-badge";
 
@@ -33,13 +37,7 @@ interface WorkoutPropertyConfig {
 
 export const WORKOUT_PROPERTY_CONFIG: WorkoutPropertyConfig[] = [
   {
-    getValue: (workout) =>
-      new Date(workout.workoutDate).toLocaleDateString("en-US", {
-        day: "numeric",
-        month: "long",
-        timeZone: "UTC",
-        year: "numeric",
-      }),
+    getValue: (workout) => formatWorkoutDate(new Date(workout.workoutDate)),
     icon: IconCalendar,
     label: "Date",
   },

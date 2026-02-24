@@ -238,16 +238,13 @@ export const getRollingLoad = query({
 
     let workoutsQuery = ctx.db
       .query("workouts")
-      .filter((q) => q.gte(q.field("workoutDate"), fromDate));
+      .withIndex("by_workout_date", (q) => q.gte("workoutDate", fromDate));
 
     if (to) {
       workoutsQuery = ctx.db
         .query("workouts")
-        .filter((q) =>
-          q.and(
-            q.gte(q.field("workoutDate"), fromDate),
-            q.lte(q.field("workoutDate"), to),
-          ),
+        .withIndex("by_workout_date", (q) =>
+          q.gte("workoutDate", fromDate).lte("workoutDate", to),
         );
     }
 
@@ -294,16 +291,13 @@ export const getRunVolumeMix = query({
 
     let workoutsQuery = ctx.db
       .query("workouts")
-      .filter((q) => q.gte(q.field("workoutDate"), fromDate));
+      .withIndex("by_workout_date", (q) => q.gte("workoutDate", fromDate));
 
     if (to) {
       workoutsQuery = ctx.db
         .query("workouts")
-        .filter((q) =>
-          q.and(
-            q.gte(q.field("workoutDate"), fromDate),
-            q.lte(q.field("workoutDate"), to),
-          ),
+        .withIndex("by_workout_date", (q) =>
+          q.gte("workoutDate", fromDate).lte("workoutDate", to),
         );
     }
 
@@ -357,6 +351,103 @@ export const getRunVolumeMix = query({
   },
 });
 
+export const getWeeklyTotals = query({
+  args: {
+    from: v.optional(v.string()),
+    to: v.optional(v.string()),
+  },
+  handler: async (ctx, { from, to }) => {
+    const fromDate = from ?? getDefaultFromDate();
+
+    let workoutsQuery = ctx.db
+      .query("workouts")
+      .withIndex("by_workout_date", (q) => q.gte("workoutDate", fromDate));
+
+    if (to) {
+      workoutsQuery = ctx.db
+        .query("workouts")
+        .withIndex("by_workout_date", (q) =>
+          q.gte("workoutDate", fromDate).lte("workoutDate", to),
+        );
+    }
+
+    const workouts = (await workoutsQuery.collect()).filter(isVisibleWorkout);
+
+    const weeklyData = new Map<
+      string,
+      {
+        trainingMinutes: number;
+        cardioMinutes: number;
+        stl: number;
+        totalRunMiles: number;
+        totalBikeMiles: number;
+        totalRowKs: number;
+        totalSkiKs: number;
+        easyMiles: number;
+        lt1Miles: number;
+        lt2Miles: number;
+        vo2Miles: number;
+        speedMiles: number;
+        burpees: number;
+        wallballs: number;
+      }
+    >();
+
+    for (const workout of workouts) {
+      const existing = weeklyData.get(workout.week) ?? {
+        burpees: 0,
+        cardioMinutes: 0,
+        easyMiles: 0,
+        lt1Miles: 0,
+        lt2Miles: 0,
+        speedMiles: 0,
+        stl: 0,
+        totalBikeMiles: 0,
+        totalRowKs: 0,
+        totalRunMiles: 0,
+        totalSkiKs: 0,
+        trainingMinutes: 0,
+        vo2Miles: 0,
+        wallballs: 0,
+      };
+
+      const runMultiplier = (workout.totalRunMiles ?? 0) > 0 ? 1.1 : 1;
+      const stl = workout.rpe * (workout.trainingMinutes / 10) * runMultiplier;
+
+      const lt1 = workout.lt1Miles ?? 0;
+      const lt2 = workout.lt2Miles ?? 0;
+      const vo2 = workout.vo2Miles ?? 0;
+      const speed = workout.speedMiles ?? 0;
+      const totalRun = workout.totalRunMiles ?? 0;
+      const easy = totalRun - lt1 - lt2 - vo2 - speed;
+
+      weeklyData.set(workout.week, {
+        burpees: existing.burpees + (workout.burpees ?? 0),
+        cardioMinutes: existing.cardioMinutes + (workout.cardioMinutes ?? 0),
+        easyMiles: existing.easyMiles + easy,
+        lt1Miles: existing.lt1Miles + lt1,
+        lt2Miles: existing.lt2Miles + lt2,
+        speedMiles: existing.speedMiles + speed,
+        stl: existing.stl + stl,
+        totalBikeMiles: existing.totalBikeMiles + (workout.totalBikeMiles ?? 0),
+        totalRowKs: existing.totalRowKs + (workout.totalRowKs ?? 0),
+        totalRunMiles: existing.totalRunMiles + totalRun,
+        totalSkiKs: existing.totalSkiKs + (workout.totalSkiKs ?? 0),
+        trainingMinutes: existing.trainingMinutes + workout.trainingMinutes,
+        vo2Miles: existing.vo2Miles + vo2,
+        wallballs: existing.wallballs + (workout.wallballs ?? 0),
+      });
+    }
+
+    return Array.from(weeklyData.entries())
+      .map(([week, data]) => ({
+        week,
+        ...data,
+      }))
+      .sort((a, b) => b.week.localeCompare(a.week));
+  },
+});
+
 export const getWorkouts = query({
   args: {
     from: v.string(),
@@ -366,11 +457,8 @@ export const getWorkouts = query({
     return (
       await ctx.db
         .query("workouts")
-        .filter((q) =>
-          q.and(
-            q.gte(q.field("workoutDate"), from),
-            q.lte(q.field("workoutDate"), to),
-          ),
+        .withIndex("by_workout_date", (q) =>
+          q.gte("workoutDate", from).lte("workoutDate", to),
         )
         .collect()
     ).filter(isVisibleWorkout);

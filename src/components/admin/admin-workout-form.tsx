@@ -99,6 +99,7 @@ function CreateWorkoutForm() {
         await withMinimumDuration(
           createWorkout({ workout: validation.workout }),
         );
+        form.reset();
         router.push("/admin");
       } catch (error) {
         setErrorMessage(

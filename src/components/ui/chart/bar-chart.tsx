@@ -571,6 +571,7 @@ interface BarChartProps extends React.HTMLAttributes<HTMLDivElement> {
   enableLegendSlider?: boolean;
   tickGap?: number;
   barCategoryGap?: string | number;
+  xAxisPadding?: number;
   xAxisLabel?: string;
   yAxisLabel?: string;
   layout?: "vertical" | "horizontal";
@@ -607,6 +608,7 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
       enableLegendSlider = false,
       barCategoryGap,
       tickGap = 5,
+      xAxisPadding,
       xAxisLabel,
       yAxisLabel,
       layout = "horizontal",
@@ -618,7 +620,8 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
     } = props;
     const CustomTooltip = customTooltip;
     const paddingValue =
-      (!showXAxis && !showYAxis) || (startEndOnly && !showYAxis) ? 0 : 20;
+      xAxisPadding ??
+      ((!showXAxis && !showYAxis) || (startEndOnly && !showYAxis) ? 0 : 20);
     const [legendHeight, setLegendHeight] = React.useState(60);
     const [activeLegend, setActiveLegend] = React.useState<string | undefined>(
       undefined,

@@ -49,6 +49,7 @@ export function RollingLoadChart() {
         return `Week of ${label}`;
       }}
       xAxisLabel="Week"
+      xAxisPadding={4}
       xTicksFormatter={(value) =>
         new Date(value).toLocaleDateString("en-US", {
           day: "numeric",

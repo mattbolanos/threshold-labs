@@ -32,6 +32,7 @@ export function RunMixChart() {
       legendPosition="left"
       type="stacked"
       xAxisLabel="Week"
+      xAxisPadding={4}
       xTicksFormatter={(value) =>
         new Date(value).toLocaleDateString("en-US", {
           day: "numeric",

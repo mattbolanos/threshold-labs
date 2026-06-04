@@ -623,6 +623,7 @@ interface ComboChartProps extends React.HTMLAttributes<HTMLDivElement> {
   enableBiaxial?: boolean;
   tooltipCallback?: (tooltipCallbackContent: TooltipProps) => void;
   customTooltip?: React.ComponentType<TooltipProps>;
+  xAxisPadding?: number;
   barSeries: ChartSeries & {
     type?: "default" | "stacked";
     valueFormatter?: (value: number) => string;
@@ -676,6 +677,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
       enableBiaxial = false,
       tooltipLabelFormatter,
       xTicksFormatter,
+      xAxisPadding,
       barSeries = defaultBarSeries,
       lineSeries = defaultLineSeries,
       tooltipCallback,
@@ -690,7 +692,8 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
     const CustomTooltip = customTooltip;
 
     const paddingValue =
-      (!showXAxis &&
+      xAxisPadding ??
+      ((!showXAxis &&
         !mergedBarSeries.showYAxis &&
         enableBiaxial &&
         !mergedLineSeries.showYAxis) ||
@@ -699,7 +702,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
         enableBiaxial &&
         !mergedLineSeries.showYAxis)
         ? 0
-        : 20;
+        : 20);
     const [legendHeight, setLegendHeight] = React.useState(60);
     const [activeDot, setActiveDot] = React.useState<ActiveDot | undefined>(
       undefined,

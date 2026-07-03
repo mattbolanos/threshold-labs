@@ -1,29 +1,42 @@
-import { IconSettings } from "@tabler/icons-react";
 import { ThemeToggle } from "@/components/theme/toggle";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
 interface NavUserProps {
-  email: string;
-  imageUrl: string;
-  initials: string;
-  username: string;
+  user?: {
+    email: string;
+    name: string;
+  } | null;
 }
 
-export function NavUser({ email, imageUrl, initials, username }: NavUserProps) {
+export function NavUser({ user }: NavUserProps) {
+  if (!user) {
+    return null;
+  }
+
+  const email = user.email.trim();
+  const username = user.name.trim() || email;
+  const initials = getInitials(username, email);
+
   return (
     <Popover>
-      <PopoverTrigger asChild className="max-md:hidden">
-        <Avatar className="cursor-pointer transition-[opacity,transform] duration-150 ease-in-out hover:scale-105 hover:opacity-85">
-          <AvatarImage alt="User avatar" src={imageUrl} />
-          <AvatarFallback>{initials}</AvatarFallback>
-        </Avatar>
+      <PopoverTrigger asChild>
+        <button
+          aria-label={`${username} menu`}
+          className="max-md:hidden rounded-full outline-hidden transition-[opacity,transform] duration-150 ease-in-out hover:scale-105 hover:opacity-85 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          type="button"
+        >
+          <Avatar>
+            <AvatarFallback className="text-xs font-semibold uppercase">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+        </button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-56 p-1 shadow-md">
         <div className="mb-2 flex flex-col gap-1 px-2 py-1.5">
@@ -35,14 +48,20 @@ export function NavUser({ email, imageUrl, initials, username }: NavUserProps) {
           Theme
           <ThemeToggle />
         </MenuItem>
-        <Separator className="my-1" />
-        <MenuItem>
-          <IconSettings />
-          Account Settings
-        </MenuItem>
       </PopoverContent>
     </Popover>
   );
+}
+
+function getInitials(name: string, email: string) {
+  const parts = name.split(/\s+/).filter(Boolean);
+
+  if (parts.length > 1) {
+    return `${parts[0][0]}${parts.at(-1)?.[0] ?? ""}`.toUpperCase();
+  }
+
+  const fallback = parts[0] || email.split("@")[0] || "";
+  return fallback.slice(0, 2).toUpperCase();
 }
 
 function MenuItem({

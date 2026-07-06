@@ -31,19 +31,21 @@ export function DateFilter({ range, setRange }: DateFilterProps) {
 
   return (
     <Popover onOpenChange={setOpen} open={open}>
-      <PopoverTrigger asChild>
-        <Button
-          className={cn(
-            "text-xs",
-            !range?.from || !range?.to ? "text-muted-foreground" : "",
-          )}
-          variant="outline"
-        >
-          <IconCalendarWeek />
-          {range?.from && range?.to
-            ? `${new Date(range.from).toLocaleDateString()} - ${new Date(range.to).toLocaleDateString()}`
-            : "Select Date Range"}
-        </Button>
+      <PopoverTrigger
+        render={
+          <Button
+            className={cn(
+              "text-xs",
+              !range?.from || !range?.to ? "text-muted-foreground" : "",
+            )}
+            variant="outline"
+          />
+        }
+      >
+        <IconCalendarWeek />
+        {range?.from && range?.to
+          ? `${new Date(range.from).toLocaleDateString()} - ${new Date(range.to).toLocaleDateString()}`
+          : "Select Date Range"}
       </PopoverTrigger>
       <PopoverContent align="end" className="w-auto overflow-hidden p-0">
         <Calendar

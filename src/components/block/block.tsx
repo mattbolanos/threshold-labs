@@ -1,5 +1,6 @@
 "use client";
 
+import type * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import {
@@ -31,12 +32,18 @@ interface BlockProps {
   className?: string;
 }
 
-const BaseCard = ({ workout, tagConfig, className }: BlockProps) => (
+const BaseCard = ({
+  workout,
+  tagConfig,
+  className,
+  ...props
+}: BlockProps & React.ComponentProps<"div">) => (
   <Card
     className={cn(
       className,
       "group/block sm:hover:bg-accent/60 w-full cursor-pointer overflow-hidden transition-colors duration-150",
     )}
+    {...props}
   >
     <CardContent className="flex flex-col items-start gap-2.5 text-left">
       <CardTitle className="flex min-w-0 items-center gap-1.5">
@@ -78,13 +85,16 @@ export function Block({ workout, className }: BlockProps) {
   return (
     <>
       <Dialog>
-        <DialogTrigger className="hidden w-full sm:inline-flex">
-          <BaseCard
-            className={className}
-            tagConfig={tagConfig}
-            workout={workout}
-          />
-        </DialogTrigger>
+        <DialogTrigger
+          nativeButton={false}
+          render={
+            <BaseCard
+              className={cn(className, "hidden w-full sm:inline-flex")}
+              tagConfig={tagConfig}
+              workout={workout}
+            />
+          }
+        />
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-1.5">
@@ -103,13 +113,16 @@ export function Block({ workout, className }: BlockProps) {
         </DialogContent>
       </Dialog>
       <Drawer>
-        <DrawerTrigger className="inline-flex w-full sm:hidden">
-          <BaseCard
-            className={className}
-            tagConfig={tagConfig}
-            workout={workout}
-          />
-        </DrawerTrigger>
+        <DrawerTrigger
+          nativeButton={false}
+          render={
+            <BaseCard
+              className={cn(className, "inline-flex w-full sm:hidden")}
+              tagConfig={tagConfig}
+              workout={workout}
+            />
+          }
+        />
         <DrawerContent>
           <DrawerHeader>
             <DrawerTitle className="flex items-center gap-1.5">
@@ -126,9 +139,7 @@ export function Block({ workout, className }: BlockProps) {
           </DrawerHeader>
           <BlockContent workout={workout} />
           <DrawerFooter>
-            <DrawerClose asChild>
-              <Button size="lg">Close</Button>
-            </DrawerClose>
+            <DrawerClose render={<Button size="lg" />}>Close</DrawerClose>
           </DrawerFooter>
         </DrawerContent>
       </Drawer>

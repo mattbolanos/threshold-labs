@@ -25,18 +25,20 @@ export function NavUser({ user }: NavUserProps) {
 
   return (
     <Popover>
-      <PopoverTrigger asChild>
-        <button
-          aria-label={`${username} menu`}
-          className="max-md:hidden rounded-full outline-hidden transition-[opacity,transform] duration-150 ease-in-out hover:scale-105 hover:opacity-85 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-          type="button"
-        >
-          <Avatar>
-            <AvatarFallback className="text-xs font-semibold uppercase">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
-        </button>
+      <PopoverTrigger
+        render={
+          <button
+            aria-label={`${username} menu`}
+            className="max-md:hidden rounded-full outline-hidden transition-[opacity,transform] duration-150 ease-in-out hover:scale-105 hover:opacity-85 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            type="button"
+          />
+        }
+      >
+        <Avatar>
+          <AvatarFallback className="text-xs font-semibold uppercase">
+            {initials}
+          </AvatarFallback>
+        </Avatar>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-56 p-1 shadow-md">
         <div className="mb-2 flex flex-col gap-1 px-2 py-1.5">

@@ -87,21 +87,23 @@ export function WorkoutEditorFields({
             Workout Date <span className="text-destructive">*</span>
           </Label>
           <Popover onOpenChange={setCalendarOpen} open={calendarOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                className={cn(
-                  "min-h-11 w-full justify-start text-left font-normal",
-                  !form.workoutDate && "text-muted-foreground",
-                )}
-                id={`${idPrefix}-workoutDate`}
-                type="button"
-                variant="outline"
-              >
-                <IconCalendarWeek aria-hidden className="size-4" />
-                {selectedDate && !Number.isNaN(selectedDate.getTime())
-                  ? format(selectedDate, "MMM d, yyyy")
-                  : "Pick a date…"}
-              </Button>
+            <PopoverTrigger
+              render={
+                <Button
+                  className={cn(
+                    "min-h-11 w-full justify-start text-left font-normal",
+                    !form.workoutDate && "text-muted-foreground",
+                  )}
+                  id={`${idPrefix}-workoutDate`}
+                  type="button"
+                  variant="outline"
+                />
+              }
+            >
+              <IconCalendarWeek aria-hidden className="size-4" />
+              {selectedDate && !Number.isNaN(selectedDate.getTime())
+                ? format(selectedDate, "MMM d, yyyy")
+                : "Pick a date…"}
             </PopoverTrigger>
             <PopoverContent align="start" className="w-auto p-0">
               <Calendar

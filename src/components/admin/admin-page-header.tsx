@@ -1,6 +1,6 @@
 import { IconPlus } from "@tabler/icons-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 
 export function AdminPageHeader() {
   return (
@@ -13,12 +13,10 @@ export function AdminPageHeader() {
           Workout Manager
         </h2>
       </div>
-      <Button asChild>
-        <Link href="/admin/workout/new">
-          <IconPlus aria-hidden />
-          <span>New Workout</span>
-        </Link>
-      </Button>
+      <Link className={buttonVariants()} href="/admin/workout/new">
+        <IconPlus aria-hidden />
+        <span>New Workout</span>
+      </Link>
     </div>
   );
 }

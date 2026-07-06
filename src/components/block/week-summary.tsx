@@ -43,7 +43,7 @@ export function WeekSummary({ workouts, className }: WeekSummaryProps) {
     return (
       <Card className={cn(className, "bg-muted/40 py-0")}>
         <CardContent>
-          <Accordion collapsible type="single">
+          <Accordion>
             <AccordionItem value="item-1">
               <AccordionTrigger className="hover:no-underline" disabled>
                 <div className="flex flex-1 items-center justify-between pr-2 text-left">
@@ -86,7 +86,7 @@ export function WeekSummary({ workouts, className }: WeekSummaryProps) {
   return (
     <Card className={cn(className, "bg-muted/40 py-0")}>
       <CardContent>
-        <Accordion collapsible type="single">
+        <Accordion>
           <AccordionItem value="item-1">
             <AccordionTrigger
               className="hover:no-underline"

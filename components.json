@@ -7,10 +7,14 @@
     "ui": "@/components/ui",
     "utils": "@/lib/utils"
   },
+  "iconLibrary": "tabler",
+  "menuAccent": "bold",
+  "menuColor": "default",
   "rsc": true,
-  "style": "new-york",
+  "rtl": false,
+  "style": "base-nova",
   "tailwind": {
-    "baseColor": "stone",
+    "baseColor": "olive",
     "config": "",
     "css": "src/app/globals.css",
     "cssVariables": true,

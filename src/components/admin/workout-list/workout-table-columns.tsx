@@ -3,7 +3,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 import type { Workout } from "@/components/admin/workout-form-utils";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { TagBadge } from "@/components/workouts/tag-badge";
 import { formatWorkoutDate } from "@/lib/utils";
 
@@ -76,9 +76,16 @@ export function getWorkoutColumns({
       accessorKey: "actions",
       cell: ({ row }) => (
         <div className="flex items-center justify-end gap-2">
-          <Button asChild className="min-h-9" size="sm" variant="outline">
-            <Link href={`/admin/workout/${row.original._id}`}>Edit</Link>
-          </Button>
+          <Link
+            className={buttonVariants({
+              className: "min-h-9",
+              size: "sm",
+              variant: "outline",
+            })}
+            href={`/admin/workout/${row.original._id}`}
+          >
+            Edit
+          </Link>
           <Button
             className="min-h-9"
             disabled={pendingVisibilityId === row.original._id}

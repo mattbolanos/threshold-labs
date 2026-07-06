@@ -1,6 +1,6 @@
 import { IconTable, IconUserPlus } from "@tabler/icons-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -34,12 +34,13 @@ export function AdminQuickLinks() {
               </CardDescription>
             </CardHeader>
             <CardContent className="px-4 pb-4 md:px-5 md:pb-5">
-              <Button asChild className="min-h-11">
-                <Link href="/admin/add-client">
-                  <IconUserPlus aria-hidden />
-                  <span>Open Add Client</span>
-                </Link>
-              </Button>
+              <Link
+                className={buttonVariants({ className: "min-h-11" })}
+                href="/admin/add-client"
+              >
+                <IconUserPlus aria-hidden />
+                <span>Open Add Client</span>
+              </Link>
             </CardContent>
           </Card>
 
@@ -53,12 +54,13 @@ export function AdminQuickLinks() {
               </CardDescription>
             </CardHeader>
             <CardContent className="px-4 pb-4 md:px-5 md:pb-5">
-              <Button asChild className="min-h-11">
-                <Link href="/admin/totals">
-                  <IconTable aria-hidden />
-                  <span>Open Totals</span>
-                </Link>
-              </Button>
+              <Link
+                className={buttonVariants({ className: "min-h-11" })}
+                href="/admin/totals"
+              >
+                <IconTable aria-hidden />
+                <span>Open Totals</span>
+              </Link>
             </CardContent>
           </Card>
         </div>

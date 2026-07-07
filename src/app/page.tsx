@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 export default async function Home() {
   "use memo";
 
-  await checkAuth();
+  await checkAuth({ allowUnauthenticatedPreview: true });
 
   return (
     <div className="bg-background route-padding-y mx-auto flex max-w-[var(--max-app-width)] flex-col gap-6">

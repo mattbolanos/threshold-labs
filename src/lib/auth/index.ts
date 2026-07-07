@@ -1,8 +1,16 @@
 import { redirect } from "next/navigation";
 import { isAuthenticated } from "@/lib/auth-server";
 
-export const checkAuth = async () => {
-  if (process.env.VERCEL_ENV === "preview") {
+type CheckAuthOptions = {
+  allowUnauthenticatedPreview?: boolean;
+};
+
+const isVercelPreview = process.env.VERCEL_ENV === "preview";
+
+export const checkAuth = async ({
+  allowUnauthenticatedPreview = false,
+}: CheckAuthOptions = {}) => {
+  if (allowUnauthenticatedPreview && isVercelPreview) {
     return true;
   }
 

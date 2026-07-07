@@ -18,8 +18,6 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  "use memo";
-
   await checkAuth({ allowUnauthenticatedPreview: true });
 
   return (

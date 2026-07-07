@@ -15,8 +15,6 @@ export const metadata: Metadata = {
 };
 
 export default async function TotalsPage() {
-  "use memo";
-
   await checkAuth();
 
   return (

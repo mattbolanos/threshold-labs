@@ -84,9 +84,13 @@ const normalizeWorkout = (workout: {
   const week = workout.week.trim();
   const workoutDate = workout.workoutDate.trim();
   const workoutPlan = workout.workoutPlan.trim();
-  const cleanedTags = workout.tags
-    .map((tag) => tag.trim())
-    .filter((tag) => tag.length > 0);
+  const cleanedTags = workout.tags.reduce<string[]>((tags, tag) => {
+    const trimmedTag = tag.trim();
+    if (trimmedTag.length > 0) {
+      tags.push(trimmedTag);
+    }
+    return tags;
+  }, []);
 
   if (!title) {
     throw new ConvexError("Title is required.");
@@ -492,7 +496,7 @@ export const getWorkoutsDateRange = query({
       };
     }
 
-    const sortedVisibleWorkouts = [...visibleWorkouts].sort((a, b) =>
+    const sortedVisibleWorkouts = visibleWorkouts.toSorted((a, b) =>
       a.workoutDate.localeCompare(b.workoutDate),
     );
 

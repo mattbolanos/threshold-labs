@@ -124,7 +124,7 @@ export function DateFilter({ range, setRange }: DateFilterProps) {
   const rangeFrom = range?.from;
   const rangeTo = range?.to;
   const [localRange, setLocalRange] = React.useState<DateRange | undefined>(
-    rangeToDateRange(range),
+    () => rangeToDateRange(range),
   );
   const [open, setOpen] = React.useState(false);
   const selectedPreset = getMatchingPresetValue(dateRangeToRange(localRange));
@@ -178,7 +178,7 @@ export function DateFilter({ range, setRange }: DateFilterProps) {
       <PopoverContent align="end" className="w-auto p-2">
         <ToggleGroup
           aria-label="Date range presets"
-          className="max-w-[calc(100vw-2rem)] flex-wrap"
+          className="grid grid-cols-3 sm:flex sm:flex-wrap"
           onValueChange={handlePresetSelect}
           size="sm"
           value={selectedPreset ? [selectedPreset] : []}
@@ -187,6 +187,7 @@ export function DateFilter({ range, setRange }: DateFilterProps) {
           {DATE_PRESETS.map((preset) => (
             <ToggleGroupItem
               aria-label={preset.label}
+              className="w-full sm:w-auto"
               key={preset.value}
               value={preset.value}
             >

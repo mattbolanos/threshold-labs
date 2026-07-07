@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { cn, formatQueryDate } from "@/lib/utils";
 
 interface Range {
@@ -43,21 +44,20 @@ function getToday() {
   return new Date(today.getFullYear(), today.getMonth(), today.getDate());
 }
 
-function getPresetRange(preset: DatePreset): Range {
-  const to = getToday();
-  let from: Date;
-
+function getPresetStartDate(preset: DatePreset, to: Date) {
   switch (preset.unit) {
     case "week":
-      from = subWeeks(to, preset.amount);
-      break;
+      return subWeeks(to, preset.amount);
     case "month":
-      from = subMonths(to, preset.amount);
-      break;
+      return subMonths(to, preset.amount);
     case "year":
-      from = subYears(to, preset.amount);
-      break;
+      return subYears(to, preset.amount);
   }
+}
+
+function getPresetRange(preset: DatePreset): Range {
+  const to = getToday();
+  const from = getPresetStartDate(preset, to);
 
   return {
     from: formatQueryDate(from),
@@ -72,10 +72,14 @@ function getPresetByValue(value: string | undefined) {
 function getMatchingPresetValue(range: Range | null): DatePresetValue | "" {
   if (!range?.from || !range?.to) return "";
 
-  const matchingPreset = DATE_PRESETS.find((preset) => {
-    const presetRange = getPresetRange(preset);
+  const to = parseQueryDate(range.to);
 
-    return presetRange.from === range.from && presetRange.to === range.to;
+  if (!to) return "";
+
+  const matchingPreset = DATE_PRESETS.find((preset) => {
+    const presetFrom = getPresetStartDate(preset, to);
+
+    return formatQueryDate(presetFrom) === range.from;
   });
 
   return matchingPreset?.value ?? "";
@@ -121,22 +125,25 @@ function getRangeLabel(range: Range | null) {
 }
 
 export function DateFilter({ range, setRange }: DateFilterProps) {
-  const rangeFrom = range?.from;
-  const rangeTo = range?.to;
-  const [localRange, setLocalRange] = React.useState<DateRange | undefined>(
-    () => rangeToDateRange(range),
-  );
+  const isMobile = useIsMobile();
+  const appliedRange = rangeToDateRange(range);
+  const [draftRange, setDraftRange] = React.useState<DateRange | undefined>();
   const [open, setOpen] = React.useState(false);
-  const selectedPreset = getMatchingPresetValue(dateRangeToRange(localRange));
-  const hasCompleteLocalRange = Boolean(localRange?.from && localRange?.to);
+  const calendarRange = draftRange ?? appliedRange;
+  const selectedPreset = getMatchingPresetValue(
+    dateRangeToRange(calendarRange),
+  );
+  const hasCompleteCalendarRange = Boolean(
+    calendarRange?.from && calendarRange?.to,
+  );
 
-  React.useEffect(() => {
-    setLocalRange(
-      rangeToDateRange(
-        rangeFrom || rangeTo ? { from: rangeFrom, to: rangeTo } : null,
-      ),
-    );
-  }, [rangeFrom, rangeTo]);
+  const handleOpenChange = (nextOpen: boolean) => {
+    setOpen(nextOpen);
+
+    if (!nextOpen) {
+      setDraftRange(undefined);
+    }
+  };
 
   const handlePresetSelect = (values: string[]) => {
     const preset = getPresetByValue(values[0]);
@@ -145,22 +152,23 @@ export function DateFilter({ range, setRange }: DateFilterProps) {
 
     const nextRange = getPresetRange(preset);
 
-    setLocalRange(rangeToDateRange(nextRange));
     setRange(nextRange);
+    setDraftRange(undefined);
     setOpen(false);
   };
 
   const handleApply = () => {
-    const nextRange = dateRangeToRange(localRange);
+    const nextRange = dateRangeToRange(calendarRange);
 
     if (!nextRange) return;
 
     setRange(nextRange);
+    setDraftRange(undefined);
     setOpen(false);
   };
 
   return (
-    <Popover onOpenChange={setOpen} open={open}>
+    <Popover onOpenChange={handleOpenChange} open={open}>
       <PopoverTrigger
         render={
           <Button
@@ -198,19 +206,19 @@ export function DateFilter({ range, setRange }: DateFilterProps) {
         <Separator />
         <Calendar
           className="w-full"
-          defaultMonth={localRange?.from ?? new Date()}
+          defaultMonth={calendarRange?.from}
           fixedWeeks
           mode="range"
-          numberOfMonths={2}
-          onSelect={setLocalRange}
-          selected={localRange}
+          numberOfMonths={isMobile ? 1 : 2}
+          onSelect={setDraftRange}
+          selected={calendarRange}
           showOutsideDays
         />
         <div className="flex justify-end gap-2">
           <Button
             onClick={() => {
               setRange(null);
-              setLocalRange(undefined);
+              setDraftRange(undefined);
               setOpen(false);
             }}
             type="button"
@@ -219,7 +227,7 @@ export function DateFilter({ range, setRange }: DateFilterProps) {
             Clear
           </Button>
           <Button
-            disabled={!hasCompleteLocalRange}
+            disabled={!hasCompleteCalendarRange}
             onClick={handleApply}
             type="button"
           >

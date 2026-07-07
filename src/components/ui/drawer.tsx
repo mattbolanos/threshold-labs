@@ -1,7 +1,8 @@
 "use client";
 
 import { Drawer as DrawerPrimitive } from "@base-ui/react/drawer";
-import * as React from "react";
+import type * as React from "react";
+import { createContext, use } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -12,10 +13,10 @@ type DrawerContextProps = {
   swipeDirection: NonNullable<DrawerPrimitive.Root.Props["swipeDirection"]>;
 };
 
-const DrawerContext = React.createContext<DrawerContextProps | null>(null);
+const DrawerContext = createContext<DrawerContextProps | null>(null);
 
 function useDrawer() {
-  const context = React.useContext(DrawerContext);
+  const context = use(DrawerContext);
 
   if (!context) {
     throw new Error("useDrawer must be used within a Drawer.");
@@ -34,10 +35,12 @@ function Drawer({
   showSwipeHandle?: boolean;
 }) {
   const hasSnapPoints = snapPoints != null && snapPoints.length > 0;
-  const contextValue = React.useMemo(
-    () => ({ hasSnapPoints, modal, showSwipeHandle, swipeDirection }),
-    [hasSnapPoints, modal, showSwipeHandle, swipeDirection],
-  );
+  const contextValue = {
+    hasSnapPoints,
+    modal,
+    showSwipeHandle,
+    swipeDirection,
+  };
 
   return (
     <DrawerContext.Provider value={contextValue}>

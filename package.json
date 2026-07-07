@@ -45,6 +45,7 @@
   "scripts": {
     "build": "next build --turbopack",
     "dev": "next dev --turbopack",
+    "doctor": "npx react-doctor@latest",
     "format": "biome format --write",
     "lint": "biome check",
     "start": "next start",

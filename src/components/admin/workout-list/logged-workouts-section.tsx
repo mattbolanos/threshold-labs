@@ -41,7 +41,7 @@ export function LoggedWorkoutsSection({
 }: LoggedWorkoutsSectionProps) {
   return (
     <>
-      <div className="flex items-end justify-between">
+      <div className="route-padding-x flex items-end justify-between">
         <div>
           <p className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
             Workouts
@@ -64,8 +64,8 @@ export function LoggedWorkoutsSection({
         </ButtonGroup>
       </div>
 
-      <div className="border-primary/20 relative border-t pt-4">
-        <div className="bg-primary/40 absolute top-0 left-0 h-0.5 w-16" />
+      <div className="route-padding-x border-primary/20 relative border-t pt-4">
+        <div className="bg-primary/40 absolute top-0 left-5 h-0.5 w-16 md:left-8" />
 
         <div className="flex flex-col gap-3">
           <div className="relative max-w-sm">

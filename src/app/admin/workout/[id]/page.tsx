@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AdminWorkoutForm } from "@/components/admin/admin-workout-form";
 import { checkAuth } from "@/lib/auth";
 import { preloadAuthQuery } from "@/lib/auth-server";
-import { api } from "../../../../../../convex/_generated/api";
+import { api } from "../../../../../convex/_generated/api";
 
 export const metadata: Metadata = {
   description: "Edit workout",

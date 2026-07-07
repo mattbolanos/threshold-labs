@@ -119,7 +119,7 @@ function getRangeLabel(range: Range | null) {
   const from = parseQueryDate(range?.from);
   const to = parseQueryDate(range?.to);
 
-  if (!from || !to) return "Select Date Range";
+  if (!from || !to) return "Date Range";
 
   return `${format(from, "MMM d, yyyy")} - ${format(to, "MMM d, yyyy")}`;
 }

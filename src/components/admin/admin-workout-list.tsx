@@ -237,7 +237,7 @@ export const AdminWorkoutList = ({
               animate={
                 shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }
               }
-              className="bg-destructive/10 text-destructive border-destructive/30 rounded-lg border px-4 py-3 text-sm"
+              className="route-padding-x bg-destructive/10 text-destructive border-destructive/30 rounded-lg border px-4 py-3 text-sm"
               exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -4 }}
               initial={
                 shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -4 }

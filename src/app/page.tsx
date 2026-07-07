@@ -26,9 +26,9 @@ export default async function Home() {
   await checkAuth({ allowUnauthenticatedPreview: true });
 
   return (
-    <>
+    <div className="bg-background route-padding-y mx-auto flex max-w-7xl flex-col gap-6">
       {/* Performance Section Header */}
-      <div className="flex items-end justify-between">
+      <div className="route-padding-x flex items-end justify-between">
         <div>
           <p className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
             Performance
@@ -41,7 +41,7 @@ export default async function Home() {
       </div>
 
       {/* Charts */}
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="route-padding-x grid gap-4 lg:grid-cols-3">
         <Card className="w-full gap-0 overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between pl-5">
             <CardTitle className="text-sm font-medium">
@@ -85,7 +85,7 @@ export default async function Home() {
       </div>
 
       {/* Calendar Section */}
-      <div className="mt-2 flex items-end justify-between">
+      <div className="route-padding-x mt-2 flex items-end justify-between">
         <div>
           <p className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
             Schedule
@@ -95,13 +95,13 @@ export default async function Home() {
         <WeekNavigation />
       </div>
 
-      <div className="border-primary/20 relative border-t pt-4">
-        <div className="bg-primary/40 absolute top-0 left-0 h-0.5 w-16" />
+      <div className="route-padding-x border-primary/20 relative border-t pt-4">
+        <div className="bg-primary/40 absolute top-0 left-5 h-0.5 w-16 md:left-8" />
         <div className="flex min-h-[300px] flex-col gap-2 lg:min-h-[450px]">
           <DayHeaders />
           <WeekBlocks />
         </div>
       </div>
-    </>
+    </div>
   );
 }

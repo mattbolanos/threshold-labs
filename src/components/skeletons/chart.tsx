@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 export function ChartSkeleton({ className }: { className?: string }) {
   return (
-    <div className={cn("flex h-64 w-full flex-col gap-4 sm:h-80", className)}>
+    <div className={cn("flex h-64 w-full flex-col gap-4 sm:h-52", className)}>
       {/* Legend placeholder */}
       <div className="flex items-center gap-4 pt-2 pl-2">
         <Skeleton className="h-4 w-24" />

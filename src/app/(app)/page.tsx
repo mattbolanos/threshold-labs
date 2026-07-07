@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
-import { ROLLING_LOAD_DEFINITIONS, RUN_MIX_DEFINITIONS } from "@/app/constants";
+import {
+  BASE_FITNESS_DEFINITIONS,
+  ROLLING_LOAD_DEFINITIONS,
+  RUN_MIX_DEFINITIONS,
+} from "@/app/constants";
 import { DayHeaders } from "@/components/calendar/day-headers";
 import { WeekBlocks } from "@/components/calendar/week-blocks";
 import { WeekNavigation } from "@/components/calendar/week-navigation";
 import { WeekRangeLabel } from "@/components/calendar/week-range-label";
+import { BaseFitnessChart } from "@/components/chart/base-fitness";
 import { ChartControls } from "@/components/chart/controls";
 import { InfoPopover } from "@/components/chart/info-popover";
 import { RollingLoadChart } from "@/components/chart/rolling-load";
@@ -21,9 +26,9 @@ export default async function Home() {
   await checkAuth({ allowUnauthenticatedPreview: true });
 
   return (
-    <div className="bg-background route-padding-y mx-auto flex max-w-[var(--max-app-width)] flex-col gap-6">
+    <>
       {/* Performance Section Header */}
-      <div className="route-padding-x flex items-end justify-between">
+      <div className="flex items-end justify-between">
         <div>
           <p className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
             Performance
@@ -36,7 +41,7 @@ export default async function Home() {
       </div>
 
       {/* Charts */}
-      <div className="route-padding-x grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-3">
         <Card className="w-full gap-0 overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between pl-5">
             <CardTitle className="text-sm font-medium">
@@ -64,10 +69,23 @@ export default async function Home() {
             <RollingLoadChart />
           </CardContent>
         </Card>
+
+        <Card className="w-full gap-0 overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between pl-5">
+            <CardTitle className="text-sm font-medium">Base Fitness</CardTitle>
+            <InfoPopover
+              definitions={BASE_FITNESS_DEFINITIONS}
+              title="Base Fitness"
+            />
+          </CardHeader>
+          <CardContent>
+            <BaseFitnessChart />
+          </CardContent>
+        </Card>
       </div>
 
       {/* Calendar Section */}
-      <div className="route-padding-x mt-2 flex items-end justify-between">
+      <div className="mt-2 flex items-end justify-between">
         <div>
           <p className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
             Schedule
@@ -77,13 +95,13 @@ export default async function Home() {
         <WeekNavigation />
       </div>
 
-      <div className="route-padding-x border-primary/20 relative border-t pt-4">
-        <div className="bg-primary/40 absolute top-0 left-5 h-0.5 w-16 md:left-8" />
+      <div className="border-primary/20 relative border-t pt-4">
+        <div className="bg-primary/40 absolute top-0 left-0 h-0.5 w-16" />
         <div className="flex min-h-[300px] flex-col gap-2 lg:min-h-[450px]">
           <DayHeaders />
           <WeekBlocks />
         </div>
       </div>
-    </div>
+    </>
   );
 }

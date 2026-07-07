@@ -63,3 +63,18 @@ export const ROLLING_LOAD_DEFINITIONS = [
     label: "True Training Hours",
   },
 ];
+
+export const BASE_FITNESS_DEFINITIONS = [
+  {
+    colorClassName: getColorClassName(chartColorsArray[2], "bg"),
+    description:
+      "Short-term training load smoothed with a 7-day time constant.",
+    label: "Training Impact",
+  },
+  {
+    colorClassName: getColorClassName("primary", "bg"),
+    description:
+      "Longer-term training load smoothed with a 42-day time constant.",
+    label: "Base Fitness",
+  },
+];

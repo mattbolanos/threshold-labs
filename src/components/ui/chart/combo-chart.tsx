@@ -5,6 +5,7 @@
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import React from "react";
 import {
+  Area,
   Bar,
   CartesianGrid,
   Dot,
@@ -95,7 +96,7 @@ interface LegendItemProps {
   color?: AvailableChartColorsKeys;
   onClick?: (name: string, color: AvailableChartColorsKeys) => void;
   activeLegend?: string;
-  chartType: "bar" | "line";
+  chartType: "area" | "bar" | "line";
 }
 
 const LegendItem = ({
@@ -131,6 +132,7 @@ const LegendItem = ({
         aria-hidden={true}
         className={cn(
           { "size-2.5 rounded-xs": chartType === "bar" },
+          { "h-2 w-4 rounded-xs opacity-70": chartType === "area" },
           {
             "h-1 w-4 shrink-0 rounded-full": chartType === "line",
           },
@@ -215,7 +217,12 @@ const ScrollButton = ({ icon, onClick, disabled }: ScrollButtonProps) => {
 };
 
 interface LegendProps extends React.OlHTMLAttributes<HTMLOListElement> {
-  categories: { name: string; label?: string; chartType: "bar" | "line" }[];
+  categories: {
+    name: string;
+    label?: string;
+    chartType: "area" | "bar" | "line";
+  }[];
+  areaCategoryColors: Map<string, AvailableChartColorsKeys>;
   barCategoryColors: Map<string, AvailableChartColorsKeys>;
   lineCategoryColors: Map<string, AvailableChartColorsKeys>;
   onClickLegendItem?: (
@@ -234,6 +241,7 @@ type HasScrollProps = {
 const Legend = React.forwardRef<HTMLOListElement, LegendProps>((props, ref) => {
   const {
     categories,
+    areaCategoryColors,
     barCategoryColors,
     lineCategoryColors,
     onClickLegendItem,
@@ -344,12 +352,19 @@ const Legend = React.forwardRef<HTMLOListElement, LegendProps>((props, ref) => {
       >
         {categories.map((category) => {
           const barColor = barCategoryColors.get(category.name);
+          const areaColor = areaCategoryColors.get(category.name);
           const lineColor = lineCategoryColors.get(category.name);
           return (
             <LegendItem
               activeLegend={activeLegend}
               chartType={category.chartType}
-              color={category.chartType === "bar" ? barColor : lineColor}
+              color={
+                category.chartType === "bar"
+                  ? barColor
+                  : category.chartType === "area"
+                    ? areaColor
+                    : lineColor
+              }
               key={`${category.chartType}-${category.name}`}
               label={category.label ?? category.name}
               name={category.name}
@@ -394,6 +409,7 @@ Legend.displayName = "Legend";
 const ChartLegend = (
   { payload }: any,
   barCategoryColors: Map<string, AvailableChartColorsKeys>,
+  areaCategoryColors: Map<string, AvailableChartColorsKeys>,
   lineCategoryColors: Map<string, AvailableChartColorsKeys>,
   setLegendHeight: React.Dispatch<React.SetStateAction<number>>,
   activeLegend: string | undefined,
@@ -402,6 +418,7 @@ const ChartLegend = (
   legendPosition?: "left" | "center" | "right",
   lineYAxisWidth?: number,
   barCategoryLabelMap?: Map<string, string>,
+  areaCategoryLabelMap?: Map<string, string>,
   lineCategoryLabelMap?: Map<string, string>,
 ) => {
   // biome-ignore lint/correctness/useHookAtTopLevel: <tremor>
@@ -419,11 +436,18 @@ const ChartLegend = (
   const legendItems = filteredPayload.map((entry: any) => {
     const dataKey = entry.dataKey as string;
     const isBar = entry.type === "rect" || barCategoryColors.has(dataKey);
-    const chartType: "bar" | "line" = isBar ? "bar" : "line";
+    const isArea = areaCategoryColors.has(dataKey);
+    const chartType: "area" | "bar" | "line" = isBar
+      ? "bar"
+      : isArea
+        ? "area"
+        : "line";
     const label =
       (chartType === "bar"
         ? barCategoryLabelMap?.get(dataKey)
-        : lineCategoryLabelMap?.get(dataKey)) ?? entry.value;
+        : chartType === "area"
+          ? areaCategoryLabelMap?.get(dataKey)
+          : lineCategoryLabelMap?.get(dataKey)) ?? entry.value;
 
     return {
       chartType,
@@ -453,6 +477,7 @@ const ChartLegend = (
     >
       <Legend
         activeLegend={activeLegend}
+        areaCategoryColors={areaCategoryColors}
         barCategoryColors={barCategoryColors}
         categories={legendItems}
         enableLegendSlider={enableLegendSlider}
@@ -471,9 +496,10 @@ type PayloadItem = {
   category: string;
   value: number;
   index: string;
+  areaColor: AvailableChartColorsKeys;
   barColor: AvailableChartColorsKeys;
   lineColor: AvailableChartColorsKeys;
-  chartType: "bar" | "line";
+  chartType: "area" | "bar" | "line";
   dataKey: string;
   type: string;
   payload: any;
@@ -484,6 +510,7 @@ interface ChartTooltipProps {
   payload: PayloadItem[];
   label: string;
   labelFormatter?: (label: string) => string;
+  areaValueFormatter?: (value: number) => string;
   barValueFormatter?: (value: number) => string;
   lineValueFormatter?: (value: number) => string;
 }
@@ -493,6 +520,7 @@ const ChartTooltip = ({
   payload,
   label,
   labelFormatter,
+  areaValueFormatter = defaultValueFormatter,
   barValueFormatter = defaultValueFormatter,
   lineValueFormatter = defaultValueFormatter,
 }: ChartTooltipProps) => {
@@ -523,7 +551,15 @@ const ChartTooltip = ({
         </div>
         <div className={cn("space-y-1 px-4 py-2")}>
           {filteredPayload.map(
-            ({ value, category, barColor, lineColor, chartType, dataKey }) => (
+            ({
+              value,
+              category,
+              areaColor,
+              barColor,
+              lineColor,
+              chartType,
+              dataKey,
+            }) => (
               <div
                 className="flex items-center justify-between space-x-8"
                 key={`${chartType}-${category}-${dataKey}`}
@@ -534,13 +570,18 @@ const ChartTooltip = ({
                       aria-hidden="true"
                       className={cn(
                         { "size-3 rounded-xs": chartType === "bar" },
+                        { "h-2.5 w-3.5 rounded-xs": chartType === "area" },
                         {
                           "h-1 w-3.5 shrink-0 rounded-full":
                             chartType === "line",
                         },
                         "shrink-0",
                         getColorClassName(
-                          chartType === "bar" ? barColor : lineColor,
+                          chartType === "bar"
+                            ? barColor
+                            : chartType === "area"
+                              ? areaColor
+                              : lineColor,
                           "bg",
                         ),
                       )}
@@ -567,7 +608,9 @@ const ChartTooltip = ({
                 >
                   {chartType === "bar"
                     ? barValueFormatter(value)
-                    : lineValueFormatter(value)}
+                    : chartType === "area"
+                      ? areaValueFormatter(value)
+                      : lineValueFormatter(value)}
                 </p>
               </div>
             ),
@@ -625,6 +668,12 @@ interface ComboChartProps extends React.HTMLAttributes<HTMLDivElement> {
   tooltipCallback?: (tooltipCallbackContent: TooltipProps) => void;
   customTooltip?: React.ComponentType<TooltipProps>;
   xAxisPadding?: number;
+  areaSeries?: ChartSeries & {
+    connectNulls?: boolean;
+    fillOpacity?: number;
+    strokeWidth?: number;
+    valueFormatter?: (value: number) => string;
+  };
   barSeries: ChartSeries & {
     type?: "default" | "stacked";
     valueFormatter?: (value: number) => string;
@@ -660,6 +709,12 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
       ...defaultSeries,
       connectNulls: false,
     };
+    const defaultAreaSeries = {
+      ...defaultSeries,
+      connectNulls: false,
+      fillOpacity: 0.18,
+      strokeWidth: 2,
+    };
 
     const {
       data = [],
@@ -679,6 +734,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
       tooltipLabelFormatter,
       xTicksFormatter,
       xAxisPadding,
+      areaSeries = defaultAreaSeries,
       barSeries = defaultBarSeries,
       lineSeries = defaultLineSeries,
       tooltipCallback,
@@ -687,6 +743,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
       className,
       ...other
     } = props;
+    const mergedAreaSeries = { ...defaultAreaSeries, ...areaSeries };
     const mergedBarSeries = { ...defaultBarSeries, ...barSeries };
     const mergedLineSeries = { ...defaultLineSeries, ...lineSeries };
 
@@ -719,6 +776,10 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
       mergedBarSeries.categories,
       mergedBarSeries.colors ?? AvailableChartColors,
     );
+    const areaCategoryColors = constructCategoryColors(
+      mergedAreaSeries.categories,
+      mergedAreaSeries.colors ?? AvailableChartColors,
+    );
     const lineCategoryColors = constructCategoryColors(
       mergedLineSeries.categories,
       mergedLineSeries.colors ?? AvailableChartColors,
@@ -733,6 +794,16 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
       });
       return map;
     }, [mergedBarSeries.categories, mergedBarSeries.categoryLabels]);
+    const areaCategoryLabelMap = React.useMemo(() => {
+      const map = new Map<string, string>();
+      mergedAreaSeries.categories.forEach((category) => {
+        map.set(
+          category,
+          mergedAreaSeries.categoryLabels?.[category] ?? category,
+        );
+      });
+      return map;
+    }, [mergedAreaSeries.categories, mergedAreaSeries.categoryLabels]);
     const lineCategoryLabelMap = React.useMemo(() => {
       const map = new Map<string, string>();
       mergedLineSeries.categories.forEach((category) => {
@@ -837,7 +908,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
 
     return (
       <div
-        className={cn("h-64 w-full sm:h-80", className)}
+        className={cn("h-64 w-full sm:h-52", className)}
         data-tremor-id="tremor-raw"
         ref={forwardedRef}
         {...other}
@@ -987,6 +1058,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                   ChartLegend(
                     { payload },
                     barCategoryColors,
+                    areaCategoryColors,
                     lineCategoryColors,
                     setLegendHeight,
                     activeLegend,
@@ -998,6 +1070,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                     legendPosition,
                     mergedLineSeries.yAxisWidth,
                     barCategoryLabelMap,
+                    areaCategoryLabelMap,
                     lineCategoryLabelMap,
                   )
                 }
@@ -1010,17 +1083,24 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
               content={({ active, payload, label }) => {
                 const cleanPayload: TooltipProps["payload"] = payload
                   ? payload.map((item: any) => ({
+                      areaColor: areaCategoryColors.get(
+                        item.dataKey,
+                      ) as AvailableChartColorsKeys,
                       barColor: barCategoryColors.get(
                         item.dataKey,
                       ) as AvailableChartColorsKeys,
                       category:
                         (barCategoryColors.has(item.dataKey)
                           ? barCategoryLabelMap?.get(item.dataKey)
-                          : lineCategoryLabelMap?.get(item.dataKey)) ??
+                          : areaCategoryColors.has(item.dataKey)
+                            ? areaCategoryLabelMap?.get(item.dataKey)
+                            : lineCategoryLabelMap?.get(item.dataKey)) ??
                         item.dataKey,
                       chartType: barCategoryColors.has(item.dataKey)
                         ? "bar"
-                        : ("line" as PayloadItem["chartType"]),
+                        : areaCategoryColors.has(item.dataKey)
+                          ? "area"
+                          : ("line" as PayloadItem["chartType"]),
                       dataKey: item.dataKey,
                       index: item.payload[index],
                       lineColor: lineCategoryColors.get(
@@ -1053,6 +1133,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                   ) : (
                     <ChartTooltip
                       active={active}
+                      areaValueFormatter={mergedAreaSeries.valueFormatter}
                       barValueFormatter={mergedBarSeries.valueFormatter}
                       label={label as string}
                       labelFormatter={tooltipLabelFormatter}
@@ -1091,6 +1172,43 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                 }
                 stackId={stacked ? "stack" : undefined}
                 type="linear"
+                yAxisId={enableBiaxial ? "left" : undefined}
+              />
+            ))}
+            {mergedAreaSeries.categories.map((category) => (
+              <Area
+                animationDuration={700}
+                animationEasing="ease-in"
+                className={cn(
+                  getColorClassName(
+                    areaCategoryColors.get(
+                      category,
+                    ) as AvailableChartColorsKeys,
+                    "fill",
+                  ),
+                  getColorClassName(
+                    areaCategoryColors.get(
+                      category,
+                    ) as AvailableChartColorsKeys,
+                    "stroke",
+                  ),
+                )}
+                connectNulls={mergedAreaSeries.connectNulls}
+                dataKey={category}
+                dot={false}
+                fill=""
+                fillOpacity={mergedAreaSeries.fillOpacity}
+                isAnimationActive={true}
+                key={`${category}-area-id`}
+                name={category}
+                stroke=""
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeOpacity={
+                  activeLegend && activeLegend !== category ? 0.3 : 1
+                }
+                strokeWidth={mergedAreaSeries.strokeWidth}
+                type="monotone"
                 yAxisId={enableBiaxial ? "left" : undefined}
               />
             ))}

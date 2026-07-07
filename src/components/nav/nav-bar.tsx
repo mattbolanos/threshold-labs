@@ -17,7 +17,7 @@ export function NavBar() {
 
   return (
     <header className="bg-background/95 sticky top-0 z-40 w-full border-b border-border/80 backdrop-blur-sm">
-      <nav className="route-padding-x mx-auto flex h-12 w-full max-w-[var(--max-app-width)] items-center justify-between gap-4 md:h-14">
+      <nav className="route-padding-x mx-auto flex h-12 w-full max-w-7xl items-center justify-between gap-4 md:h-14">
         <div className="flex items-center gap-6">
           <Link
             aria-label="Threshold Lab home"

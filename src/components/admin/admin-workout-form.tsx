@@ -126,20 +126,20 @@ function CreateWorkoutForm() {
         {...(shouldReduceMotion ? reducedFadeIn : fadeIn)}
         className="flex w-full flex-col gap-6"
       >
-        <div className="route-padding-x">
+        <div>
           <AdminBackLink />
         </div>
 
         {errorMessage ? (
           <div
-            className="route-padding-x bg-destructive/10 text-destructive border-destructive/30 rounded-lg border px-4 py-3 text-sm"
+            className="bg-destructive/10 text-destructive border-destructive/30 rounded-lg border px-4 py-3 text-sm"
             role="alert"
           >
             {errorMessage}
           </div>
         ) : null}
 
-        <div className="route-padding-x flex items-end justify-between">
+        <div className="flex items-end justify-between">
           <div>
             <p className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
               Admin
@@ -153,8 +153,8 @@ function CreateWorkoutForm() {
           </div>
         </div>
 
-        <div className="route-padding-x border-primary/20 relative border-t pt-4">
-          <div className="bg-primary/40 absolute top-0 left-5 h-0.5 w-16 md:left-8" />
+        <div className="border-primary/20 relative border-t pt-4">
+          <div className="bg-primary/40 absolute top-0 left-0 h-0.5 w-16" />
           <form
             action={handleCreateSubmit}
             className="mx-auto max-w-4xl space-y-5"
@@ -215,10 +215,10 @@ function EditWorkoutForm({ workoutId }: { workoutId: string }) {
   if (workout === undefined) {
     return (
       <div className="flex w-full flex-col gap-6">
-        <div className="route-padding-x">
+        <div>
           <AdminBackLink />
         </div>
-        <div className="route-padding-x">
+        <div>
           <p className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
             Admin
           </p>
@@ -231,10 +231,10 @@ function EditWorkoutForm({ workoutId }: { workoutId: string }) {
   if (workout === null) {
     return (
       <div className="flex w-full flex-col gap-6">
-        <div className="route-padding-x">
+        <div>
           <AdminBackLink />
         </div>
-        <div className="route-padding-x">
+        <div>
           <p className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
             Admin
           </p>
@@ -305,20 +305,20 @@ function LoadedEditWorkoutForm({ workout }: { workout: Workout }) {
         {...(shouldReduceMotion ? reducedFadeIn : fadeIn)}
         className="flex w-full flex-col gap-6"
       >
-        <div className="route-padding-x">
+        <div>
           <AdminBackLink />
         </div>
 
         {errorMessage ? (
           <div
-            className="route-padding-x bg-destructive/10 text-destructive border-destructive/30 rounded-lg border px-4 py-3 text-sm"
+            className="bg-destructive/10 text-destructive border-destructive/30 rounded-lg border px-4 py-3 text-sm"
             role="alert"
           >
             {errorMessage}
           </div>
         ) : null}
 
-        <div className="route-padding-x flex items-end justify-between">
+        <div className="flex items-end justify-between">
           <div>
             <p className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
               Admin
@@ -332,8 +332,8 @@ function LoadedEditWorkoutForm({ workout }: { workout: Workout }) {
           </div>
         </div>
 
-        <div className="route-padding-x border-primary/20 relative border-t pt-4">
-          <div className="bg-primary/40 absolute top-0 left-5 h-0.5 w-16 md:left-8" />
+        <div className="border-primary/20 relative border-t pt-4">
+          <div className="bg-primary/40 absolute top-0 left-0 h-0.5 w-16" />
           <form
             action={handleEditSubmit}
             className="mx-auto max-w-4xl space-y-5"

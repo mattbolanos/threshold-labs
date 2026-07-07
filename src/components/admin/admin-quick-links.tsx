@@ -12,7 +12,7 @@ import {
 export function AdminQuickLinks() {
   return (
     <>
-      <div className="route-padding-x flex items-end justify-between">
+      <div className="flex items-end justify-between">
         <div>
           <p className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
             Tools
@@ -21,8 +21,8 @@ export function AdminQuickLinks() {
         </div>
       </div>
 
-      <div className="route-padding-x border-primary/20 relative border-t pt-4">
-        <div className="bg-primary/40 absolute top-0 left-5 h-0.5 w-16 md:left-8" />
+      <div className="border-primary/20 relative border-t pt-4">
+        <div className="bg-primary/40 absolute top-0 left-0 h-0.5 w-16" />
         <div className="grid gap-4 sm:grid-cols-2">
           <Card className="border-primary/20 from-card via-card to-muted/30 bg-gradient-to-br py-0 shadow-sm">
             <CardHeader className="px-4 pt-4 md:px-5 md:pt-5">

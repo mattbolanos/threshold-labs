@@ -12,7 +12,7 @@ export function BlockContent({ workout }: BlockContentProps) {
   const hasText = workout.workoutPlan || workout.notes;
 
   return (
-    <div className="space-y-1 overflow-y-auto px-2 md:-ms-1.5 md:px-0">
+    <div className="mb-4 space-y-1 overflow-y-auto px-2 md:-ms-1.5 md:px-0">
       {WORKOUT_PROPERTY_CONFIG.map((property) => (
         <PropertyRow
           key={property.label}
@@ -22,9 +22,9 @@ export function BlockContent({ workout }: BlockContentProps) {
         />
       ))}
       {hasText && (
-        <div className="my-4 space-y-4 px-1.5">
+        <div className="space-y-2 px-2.5">
           <Separator />
-          <div className="space-y-6 sm:space-y-8">
+          <div className="space-y-6">
             <FreeText text={workout.workoutPlan} title="Plan" />
             <FreeText text={workout.notes ?? ""} title="Notes" />
           </div>

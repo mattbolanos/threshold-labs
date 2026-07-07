@@ -25,17 +25,19 @@ export function InfoPopover({
 }: InfoPopoverProps) {
   return (
     <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          className="data-[state=open]:bg-accent data-[state=open]:text-foreground text-muted-foreground hover:text-foreground"
-          size="icon-sm"
-          variant="ghost"
-        >
-          <IconInfoCircle className="size-5" />
-          <span className="sr-only">View definitions</span>
-        </Button>
+      <PopoverTrigger
+        render={
+          <Button
+            className="data-[state=open]:bg-accent data-[state=open]:text-foreground text-muted-foreground hover:text-foreground"
+            size="icon-sm"
+            variant="ghost"
+          />
+        }
+      >
+        <IconInfoCircle className="size-5" />
+        <span className="sr-only">View definitions</span>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-84 p-4" collisionPadding={10}>
+      <PopoverContent align="end" className="w-84 p-4">
         <div className="space-y-5">
           <h4 className="leading-none font-semibold">{title}</h4>
           <div className="grid gap-3">

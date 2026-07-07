@@ -2,6 +2,15 @@ import { type ClassValue, clsx } from "clsx";
 import { addDays } from "date-fns";
 import { twMerge } from "tailwind-merge";
 
+const TRAINING_LOAD_SCALE_FACTOR = 3;
+const WEEK_RANGE_MONTH_FORMATTER = new Intl.DateTimeFormat("default", {
+  month: "short",
+});
+const WEEK_RANGE_DAY_FORMATTER = new Intl.DateTimeFormat("default", {
+  day: "numeric",
+  month: "short",
+});
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -30,17 +39,13 @@ export function getWeekDays(weekStart: Date): Date[] {
 
 export function formatWeekRangeLabel(
   weekStart: Date,
-  locale: string = "default",
   showDays: boolean = false,
 ): string {
   const weekEnd = addDays(weekStart, 6);
   const sameYear = weekStart.getFullYear() === weekEnd.getFullYear();
   const sameMonth = sameYear && weekStart.getMonth() === weekEnd.getMonth();
 
-  const monthOptions = showDays
-    ? { day: "numeric" as const, month: "short" as const }
-    : { month: "short" as const };
-  const fmt = new Intl.DateTimeFormat(locale, monthOptions);
+  const fmt = showDays ? WEEK_RANGE_DAY_FORMATTER : WEEK_RANGE_MONTH_FORMATTER;
   const startMonth = fmt.format(weekStart);
   const endMonth = fmt.format(weekEnd);
   const startYear = weekStart.getFullYear();
@@ -71,7 +76,9 @@ export function calculateSTL(
   totalRunMiles: number | null,
 ): number {
   const runMultiplier = totalRunMiles !== null && totalRunMiles > 0 ? 1.1 : 1;
-  return rpe * (trainingMinutes / 10) * runMultiplier;
+  return (
+    rpe * (trainingMinutes / 10) * runMultiplier * TRAINING_LOAD_SCALE_FACTOR
+  );
 }
 
 export function formatWorkoutDate(date: Date): string {

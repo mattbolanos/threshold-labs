@@ -240,7 +240,17 @@ export function AdminClientInviteForm() {
 
           <div className="space-y-2">
             <Label htmlFor={roleId}>Role</Label>
-            <Select>
+            <Select
+              id={roleId}
+              items={roleOptions}
+              name="invite_role"
+              onValueChange={(role) => {
+                if (role) {
+                  setForm((prev) => ({ ...prev, role: role as ClientRole }));
+                }
+              }}
+              value={form.role}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a role" />
               </SelectTrigger>

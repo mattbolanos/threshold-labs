@@ -3,7 +3,7 @@ import { flexRender, type Table } from "@tanstack/react-table";
 import Link from "next/link";
 import type { Workout } from "@/components/admin/workout-form-utils";
 import { WorkoutPaginationControls } from "@/components/admin/workout-pagination-controls";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { cn, formatWorkoutDate } from "@/lib/utils";
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
@@ -66,9 +66,15 @@ export function WorkoutResults({
                   )}
                 </div>
                 <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <Button asChild className="min-h-11" variant="outline">
-                    <Link href={`/admin/workout/${workoutId}`}>Edit</Link>
-                  </Button>
+                  <Link
+                    className={buttonVariants({
+                      className: "min-h-11",
+                      variant: "outline",
+                    })}
+                    href={`/admin/workout/${workoutId}`}
+                  >
+                    Edit
+                  </Link>
                   <Button
                     className="min-h-11"
                     disabled={isPending}

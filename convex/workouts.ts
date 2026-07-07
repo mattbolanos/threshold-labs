@@ -84,9 +84,13 @@ const normalizeWorkout = (workout: {
   const week = workout.week.trim();
   const workoutDate = workout.workoutDate.trim();
   const workoutPlan = workout.workoutPlan.trim();
-  const cleanedTags = workout.tags
-    .map((tag) => tag.trim())
-    .filter((tag) => tag.length > 0);
+  const cleanedTags = workout.tags.reduce<string[]>((tags, tag) => {
+    const trimmedTag = tag.trim();
+    if (trimmedTag.length > 0) {
+      tags.push(trimmedTag);
+    }
+    return tags;
+  }, []);
 
   if (!title) {
     throw new ConvexError("Title is required.");
@@ -144,6 +148,22 @@ const assertAdmin = async (ctx: QueryCtx | MutationCtx) => {
 
 const isVisibleWorkout = (workout: { isHidden?: boolean }) =>
   workout.isHidden !== true;
+
+const TRAINING_LOAD_SCALE_FACTOR = 3;
+
+const calculateTrainingLoad = (workout: {
+  rpe: number;
+  totalRunMiles?: number;
+  trainingMinutes: number;
+}) => {
+  const runMultiplier = (workout.totalRunMiles ?? 0) > 0 ? 1.1 : 1;
+  return (
+    workout.rpe *
+    (workout.trainingMinutes / 10) *
+    runMultiplier *
+    TRAINING_LOAD_SCALE_FACTOR
+  );
+};
 
 export const createWorkout = mutation({
   args: {
@@ -261,8 +281,7 @@ export const getRollingLoad = query({
         trueTrainingHours: 0,
       };
 
-      const runMultiplier = (workout.totalRunMiles ?? 0) > 0 ? 1.1 : 1;
-      const stl = workout.rpe * (workout.trainingMinutes / 10) * runMultiplier;
+      const stl = calculateTrainingLoad(workout);
       const trainingHours = workout.trainingMinutes / 60;
 
       weeklyData.set(workout.week, {
@@ -411,8 +430,7 @@ export const getWeeklyTotals = query({
         wallballs: 0,
       };
 
-      const runMultiplier = (workout.totalRunMiles ?? 0) > 0 ? 1.1 : 1;
-      const stl = workout.rpe * (workout.trainingMinutes / 10) * runMultiplier;
+      const stl = calculateTrainingLoad(workout);
 
       const lt1 = workout.lt1Miles ?? 0;
       const lt2 = workout.lt2Miles ?? 0;
@@ -478,7 +496,7 @@ export const getWorkoutsDateRange = query({
       };
     }
 
-    const sortedVisibleWorkouts = [...visibleWorkouts].sort((a, b) =>
+    const sortedVisibleWorkouts = visibleWorkouts.toSorted((a, b) =>
       a.workoutDate.localeCompare(b.workoutDate),
     );
 

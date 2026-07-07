@@ -53,7 +53,8 @@ export const RUN_MIX_DEFINITIONS = [
 export const ROLLING_LOAD_DEFINITIONS = [
   {
     colorClassName: getColorClassName(chartColorsArray[0], "bg"),
-    description: "Subjective training load based on RPE and workout duration.",
+    description:
+      "Subjective training load scaled 3x from RPE and workout duration.",
     label: "Subjective Training Load",
   },
   {

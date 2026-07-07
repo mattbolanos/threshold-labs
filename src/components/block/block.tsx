@@ -1,5 +1,6 @@
 "use client";
 
+import type * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import {
@@ -22,7 +23,6 @@ import { TagBadge } from "@/components/workouts/tag-badge";
 import { TAG_CONFIG, type TagConfig } from "@/components/workouts/tag-config";
 import { cn, formatMinutesToTime } from "@/lib/utils";
 import type { Doc } from "../../../convex/_generated/dataModel";
-import { CircularProgress } from "../ui/circular-progress";
 import { BlockContent } from "./block-content";
 
 interface BlockProps {
@@ -31,37 +31,29 @@ interface BlockProps {
   className?: string;
 }
 
-const BaseCard = ({ workout, tagConfig, className }: BlockProps) => (
+const BaseCard = ({
+  workout,
+  tagConfig,
+  className,
+  ...props
+}: BlockProps & React.ComponentProps<"div">) => (
   <Card
     className={cn(
       className,
       "group/block sm:hover:bg-accent/60 w-full cursor-pointer overflow-hidden transition-colors duration-150",
     )}
+    {...props}
   >
-    <CardContent className="flex flex-col items-start gap-2.5 text-left">
+    <CardContent className="flex flex-col items-start gap-3 text-left">
       <CardTitle className="flex min-w-0 items-center gap-1.5">
-        {tagConfig?.icon && (
-          <tagConfig.icon
-            className={cn(
-              "stroke-2.5 size-4.5 shrink-0 self-start",
-              tagConfig.iconColor,
-            )}
-          />
-        )}
         <span className="text-sm leading-snug font-medium">
           {workout.title}
         </span>
       </CardTitle>
       <div className="flex items-center gap-1.5">
-        <span className="font-mono text-xs tabular-nums tracking-tight">
-          {formatMinutesToTime(workout.trainingMinutes)}
+        <span className="text-xs tabular-nums">
+          {formatMinutesToTime(workout.trainingMinutes)} • RPE {workout.rpe}/10
         </span>
-        <CircularProgress
-          showLabel
-          size={26}
-          strokeWidth={2.5}
-          value={workout.rpe}
-        />
       </div>
       <div className="flex flex-wrap items-center gap-1.5">
         {workout.tags.map((tag) => (
@@ -78,13 +70,16 @@ export function Block({ workout, className }: BlockProps) {
   return (
     <>
       <Dialog>
-        <DialogTrigger className="hidden w-full sm:inline-flex">
-          <BaseCard
-            className={className}
-            tagConfig={tagConfig}
-            workout={workout}
-          />
-        </DialogTrigger>
+        <DialogTrigger
+          nativeButton={false}
+          render={
+            <BaseCard
+              className={cn(className, "hidden w-full sm:inline-flex")}
+              tagConfig={tagConfig}
+              workout={workout}
+            />
+          }
+        />
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-1.5">
@@ -103,13 +98,16 @@ export function Block({ workout, className }: BlockProps) {
         </DialogContent>
       </Dialog>
       <Drawer>
-        <DrawerTrigger className="inline-flex w-full sm:hidden">
-          <BaseCard
-            className={className}
-            tagConfig={tagConfig}
-            workout={workout}
-          />
-        </DrawerTrigger>
+        <DrawerTrigger
+          nativeButton={false}
+          render={
+            <BaseCard
+              className={cn(className, "inline-flex w-full sm:hidden")}
+              tagConfig={tagConfig}
+              workout={workout}
+            />
+          }
+        />
         <DrawerContent>
           <DrawerHeader>
             <DrawerTitle className="flex items-center gap-1.5">
@@ -126,9 +124,7 @@ export function Block({ workout, className }: BlockProps) {
           </DrawerHeader>
           <BlockContent workout={workout} />
           <DrawerFooter>
-            <DrawerClose asChild>
-              <Button size="lg">Close</Button>
-            </DrawerClose>
+            <DrawerClose render={<Button size="lg" />}>Close</DrawerClose>
           </DrawerFooter>
         </DrawerContent>
       </Drawer>

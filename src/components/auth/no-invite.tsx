@@ -1,6 +1,6 @@
 import { IconMailX } from "@tabler/icons-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 
 export function NoInvite({ email }: { email: string }) {
   return (
@@ -29,9 +29,16 @@ export function NoInvite({ email }: { email: string }) {
             <li>Check for typos in your email address</li>
           </ul>
         </div>
-        <Button asChild className="mt-6 w-full" size="lg" variant="outline">
-          <Link href="/signup">Try a Different Email</Link>
-        </Button>
+        <Link
+          className={buttonVariants({
+            className: "mt-6 w-full",
+            size: "lg",
+            variant: "outline",
+          })}
+          href="/signup"
+        >
+          Try a Different Email
+        </Link>
         <p className="text-muted-foreground mt-4 text-sm">
           Already have an account?{" "}
           <Link

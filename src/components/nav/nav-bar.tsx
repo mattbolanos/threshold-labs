@@ -1,6 +1,5 @@
 "use client";
 import { useQuery } from "convex/react";
-import Image from "next/image";
 import Link from "next/link";
 import {
   NavigationMenu,
@@ -17,24 +16,21 @@ export function NavBar() {
   const user = useQuery(api.auth.getCurrentUser);
 
   return (
-    <header className="bg-background/95 section-slash sticky top-0 z-40 w-full border-b backdrop-blur-sm">
+    <header className="bg-background/95 sticky top-0 z-40 w-full border-b border-border/80 backdrop-blur-sm">
       <nav className="route-padding-x mx-auto flex h-12 w-full max-w-[var(--max-app-width)] items-center justify-between gap-4 md:h-14">
         <div className="flex items-center gap-6">
-          <Link href="/" prefetch>
-            <Image
-              alt="Threshold Lab"
-              className="size-20 md:size-25 dark:hidden"
-              height={100}
-              src="/wordmark-light.svg"
-              width={100}
-            />
-            <Image
-              alt="Threshold Lab"
-              className="hidden size-20 md:size-25 dark:block"
-              height={100}
-              src="/wordmark-dark.svg"
-              width={100}
-            />
+          <Link
+            aria-label="Threshold Lab home"
+            className="group/brand flex items-center gap-2"
+            href="/"
+            prefetch
+          >
+            <span className="bg-primary text-primary-foreground flex size-7 items-center justify-center rounded-md text-[10px] font-bold leading-none">
+              TL
+            </span>
+            <span className="text-foreground text-sm font-bold">
+              THRESHOLD LAB
+            </span>
           </Link>
           {/* desktop */}
           <NavigationMenu className="max-md:hidden">
@@ -46,12 +42,10 @@ export function NavBar() {
                 return (
                   <NavigationMenuItem key={link.href}>
                     <NavigationMenuLink
-                      asChild
                       className="text-muted-foreground hover:text-foreground rounded-md px-3 py-1.5 text-sm font-medium transition-colors duration-150 ease-in-out"
+                      render={<Link href={link.href} prefetch />}
                     >
-                      <Link href={link.href} prefetch>
-                        {link.label}
-                      </Link>
+                      {link.label}
                     </NavigationMenuLink>
                   </NavigationMenuItem>
                 );

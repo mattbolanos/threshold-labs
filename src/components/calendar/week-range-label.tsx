@@ -7,11 +7,7 @@ export function WeekRangeLabel() {
   const { weekStartDate } = useCalendarNav();
 
   const headerLabel = formatWeekRangeLabel(weekStartDate);
-  const mobileHeaderLabel = formatWeekRangeLabel(
-    weekStartDate,
-    "default",
-    true,
-  );
+  const mobileHeaderLabel = formatWeekRangeLabel(weekStartDate, true);
 
   return (
     <div className="flex flex-col">

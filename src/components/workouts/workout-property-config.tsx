@@ -1,4 +1,5 @@
 import {
+  IconBaguette,
   IconBike,
   IconBolt,
   IconBrain,
@@ -33,6 +34,7 @@ interface WorkoutPropertyConfig {
   icon: TablerIcon;
   label: string;
   getValue: (workout: Workout) => string | ReactNode | null | number;
+  suffix?: string;
 }
 
 export const WORKOUT_PROPERTY_CONFIG: WorkoutPropertyConfig[] = [
@@ -91,6 +93,12 @@ export const WORKOUT_PROPERTY_CONFIG: WorkoutPropertyConfig[] = [
     getValue: (workout) => workout.totalRunMiles,
     icon: IconRoad,
     label: "Run mi",
+  },
+  {
+    getValue: (workout) => workout.carbs,
+    icon: IconBaguette,
+    label: "Carbs",
+    suffix: "g",
   },
   {
     getValue: (workout) => workout.lt2Miles,

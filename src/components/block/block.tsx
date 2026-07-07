@@ -23,7 +23,6 @@ import { TagBadge } from "@/components/workouts/tag-badge";
 import { TAG_CONFIG, type TagConfig } from "@/components/workouts/tag-config";
 import { cn, formatMinutesToTime } from "@/lib/utils";
 import type { Doc } from "../../../convex/_generated/dataModel";
-import { CircularProgress } from "../ui/circular-progress";
 import { BlockContent } from "./block-content";
 
 interface BlockProps {
@@ -45,30 +44,16 @@ const BaseCard = ({
     )}
     {...props}
   >
-    <CardContent className="flex flex-col items-start gap-2.5 text-left">
+    <CardContent className="flex flex-col items-start gap-3 text-left">
       <CardTitle className="flex min-w-0 items-center gap-1.5">
-        {tagConfig?.icon && (
-          <tagConfig.icon
-            className={cn(
-              "stroke-2.5 size-4.5 shrink-0 self-start",
-              tagConfig.iconColor,
-            )}
-          />
-        )}
         <span className="text-sm leading-snug font-medium">
           {workout.title}
         </span>
       </CardTitle>
       <div className="flex items-center gap-1.5">
-        <span className="font-mono text-xs tabular-nums tracking-tight">
-          {formatMinutesToTime(workout.trainingMinutes)}
+        <span className="text-xs tabular-nums">
+          {formatMinutesToTime(workout.trainingMinutes)} • RPE {workout.rpe}/10
         </span>
-        <CircularProgress
-          showLabel
-          size={26}
-          strokeWidth={2.5}
-          value={workout.rpe}
-        />
       </div>
       <div className="flex flex-wrap items-center gap-1.5">
         {workout.tags.map((tag) => (

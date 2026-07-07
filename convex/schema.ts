@@ -11,6 +11,7 @@ export default defineSchema({
 
   workouts: defineTable({
     burpees: v.optional(v.number()),
+    carbs: v.optional(v.number()),
     cardioMinutes: v.optional(v.number()),
     isHidden: v.optional(v.boolean()),
     lt1Miles: v.optional(v.number()),

@@ -4,6 +4,7 @@ import {
   IconHeartBroken,
   IconListCheck,
   IconRun,
+  IconSleigh,
   IconStretching,
   IconTrophy,
   IconWeight,
@@ -70,6 +71,13 @@ export const TAG_CONFIG: TagConfig[] = [
     icon: IconTrophy,
     iconColor: "text-red-700",
     tag: "Race",
+  },
+  {
+    color:
+      "dark:text-foreground dark:bg-cyan-700 bg-cyan-500/20 text-cyan-700",
+    icon: IconSleigh,
+    iconColor: "text-cyan-700",
+    tag: "Sleds",
   },
   {
     color:

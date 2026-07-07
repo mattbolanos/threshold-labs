@@ -145,6 +145,22 @@ const assertAdmin = async (ctx: QueryCtx | MutationCtx) => {
 const isVisibleWorkout = (workout: { isHidden?: boolean }) =>
   workout.isHidden !== true;
 
+const TRAINING_LOAD_SCALE_FACTOR = 3;
+
+const calculateTrainingLoad = (workout: {
+  rpe: number;
+  totalRunMiles?: number;
+  trainingMinutes: number;
+}) => {
+  const runMultiplier = (workout.totalRunMiles ?? 0) > 0 ? 1.1 : 1;
+  return (
+    workout.rpe *
+    (workout.trainingMinutes / 10) *
+    runMultiplier *
+    TRAINING_LOAD_SCALE_FACTOR
+  );
+};
+
 export const createWorkout = mutation({
   args: {
     workout: workoutInputValidator,
@@ -261,8 +277,7 @@ export const getRollingLoad = query({
         trueTrainingHours: 0,
       };
 
-      const runMultiplier = (workout.totalRunMiles ?? 0) > 0 ? 1.1 : 1;
-      const stl = workout.rpe * (workout.trainingMinutes / 10) * runMultiplier;
+      const stl = calculateTrainingLoad(workout);
       const trainingHours = workout.trainingMinutes / 60;
 
       weeklyData.set(workout.week, {
@@ -411,8 +426,7 @@ export const getWeeklyTotals = query({
         wallballs: 0,
       };
 
-      const runMultiplier = (workout.totalRunMiles ?? 0) > 0 ? 1.1 : 1;
-      const stl = workout.rpe * (workout.trainingMinutes / 10) * runMultiplier;
+      const stl = calculateTrainingLoad(workout);
 
       const lt1 = workout.lt1Miles ?? 0;
       const lt2 = workout.lt2Miles ?? 0;

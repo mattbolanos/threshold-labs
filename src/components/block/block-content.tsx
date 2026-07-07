@@ -17,6 +17,7 @@ export function BlockContent({ workout }: BlockContentProps) {
         <PropertyRow
           key={property.label}
           label={{ icon: property.icon, title: property.label }}
+          suffix={property.suffix}
           value={property.getValue(workout)}
         />
       ))}

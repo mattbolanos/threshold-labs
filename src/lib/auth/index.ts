@@ -6,12 +6,15 @@ type CheckAuthOptions = {
 };
 
 const isVercelPreview = process.env.VERCEL_ENV === "preview";
+const isDev = process.env.NODE_ENV === "development";
 
 export const checkAuth = async ({
   allowUnauthenticatedPreview = false,
 }: CheckAuthOptions = {}) => {
-  if (allowUnauthenticatedPreview && isVercelPreview) {
-    return true;
+  if (allowUnauthenticatedPreview) {
+    if (isVercelPreview || isDev) {
+      return true;
+    }
   }
 
   const hasToken = await isAuthenticated();

@@ -10,19 +10,21 @@ interface PropertyRowProps {
   };
   value: string | ReactNode | null | undefined;
   labelClassName?: string;
+  suffix?: string;
 }
 
 export function PropertyRow({
   label,
   value,
   labelClassName,
+  suffix,
 }: PropertyRowProps) {
   if (value === null || value === undefined) return null;
 
   return (
     <div className="flex items-center justify-start gap-8">
       <PropertyLabel label={label} labelClassName={labelClassName} />
-      <PropertyValue value={value} />
+      <PropertyValue suffix={suffix} value={value} />
     </div>
   );
 }

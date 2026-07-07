@@ -2,6 +2,8 @@ import { type ClassValue, clsx } from "clsx";
 import { addDays } from "date-fns";
 import { twMerge } from "tailwind-merge";
 
+const TRAINING_LOAD_SCALE_FACTOR = 3;
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -71,7 +73,9 @@ export function calculateSTL(
   totalRunMiles: number | null,
 ): number {
   const runMultiplier = totalRunMiles !== null && totalRunMiles > 0 ? 1.1 : 1;
-  return rpe * (trainingMinutes / 10) * runMultiplier;
+  return (
+    rpe * (trainingMinutes / 10) * runMultiplier * TRAINING_LOAD_SCALE_FACTOR
+  );
 }
 
 export function formatWorkoutDate(date: Date): string {

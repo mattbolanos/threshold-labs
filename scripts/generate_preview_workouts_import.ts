@@ -45,7 +45,7 @@ type CliOptions = {
 };
 
 const DEFAULT_OUTPUT = ".generated/convex-preview-workouts.jsonl";
-const DEFAULT_WEEKS = 4;
+const DEFAULT_WEEKS = 52;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 const DAY_TEMPLATES: WorkoutKind[][] = [

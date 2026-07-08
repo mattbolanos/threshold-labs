@@ -19,9 +19,8 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { TagBadge } from "@/components/workouts/tag-badge";
 import { TAG_CONFIG, type TagConfig } from "@/components/workouts/tag-config";
-import { cn, formatMinutesToTime } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { BlockContent } from "./block-content";
 
@@ -31,38 +30,68 @@ interface BlockProps {
   className?: string;
 }
 
+const BLOCK_ACCENT_CLASS_BY_TAG: Record<string, string> = {
+  "Aerobic Cross Training": "bg-[#0f54fa]",
+  "Aerobic Run": "bg-[#0f5439]",
+  "Bad Heart Rate Data": "bg-[#839288]",
+  "Muscular Endurance": "bg-[#fa0f4d]",
+  "Quality Cross Training": "bg-[#0f54fa]",
+  "Quality HYROX": "bg-[#f57808]",
+  "Quality Running": "bg-[#f5a61f]",
+  Race: "bg-[#fa0f4d]",
+  Sleds: "bg-[#0f54fa]",
+  Strength: "bg-[#f57808]",
+};
+
+function getBlockAccentClass(tag: string | undefined) {
+  if (!tag) return "bg-[#6ee542]";
+  return BLOCK_ACCENT_CLASS_BY_TAG[tag] ?? "bg-[#6ee542]";
+}
+
+function formatBlockDuration(minutes: number) {
+  const roundedMinutes = Math.round(minutes);
+  const hours = Math.floor(roundedMinutes / 60);
+  const mins = roundedMinutes % 60;
+
+  return `${hours}:${mins.toString().padStart(2, "0")}`;
+}
+
 const BaseCard = ({
   workout,
   tagConfig,
   className,
   ...props
-}: BlockProps & React.ComponentProps<"div">) => (
-  <Card
-    className={cn(
-      className,
-      "group/block sm:hover:bg-accent/60 w-full cursor-pointer overflow-hidden transition-colors duration-150",
-    )}
-    {...props}
-  >
-    <CardContent className="flex flex-col items-start gap-3 text-left">
-      <CardTitle className="flex min-w-0 items-center gap-1.5">
-        <span className="text-sm leading-snug font-medium">
+}: BlockProps & React.ComponentProps<"div">) => {
+  const accentClass = getBlockAccentClass(tagConfig?.tag ?? workout.tags[0]);
+
+  return (
+    <Card
+      aria-label={`${workout.title}, ${formatBlockDuration(
+        workout.trainingMinutes,
+      )}, RPE ${workout.rpe}`}
+      className={cn(
+        className,
+        "group/block relative h-[52px] w-full cursor-pointer gap-0 overflow-hidden rounded-[7px] bg-[#0a0f0c] py-0 text-[#ecf1e9] ring-1 ring-[#141d19] transition-[background-color,box-shadow,transform] duration-150 sm:hover:-translate-y-px sm:hover:bg-[#0c120f] sm:hover:ring-[#1d2721]",
+      )}
+      {...props}
+    >
+      <div
+        className={cn(
+          "pointer-events-none absolute inset-y-[-1px] left-[-1px] w-[3px] rounded-[2px]",
+          accentClass,
+        )}
+      />
+      <CardContent className="flex h-[52px] min-w-0 flex-col items-start gap-[6px] px-[9px] py-[7px] text-left">
+        <CardTitle className="max-w-full truncate text-[12px] leading-[15px] font-semibold text-[#ecf1e9]">
           {workout.title}
+        </CardTitle>
+        <span className="max-w-full truncate text-[11px] leading-[14px] font-normal tabular-nums text-[#839288]">
+          {formatBlockDuration(workout.trainingMinutes)} - RPE {workout.rpe}
         </span>
-      </CardTitle>
-      <div className="flex items-center gap-1.5">
-        <span className="text-xs tabular-nums">
-          {formatMinutesToTime(workout.trainingMinutes)} • RPE {workout.rpe}/10
-        </span>
-      </div>
-      <div className="flex flex-wrap items-center gap-1.5">
-        {workout.tags.map((tag) => (
-          <TagBadge key={tag} tag={tag} />
-        ))}
-      </div>
-    </CardContent>
-  </Card>
-);
+      </CardContent>
+    </Card>
+  );
+};
 
 export function Block({ workout, className }: BlockProps) {
   const tagConfig = TAG_CONFIG.find((t) => t.tag === workout.tags[0]);

@@ -6,16 +6,12 @@ import { formatWeekRangeLabel } from "@/lib/utils";
 export function WeekRangeLabel() {
   const { weekStartDate } = useCalendarNav();
 
-  const headerLabel = formatWeekRangeLabel(weekStartDate);
-  const mobileHeaderLabel = formatWeekRangeLabel(weekStartDate, true);
+  const headerLabel = formatWeekRangeLabel(weekStartDate, true);
 
   return (
-    <div className="flex flex-col">
-      <span className="hidden text-lg font-semibold tracking-tight tabular-nums lg:flex">
+    <div className="flex min-w-0">
+      <span className="text-[13px] leading-4 font-normal tabular-nums text-[#839288]">
         {headerLabel}
-      </span>
-      <span className="text-base font-semibold tracking-tight tabular-nums lg:hidden">
-        {mobileHeaderLabel}
       </span>
     </div>
   );

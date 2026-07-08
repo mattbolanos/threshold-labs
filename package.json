@@ -40,10 +40,12 @@
   "private": true,
   "scripts": {
     "build": "next build --turbopack",
+    "convex:deploy": "bun scripts/deploy_convex_with_preview_seed.ts",
     "dev": "next dev --turbopack",
     "doctor": "npx react-doctor@latest",
     "format": "biome format --write",
     "lint": "biome check",
+    "seed:preview-workouts": "bun scripts/generate_preview_workouts_import.ts",
     "start": "next start",
     "typecheck": "tsc --noEmit"
   },

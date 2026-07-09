@@ -23,7 +23,7 @@ export function DayHeaders() {
             )}
             key={day.toISOString()}
           >
-            <span className="text-muted-foreground text-[11px] font-medium uppercase tracking-wider">
+            <span className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
               {day.toLocaleString("default", {
                 weekday: "short",
               })}

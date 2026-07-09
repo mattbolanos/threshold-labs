@@ -31,7 +31,7 @@ export function getWorkoutColumns({
           <p className="font-medium">{row.original.title}</p>
           <div className="flex flex-wrap items-center gap-1">
             {row.original.tags.map((tag) => (
-              <TagBadge className="text-[11px]" key={tag} tag={tag} />
+              <TagBadge className="text-xs" key={tag} tag={tag} />
             ))}
           </div>
         </div>

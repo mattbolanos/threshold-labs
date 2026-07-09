@@ -31,21 +31,21 @@ interface BlockProps {
 }
 
 const BLOCK_ACCENT_CLASS_BY_TAG: Record<string, string> = {
-  "Aerobic Cross Training": "bg-[#0f54fa]",
-  "Aerobic Run": "bg-[#0f5439]",
-  "Bad Heart Rate Data": "bg-[#839288]",
-  "Muscular Endurance": "bg-[#fa0f4d]",
-  "Quality Cross Training": "bg-[#0f54fa]",
-  "Quality HYROX": "bg-[#f57808]",
-  "Quality Running": "bg-[#f5a61f]",
-  Race: "bg-[#fa0f4d]",
-  Sleds: "bg-[#0f54fa]",
-  Strength: "bg-[#f57808]",
+  "Aerobic Cross Training": "bg-chart-3",
+  "Aerobic Run": "bg-chart-1",
+  "Bad Heart Rate Data": "bg-muted-foreground",
+  "Muscular Endurance": "bg-chart-5",
+  "Quality Cross Training": "bg-chart-3",
+  "Quality HYROX": "bg-chart-4",
+  "Quality Running": "bg-chart-2",
+  Race: "bg-chart-5",
+  Sleds: "bg-chart-3",
+  Strength: "bg-chart-4",
 };
 
 function getBlockAccentClass(tag: string | undefined) {
-  if (!tag) return "bg-[#6ee542]";
-  return BLOCK_ACCENT_CLASS_BY_TAG[tag] ?? "bg-[#6ee542]";
+  if (!tag) return "bg-primary";
+  return BLOCK_ACCENT_CLASS_BY_TAG[tag] ?? "bg-primary";
 }
 
 function formatBlockDuration(minutes: number) {
@@ -71,21 +71,21 @@ const BaseCard = ({
       )}, RPE ${workout.rpe}`}
       className={cn(
         className,
-        "group/block relative h-[52px] w-full cursor-pointer gap-0 overflow-hidden rounded-[7px] bg-[#0a0f0c] py-0 text-[#ecf1e9] ring-1 ring-[#141d19] transition-[background-color,box-shadow,transform] duration-150 sm:hover:-translate-y-px sm:hover:bg-[#0c120f] sm:hover:ring-[#1d2721]",
+        "group/block bg-card text-card-foreground ring-border sm:hover:bg-accent sm:hover:ring-border relative h-13 w-full cursor-pointer gap-0 overflow-hidden rounded-lg py-0 ring-1 transition-all duration-150 sm:hover:-translate-y-px",
       )}
       {...props}
     >
       <div
         className={cn(
-          "pointer-events-none absolute inset-y-[-1px] left-[-1px] w-[3px] rounded-[2px]",
+          "pointer-events-none absolute -inset-y-px -left-px w-1 rounded-xs",
           accentClass,
         )}
       />
-      <CardContent className="flex h-[52px] min-w-0 flex-col items-start gap-[6px] px-[9px] py-[7px] text-left">
-        <CardTitle className="max-w-full truncate text-[12px] leading-[15px] font-semibold text-[#ecf1e9]">
+      <CardContent className="flex h-13 min-w-0 flex-col items-start gap-1.5 px-2 py-2 text-left">
+        <CardTitle className="max-w-full truncate text-xs font-semibold">
           {workout.title}
         </CardTitle>
-        <span className="max-w-full truncate text-[11px] leading-[14px] font-normal tabular-nums text-[#839288]">
+        <span className="text-muted-foreground max-w-full truncate text-xs font-normal tabular-nums">
           {formatBlockDuration(workout.trainingMinutes)} - RPE {workout.rpe}
         </span>
       </CardContent>
@@ -120,7 +120,7 @@ export function Block({ workout, className }: BlockProps) {
                   )}
                 />
               )}
-              <span className="text-left leading-snug">{workout.title}</span>
+              <span className="text-left">{workout.title}</span>
             </DialogTitle>
           </DialogHeader>
           <BlockContent workout={workout} />
@@ -148,7 +148,7 @@ export function Block({ workout, className }: BlockProps) {
                   )}
                 />
               )}
-              <span className="text-left leading-snug">{workout.title}</span>
+              <span className="text-left">{workout.title}</span>
             </DrawerTitle>
           </DrawerHeader>
           <BlockContent workout={workout} />

@@ -176,7 +176,7 @@ export function AdminClientInviteForm() {
         ) : null}
 
         {statusMessage ? (
-          <p className="mt-3 inline-flex items-center gap-2 text-sm text-emerald-700 dark:text-emerald-400">
+          <p className="text-primary mt-3 inline-flex items-center gap-2 text-sm">
             <IconCheck aria-hidden className="size-4" />
             <span>{statusMessage}</span>
           </p>
@@ -271,7 +271,7 @@ export function AdminClientInviteForm() {
             <span className="text-sm font-medium">Invite Status</span>
             <div className="has-focus-within bg-background rounded-lg border">
               <Label
-                className="cursor-pointer items-start justify-between gap-4 p-3 leading-normal"
+                className="cursor-pointer items-start justify-between gap-4 p-3"
                 htmlFor={statusId}
               >
                 <span className="space-y-1">

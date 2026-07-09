@@ -291,7 +291,7 @@ export function TotalsTable() {
               colSpan={group.columns.length}
               key={group.label}
             >
-              <span className="text-muted-foreground text-[10px] font-semibold tracking-[0.1em] uppercase">
+              <span className="text-muted-foreground text-xs font-semibold tracking-widest uppercase">
                 {group.label}
               </span>
             </TableHead>

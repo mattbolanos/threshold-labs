@@ -36,7 +36,7 @@ function ToggleGroup({
   return (
     <ToggleGroupPrimitive
       className={cn(
-        "group/toggle-group flex w-fit flex-row items-center gap-[--spacing(var(--gap))] rounded-lg data-[size=sm]:rounded-[min(var(--radius-md),10px)] data-vertical:flex-col data-vertical:items-stretch",
+        "group/toggle-group flex w-fit flex-row items-center gap-(--gap) rounded-lg data-vertical:flex-col data-vertical:items-stretch data-[size=sm]:rounded-md",
         className,
       )}
       data-orientation={orientation}
@@ -44,7 +44,7 @@ function ToggleGroup({
       data-slot="toggle-group"
       data-spacing={spacing}
       data-variant={variant}
-      style={{ "--gap": spacing } as CSSProperties}
+      style={{ "--gap": `calc(var(--spacing) * ${spacing})` } as CSSProperties}
       {...props}
     >
       <ToggleGroupContext.Provider

@@ -43,7 +43,7 @@ export function LoggedWorkoutsSection({
     <>
       <div className="route-padding-x flex items-end justify-between">
         <div>
-          <p className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
+          <p className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
             Workouts
           </p>
           <h3 className="text-lg font-semibold tracking-tight">

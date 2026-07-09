@@ -94,7 +94,7 @@ const RunMixTooltip = createTooltip(
           });
           const colorClassName = payloadItem.color
             ? getColorClassName(payloadItem.color, "bg")
-            : "bg-gray-300";
+            : "bg-muted";
 
           return (
             <div className="flex items-center justify-between" key={dataKey}>

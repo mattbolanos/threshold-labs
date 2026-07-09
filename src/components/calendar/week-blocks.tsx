@@ -124,7 +124,7 @@ function getLoadPercent(dayLoad: number, maxDayLoad: number) {
 }
 
 function getLoadBarClass(loadPercent: number) {
-  return loadPercent >= 64 ? "bg-[#f5a61f]" : "bg-[#6ee542]";
+  return loadPercent >= 64 ? "bg-chart-2" : "bg-primary";
 }
 
 function WeekBlocksLoading({ weekDays }: { weekDays: Date[] }) {
@@ -137,24 +137,24 @@ function WeekBlocksLoading({ weekDays }: { weekDays: Date[] }) {
 
         return (
           <div
-            className="flex w-full flex-col overflow-hidden rounded-[8px] border border-[#141d19] bg-[#080c0a] p-[9px] lg:min-h-[270px]"
+            className="bg-card flex w-full flex-col overflow-hidden rounded-lg border p-2 lg:min-h-68"
             key={day.toISOString()}
           >
-            <div className="mb-[6px] flex h-[42px] items-start justify-between px-1 pt-0.5">
+            <div className="mb-1.5 flex h-10 items-start justify-between px-1 pt-0.5">
               <div className="min-w-0">
-                <p className="text-[10px] leading-[13px] font-bold text-[#839288]">
+                <p className="text-muted-foreground text-xs font-bold">
                   {weekday}
                 </p>
-                <p className="mt-[3px] text-[18px] leading-[23px] font-bold text-[#ecf1e9] tabular-nums">
+                <p className="mt-1 text-lg font-bold tabular-nums">
                   {day.getDate()}
                 </p>
               </div>
-              <Skeleton className="mt-[7px] h-[5px] w-[38px] rounded-[3px] bg-[#141d19]" />
+              <Skeleton className="bg-muted mt-2 h-1 w-10 rounded-sm" />
             </div>
-            <div className="flex w-full flex-1 flex-col gap-[6px]">
-              <Skeleton className="h-[52px] rounded-[7px] bg-[#0f1712]" />
-              <Skeleton className="h-[52px] rounded-[7px] bg-[#0f1712]" />
-              <Skeleton className="h-[52px] rounded-[7px] bg-[#0f1712]" />
+            <div className="flex w-full flex-1 flex-col gap-1.5">
+              <Skeleton className="bg-muted h-13 rounded-lg" />
+              <Skeleton className="bg-muted h-13 rounded-lg" />
+              <Skeleton className="bg-muted h-13 rounded-lg" />
             </div>
           </div>
         );
@@ -233,7 +233,7 @@ export function WeekBlocks() {
               key="empty"
               variants={emptyAnimationVariants}
             >
-              <EmptyWeekState className="border-[#141d19] bg-[#080c0a] text-[#ecf1e9] lg:min-h-[270px]" />
+              <EmptyWeekState className="bg-card text-card-foreground lg:min-h-68" />
             </m.div>
           ) : (
             <m.div
@@ -264,9 +264,8 @@ export function WeekBlocks() {
                 return (
                   <m.div
                     className={cn(
-                      "flex w-full flex-col overflow-hidden rounded-[8px] border border-[#141d19] bg-[#080c0a] p-[9px] transition-[border-color,box-shadow] lg:min-h-[270px]",
-                      isToday &&
-                        "border-[#6ee542]/70 shadow-[0_0_0_1px_rgba(110,229,66,0.18)]",
+                      "bg-card flex w-full flex-col overflow-hidden rounded-lg border p-2 transition-shadow lg:min-h-68",
+                      isToday && "border-primary/70 shadow-sm",
                     )}
                     key={dayString}
                     variants={{
@@ -275,31 +274,31 @@ export function WeekBlocks() {
                       visible: { opacity: 1 },
                     }}
                   >
-                    <div className="mb-[6px] flex h-[42px] items-start justify-between px-1 pt-0.5">
+                    <div className="mb-1.5 flex h-10 items-start justify-between px-1 pt-0.5">
                       <div className="min-w-0">
                         <p
                           className={cn(
-                            "text-[10px] leading-[13px] font-bold text-[#839288]",
-                            isToday && "text-[#6ee542]",
+                            "text-muted-foreground text-xs font-bold",
+                            isToday && "text-primary",
                           )}
                         >
                           {weekday}
                         </p>
-                        <p className="mt-[3px] text-[18px] leading-[23px] font-bold text-[#ecf1e9] tabular-nums">
+                        <p className="mt-1 text-lg font-bold tabular-nums">
                           {day.getDate()}
                         </p>
                       </div>
-                      <div className="mt-[7px] h-[5px] w-[38px] overflow-hidden rounded-[3px] bg-[#141d19]">
+                      <div className="bg-muted mt-2 h-1 w-10 overflow-hidden rounded-sm">
                         <div
                           className={cn(
-                            "h-full rounded-[3px] transition-[width,background-color] duration-300",
+                            "h-full rounded-sm transition-all duration-300",
                             getLoadBarClass(loadPercent),
                           )}
                           style={{ width: `${loadPercent}%` }}
                         />
                       </div>
                     </div>
-                    <div className="flex w-full flex-1 flex-col gap-[6px]">
+                    <div className="flex w-full flex-1 flex-col gap-1.5">
                       {dayWorkouts.map((workout, workoutIndex) => (
                         <m.div
                           className={cn(

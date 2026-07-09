@@ -115,9 +115,7 @@ const LegendItem = ({
       className={cn(
         // base
         "group inline-flex flex-nowrap items-center gap-1.5 rounded-sm px-2 py-1 whitespace-nowrap transition",
-        hasOnValueChange
-          ? "cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
-          : "cursor-default",
+        hasOnValueChange ? "hover:bg-muted cursor-pointer" : "cursor-default",
       )}
       onClick={(e) => {
         e.stopPropagation();
@@ -146,9 +144,8 @@ const LegendItem = ({
           // base
           "truncate text-xs whitespace-nowrap",
           // text color
-          "text-gray-700 dark:text-gray-300",
-          hasOnValueChange &&
-            "group-hover:text-gray-900 dark:group-hover:text-gray-50",
+          "text-muted-foreground",
+          hasOnValueChange && "group-hover:text-foreground",
           activeLegend && activeLegend !== name ? "opacity-40" : "opacity-100",
         )}
       >
@@ -193,8 +190,8 @@ const ScrollButton = ({ icon, onClick, disabled }: ScrollButtonProps) => {
         // base
         "group inline-flex size-5 items-center truncate rounded-sm transition",
         disabled
-          ? "cursor-not-allowed text-gray-400 dark:text-gray-600"
-          : "cursor-pointer text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-50",
+          ? "text-muted-foreground cursor-not-allowed opacity-50"
+          : "text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer",
       )}
       disabled={disabled}
       onClick={(e) => {
@@ -468,7 +465,7 @@ const ChartLegend = (
         "flex items-center",
         { "justify-center": legendPosition === "center" },
         {
-          "justify-start pl-1.5": legendPosition === "left",
+          "-ml-1 justify-start": legendPosition === "left",
         },
         { "justify-end": legendPosition === "right" },
       )}
@@ -532,7 +529,7 @@ const ChartTooltip = ({
           // base
           "rounded-md border text-sm shadow-md",
           // border color
-          "border-gray-200 dark:border-gray-800",
+          "border-border",
           // background color
           "bg-card",
         )}
@@ -543,7 +540,7 @@ const ChartTooltip = ({
               // base
               "font-medium",
               // text color
-              "text-gray-900 dark:text-gray-50",
+              "text-foreground",
             )}
           >
             {labelFormatter ? labelFormatter(label) : label}
@@ -592,7 +589,7 @@ const ChartTooltip = ({
                       // base
                       "text-right whitespace-nowrap",
                       // text color
-                      "text-gray-700 dark:text-gray-300",
+                      "text-muted-foreground",
                     )}
                   >
                     {category}
@@ -603,7 +600,7 @@ const ChartTooltip = ({
                     // base
                     "text-right font-medium whitespace-nowrap tabular-nums",
                     // text color
-                    "text-gray-900 dark:text-gray-50",
+                    "text-foreground",
                   )}
                 >
                   {chartType === "bar"

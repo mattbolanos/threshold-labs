@@ -4,7 +4,7 @@ import { buttonVariants } from "@/components/ui/button";
 
 export function NoInvite({ email }: { email: string }) {
   return (
-    <div className="bg-card/80 rounded-2xl border p-8 shadow-xl shadow-black/5 backdrop-blur-sm">
+    <div className="bg-card/80 shadow-foreground/5 rounded-2xl border p-8 shadow-xl backdrop-blur-sm">
       <div className="flex flex-col items-center text-center">
         <div className="bg-destructive/10 mb-4 flex size-14 items-center justify-center rounded-full">
           <IconMailX className="text-destructive size-7" />

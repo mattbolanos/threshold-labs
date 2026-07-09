@@ -36,12 +36,10 @@ export default async function Home() {
 
       {/* Calendar Section */}
       <section className="route-padding-x">
-        <div className="rounded-[10px] border border-[#1d2721] bg-[#030605] px-4 pt-4 pb-5 text-[#ecf1e9] shadow-[0_18px_60px_rgba(0,0,0,0.22)] sm:min-h-87 lg:px-[19px] lg:pt-[17px] lg:pb-[21px]">
-          <div className="mb-[14px] flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div className="flex flex-wrap items-baseline gap-x-[17px] gap-y-1">
-              <h2 className="text-[18px] leading-[23px] font-bold text-[#ecf1e9]">
-                Schedule
-              </h2>
+        <div className="bg-card text-card-foreground rounded-xl border px-4 pt-4 pb-5 shadow-lg sm:min-h-87 lg:px-5 lg:pt-4 lg:pb-5">
+          <div className="mb-3.5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+              <h2 className="text-lg font-bold">Schedule</h2>
               <WeekRangeLabel />
             </div>
           </div>
@@ -53,13 +51,13 @@ export default async function Home() {
       <section className="route-padding-x grid gap-4 md:grid-cols-2">
         <SelectedWeekSummary />
 
-        <Card className="min-h-[218px] w-full gap-0 rounded-[10px] border border-[#1d2721] bg-[#060a08] py-0 text-[#ecf1e9]">
-          <CardHeader className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-1 px-[19px] pt-[17px] pb-0">
+        <Card className="min-h-54 w-full gap-0 rounded-xl py-0">
+          <CardHeader className="flex flex-row items-start justify-between gap-4 px-5 pt-4 pb-0">
             <div className="min-w-0">
-              <CardTitle className="text-[17px] leading-[21px] font-bold text-[#ecf1e9]">
+              <CardTitle className="text-base font-bold">
                 Base Fitness + Impact
               </CardTitle>
-              <CardDescription className="mt-1 text-[12px] leading-[15px] text-[#839288]">
+              <CardDescription className="text-muted-foreground mt-1 text-xs">
                 42d base fitness vs 7d training impact.
               </CardDescription>
             </div>
@@ -68,18 +66,18 @@ export default async function Home() {
               title="Base Fitness"
             />
           </CardHeader>
-          <CardContent className="px-[19px] pt-2 pb-3">
+          <CardContent className="px-5 pt-2 pb-3">
             <BaseFitnessChart />
           </CardContent>
         </Card>
 
-        <Card className="min-h-[218px] w-full gap-0 rounded-[10px] border border-[#1d2721] bg-[#060a08] py-0 text-[#ecf1e9]">
-          <CardHeader className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-1 px-[19px] pt-[17px] pb-0">
+        <Card className="min-h-54 w-full gap-0 rounded-xl py-0">
+          <CardHeader className="flex flex-row items-start justify-between gap-4 px-5 pt-4 pb-0">
             <div className="min-w-0">
-              <CardTitle className="text-[17px] leading-[21px] font-bold text-[#ecf1e9]">
+              <CardTitle className="text-base font-bold">
                 Run Volume Mix
               </CardTitle>
-              <CardDescription className="mt-1 text-[12px] leading-[15px] text-[#839288]">
+              <CardDescription className="text-muted-foreground mt-1 text-xs">
                 Easy, quality, trail, warmup/cooldown.
               </CardDescription>
             </div>
@@ -88,18 +86,18 @@ export default async function Home() {
               title="Run Volume Mix"
             />
           </CardHeader>
-          <CardContent className="px-[19px] pt-2 pb-3">
+          <CardContent className="px-5 pt-2 pb-3">
             <RunMixChart />
           </CardContent>
         </Card>
 
-        <Card className="min-h-[218px] w-full gap-0 rounded-[10px] border border-[#1d2721] bg-[#060a08] py-0 text-[#ecf1e9]">
-          <CardHeader className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-1 px-[19px] pt-[17px] pb-0">
+        <Card className="min-h-54 w-full gap-0 rounded-xl py-0">
+          <CardHeader className="flex flex-row items-start justify-between gap-4 px-5 pt-4 pb-0">
             <div className="min-w-0">
-              <CardTitle className="text-[17px] leading-[21px] font-bold text-[#ecf1e9]">
+              <CardTitle className="text-base font-bold">
                 Training Load
               </CardTitle>
-              <CardDescription className="mt-1 text-[12px] leading-[15px] text-[#839288]">
+              <CardDescription className="text-muted-foreground mt-1 text-xs">
                 Weekly load with target range.
               </CardDescription>
             </div>
@@ -108,7 +106,7 @@ export default async function Home() {
               title="Training Load"
             />
           </CardHeader>
-          <CardContent className="px-[19px] pt-2 pb-3">
+          <CardContent className="px-5 pt-2 pb-3">
             <RollingLoadChart />
           </CardContent>
         </Card>

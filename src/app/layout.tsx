@@ -18,6 +18,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  appleWebApp: {
+    title: "Threshold Lab",
+  },
   description: "Train Smarter. Race Faster.",
   title: "Threshold Lab",
 };

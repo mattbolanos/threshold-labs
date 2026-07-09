@@ -60,11 +60,9 @@ function SummaryMetric({
 }) {
   const isLargeValue = label === "Subjective Load";
   return (
-    <div className="min-h-[52px] rounded-[8px] border border-[#141d19] bg-[#080c0a] px-[11px] py-[7px]">
-      <p className="text-[10px] leading-[13px] font-bold text-[#839288]">
-        {label}
-      </p>
-      <div className="mt-[2px] flex items-end gap-3">
+    <div className="bg-card min-h-13 rounded-lg border px-3 py-2">
+      <p className="text-muted-foreground text-xs font-bold">{label}</p>
+      <div className="mt-0.5 flex items-end gap-3">
         {loading ? (
           <Skeleton className={cn("h-7 w-11", isLargeValue && "w-18")} />
         ) : (
@@ -84,19 +82,17 @@ function SummarySkeleton({ className }: { className?: string }) {
   return (
     <Card
       className={cn(
-        "min-h-[154px] gap-0 rounded-[10px] border border-[#1d2721] bg-[#060a08] py-0 text-[#ecf1e9]",
+        "bg-card text-card-foreground min-h-38 gap-0 rounded-xl border py-0",
         className,
       )}
     >
-      <CardHeader className="gap-1 px-[19px] pt-[17px] pb-0">
-        <CardTitle className="text-[17px] leading-[21px] font-bold text-[#ecf1e9]">
-          Weekly Summary
-        </CardTitle>
-        <CardDescription className="text-[12px] leading-[15px] text-[#839288]">
+      <CardHeader className="gap-1 px-5 pt-4 pb-0">
+        <CardTitle className="text-base font-bold">Weekly Summary</CardTitle>
+        <CardDescription className="text-muted-foreground text-xs">
           A fast read on the selected week.
         </CardDescription>
       </CardHeader>
-      <CardContent className="grid gap-3 px-[19px] pt-3 pb-[17px] sm:grid-cols-2">
+      <CardContent className="grid gap-3 px-5 pt-3 pb-4 sm:grid-cols-2">
         <SummaryMetric
           helper="true time"
           label="Training Hours"
@@ -156,19 +152,17 @@ export function WeekSummary({ workouts, className }: WeekSummaryProps) {
   return (
     <Card
       className={cn(
-        "min-h-[154px] gap-0 rounded-[10px] border border-[#1d2721] bg-[#060a08] py-0 text-[#ecf1e9]",
+        "bg-card text-card-foreground min-h-38 gap-0 rounded-xl border py-0",
         className,
       )}
     >
-      <CardHeader className="gap-1 px-[19px] pt-[17px] pb-0">
-        <CardTitle className="text-[17px] leading-[21px] font-bold text-[#ecf1e9]">
-          Weekly Summary
-        </CardTitle>
-        <CardDescription className="text-[12px] leading-[15px] text-[#839288]">
+      <CardHeader className="gap-1 px-5 pt-4 pb-0">
+        <CardTitle className="text-base font-bold">Weekly Summary</CardTitle>
+        <CardDescription className="text-muted-foreground text-xs">
           A fast read on the selected week.
         </CardDescription>
       </CardHeader>
-      <CardContent className="grid gap-3 px-[19px] pt-3 pb-[17px] sm:grid-cols-2">
+      <CardContent className="grid gap-3 px-5 pt-3 pb-4 sm:grid-cols-2">
         <SummaryMetric
           helper="true time"
           label="Training Hours"

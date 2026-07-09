@@ -10,7 +10,7 @@ export function WeekRangeLabel() {
 
   return (
     <div className="flex min-w-0">
-      <span className="text-[13px] leading-4 font-normal tabular-nums text-[#839288]">
+      <span className="text-muted-foreground text-xs font-normal tabular-nums">
         {headerLabel}
       </span>
     </div>

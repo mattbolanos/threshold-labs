@@ -141,7 +141,7 @@ function CreateWorkoutForm() {
 
         <div className="route-padding-x flex items-end justify-between">
           <div>
-            <p className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
+            <p className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
               Admin
             </p>
             <h2 className="text-lg font-semibold tracking-tight">
@@ -219,7 +219,7 @@ function EditWorkoutForm({ workoutId }: { workoutId: string }) {
           <AdminBackLink />
         </div>
         <div className="route-padding-x">
-          <p className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
+          <p className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
             Admin
           </p>
           <h2 className="text-lg font-semibold tracking-tight">Loading…</h2>
@@ -235,7 +235,7 @@ function EditWorkoutForm({ workoutId }: { workoutId: string }) {
           <AdminBackLink />
         </div>
         <div className="route-padding-x">
-          <p className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
+          <p className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
             Admin
           </p>
           <h2 className="text-lg font-semibold tracking-tight">
@@ -320,7 +320,7 @@ function LoadedEditWorkoutForm({ workout }: { workout: Workout }) {
 
         <div className="route-padding-x flex items-end justify-between">
           <div>
-            <p className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
+            <p className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
               Admin
             </p>
             <h2 className="text-lg font-semibold tracking-tight">

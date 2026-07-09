@@ -29,7 +29,7 @@ export function NavUser({ user }: NavUserProps) {
         render={
           <button
             aria-label={`${username} menu`}
-            className="max-md:hidden rounded-full outline-hidden transition-[opacity,transform] duration-150 ease-in-out hover:scale-105 hover:opacity-85 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="focus-visible:ring-ring focus-visible:ring-offset-background rounded-full outline-hidden transition-all duration-150 ease-in-out hover:scale-105 hover:opacity-85 focus-visible:ring-2 focus-visible:ring-offset-2 max-md:hidden"
             type="button"
           />
         }

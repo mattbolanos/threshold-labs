@@ -31,7 +31,7 @@ export function AdminAddClientPage({
       </div>
 
       <div className="route-padding-x">
-        <p className="text-muted-foreground text-xs font-medium tracking-[0.15em] uppercase">
+        <p className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
           Access
         </p>
         <h2 className="text-lg font-semibold tracking-tight">Add Client</h2>

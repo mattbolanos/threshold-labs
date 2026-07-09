@@ -44,19 +44,19 @@ export function MobileMenu() {
       >
         <div
           className={cn(
-            "bg-foreground h-0.5 w-[14px] transition-transform duration-200",
-            open && "translate-y-[3px] scale-105 -rotate-45",
+            "bg-foreground h-0.5 w-3.5 transition-transform duration-200",
+            open && "translate-y-1 scale-105 -rotate-45",
           )}
         />
         <div
           className={cn(
-            "bg-foreground h-0.5 w-[14px] transition-transform duration-200",
-            open && "-translate-y-[3px] scale-105 rotate-45",
+            "bg-foreground h-0.5 w-3.5 transition-transform duration-200",
+            open && "-translate-y-1 scale-105 rotate-45",
           )}
         />
       </Button>
       {open && (
-        <div className="bg-background animate-in fade-out fixed top-0 left-0 z-[99] mt-12.5 min-h-screen w-full overflow-y-auto transition-opacity duration-200">
+        <div className="bg-background animate-in fade-out fixed top-0 left-0 z-50 mt-12.5 min-h-screen w-full overflow-y-auto transition-opacity duration-200">
           <ul className="p-2.5 pt-4">
             <li className={ITEM_CLASS}>
               <Link href="/">Home Page</Link>

@@ -48,12 +48,10 @@ function isCardioWorkout(workout: Workouts) {
 }
 
 function SummaryMetric({
-  helper,
   label,
   loading,
   value,
 }: {
-  helper: string;
   label: string;
   loading?: boolean;
   value: number;
@@ -70,9 +68,7 @@ function SummaryMetric({
             {oneDecimalFormatter.format(value)}
           </span>
         )}
-        <span className="text-muted-foreground ml-auto pb-1 text-xs">
-          {helper}
-        </span>
+
       </div>
     </div>
   );
@@ -94,25 +90,21 @@ function SummarySkeleton({ className }: { className?: string }) {
       </CardHeader>
       <CardContent className="grid gap-3 px-5 pt-3 pb-4 sm:grid-cols-2">
         <SummaryMetric
-          helper="true time"
           label="Training Hours"
           loading
           value={0}
         />
         <SummaryMetric
-          helper="session RPE x duration"
           label="Subjective Load"
           loading
           value={0}
         />
         <SummaryMetric
-          helper="planned / completed"
           label="Run Miles"
           loading
           value={0}
         />
         <SummaryMetric
-          helper="run + bike + ergs"
           label="Cardio Hours"
           loading
           value={0}
@@ -165,22 +157,18 @@ export function WeekSummary({ workouts, className }: WeekSummaryProps) {
       </CardHeader>
       <CardContent className="grid gap-3 px-5 pt-3 pb-4 sm:grid-cols-2">
         <SummaryMetric
-          helper="true time"
-          label="Training Hours"
+          label="True Training Hours"
           value={totalTrainingMinutes / 60}
         />
         <SummaryMetric
-          helper="session RPE x duration"
-          label="Subjective Load"
+          label="Subjective Training Load"
           value={totalSubjectiveTrainingLoad}
         />
         <SummaryMetric
-          helper="planned / completed"
           label="Run Miles"
           value={totalRunMiles}
         />
         <SummaryMetric
-          helper="run + bike + ergs"
           label="Cardio Hours"
           value={totalCardioMinutes / 60}
         />

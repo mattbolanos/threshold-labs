@@ -6,6 +6,8 @@ import { ComboChart } from "@/components/ui/chart/combo-chart";
 import { useChartState } from "@/hooks/use-chart-state";
 import { api } from "../../../convex/_generated/api";
 
+const Y_AXIS_PADDING_RATIO = 0.1;
+
 const formatFitnessValue = (value: number) =>
   value.toLocaleString("en-US", {
     maximumFractionDigits: 0,
@@ -19,6 +21,26 @@ const formatDate = (value: number | string) =>
     timeZone: "UTC",
   });
 
+const getPaddedYAxisDomain = (
+  data: ReadonlyArray<{ baseFitness: number; trainingImpact: number }>,
+) => {
+  if (data.length === 0) {
+    return { maxValue: undefined, minValue: undefined };
+  }
+
+  const fitnessValues = data.flatMap(({ baseFitness, trainingImpact }) => [
+    baseFitness,
+    trainingImpact,
+  ]);
+  const dataMin = Math.min(...fitnessValues);
+  const dataMax = Math.max(...fitnessValues);
+
+  return {
+    maxValue: dataMax * (1 + Y_AXIS_PADDING_RATIO),
+    minValue: Math.max(dataMin * (1 - Y_AXIS_PADDING_RATIO), Number.EPSILON),
+  };
+};
+
 export function BaseFitnessChart() {
   const { range } = useChartState();
 
@@ -30,6 +52,8 @@ export function BaseFitnessChart() {
   if (data === undefined) {
     return <ChartSkeleton />;
   }
+
+  const { maxValue, minValue } = getPaddedYAxisDomain(data);
 
   return (
     <ComboChart
@@ -45,6 +69,8 @@ export function BaseFitnessChart() {
       barSeries={{
         allowDecimals: false,
         categories: [],
+        maxValue,
+        minValue,
         valueFormatter: formatFitnessValue,
       }}
       data={data}

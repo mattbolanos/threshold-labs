@@ -112,7 +112,7 @@ export function Block({ workout, className }: BlockProps) {
               <span className="text-left">{workout.title}</span>
             </DialogTitle>
           </DialogHeader>
-          <BlockContent className="max-h-[80svh]" workout={workout} />
+          <BlockContent className="max-h-[70svh]" workout={workout} />
         </DialogContent>
       </Dialog>
       <Drawer>

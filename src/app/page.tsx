@@ -5,6 +5,7 @@ import {
   RUN_MIX_DEFINITIONS,
 } from "@/app/constants";
 import { SelectedWeekSummary } from "@/components/block/selected-week-summary";
+import { MobileWeekSummary } from "@/components/calendar/mobile-week-summary";
 import { TrainingPageHeader } from "@/components/calendar/training-page-header";
 import { WeekBlocks } from "@/components/calendar/week-blocks";
 import { WeekRangeLabel } from "@/components/calendar/week-range-label";
@@ -31,18 +32,19 @@ export default async function Home() {
   await checkAuth({ allowUnauthenticatedPreview: true });
 
   return (
-    <div className="bg-background route-padding-y mx-auto flex max-w-7xl flex-col gap-4">
+    <div className="route-padding-y mx-auto flex max-w-7xl flex-col gap-4 bg-background">
       <TrainingPageHeader />
 
       {/* Calendar Section */}
       <section className="route-padding-x">
-        <div className="bg-card text-card-foreground rounded-xl border px-4 pt-4 pb-5 shadow-lg lg:min-h-90 lg:px-5 lg:pt-4 lg:pb-5">
+        <div className="rounded-xl border bg-card px-4 pt-4 pb-5 text-card-foreground shadow-lg lg:min-h-90 lg:px-5 lg:pt-4 lg:pb-5">
           <div className="mb-3.5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
               <h2 className="text-lg font-bold">Schedule</h2>
               <WeekRangeLabel />
             </div>
           </div>
+          <MobileWeekSummary />
           <WeekBlocks />
         </div>
       </section>
@@ -57,7 +59,7 @@ export default async function Home() {
               <CardTitle className="text-base font-bold">
                 Base Fitness + Impact
               </CardTitle>
-              <CardDescription className="text-muted-foreground mt-1 text-xs">
+              <CardDescription className="mt-1 text-xs text-muted-foreground">
                 42d base fitness vs 7d training impact.
               </CardDescription>
             </div>
@@ -77,7 +79,7 @@ export default async function Home() {
               <CardTitle className="text-base font-bold">
                 Run Volume Mix
               </CardTitle>
-              <CardDescription className="text-muted-foreground mt-1 text-xs">
+              <CardDescription className="mt-1 text-xs text-muted-foreground">
                 Easy, quality, trail, warmup/cooldown.
               </CardDescription>
             </div>
@@ -97,7 +99,7 @@ export default async function Home() {
               <CardTitle className="text-base font-bold">
                 Training Load
               </CardTitle>
-              <CardDescription className="text-muted-foreground mt-1 text-xs">
+              <CardDescription className="mt-1 text-xs text-muted-foreground">
                 Weekly load with target range.
               </CardDescription>
             </div>

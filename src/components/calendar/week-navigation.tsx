@@ -62,7 +62,7 @@ export function WeekNavigation() {
       <ButtonGroup className="lg:hidden">
         <Button
           aria-label="Go to This Week"
-          className="text-xs"
+          className="w-full text-xs"
           onClick={jumpToToday}
           size="sm"
           variant="outline"

@@ -9,8 +9,8 @@ export function WeekRangeLabel() {
   const headerLabel = formatWeekRangeLabel(weekStartDate, true);
 
   return (
-    <div className="flex min-w-0">
-      <span className="text-muted-foreground text-xs font-normal tabular-nums">
+    <div className="ml-auto flex min-w-0 lg:ml-0">
+      <span className="text-sm font-normal text-muted-foreground tabular-nums">
         {headerLabel}
       </span>
     </div>

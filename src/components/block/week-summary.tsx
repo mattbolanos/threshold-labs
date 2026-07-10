@@ -58,8 +58,8 @@ function SummaryMetric({
 }) {
   const isLargeValue = label === "Subjective Load";
   return (
-    <div className="bg-card min-h-13 rounded-lg border px-3 py-2">
-      <p className="text-muted-foreground text-xs font-bold">{label}</p>
+    <div className="min-h-13 rounded-lg border bg-card px-3 py-2">
+      <p className="text-xs font-bold text-muted-foreground">{label}</p>
       <div className="mt-0.5 flex items-end gap-3">
         {loading ? (
           <Skeleton className={cn("h-7 w-11", isLargeValue && "w-18")} />
@@ -68,7 +68,6 @@ function SummaryMetric({
             {oneDecimalFormatter.format(value)}
           </span>
         )}
-
       </div>
     </div>
   );
@@ -78,37 +77,21 @@ function SummarySkeleton({ className }: { className?: string }) {
   return (
     <Card
       className={cn(
-        "bg-card text-card-foreground min-h-38 gap-0 rounded-xl border py-0",
+        "min-h-38 gap-0 rounded-xl border bg-card py-0 text-card-foreground",
         className,
       )}
     >
       <CardHeader className="gap-1 px-5 pt-4 pb-0">
         <CardTitle className="text-base font-bold">Weekly Summary</CardTitle>
-        <CardDescription className="text-muted-foreground text-xs">
+        <CardDescription className="text-xs text-muted-foreground">
           A fast read on the selected week.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-3 px-5 pt-3 pb-4 sm:grid-cols-2">
-        <SummaryMetric
-          label="Training Hours"
-          loading
-          value={0}
-        />
-        <SummaryMetric
-          label="Subjective Load"
-          loading
-          value={0}
-        />
-        <SummaryMetric
-          label="Run Miles"
-          loading
-          value={0}
-        />
-        <SummaryMetric
-          label="Cardio Hours"
-          loading
-          value={0}
-        />
+        <SummaryMetric label="Training Hours" loading value={0} />
+        <SummaryMetric label="Subjective Load" loading value={0} />
+        <SummaryMetric label="Run Miles" loading value={0} />
+        <SummaryMetric label="Cardio Hours" loading value={0} />
       </CardContent>
     </Card>
   );
@@ -144,14 +127,13 @@ export function WeekSummary({ workouts, className }: WeekSummaryProps) {
   return (
     <Card
       className={cn(
-        "bg-card text-card-foreground min-h-38 gap-0 rounded-xl border py-0",
-        totalSubjectiveTrainingLoad === 0 && "lg:flex hidden",
+        "hidden min-h-38 gap-0 rounded-xl border bg-card py-0 text-card-foreground lg:flex",
         className,
       )}
     >
       <CardHeader className="gap-1 px-5 pt-4 pb-0">
         <CardTitle className="text-base font-bold">Weekly Summary</CardTitle>
-        <CardDescription className="text-muted-foreground text-xs">
+        <CardDescription className="text-xs text-muted-foreground">
           A fast read on the selected week.
         </CardDescription>
       </CardHeader>
@@ -164,14 +146,8 @@ export function WeekSummary({ workouts, className }: WeekSummaryProps) {
           label="Subjective Training Load"
           value={totalSubjectiveTrainingLoad}
         />
-        <SummaryMetric
-          label="Run Miles"
-          value={totalRunMiles}
-        />
-        <SummaryMetric
-          label="Cardio Hours"
-          value={totalCardioMinutes / 60}
-        />
+        <SummaryMetric label="Run Miles" value={totalRunMiles} />
+        <SummaryMetric label="Cardio Hours" value={totalCardioMinutes / 60} />
       </CardContent>
     </Card>
   );

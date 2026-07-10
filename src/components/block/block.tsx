@@ -57,7 +57,7 @@ const BaseCard = ({
       )}, RPE ${workout.rpe}, tags: ${tagLabel}`}
       className={cn(
         className,
-        "group/block bg-card text-card-foreground ring-border sm:hover:bg-accent sm:hover:ring-border relative h-13 w-full cursor-pointer gap-0 overflow-hidden rounded-lg py-0 ring-1 transition-all duration-150 sm:hover:-translate-y-px",
+        "group/block relative h-13 w-full cursor-pointer gap-0 overflow-hidden rounded-lg bg-card py-0 text-card-foreground ring-1 ring-border transition-all duration-150 sm:hover:-translate-y-px sm:hover:bg-accent sm:hover:ring-border",
       )}
       title={tagLabel}
       {...props}
@@ -69,14 +69,14 @@ const BaseCard = ({
           {tagOverflowCount > 0 && (
             <span
               aria-hidden
-              className="text-muted-foreground shrink-0 text-xs font-medium tabular-nums"
+              className="shrink-0 text-xs font-medium text-muted-foreground tabular-nums"
             >
               +{tagOverflowCount}
             </span>
           )}
         </CardTitle>
-        <span className="text-muted-foreground max-w-full truncate text-xs font-normal tabular-nums">
-          {formatBlockDuration(workout.trainingMinutes)} - RPE {workout.rpe}
+        <span className="max-w-full truncate text-xs font-normal text-muted-foreground tabular-nums">
+          {formatBlockDuration(workout.trainingMinutes)} • RPE {workout.rpe}
         </span>
       </CardContent>
     </Card>

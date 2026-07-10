@@ -7,6 +7,7 @@ import { RollingLoadChart } from "@/components/chart/rolling-load";
 import { RunMixChart } from "@/components/chart/run-mix";
 import { TotalsTable } from "@/components/totals/totals-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChartStateProvider } from "@/hooks/use-chart-state";
 import { checkAuth } from "@/lib/auth";
 
 export const metadata: Metadata = {
@@ -23,56 +24,62 @@ export default async function TotalsPage() {
         <AdminBackLink />
       </div>
 
-      <div className="route-padding-x flex items-end justify-between">
-        <div>
-          <p className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
-            Admin
-          </p>
-          <h2 className="text-lg font-semibold tracking-tight">
-            Weekly Totals
-          </h2>
+      <ChartStateProvider>
+        <div className="route-padding-x flex items-end justify-between">
+          <div>
+            <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
+              Admin
+            </p>
+            <h2 className="text-lg font-semibold tracking-tight">
+              Weekly Totals
+            </h2>
+          </div>
+          <ChartControls />
         </div>
-        <ChartControls />
-      </div>
 
-      <div className="route-padding-x grid gap-4 lg:grid-cols-2">
-        <Card className="w-full gap-0 overflow-hidden lg:col-span-2">
-          <CardHeader className="pl-5">
-            <CardTitle className="text-sm font-medium">Weekly Totals</CardTitle>
-          </CardHeader>
-          <CardContent className="px-0 pb-0">
-            <TotalsTable />
-          </CardContent>
-        </Card>
+        <div className="route-padding-x grid gap-4 lg:grid-cols-2">
+          <Card className="w-full gap-0 overflow-hidden lg:col-span-2">
+            <CardHeader className="pl-5">
+              <CardTitle className="text-sm font-medium">
+                Weekly Totals
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-0 pb-0">
+              <TotalsTable />
+            </CardContent>
+          </Card>
 
-        <Card className="w-full gap-0 overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between pl-5">
-            <CardTitle className="text-sm font-medium">
-              Run Volume Mix
-            </CardTitle>
-            <InfoPopover
-              definitions={RUN_MIX_DEFINITIONS}
-              title="Run Volume Mix"
-            />
-          </CardHeader>
-          <CardContent>
-            <RunMixChart />
-          </CardContent>
-        </Card>
+          <Card className="w-full gap-0 overflow-hidden">
+            <CardHeader className="flex flex-row items-center justify-between pl-5">
+              <CardTitle className="text-sm font-medium">
+                Run Volume Mix
+              </CardTitle>
+              <InfoPopover
+                definitions={RUN_MIX_DEFINITIONS}
+                title="Run Volume Mix"
+              />
+            </CardHeader>
+            <CardContent>
+              <RunMixChart />
+            </CardContent>
+          </Card>
 
-        <Card className="w-full gap-0 overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between pl-5">
-            <CardTitle className="text-sm font-medium">Training Load</CardTitle>
-            <InfoPopover
-              definitions={ROLLING_LOAD_DEFINITIONS}
-              title="Training Load"
-            />
-          </CardHeader>
-          <CardContent>
-            <RollingLoadChart />
-          </CardContent>
-        </Card>
-      </div>
+          <Card className="w-full gap-0 overflow-hidden">
+            <CardHeader className="flex flex-row items-center justify-between pl-5">
+              <CardTitle className="text-sm font-medium">
+                Training Load
+              </CardTitle>
+              <InfoPopover
+                definitions={ROLLING_LOAD_DEFINITIONS}
+                title="Training Load"
+              />
+            </CardHeader>
+            <CardContent>
+              <RollingLoadChart />
+            </CardContent>
+          </Card>
+        </div>
+      </ChartStateProvider>
     </>
   );
 }

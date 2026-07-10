@@ -31,6 +31,12 @@ export const chartColors = {
     stroke: "stroke-chart-5",
     text: "text-chart-5",
   },
+  "chart-6": {
+    bg: "bg-chart-6",
+    fill: "fill-chart-6",
+    stroke: "stroke-chart-6",
+    text: "text-chart-6",
+  },
   primary: {
     bg: "bg-primary",
     fill: "fill-primary",

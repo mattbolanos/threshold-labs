@@ -382,6 +382,61 @@ export const getRunVolumeMix = query({
   },
 });
 
+export const getSessionIntensity = query({
+  args: {
+    from: v.optional(v.string()),
+    to: v.optional(v.string()),
+  },
+  handler: async (ctx, { from, to }) => {
+    const fromDate = from ?? getDefaultFromDate();
+
+    let workoutsQuery = ctx.db
+      .query("workouts")
+      .withIndex("by_workout_date", (q) => q.gte("workoutDate", fromDate));
+
+    if (to) {
+      workoutsQuery = ctx.db
+        .query("workouts")
+        .withIndex("by_workout_date", (q) =>
+          q.gte("workoutDate", fromDate).lte("workoutDate", to),
+        );
+    }
+
+    const workouts = (await workoutsQuery.collect()).filter(isVisibleWorkout);
+    const weeklyData = new Map<
+      string,
+      {
+        easySessions: number;
+        moderateSessions: number;
+        hardSessions: number;
+        veryHardSessions: number;
+      }
+    >();
+
+    for (const workout of workouts) {
+      if (workout.rpe < 1 || workout.rpe > 10) continue;
+
+      const existing = weeklyData.get(workout.week) ?? {
+        easySessions: 0,
+        hardSessions: 0,
+        moderateSessions: 0,
+        veryHardSessions: 0,
+      };
+
+      if (workout.rpe <= 3) existing.easySessions += 1;
+      else if (workout.rpe <= 6) existing.moderateSessions += 1;
+      else if (workout.rpe <= 8) existing.hardSessions += 1;
+      else existing.veryHardSessions += 1;
+
+      weeklyData.set(workout.week, existing);
+    }
+
+    return Array.from(weeklyData.entries())
+      .map(([week, data]) => ({ week, ...data }))
+      .sort((a, b) => a.week.localeCompare(b.week));
+  },
+});
+
 export const getBaseFitness = query({
   args: {
     from: v.optional(v.string()),

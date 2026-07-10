@@ -18,6 +18,7 @@ import {
 } from "@/components/workouts/tag-accent-marker";
 import { cn } from "@/lib/utils";
 import type { Doc } from "../../../convex/_generated/dataModel";
+import { Button } from "../ui/button";
 
 type Workout = Doc<"workouts">;
 
@@ -74,10 +75,11 @@ export function HiddenWorkoutsDialog({
     >
       <DialogTrigger
         render={
-          <button
+          <Button
             aria-label={`Show all ${workouts.length} workouts for ${dayLabel}`}
-            className="group/more bg-background text-primary hover:border-primary/35 hover:bg-accent focus-visible:border-primary/70 focus-visible:ring-primary/25 hidden h-7.5 w-full items-center justify-center gap-1.5 rounded-lg border px-2 text-xs font-semibold transition-all duration-150 outline-none focus-visible:ring-2 active:translate-y-px lg:inline-flex"
+            className="group/more hidden h-7.5 w-full items-center justify-center gap-1.5 rounded-lg border bg-background px-2 text-xs font-semibold text-primary transition-all duration-150 outline-none hover:border-primary/35 hover:bg-accent focus-visible:border-primary/70 focus-visible:ring-2 focus-visible:ring-primary/25 active:translate-y-px lg:inline-flex"
             type="button"
+            variant="outline"
           />
         }
       >
@@ -91,7 +93,7 @@ export function HiddenWorkoutsDialog({
         />
       </DialogTrigger>
       <DialogContent
-        className="bg-popover text-popover-foreground max-h-svh gap-0 overflow-hidden p-0 shadow-xl sm:max-w-4xl"
+        className="max-h-svh gap-0 overflow-hidden bg-popover p-0 text-popover-foreground shadow-xl sm:max-w-4xl"
         showCloseButton={false}
       >
         <div className="flex items-start justify-between gap-4 border-b px-4 py-3.5">
@@ -99,7 +101,7 @@ export function HiddenWorkoutsDialog({
             <DialogTitle className="text-sm font-semibold">
               All workouts
             </DialogTitle>
-            <DialogDescription className="text-muted-foreground text-xs">
+            <DialogDescription className="text-xs text-muted-foreground">
               {dayLabel}, {workouts.length}{" "}
               {workouts.length === 1 ? "workout" : "workouts"}
             </DialogDescription>
@@ -108,7 +110,7 @@ export function HiddenWorkoutsDialog({
             render={
               <button
                 aria-label="Close workouts"
-                className="text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-primary/30 inline-flex size-7 shrink-0 items-center justify-center rounded-lg transition-colors outline-none focus-visible:ring-2"
+                className="inline-flex size-7 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors outline-none hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary/30"
                 type="button"
               />
             }
@@ -116,7 +118,7 @@ export function HiddenWorkoutsDialog({
             <IconX aria-hidden className="size-4" />
           </DialogClose>
         </div>
-        <div className="grid h-dvh max-h-160 min-h-0 grid-cols-3">
+        <div className="grid h-dvh max-h-132 min-h-0 grid-cols-3">
           <div className="col-span-1 h-full overflow-y-auto border-r p-2">
             <fieldset className="m-0 flex min-w-0 flex-col gap-1.5 border-0 p-0">
               <legend className="sr-only">Workout list</legend>
@@ -152,17 +154,17 @@ export function HiddenWorkoutsDialog({
                       {tagOverflowCount > 0 && (
                         <span
                           aria-hidden
-                          className="text-muted-foreground shrink-0 text-xs font-medium tabular-nums"
+                          className="shrink-0 text-xs font-medium text-muted-foreground tabular-nums"
                         >
                           +{tagOverflowCount}
                         </span>
                       )}
                     </span>
-                    <span className="text-muted-foreground mt-1 flex min-w-0 items-center gap-1 pl-1 text-xs">
+                    <span className="mt-1 flex min-w-0 items-center gap-1 pl-1 text-xs text-muted-foreground">
                       <span className="tabular-nums">
                         {formatBlockDuration(workout.trainingMinutes)}
                       </span>
-                      <span aria-hidden>-</span>
+                      <span aria-hidden>•</span>
                       <span className="tabular-nums">RPE {workout.rpe}</span>
                     </span>
                   </button>
@@ -176,7 +178,7 @@ export function HiddenWorkoutsDialog({
                 <h3 className="truncate text-base font-semibold">
                   {selectedWorkout.title}
                 </h3>
-                <p className="text-muted-foreground mt-1 text-xs">
+                <p className="mt-1 text-xs text-muted-foreground">
                   Workout {selectedWorkoutIndex + 1} of {workouts.length}
                 </p>
               </div>

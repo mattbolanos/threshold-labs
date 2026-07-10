@@ -3,7 +3,7 @@
 import { useQuery } from "convex/react";
 import { ChartSkeleton } from "@/components/skeletons/chart";
 import { ComboChart } from "@/components/ui/chart/combo-chart";
-import { useChartState } from "@/hooks/use-chart-state";
+import { useChartRange } from "@/hooks/use-chart-state";
 import { api } from "../../../convex/_generated/api";
 
 const Y_AXIS_PADDING_RATIO = 0.1;
@@ -41,8 +41,12 @@ const getPaddedYAxisDomain = (
   };
 };
 
-export function BaseFitnessChart() {
-  const { range } = useChartState();
+export interface BaseFitnessChartProps {
+  yAxisWidth?: number;
+}
+
+export function BaseFitnessChart({ yAxisWidth }: BaseFitnessChartProps) {
+  const range = useChartRange();
 
   const data = useQuery(api.workouts.getBaseFitness, {
     from: range?.from ?? undefined,
@@ -62,7 +66,7 @@ export function BaseFitnessChart() {
         categoryLabels: {
           trainingImpact: "Training Impact",
         },
-        colors: ["chart-3"],
+        colors: ["chart-1"],
         fillOpacity: 0.16,
         valueFormatter: formatFitnessValue,
       }}
@@ -75,6 +79,7 @@ export function BaseFitnessChart() {
       }}
       data={data}
       index="date"
+      leftYAxisWidth={yAxisWidth}
       legendPosition="left"
       lineSeries={{
         allowDecimals: false,
@@ -82,7 +87,7 @@ export function BaseFitnessChart() {
         categoryLabels: {
           baseFitness: "Base Fitness",
         },
-        colors: ["primary"],
+        colors: ["chart-6"],
         isAnimationActive: false,
         valueFormatter: formatFitnessValue,
       }}

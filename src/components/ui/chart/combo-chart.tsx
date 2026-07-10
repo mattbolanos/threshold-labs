@@ -115,7 +115,7 @@ const LegendItem = ({
       className={cn(
         // base
         "group inline-flex flex-nowrap items-center gap-1.5 rounded-sm px-2 py-1 whitespace-nowrap transition",
-        hasOnValueChange ? "hover:bg-muted cursor-pointer" : "cursor-default",
+        hasOnValueChange ? "cursor-pointer hover:bg-muted" : "cursor-default",
       )}
       onClick={(e) => {
         e.stopPropagation();
@@ -190,8 +190,8 @@ const ScrollButton = ({ icon, onClick, disabled }: ScrollButtonProps) => {
         // base
         "group inline-flex size-5 items-center truncate rounded-sm transition",
         disabled
-          ? "text-muted-foreground cursor-not-allowed opacity-50"
-          : "text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer",
+          ? "cursor-not-allowed text-muted-foreground opacity-50"
+          : "cursor-pointer text-muted-foreground hover:bg-muted hover:text-foreground",
       )}
       disabled={disabled}
       onClick={(e) => {
@@ -649,6 +649,8 @@ type ChartSeries = {
 interface ComboChartProps extends React.HTMLAttributes<HTMLDivElement> {
   data: Record<string, any>[];
   index: string;
+  leftYAxisWidth?: number;
+  rightYAxisWidth?: number;
   startEndOnly?: boolean;
   showXAxis?: boolean;
   xTicksFormatter?: (value: number | string) => string;
@@ -699,7 +701,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
       valueFormatter: defaultValueFormatter,
       xTicksFormatter: undefined,
       yAxisLabel: undefined,
-      yAxisWidth: 56,
+      yAxisWidth: 48,
     };
 
     const defaultBarSeries = defaultSeries;
@@ -718,6 +720,8 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
     const {
       data = [],
       index,
+      leftYAxisWidth,
+      rightYAxisWidth,
       startEndOnly = false,
       showXAxis = true,
       showGridLines = true,
@@ -745,6 +749,9 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
     const mergedAreaSeries = { ...defaultAreaSeries, ...areaSeries };
     const mergedBarSeries = { ...defaultBarSeries, ...barSeries };
     const mergedLineSeries = { ...defaultLineSeries, ...lineSeries };
+    const resolvedLeftYAxisWidth = leftYAxisWidth ?? mergedBarSeries.yAxisWidth;
+    const resolvedRightYAxisWidth =
+      rightYAxisWidth ?? mergedLineSeries.yAxisWidth;
 
     const CustomTooltip = customTooltip;
 
@@ -917,7 +924,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
             data={data}
             margin={{
               bottom: xAxisLabel ? 30 : undefined,
-              left: mergedBarSeries.yAxisLabel ? 20 : undefined,
+              left: mergedBarSeries.yAxisLabel ? 0 : undefined,
               right: mergedLineSeries.yAxisLabel ? 20 : undefined,
               top: 5,
             }}
@@ -998,7 +1005,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
               tickFormatter={mergedBarSeries.valueFormatter}
               tickLine={false}
               type="number"
-              width={mergedBarSeries.yAxisWidth}
+              width={resolvedLeftYAxisWidth}
               yAxisId={enableBiaxial ? "left" : undefined}
             >
               {mergedBarSeries.yAxisLabel && (
@@ -1035,7 +1042,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                 tickFormatter={mergedLineSeries.valueFormatter}
                 tickLine={false}
                 type="number"
-                width={mergedLineSeries.yAxisWidth}
+                width={resolvedRightYAxisWidth}
                 yAxisId="right"
               >
                 {mergedLineSeries.yAxisLabel && (
@@ -1067,7 +1074,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                       : undefined,
                     enableLegendSlider,
                     legendPosition,
-                    mergedLineSeries.yAxisWidth,
+                    resolvedRightYAxisWidth,
                     barCategoryLabelMap,
                     areaCategoryLabelMap,
                     lineCategoryLabelMap,

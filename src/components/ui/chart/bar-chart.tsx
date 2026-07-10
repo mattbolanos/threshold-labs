@@ -116,7 +116,7 @@ const LegendItem = ({
       className={cn(
         // base
         "group inline-flex flex-nowrap items-center gap-1.5 rounded-sm px-2 py-1 whitespace-nowrap transition",
-        hasOnValueChange ? "hover:bg-muted cursor-pointer" : "cursor-default",
+        hasOnValueChange ? "cursor-pointer hover:bg-muted" : "cursor-default",
       )}
       onClick={(e) => {
         e.stopPropagation();
@@ -190,8 +190,8 @@ const ScrollButton = ({ icon, onClick, disabled }: ScrollButtonProps) => {
         // base
         "group inline-flex size-5 items-center truncate rounded-sm transition",
         disabled
-          ? "text-muted-foreground cursor-not-allowed opacity-50"
-          : "text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer",
+          ? "cursor-not-allowed text-muted-foreground opacity-50"
+          : "cursor-pointer text-muted-foreground hover:bg-muted hover:text-foreground",
       )}
       disabled={disabled}
       onClick={(e) => {
@@ -597,7 +597,7 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
       xTicksFormatter,
       showYAxis = true,
       showGridLines = true,
-      yAxisWidth = 56,
+      yAxisWidth = 44,
       intervalType = "equidistantPreserveStart",
       showTooltip = true,
       showLegend = true,
@@ -639,7 +639,10 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
     const [activeBar, setActiveBar] = React.useState<any | undefined>(
       undefined,
     );
-    const yAxisDomain = getYAxisDomain(autoMinValue, minValue, maxValue);
+    const yAxisDomain =
+      type === "percent"
+        ? ([0, 1] satisfies AxisDomain)
+        : getYAxisDomain(autoMinValue, minValue, maxValue);
     const hasOnValueChange = !!onValueChange;
     const stacked = type === "stacked" || type === "percent";
 

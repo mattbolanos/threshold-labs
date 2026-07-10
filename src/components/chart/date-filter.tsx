@@ -173,7 +173,7 @@ export function DateFilter({ range, setRange }: DateFilterProps) {
         render={
           <Button
             className={cn(
-              "max-w-72 justify-start text-left font-normal",
+              "w-full justify-start text-left font-normal lg:max-w-52",
               !range?.from || !range?.to ? "text-muted-foreground" : false,
             )}
             variant="outline"

@@ -73,47 +73,24 @@ function SummaryMetric({
   );
 }
 
-function SummarySkeleton({ className }: { className?: string }) {
-  return (
-    <Card
-      className={cn(
-        "min-h-38 gap-0 rounded-xl border bg-card py-0 text-card-foreground",
-        className,
-      )}
-    >
-      <CardHeader className="gap-1 px-5 pt-4 pb-0">
-        <CardTitle className="text-base font-bold">Weekly Summary</CardTitle>
-        <CardDescription className="text-xs text-muted-foreground">
-          A fast read on the selected week.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-3 px-5 pt-3 pb-4 sm:grid-cols-2">
-        <SummaryMetric label="Training Hours" loading value={0} />
-        <SummaryMetric label="Subjective Load" loading value={0} />
-        <SummaryMetric label="Run Miles" loading value={0} />
-        <SummaryMetric label="Cardio Hours" loading value={0} />
-      </CardContent>
-    </Card>
-  );
-}
-
 export function WeekSummary({ workouts, className }: WeekSummaryProps) {
-  if (!workouts) return <SummarySkeleton className={className} />;
+  const isLoading = workouts === undefined;
+  const weeklyWorkouts = workouts ?? [];
 
-  const totalTrainingMinutes = workouts.reduce(
+  const totalTrainingMinutes = weeklyWorkouts.reduce(
     (sum, workout) => sum + (workout.trainingMinutes || 0),
     0,
   );
-  const totalRunMiles = workouts.reduce(
+  const totalRunMiles = weeklyWorkouts.reduce(
     (sum, workout) => sum + (workout.totalRunMiles || 0),
     0,
   );
-  const totalCardioMinutes = workouts.reduce(
+  const totalCardioMinutes = weeklyWorkouts.reduce(
     (sum, workout) =>
       isCardioWorkout(workout) ? sum + (workout.trainingMinutes || 0) : sum,
     0,
   );
-  const totalSubjectiveTrainingLoad = workouts.reduce(
+  const totalSubjectiveTrainingLoad = weeklyWorkouts.reduce(
     (sum, workout) =>
       sum +
       calculateSTL(
@@ -140,14 +117,24 @@ export function WeekSummary({ workouts, className }: WeekSummaryProps) {
       <CardContent className="grid gap-3 px-5 pt-3 pb-4 sm:grid-cols-2">
         <SummaryMetric
           label="True Training Hours"
+          loading={isLoading}
           value={totalTrainingMinutes / 60}
         />
         <SummaryMetric
           label="Subjective Training Load"
+          loading={isLoading}
           value={totalSubjectiveTrainingLoad}
         />
-        <SummaryMetric label="Run Miles" value={totalRunMiles} />
-        <SummaryMetric label="Cardio Hours" value={totalCardioMinutes / 60} />
+        <SummaryMetric
+          label="Run Miles"
+          loading={isLoading}
+          value={totalRunMiles}
+        />
+        <SummaryMetric
+          label="Cardio Hours"
+          loading={isLoading}
+          value={totalCardioMinutes / 60}
+        />
       </CardContent>
     </Card>
   );

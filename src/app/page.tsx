@@ -10,6 +10,7 @@ import { TrainingPageHeader } from "@/components/calendar/training-page-header";
 import { WeekBlocks } from "@/components/calendar/week-blocks";
 import { WeekRangeLabel } from "@/components/calendar/week-range-label";
 import { BaseFitnessChart } from "@/components/chart/base-fitness";
+import { ChartControls } from "@/components/chart/controls";
 import { InfoPopover } from "@/components/chart/info-popover";
 import { RollingLoadChart } from "@/components/chart/rolling-load";
 import { RunMixChart } from "@/components/chart/run-mix";
@@ -20,6 +21,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { checkAuth } from "@/lib/auth";
 
 export const metadata: Metadata = {
@@ -50,9 +52,15 @@ export default async function Home() {
       </section>
 
       {/* Analytics */}
-      <section className="route-padding-x grid gap-4 lg:grid-cols-2">
-        <SelectedWeekSummary />
+      <div className="route-padding-x">
+        <Separator className="lg:hidden" />
+      </div>
 
+      <div className="route-padding-x flex items-center justify-between">
+        <h3 className="hidden text-2xl font-semibold lg:block">Summaries</h3>
+        <ChartControls />
+      </div>
+      <section className="route-padding-x grid gap-4 lg:grid-cols-2">
         <Card className="min-h-54 w-full gap-0 rounded-xl py-0">
           <CardHeader className="flex flex-row items-start justify-between gap-4 px-5 pt-4 pb-0">
             <div className="min-w-0">
@@ -72,6 +80,8 @@ export default async function Home() {
             <BaseFitnessChart />
           </CardContent>
         </Card>
+
+        <SelectedWeekSummary />
 
         <Card className="min-h-54 w-full gap-0 rounded-xl py-0">
           <CardHeader className="flex flex-row items-start justify-between gap-4 px-5 pt-4 pb-0">

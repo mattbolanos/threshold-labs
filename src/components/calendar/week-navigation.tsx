@@ -30,7 +30,7 @@ export function WeekNavigation() {
         <Button
           aria-label="Go Back"
           disabled={!canGoBack}
-          onMouseDown={subtractWeekfromStart}
+          onClick={subtractWeekfromStart}
           size="icon-sm"
           variant="ghost"
         >
@@ -41,7 +41,7 @@ export function WeekNavigation() {
         <Button
           aria-label="Go Back"
           disabled={!canGoBack}
-          onMouseDown={subtractWeekfromStart}
+          onClick={subtractWeekfromStart}
           size="icon-sm"
           variant="outline"
         >
@@ -52,7 +52,7 @@ export function WeekNavigation() {
       <ButtonGroup className="hidden lg:flex">
         <Button
           aria-label="Go to Today"
-          onMouseDown={jumpToToday}
+          onClick={jumpToToday}
           size="sm"
           variant="outline"
         >
@@ -63,7 +63,7 @@ export function WeekNavigation() {
         <Button
           aria-label="Go to This Week"
           className="text-xs"
-          onMouseDown={jumpToToday}
+          onClick={jumpToToday}
           size="sm"
           variant="outline"
         >
@@ -74,7 +74,7 @@ export function WeekNavigation() {
         <Button
           aria-label="Go Forward"
           disabled={!canGoForward}
-          onMouseDown={addWeektoStart}
+          onClick={addWeektoStart}
           size="icon-sm"
           variant="ghost"
         >
@@ -85,7 +85,7 @@ export function WeekNavigation() {
         <Button
           aria-label="Go Forward"
           disabled={!canGoForward}
-          onMouseDown={addWeektoStart}
+          onClick={addWeektoStart}
           size="icon-sm"
           variant="outline"
         >

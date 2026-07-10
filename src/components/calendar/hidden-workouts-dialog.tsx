@@ -12,6 +12,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  getTagAccentOverflowCount,
+  TagAccentMarker,
+} from "@/components/workouts/tag-accent-marker";
 import { cn } from "@/lib/utils";
 import type { Doc } from "../../../convex/_generated/dataModel";
 
@@ -23,32 +27,11 @@ const DAY_DIALOG_DATE_FORMATTER = new Intl.DateTimeFormat("en-US", {
   weekday: "long",
 });
 
-const BLOCK_ACCENT_CLASS_BY_TAG: Record<string, string> = {
-  "Aerobic Cross Training": "bg-chart-3",
-  "Aerobic Run": "bg-chart-1",
-  "Bad Heart Rate Data": "bg-muted-foreground",
-  "Muscular Endurance": "bg-chart-5",
-  "Quality Cross Training": "bg-chart-3",
-  "Quality HYROX": "bg-chart-4",
-  "Quality Running": "bg-chart-2",
-  Race: "bg-chart-5",
-  Sleds: "bg-chart-3",
-  Strength: "bg-chart-4",
-};
-
 interface HiddenWorkoutsDialogProps {
   day: Date;
   hiddenWorkoutCount: number;
   visibleWorkoutCount: number;
   workouts: Workout[];
-}
-
-function getBlockAccentClass(workout: Workout) {
-  const tag = workout.tags[0];
-
-  if (!tag) return "bg-primary";
-
-  return BLOCK_ACCENT_CLASS_BY_TAG[tag] ?? "bg-primary";
 }
 
 function formatBlockDuration(minutes: number) {
@@ -140,10 +123,15 @@ export function HiddenWorkoutsDialog({
               {workouts.map((workout) => {
                 const workoutId = workout._id.toString();
                 const isSelected = workoutId === selectedWorkout._id.toString();
+                const tagOverflowCount = getTagAccentOverflowCount(
+                  workout.tags,
+                );
+                const tagLabel =
+                  workout.tags.length > 0 ? workout.tags.join(", ") : "No tags";
 
                 return (
                   <button
-                    aria-label={`View details for ${workout.title}`}
+                    aria-label={`View details for ${workout.title}, tags: ${tagLabel}`}
                     aria-pressed={isSelected}
                     className={cn(
                       "relative min-h-14 overflow-hidden rounded-lg border px-3 py-2 text-left transition-all duration-150 outline-none",
@@ -153,18 +141,22 @@ export function HiddenWorkoutsDialog({
                     )}
                     key={workoutId}
                     onClick={() => setSelectedWorkoutId(workoutId)}
+                    title={tagLabel}
                     type="button"
                   >
-                    <span
-                      className={cn(
-                        "absolute -inset-y-px -left-px w-1 rounded-xs",
-                        getBlockAccentClass(workout),
-                      )}
-                    />
+                    <TagAccentMarker tags={workout.tags} />
                     <span className="flex min-w-0 items-start justify-between gap-2 pl-1">
                       <span className="min-w-0 truncate text-xs font-semibold">
                         {workout.title}
                       </span>
+                      {tagOverflowCount > 0 && (
+                        <span
+                          aria-hidden
+                          className="text-muted-foreground shrink-0 text-xs font-medium tabular-nums"
+                        >
+                          +{tagOverflowCount}
+                        </span>
+                      )}
                     </span>
                     <span className="text-muted-foreground mt-1 flex min-w-0 items-center gap-1 pl-1 text-xs">
                       <span className="tabular-nums">

@@ -19,33 +19,18 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { TAG_CONFIG, type TagConfig } from "@/components/workouts/tag-config";
+import {
+  getTagAccentOverflowCount,
+  TagAccentMarker,
+} from "@/components/workouts/tag-accent-marker";
+import { TAG_CONFIG } from "@/components/workouts/tag-config";
 import { cn } from "@/lib/utils";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { BlockContent } from "./block-content";
 
 interface BlockProps {
   workout: Doc<"workouts">;
-  tagConfig?: TagConfig | undefined;
   className?: string;
-}
-
-const BLOCK_ACCENT_CLASS_BY_TAG: Record<string, string> = {
-  "Aerobic Cross Training": "bg-chart-3",
-  "Aerobic Run": "bg-chart-1",
-  "Bad Heart Rate Data": "bg-muted-foreground",
-  "Muscular Endurance": "bg-chart-5",
-  "Quality Cross Training": "bg-chart-3",
-  "Quality HYROX": "bg-chart-4",
-  "Quality Running": "bg-chart-2",
-  Race: "bg-chart-5",
-  Sleds: "bg-chart-3",
-  Strength: "bg-chart-4",
-};
-
-function getBlockAccentClass(tag: string | undefined) {
-  if (!tag) return "bg-primary";
-  return BLOCK_ACCENT_CLASS_BY_TAG[tag] ?? "bg-primary";
 }
 
 function formatBlockDuration(minutes: number) {
@@ -58,32 +43,37 @@ function formatBlockDuration(minutes: number) {
 
 const BaseCard = ({
   workout,
-  tagConfig,
   className,
   ...props
 }: BlockProps & React.ComponentProps<"div">) => {
-  const accentClass = getBlockAccentClass(tagConfig?.tag ?? workout.tags[0]);
+  const tagOverflowCount = getTagAccentOverflowCount(workout.tags);
+  const tagLabel =
+    workout.tags.length > 0 ? workout.tags.join(", ") : "No tags";
 
   return (
     <Card
       aria-label={`${workout.title}, ${formatBlockDuration(
         workout.trainingMinutes,
-      )}, RPE ${workout.rpe}`}
+      )}, RPE ${workout.rpe}, tags: ${tagLabel}`}
       className={cn(
         className,
         "group/block bg-card text-card-foreground ring-border sm:hover:bg-accent sm:hover:ring-border relative h-13 w-full cursor-pointer gap-0 overflow-hidden rounded-lg py-0 ring-1 transition-all duration-150 sm:hover:-translate-y-px",
       )}
+      title={tagLabel}
       {...props}
     >
-      <div
-        className={cn(
-          "pointer-events-none absolute -inset-y-px -left-px w-1 rounded-xs",
-          accentClass,
-        )}
-      />
+      <TagAccentMarker tags={workout.tags} />
       <CardContent className="flex h-13 min-w-0 flex-col items-start gap-1.5 px-2 py-2 text-left">
-        <CardTitle className="max-w-full truncate text-xs font-semibold">
-          {workout.title}
+        <CardTitle className="flex w-full min-w-0 items-center gap-1.5 text-xs font-semibold">
+          <span className="min-w-0 flex-1 truncate">{workout.title}</span>
+          {tagOverflowCount > 0 && (
+            <span
+              aria-hidden
+              className="text-muted-foreground shrink-0 text-xs font-medium tabular-nums"
+            >
+              +{tagOverflowCount}
+            </span>
+          )}
         </CardTitle>
         <span className="text-muted-foreground max-w-full truncate text-xs font-normal tabular-nums">
           {formatBlockDuration(workout.trainingMinutes)} - RPE {workout.rpe}
@@ -104,7 +94,6 @@ export function Block({ workout, className }: BlockProps) {
           render={
             <BaseCard
               className={cn(className, "hidden w-full sm:inline-flex")}
-              tagConfig={tagConfig}
               workout={workout}
             />
           }
@@ -123,7 +112,7 @@ export function Block({ workout, className }: BlockProps) {
               <span className="text-left">{workout.title}</span>
             </DialogTitle>
           </DialogHeader>
-          <BlockContent workout={workout} />
+          <BlockContent className="max-h-[80svh]" workout={workout} />
         </DialogContent>
       </Dialog>
       <Drawer>
@@ -132,7 +121,6 @@ export function Block({ workout, className }: BlockProps) {
           render={
             <BaseCard
               className={cn(className, "inline-flex w-full sm:hidden")}
-              tagConfig={tagConfig}
               workout={workout}
             />
           }

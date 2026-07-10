@@ -153,6 +153,7 @@ export function WeekSummary({ workouts, className }: WeekSummaryProps) {
     <Card
       className={cn(
         "bg-card text-card-foreground min-h-38 gap-0 rounded-xl border py-0",
+        totalSubjectiveTrainingLoad === 0 && "lg:flex hidden",
         className,
       )}
     >

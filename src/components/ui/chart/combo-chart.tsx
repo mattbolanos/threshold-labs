@@ -677,6 +677,7 @@ interface ComboChartProps extends React.HTMLAttributes<HTMLDivElement> {
   };
   lineSeries?: ChartSeries & {
     connectNulls?: boolean;
+    isAnimationActive?: boolean;
     valueFormatter?: (value: number) => string;
   };
   tooltipLabelFormatter?: (label: string) => string;
@@ -705,6 +706,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
     const defaultLineSeries = {
       ...defaultSeries,
       connectNulls: false,
+      isAnimationActive: true,
     };
     const defaultAreaSeries = {
       ...defaultSeries,
@@ -1331,7 +1333,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                   }
                   return <React.Fragment key={pointKey}></React.Fragment>;
                 }}
-                isAnimationActive={true}
+                isAnimationActive={mergedLineSeries.isAnimationActive}
                 key={`${category}-line-id`}
                 name={category}
                 onClick={(props: any, event) => {

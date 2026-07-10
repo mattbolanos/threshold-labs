@@ -36,7 +36,7 @@ export default async function Home() {
 
       {/* Calendar Section */}
       <section className="route-padding-x">
-        <div className="bg-card text-card-foreground rounded-xl border px-4 pt-4 pb-5 shadow-lg sm:min-h-87 lg:px-5 lg:pt-4 lg:pb-5">
+        <div className="bg-card text-card-foreground rounded-xl border px-4 pt-4 pb-5 shadow-lg lg:min-h-90 lg:px-5 lg:pt-4 lg:pb-5">
           <div className="mb-3.5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
               <h2 className="text-lg font-bold">Schedule</h2>
@@ -48,7 +48,7 @@ export default async function Home() {
       </section>
 
       {/* Analytics */}
-      <section className="route-padding-x grid gap-4 md:grid-cols-2">
+      <section className="route-padding-x grid gap-4 lg:grid-cols-2">
         <SelectedWeekSummary />
 
         <Card className="min-h-54 w-full gap-0 rounded-xl py-0">

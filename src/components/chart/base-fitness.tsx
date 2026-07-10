@@ -57,6 +57,7 @@ export function BaseFitnessChart() {
           baseFitness: "Base Fitness",
         },
         colors: ["primary"],
+        isAnimationActive: false,
         valueFormatter: formatFitnessValue,
       }}
       showGridLines

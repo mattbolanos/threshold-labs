@@ -2,7 +2,14 @@
 
 import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
 import { useQuery } from "convex/react";
-import { isAfter, isBefore, isSameWeek, parseISO, startOfWeek } from "date-fns";
+import {
+  addWeeks,
+  isAfter,
+  isBefore,
+  isSameWeek,
+  parseISO,
+  startOfWeek,
+} from "date-fns";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { useCalendarNav } from "@/hooks/use-calendar-nav";
@@ -11,13 +18,7 @@ import { api } from "../../../convex/_generated/api";
 export function WeekNavigation() {
   const workoutsDateRange = useQuery(api.workouts.getWorkoutsDateRange);
 
-  const {
-    addWeektoStart,
-    jumpToToday,
-    subtractWeekfromStart,
-    today,
-    weekStartDate,
-  } = useCalendarNav();
+  const { jumpToToday, setWeekStart, today, weekStartDate } = useCalendarNav();
 
   const selectedWeekStart = startOfWeek(weekStartDate, { weekStartsOn: 1 });
   const currentWeekStart = startOfWeek(today, { weekStartsOn: 1 });
@@ -44,13 +45,34 @@ export function WeekNavigation() {
     weekStartsOn: 1,
   });
 
+  const goToPreviousWeek = () => {
+    void setWeekStart((weekStart) => {
+      const previousWeek = addWeeks(weekStart, -1);
+
+      if (minWorkoutWeekStart && isBefore(previousWeek, minWorkoutWeekStart)) {
+        return minWorkoutWeekStart;
+      }
+
+      return previousWeek;
+    });
+  };
+
+  const goToNextWeek = () => {
+    void setWeekStart((weekStart) => {
+      const nextWeek = addWeeks(weekStart, 1);
+      return isAfter(nextWeek, latestNavigableWeekStart)
+        ? latestNavigableWeekStart
+        : nextWeek;
+    });
+  };
+
   return (
     <ButtonGroup className="w-full lg:w-fit">
       <ButtonGroup className="mr-auto hidden lg:flex">
         <Button
-          aria-label="Go Back"
+          aria-label="Previous week"
           disabled={!canGoBack}
-          onClick={subtractWeekfromStart}
+          onClick={goToPreviousWeek}
           size="icon-sm"
           variant="ghost"
         >
@@ -59,10 +81,10 @@ export function WeekNavigation() {
       </ButtonGroup>
       <ButtonGroup className="mr-auto lg:hidden">
         <Button
-          aria-label="Go Back"
+          aria-label="Previous week"
           className="size-10"
           disabled={!canGoBack}
-          onClick={subtractWeekfromStart}
+          onClick={goToPreviousWeek}
           size="icon-sm"
           variant="outline"
         >
@@ -72,7 +94,7 @@ export function WeekNavigation() {
 
       <ButtonGroup className="hidden lg:flex">
         <Button
-          aria-label="Go to Today"
+          aria-label="Go to current week"
           disabled={isCurrentWeek}
           onClick={jumpToToday}
           size="sm"
@@ -83,7 +105,7 @@ export function WeekNavigation() {
       </ButtonGroup>
       <ButtonGroup className="flex-1 lg:hidden">
         <Button
-          aria-label="Go to This Week"
+          aria-label="Go to current week"
           className="h-10 w-full text-sm"
           disabled={isCurrentWeek}
           onClick={jumpToToday}
@@ -95,9 +117,9 @@ export function WeekNavigation() {
       </ButtonGroup>
       <ButtonGroup className="ml-auto hidden lg:flex">
         <Button
-          aria-label="Go Forward"
+          aria-label="Next week"
           disabled={!canGoForward}
-          onClick={addWeektoStart}
+          onClick={goToNextWeek}
           size="icon-sm"
           variant="ghost"
         >
@@ -106,10 +128,10 @@ export function WeekNavigation() {
       </ButtonGroup>
       <ButtonGroup className="ml-auto lg:hidden">
         <Button
-          aria-label="Go Forward"
+          aria-label="Next week"
           className="size-10"
           disabled={!canGoForward}
-          onClick={addWeektoStart}
+          onClick={goToNextWeek}
           size="icon-sm"
           variant="outline"
         >

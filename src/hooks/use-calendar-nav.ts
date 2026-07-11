@@ -1,37 +1,34 @@
-import { addWeeks, startOfWeek } from "date-fns";
-import { parseAsString, useQueryState } from "nuqs";
+import { startOfWeek } from "date-fns";
+import { createParser, useQueryState } from "nuqs";
+import { formatQueryDate, parseQueryDate } from "@/lib/utils";
+
+const WEEK_START_OPTIONS = { weekStartsOn: 1 as const };
+
+const parseAsWeekStart = createParser<Date>({
+  eq: (left, right) => left.getTime() === right.getTime(),
+  parse: (value) => {
+    const date = parseQueryDate(value);
+    return date ? startOfWeek(date, WEEK_START_OPTIONS) : null;
+  },
+  serialize: (date) => formatQueryDate(startOfWeek(date, WEEK_START_OPTIONS)),
+});
 
 export function useCalendarNav() {
   const today = new Date();
+  const currentWeekStart = startOfWeek(today, WEEK_START_OPTIONS);
 
-  const [weekStart, setWeekStart] = useQueryState(
+  const [weekStartDate, setWeekStart] = useQueryState(
     "weekStart",
-    parseAsString.withDefault(
-      startOfWeek(today, { weekStartsOn: 1 }).toISOString().split("T")[0],
-    ),
+    parseAsWeekStart.withDefault(currentWeekStart),
   );
 
-  const weekStartDate = new Date(`${weekStart}T00:00:00`);
-
-  const addWeektoStart = () => {
-    setWeekStart(addWeeks(weekStartDate, 1).toISOString().split("T")[0]);
-  };
-
-  const subtractWeekfromStart = () => {
-    setWeekStart(addWeeks(weekStartDate, -1).toISOString().split("T")[0]);
-  };
-
   const jumpToToday = () => {
-    setWeekStart(
-      startOfWeek(today, { weekStartsOn: 1 }).toISOString().split("T")[0],
-    );
+    void setWeekStart(currentWeekStart);
   };
 
   return {
-    addWeektoStart,
     jumpToToday,
     setWeekStart,
-    subtractWeekfromStart,
     today,
     weekStartDate,
   };

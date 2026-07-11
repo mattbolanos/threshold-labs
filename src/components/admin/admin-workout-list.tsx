@@ -9,13 +9,6 @@ import {
 } from "@tanstack/react-table";
 import type { Preloaded } from "convex/react";
 import { useMutation, useQuery } from "convex/react";
-import {
-  AnimatePresence,
-  domAnimation,
-  LazyMotion,
-  m,
-  useReducedMotion,
-} from "framer-motion";
 import { redirect } from "next/navigation";
 import { parseAsInteger, parseAsString, useQueryState } from "nuqs";
 import { useCallback, useMemo, useState } from "react";
@@ -37,17 +30,6 @@ interface AdminWorkoutListProps {
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50] as const;
 const DEFAULT_PAGE_SIZE = 10;
-const fadeIn = {
-  animate: { opacity: 1, y: 0 },
-  initial: { opacity: 0, y: 8 },
-  transition: { duration: 0.2 },
-};
-const reducedFadeIn = {
-  animate: { opacity: 1 },
-  initial: { opacity: 0 },
-  transition: { duration: 0 },
-};
-
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function withMinimumDuration<T>(promise: Promise<T>, minimumMs = 350) {
@@ -68,7 +50,6 @@ export const AdminWorkoutList = ({
   "use no memo";
 
   const user = usePreloadedAuthQuery(preloadedUserQuery);
-  const shouldReduceMotion = useReducedMotion();
   const workouts = useQuery(convexApi.workouts.getWorkoutsForAdmin, {
     includeHidden: true,
   });
@@ -222,56 +203,39 @@ export const AdminWorkoutList = ({
   });
 
   return (
-    <LazyMotion features={domAnimation}>
-      <m.div
-        {...(shouldReduceMotion ? reducedFadeIn : fadeIn)}
-        className="flex w-full flex-col gap-6"
-      >
-        <div aria-atomic aria-live="polite" className="sr-only">
-          {statusMessage || errorMessage || ""}
+    <div className="flex w-full flex-col gap-6">
+      <div aria-atomic aria-live="polite" className="sr-only">
+        {statusMessage || errorMessage || ""}
+      </div>
+
+      {errorMessage ? (
+        <div
+          className="route-padding-x rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+          role="alert"
+        >
+          {errorMessage}
         </div>
+      ) : null}
 
-        <AnimatePresence>
-          {errorMessage ? (
-            <m.div
-              animate={
-                shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }
-              }
-              className="route-padding-x bg-destructive/10 text-destructive border-destructive/30 rounded-lg border px-4 py-3 text-sm"
-              exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -4 }}
-              initial={
-                shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -4 }
-              }
-              role="alert"
-              transition={
-                shouldReduceMotion ? { duration: 0 } : { duration: 0.15 }
-              }
-            >
-              {errorMessage}
-            </m.div>
-          ) : null}
-        </AnimatePresence>
-
-        <LoggedWorkoutsSection
-          filteredWorkouts={filteredWorkouts}
-          filterValue={filterValue}
-          onFilterChange={(nextFilter) => {
-            void setFilterQuery(nextFilter);
-            void setPageQuery(1);
-          }}
-          onSearchChange={(nextSearch) => {
-            void setSearchQuery(nextSearch);
-            void setPageQuery(1);
-          }}
-          onToggleVisibility={(workout) => {
-            void handleToggleVisibility(workout);
-          }}
-          pendingVisibilityId={pendingVisibilityId}
-          searchQuery={searchQuery}
-          workouts={workouts}
-          workoutTable={workoutTable}
-        />
-      </m.div>
-    </LazyMotion>
+      <LoggedWorkoutsSection
+        filteredWorkouts={filteredWorkouts}
+        filterValue={filterValue}
+        onFilterChange={(nextFilter) => {
+          void setFilterQuery(nextFilter);
+          void setPageQuery(1);
+        }}
+        onSearchChange={(nextSearch) => {
+          void setSearchQuery(nextSearch);
+          void setPageQuery(1);
+        }}
+        onToggleVisibility={(workout) => {
+          void handleToggleVisibility(workout);
+        }}
+        pendingVisibilityId={pendingVisibilityId}
+        searchQuery={searchQuery}
+        workouts={workouts}
+        workoutTable={workoutTable}
+      />
+    </div>
   );
 };

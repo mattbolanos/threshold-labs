@@ -1,4 +1,9 @@
+import { createClient, type GenericCtx } from "@convex-dev/better-auth";
+import { convex } from "@convex-dev/better-auth/plugins";
+import { type BetterAuthOptions, betterAuth } from "better-auth/minimal";
 import { ConvexError, v } from "convex/values";
+import { components, internal } from "./_generated/api";
+import type { DataModel } from "./_generated/dataModel";
 import {
   internalQuery,
   type MutationCtx,
@@ -6,7 +11,69 @@ import {
   type QueryCtx,
   query,
 } from "./_generated/server";
-import { authComponent } from "./betterAuth/auth";
+import authConfig from "./auth.config";
+import authSchema from "./betterAuth/schema";
+
+export const authComponent = createClient<DataModel, typeof authSchema>(
+  components.betterAuth,
+  {
+    local: { schema: authSchema },
+    verbose: false,
+  },
+);
+
+export const createAuthOptions = (ctx: GenericCtx<DataModel>) =>
+  ({
+    appName: "Threshold Lab",
+    baseURL: process.env.SITE_URL,
+    database: authComponent.adapter(ctx),
+    databaseHooks: {
+      user: {
+        create: {
+          before: async (user) => {
+            const invite = await ctx.runQuery(
+              internal.auth.isClientAllowedForSignup,
+              { email: user.email.trim().toLowerCase() },
+            );
+
+            if (!invite) {
+              throw new Error("You are not authorized to sign up.");
+            }
+
+            return {
+              data: {
+                ...user,
+                role: invite.role,
+              },
+            };
+          },
+        },
+      },
+    },
+    emailAndPassword: {
+      enabled: true,
+    },
+    plugins: [convex({ authConfig })],
+    socialProviders: {
+      google: {
+        clientId: process.env.GOOGLE_CLIENT_ID as string,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      },
+    },
+    user: {
+      additionalFields: {
+        role: {
+          defaultValue: "client",
+          input: false,
+          required: false,
+          type: "string",
+        },
+      },
+    },
+  }) satisfies BetterAuthOptions;
+
+export const createAuth = (ctx: GenericCtx<DataModel>) =>
+  betterAuth(createAuthOptions(ctx));
 
 const assertAdmin = async (ctx: QueryCtx | MutationCtx) => {
   const user = await authComponent.safeGetAuthUser(ctx);

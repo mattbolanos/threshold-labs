@@ -11,7 +11,16 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!node_modules", "!.next", "!dist", "!build"]
+    "includes": [
+      "**",
+      "!node_modules",
+      "!.next",
+      "!dist",
+      "!build",
+      "!convex/_generated",
+      "!convex/betterAuth/_generated",
+      "!convex/betterAuth/schema.ts"
+    ]
   },
   "formatter": {
     "enabled": true,

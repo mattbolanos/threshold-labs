@@ -1,7 +1,8 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import { addDays, isSameDay } from "date-fns";
+import { addDays } from "date-fns";
+import { useSyncExternalStore } from "react";
 import { Block } from "@/components/block/block";
 import { EmptyWeekState } from "@/components/block/empty-week-state";
 import { DailyLoadBar } from "@/components/calendar/daily-load-bar";
@@ -12,6 +13,9 @@ import { api } from "../../../convex/_generated/api";
 import { HiddenWorkoutsDialog } from "./hidden-workouts-dialog";
 
 const MAX_DESKTOP_WORKOUTS_PER_DAY = 3;
+const subscribeToLocalDate = () => () => {};
+const getLocalDate = () => formatQueryDate(new Date());
+const getServerDate = () => null;
 
 function WeekBlocksLoading() {
   return (
@@ -25,6 +29,11 @@ function WeekBlocksLoading() {
 
 export function WeekBlocks() {
   const { weekStartDate } = useCalendarNav();
+  const localToday = useSyncExternalStore(
+    subscribeToLocalDate,
+    getLocalDate,
+    getServerDate,
+  );
 
   const data = useQuery(api.workouts.getWorkouts, {
     from: formatQueryDate(weekStartDate),
@@ -74,7 +83,7 @@ export function WeekBlocks() {
             const dayString = formatQueryDate(day);
             const dayWorkouts = workoutsByDay[dayString] ?? [];
             const dailyLoad = dailyLoads[dayString] ?? 0;
-            const isToday = isSameDay(new Date(), day);
+            const isToday = localToday === dayString;
             const weekday = day
               .toLocaleString("en-US", { weekday: "short" })
               .toUpperCase();

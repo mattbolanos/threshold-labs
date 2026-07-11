@@ -6,7 +6,7 @@ type CheckAuthOptions = {
 };
 
 const isVercelPreview = process.env.VERCEL_ENV === "preview";
-const isDev = process.env.NODE_ENV === "development";
+const isDev = false;
 
 export const checkAuth = async ({
   allowUnauthenticatedPreview = false,

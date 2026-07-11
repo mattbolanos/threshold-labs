@@ -6,7 +6,7 @@ import {
   type QueryCtx,
   query,
 } from "./_generated/server";
-import { authComponent } from "./betterAuth/auth";
+import { authComponent } from "./auth";
 
 const getDefaultFromDate = () =>
   format(

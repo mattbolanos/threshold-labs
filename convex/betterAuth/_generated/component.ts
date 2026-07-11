@@ -31,6 +31,31 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
           input:
             | {
                 data: {
+                  createdAt: number;
+                  email: string;
+                  emailVerified: boolean;
+                  image?: null | string;
+                  name: string;
+                  role?: null | string;
+                  updatedAt: number;
+                  userId?: null | string;
+                };
+                model: "user";
+              }
+            | {
+                data: {
+                  createdAt: number;
+                  expiresAt: number;
+                  ipAddress?: null | string;
+                  token: string;
+                  updatedAt: number;
+                  userAgent?: null | string;
+                  userId: string;
+                };
+                model: "session";
+              }
+            | {
+                data: {
                   accessToken?: null | string;
                   accessTokenExpiresAt?: null | number;
                   accountId: string;
@@ -49,46 +74,21 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
             | {
                 data: {
                   createdAt: number;
-                  expiresAt?: null | number;
-                  privateKey: string;
-                  publicKey: string;
-                };
-                model: "jwks";
-              }
-            | {
-                data: {
-                  createdAt: number;
-                  expiresAt: number;
-                  ipAddress?: null | string;
-                  token: string;
-                  updatedAt: number;
-                  userAgent?: null | string;
-                  userId: string;
-                };
-                model: "session";
-              }
-            | {
-                data: {
-                  createdAt: number;
-                  email: string;
-                  emailVerified: boolean;
-                  image?: null | string;
-                  name: string;
-                  role?: null | string;
-                  updatedAt: number;
-                  userId?: null | string;
-                };
-                model: "user";
-              }
-            | {
-                data: {
-                  createdAt: number;
                   expiresAt: number;
                   identifier: string;
                   updatedAt: number;
                   value: string;
                 };
                 model: "verification";
+              }
+            | {
+                data: {
+                  createdAt: number;
+                  expiresAt?: null | number;
+                  privateKey: string;
+                  publicKey: string;
+                };
+                model: "jwks";
               };
           onCreateHandle?: string;
           select?: Array<string>;
@@ -102,54 +102,20 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         {
           input:
             | {
-                model: "account";
+                model: "user";
                 where?: Array<{
                   connector?: "AND" | "OR";
                   field:
-                    | "accessToken"
-                    | "accessTokenExpiresAt"
-                    | "accountId"
+                    | "name"
+                    | "email"
+                    | "emailVerified"
+                    | "image"
                     | "createdAt"
-                    | "idToken"
-                    | "password"
-                    | "providerId"
-                    | "refreshToken"
-                    | "refreshTokenExpiresAt"
-                    | "scope"
                     | "updatedAt"
                     | "userId"
+                    | "role"
                     | "_id";
-                  operator?:
-                    | "lt"
-                    | "lte"
-                    | "gt"
-                    | "gte"
-                    | "eq"
-                    | "in"
-                    | "not_in"
-                    | "ne"
-                    | "contains"
-                    | "starts_with"
-                    | "ends_with";
-                  value:
-                    | string
-                    | number
-                    | boolean
-                    | Array<string>
-                    | Array<number>
-                    | null;
-                }>;
-              }
-            | {
-                model: "jwks";
-                where?: Array<{
-                  connector?: "AND" | "OR";
-                  field:
-                    | "createdAt"
-                    | "expiresAt"
-                    | "privateKey"
-                    | "publicKey"
-                    | "_id";
+                  mode?: "sensitive" | "insensitive";
                   operator?:
                     | "lt"
                     | "lte"
@@ -176,14 +142,15 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
                 where?: Array<{
                   connector?: "AND" | "OR";
                   field:
-                    | "createdAt"
                     | "expiresAt"
-                    | "ipAddress"
                     | "token"
+                    | "createdAt"
                     | "updatedAt"
+                    | "ipAddress"
                     | "userAgent"
                     | "userId"
                     | "_id";
+                  mode?: "sensitive" | "insensitive";
                   operator?:
                     | "lt"
                     | "lte"
@@ -206,19 +173,24 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
                 }>;
               }
             | {
-                model: "user";
+                model: "account";
                 where?: Array<{
                   connector?: "AND" | "OR";
                   field:
-                    | "createdAt"
-                    | "email"
-                    | "emailVerified"
-                    | "image"
-                    | "name"
-                    | "role"
-                    | "updatedAt"
+                    | "accountId"
+                    | "providerId"
                     | "userId"
+                    | "accessToken"
+                    | "refreshToken"
+                    | "idToken"
+                    | "accessTokenExpiresAt"
+                    | "refreshTokenExpiresAt"
+                    | "scope"
+                    | "password"
+                    | "createdAt"
+                    | "updatedAt"
                     | "_id";
+                  mode?: "sensitive" | "insensitive";
                   operator?:
                     | "lt"
                     | "lte"
@@ -245,12 +217,45 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
                 where?: Array<{
                   connector?: "AND" | "OR";
                   field:
+                    | "identifier"
+                    | "value"
+                    | "expiresAt"
+                    | "createdAt"
+                    | "updatedAt"
+                    | "_id";
+                  mode?: "sensitive" | "insensitive";
+                  operator?:
+                    | "lt"
+                    | "lte"
+                    | "gt"
+                    | "gte"
+                    | "eq"
+                    | "in"
+                    | "not_in"
+                    | "ne"
+                    | "contains"
+                    | "starts_with"
+                    | "ends_with";
+                  value:
+                    | string
+                    | number
+                    | boolean
+                    | Array<string>
+                    | Array<number>
+                    | null;
+                }>;
+              }
+            | {
+                model: "jwks";
+                where?: Array<{
+                  connector?: "AND" | "OR";
+                  field:
+                    | "publicKey"
+                    | "privateKey"
                     | "createdAt"
                     | "expiresAt"
-                    | "identifier"
-                    | "updatedAt"
-                    | "value"
                     | "_id";
+                  mode?: "sensitive" | "insensitive";
                   operator?:
                     | "lt"
                     | "lte"
@@ -291,54 +296,20 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         {
           input:
             | {
-                model: "account";
+                model: "user";
                 where?: Array<{
                   connector?: "AND" | "OR";
                   field:
-                    | "accessToken"
-                    | "accessTokenExpiresAt"
-                    | "accountId"
+                    | "name"
+                    | "email"
+                    | "emailVerified"
+                    | "image"
                     | "createdAt"
-                    | "idToken"
-                    | "password"
-                    | "providerId"
-                    | "refreshToken"
-                    | "refreshTokenExpiresAt"
-                    | "scope"
                     | "updatedAt"
                     | "userId"
+                    | "role"
                     | "_id";
-                  operator?:
-                    | "lt"
-                    | "lte"
-                    | "gt"
-                    | "gte"
-                    | "eq"
-                    | "in"
-                    | "not_in"
-                    | "ne"
-                    | "contains"
-                    | "starts_with"
-                    | "ends_with";
-                  value:
-                    | string
-                    | number
-                    | boolean
-                    | Array<string>
-                    | Array<number>
-                    | null;
-                }>;
-              }
-            | {
-                model: "jwks";
-                where?: Array<{
-                  connector?: "AND" | "OR";
-                  field:
-                    | "createdAt"
-                    | "expiresAt"
-                    | "privateKey"
-                    | "publicKey"
-                    | "_id";
+                  mode?: "sensitive" | "insensitive";
                   operator?:
                     | "lt"
                     | "lte"
@@ -365,14 +336,15 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
                 where?: Array<{
                   connector?: "AND" | "OR";
                   field:
-                    | "createdAt"
                     | "expiresAt"
-                    | "ipAddress"
                     | "token"
+                    | "createdAt"
                     | "updatedAt"
+                    | "ipAddress"
                     | "userAgent"
                     | "userId"
                     | "_id";
+                  mode?: "sensitive" | "insensitive";
                   operator?:
                     | "lt"
                     | "lte"
@@ -395,19 +367,24 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
                 }>;
               }
             | {
-                model: "user";
+                model: "account";
                 where?: Array<{
                   connector?: "AND" | "OR";
                   field:
-                    | "createdAt"
-                    | "email"
-                    | "emailVerified"
-                    | "image"
-                    | "name"
-                    | "role"
-                    | "updatedAt"
+                    | "accountId"
+                    | "providerId"
                     | "userId"
+                    | "accessToken"
+                    | "refreshToken"
+                    | "idToken"
+                    | "accessTokenExpiresAt"
+                    | "refreshTokenExpiresAt"
+                    | "scope"
+                    | "password"
+                    | "createdAt"
+                    | "updatedAt"
                     | "_id";
+                  mode?: "sensitive" | "insensitive";
                   operator?:
                     | "lt"
                     | "lte"
@@ -434,12 +411,45 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
                 where?: Array<{
                   connector?: "AND" | "OR";
                   field:
+                    | "identifier"
+                    | "value"
+                    | "expiresAt"
+                    | "createdAt"
+                    | "updatedAt"
+                    | "_id";
+                  mode?: "sensitive" | "insensitive";
+                  operator?:
+                    | "lt"
+                    | "lte"
+                    | "gt"
+                    | "gte"
+                    | "eq"
+                    | "in"
+                    | "not_in"
+                    | "ne"
+                    | "contains"
+                    | "starts_with"
+                    | "ends_with";
+                  value:
+                    | string
+                    | number
+                    | boolean
+                    | Array<string>
+                    | Array<number>
+                    | null;
+                }>;
+              }
+            | {
+                model: "jwks";
+                where?: Array<{
+                  connector?: "AND" | "OR";
+                  field:
+                    | "publicKey"
+                    | "privateKey"
                     | "createdAt"
                     | "expiresAt"
-                    | "identifier"
-                    | "updatedAt"
-                    | "value"
                     | "_id";
+                  mode?: "sensitive" | "insensitive";
                   operator?:
                     | "lt"
                     | "lte"
@@ -472,7 +482,7 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         {
           join?: any;
           limit?: number;
-          model: "account" | "jwks" | "session" | "user" | "verification";
+          model: "user" | "session" | "account" | "verification" | "jwks";
           offset?: number;
           paginationOpts: {
             cursor: string | null;
@@ -482,10 +492,12 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
             maximumRowsRead?: number;
             numItems: number;
           };
+          select?: Array<string>;
           sortBy?: { direction: "asc" | "desc"; field: string };
           where?: Array<{
             connector?: "AND" | "OR";
             field: string;
+            mode?: "sensitive" | "insensitive";
             operator?:
               | "lt"
               | "lte"
@@ -499,12 +511,7 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
               | "starts_with"
               | "ends_with";
             value:
-              | string
-              | number
-              | boolean
-              | Array<string>
-              | Array<number>
-              | null;
+              string | number | boolean | Array<string> | Array<number> | null;
           }>;
         },
         any,
@@ -515,11 +522,12 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         "internal",
         {
           join?: any;
-          model: "account" | "jwks" | "session" | "user" | "verification";
+          model: "user" | "session" | "account" | "verification" | "jwks";
           select?: Array<string>;
           where?: Array<{
             connector?: "AND" | "OR";
             field: string;
+            mode?: "sensitive" | "insensitive";
             operator?:
               | "lt"
               | "lte"
@@ -533,12 +541,7 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
               | "starts_with"
               | "ends_with";
             value:
-              | string
-              | number
-              | boolean
-              | Array<string>
-              | Array<number>
-              | null;
+              string | number | boolean | Array<string> | Array<number> | null;
           }>;
         },
         any,
@@ -550,74 +553,30 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         {
           input:
             | {
-                model: "account";
+                model: "user";
                 update: {
-                  accessToken?: null | string;
-                  accessTokenExpiresAt?: null | number;
-                  accountId?: string;
                   createdAt?: number;
-                  idToken?: null | string;
-                  password?: null | string;
-                  providerId?: string;
-                  refreshToken?: null | string;
-                  refreshTokenExpiresAt?: null | number;
-                  scope?: null | string;
+                  email?: string;
+                  emailVerified?: boolean;
+                  image?: null | string;
+                  name?: string;
+                  role?: null | string;
                   updatedAt?: number;
-                  userId?: string;
+                  userId?: null | string;
                 };
                 where?: Array<{
                   connector?: "AND" | "OR";
                   field:
-                    | "accessToken"
-                    | "accessTokenExpiresAt"
-                    | "accountId"
+                    | "name"
+                    | "email"
+                    | "emailVerified"
+                    | "image"
                     | "createdAt"
-                    | "idToken"
-                    | "password"
-                    | "providerId"
-                    | "refreshToken"
-                    | "refreshTokenExpiresAt"
-                    | "scope"
                     | "updatedAt"
                     | "userId"
+                    | "role"
                     | "_id";
-                  operator?:
-                    | "lt"
-                    | "lte"
-                    | "gt"
-                    | "gte"
-                    | "eq"
-                    | "in"
-                    | "not_in"
-                    | "ne"
-                    | "contains"
-                    | "starts_with"
-                    | "ends_with";
-                  value:
-                    | string
-                    | number
-                    | boolean
-                    | Array<string>
-                    | Array<number>
-                    | null;
-                }>;
-              }
-            | {
-                model: "jwks";
-                update: {
-                  createdAt?: number;
-                  expiresAt?: null | number;
-                  privateKey?: string;
-                  publicKey?: string;
-                };
-                where?: Array<{
-                  connector?: "AND" | "OR";
-                  field:
-                    | "createdAt"
-                    | "expiresAt"
-                    | "privateKey"
-                    | "publicKey"
-                    | "_id";
+                  mode?: "sensitive" | "insensitive";
                   operator?:
                     | "lt"
                     | "lte"
@@ -653,14 +612,15 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
                 where?: Array<{
                   connector?: "AND" | "OR";
                   field:
-                    | "createdAt"
                     | "expiresAt"
-                    | "ipAddress"
                     | "token"
+                    | "createdAt"
                     | "updatedAt"
+                    | "ipAddress"
                     | "userAgent"
                     | "userId"
                     | "_id";
+                  mode?: "sensitive" | "insensitive";
                   operator?:
                     | "lt"
                     | "lte"
@@ -683,29 +643,38 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
                 }>;
               }
             | {
-                model: "user";
+                model: "account";
                 update: {
+                  accessToken?: null | string;
+                  accessTokenExpiresAt?: null | number;
+                  accountId?: string;
                   createdAt?: number;
-                  email?: string;
-                  emailVerified?: boolean;
-                  image?: null | string;
-                  name?: string;
-                  role?: null | string;
+                  idToken?: null | string;
+                  password?: null | string;
+                  providerId?: string;
+                  refreshToken?: null | string;
+                  refreshTokenExpiresAt?: null | number;
+                  scope?: null | string;
                   updatedAt?: number;
-                  userId?: null | string;
+                  userId?: string;
                 };
                 where?: Array<{
                   connector?: "AND" | "OR";
                   field:
-                    | "createdAt"
-                    | "email"
-                    | "emailVerified"
-                    | "image"
-                    | "name"
-                    | "role"
-                    | "updatedAt"
+                    | "accountId"
+                    | "providerId"
                     | "userId"
+                    | "accessToken"
+                    | "refreshToken"
+                    | "idToken"
+                    | "accessTokenExpiresAt"
+                    | "refreshTokenExpiresAt"
+                    | "scope"
+                    | "password"
+                    | "createdAt"
+                    | "updatedAt"
                     | "_id";
+                  mode?: "sensitive" | "insensitive";
                   operator?:
                     | "lt"
                     | "lte"
@@ -739,12 +708,51 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
                 where?: Array<{
                   connector?: "AND" | "OR";
                   field:
+                    | "identifier"
+                    | "value"
+                    | "expiresAt"
+                    | "createdAt"
+                    | "updatedAt"
+                    | "_id";
+                  mode?: "sensitive" | "insensitive";
+                  operator?:
+                    | "lt"
+                    | "lte"
+                    | "gt"
+                    | "gte"
+                    | "eq"
+                    | "in"
+                    | "not_in"
+                    | "ne"
+                    | "contains"
+                    | "starts_with"
+                    | "ends_with";
+                  value:
+                    | string
+                    | number
+                    | boolean
+                    | Array<string>
+                    | Array<number>
+                    | null;
+                }>;
+              }
+            | {
+                model: "jwks";
+                update: {
+                  createdAt?: number;
+                  expiresAt?: null | number;
+                  privateKey?: string;
+                  publicKey?: string;
+                };
+                where?: Array<{
+                  connector?: "AND" | "OR";
+                  field:
+                    | "publicKey"
+                    | "privateKey"
                     | "createdAt"
                     | "expiresAt"
-                    | "identifier"
-                    | "updatedAt"
-                    | "value"
                     | "_id";
+                  mode?: "sensitive" | "insensitive";
                   operator?:
                     | "lt"
                     | "lte"
@@ -785,74 +793,30 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         {
           input:
             | {
-                model: "account";
+                model: "user";
                 update: {
-                  accessToken?: null | string;
-                  accessTokenExpiresAt?: null | number;
-                  accountId?: string;
                   createdAt?: number;
-                  idToken?: null | string;
-                  password?: null | string;
-                  providerId?: string;
-                  refreshToken?: null | string;
-                  refreshTokenExpiresAt?: null | number;
-                  scope?: null | string;
+                  email?: string;
+                  emailVerified?: boolean;
+                  image?: null | string;
+                  name?: string;
+                  role?: null | string;
                   updatedAt?: number;
-                  userId?: string;
+                  userId?: null | string;
                 };
                 where?: Array<{
                   connector?: "AND" | "OR";
                   field:
-                    | "accessToken"
-                    | "accessTokenExpiresAt"
-                    | "accountId"
+                    | "name"
+                    | "email"
+                    | "emailVerified"
+                    | "image"
                     | "createdAt"
-                    | "idToken"
-                    | "password"
-                    | "providerId"
-                    | "refreshToken"
-                    | "refreshTokenExpiresAt"
-                    | "scope"
                     | "updatedAt"
                     | "userId"
+                    | "role"
                     | "_id";
-                  operator?:
-                    | "lt"
-                    | "lte"
-                    | "gt"
-                    | "gte"
-                    | "eq"
-                    | "in"
-                    | "not_in"
-                    | "ne"
-                    | "contains"
-                    | "starts_with"
-                    | "ends_with";
-                  value:
-                    | string
-                    | number
-                    | boolean
-                    | Array<string>
-                    | Array<number>
-                    | null;
-                }>;
-              }
-            | {
-                model: "jwks";
-                update: {
-                  createdAt?: number;
-                  expiresAt?: null | number;
-                  privateKey?: string;
-                  publicKey?: string;
-                };
-                where?: Array<{
-                  connector?: "AND" | "OR";
-                  field:
-                    | "createdAt"
-                    | "expiresAt"
-                    | "privateKey"
-                    | "publicKey"
-                    | "_id";
+                  mode?: "sensitive" | "insensitive";
                   operator?:
                     | "lt"
                     | "lte"
@@ -888,14 +852,15 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
                 where?: Array<{
                   connector?: "AND" | "OR";
                   field:
-                    | "createdAt"
                     | "expiresAt"
-                    | "ipAddress"
                     | "token"
+                    | "createdAt"
                     | "updatedAt"
+                    | "ipAddress"
                     | "userAgent"
                     | "userId"
                     | "_id";
+                  mode?: "sensitive" | "insensitive";
                   operator?:
                     | "lt"
                     | "lte"
@@ -918,29 +883,38 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
                 }>;
               }
             | {
-                model: "user";
+                model: "account";
                 update: {
+                  accessToken?: null | string;
+                  accessTokenExpiresAt?: null | number;
+                  accountId?: string;
                   createdAt?: number;
-                  email?: string;
-                  emailVerified?: boolean;
-                  image?: null | string;
-                  name?: string;
-                  role?: null | string;
+                  idToken?: null | string;
+                  password?: null | string;
+                  providerId?: string;
+                  refreshToken?: null | string;
+                  refreshTokenExpiresAt?: null | number;
+                  scope?: null | string;
                   updatedAt?: number;
-                  userId?: null | string;
+                  userId?: string;
                 };
                 where?: Array<{
                   connector?: "AND" | "OR";
                   field:
-                    | "createdAt"
-                    | "email"
-                    | "emailVerified"
-                    | "image"
-                    | "name"
-                    | "role"
-                    | "updatedAt"
+                    | "accountId"
+                    | "providerId"
                     | "userId"
+                    | "accessToken"
+                    | "refreshToken"
+                    | "idToken"
+                    | "accessTokenExpiresAt"
+                    | "refreshTokenExpiresAt"
+                    | "scope"
+                    | "password"
+                    | "createdAt"
+                    | "updatedAt"
                     | "_id";
+                  mode?: "sensitive" | "insensitive";
                   operator?:
                     | "lt"
                     | "lte"
@@ -974,12 +948,51 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
                 where?: Array<{
                   connector?: "AND" | "OR";
                   field:
+                    | "identifier"
+                    | "value"
+                    | "expiresAt"
+                    | "createdAt"
+                    | "updatedAt"
+                    | "_id";
+                  mode?: "sensitive" | "insensitive";
+                  operator?:
+                    | "lt"
+                    | "lte"
+                    | "gt"
+                    | "gte"
+                    | "eq"
+                    | "in"
+                    | "not_in"
+                    | "ne"
+                    | "contains"
+                    | "starts_with"
+                    | "ends_with";
+                  value:
+                    | string
+                    | number
+                    | boolean
+                    | Array<string>
+                    | Array<number>
+                    | null;
+                }>;
+              }
+            | {
+                model: "jwks";
+                update: {
+                  createdAt?: number;
+                  expiresAt?: null | number;
+                  privateKey?: string;
+                  publicKey?: string;
+                };
+                where?: Array<{
+                  connector?: "AND" | "OR";
+                  field:
+                    | "publicKey"
+                    | "privateKey"
                     | "createdAt"
                     | "expiresAt"
-                    | "identifier"
-                    | "updatedAt"
-                    | "value"
                     | "_id";
+                  mode?: "sensitive" | "insensitive";
                   operator?:
                     | "lt"
                     | "lte"

@@ -2,7 +2,6 @@
 
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { ThemeProvider } from "@/components/theme/theme-provider";
 import { authClient } from "@/lib/auth-client";
 import { convex } from "./convex-client";
 
@@ -20,14 +19,7 @@ export function Providers({
         client={convex}
         initialToken={initialToken}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          disableTransitionOnChange
-          enableSystem
-        >
-          {children}
-        </ThemeProvider>
+        {children}
       </ConvexBetterAuthProvider>
     </NuqsAdapter>
   );

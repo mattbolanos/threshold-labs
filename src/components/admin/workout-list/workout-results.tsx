@@ -56,13 +56,9 @@ export function WorkoutResults({
                     {workout.tags.join(", ")}
                   </p>
                   {workout.isHidden ? (
-                    <p className="text-xs font-medium text-amber-700 dark:text-amber-500">
-                      Hidden
-                    </p>
+                    <p className="text-chart-2 text-xs font-medium">Hidden</p>
                   ) : (
-                    <p className="text-xs font-medium text-emerald-700 dark:text-emerald-400">
-                      Visible
-                    </p>
+                    <p className="text-primary text-xs font-medium">Visible</p>
                   )}
                 </div>
                 <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -102,7 +98,7 @@ export function WorkoutResults({
 
       <div className="hidden md:block">
         <div className="border-border overflow-x-auto rounded-xl border">
-          <table className="w-full min-w-[900px] border-collapse text-sm">
+          <table className="w-full min-w-4xl border-collapse text-sm">
             <thead className="bg-muted/50">
               {workoutTable.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>

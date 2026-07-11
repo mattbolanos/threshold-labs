@@ -19,50 +19,69 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { TagBadge } from "@/components/workouts/tag-badge";
-import { TAG_CONFIG, type TagConfig } from "@/components/workouts/tag-config";
-import { cn, formatMinutesToTime } from "@/lib/utils";
+import {
+  getTagAccentOverflowCount,
+  TagAccentMarker,
+} from "@/components/workouts/tag-accent-marker";
+import { TAG_CONFIG } from "@/components/workouts/tag-config";
+import { cn } from "@/lib/utils";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { BlockContent } from "./block-content";
 
 interface BlockProps {
   workout: Doc<"workouts">;
-  tagConfig?: TagConfig | undefined;
   className?: string;
+}
+
+function formatBlockDuration(minutes: number) {
+  const roundedMinutes = Math.round(minutes);
+  const hours = Math.floor(roundedMinutes / 60);
+  const mins = roundedMinutes % 60;
+
+  return `${hours}:${mins.toString().padStart(2, "0")}`;
 }
 
 const BaseCard = ({
   workout,
-  tagConfig,
   className,
   ...props
-}: BlockProps & React.ComponentProps<"div">) => (
-  <Card
-    className={cn(
-      className,
-      "group/block sm:hover:bg-accent/60 w-full cursor-pointer overflow-hidden transition-colors duration-150",
-    )}
-    {...props}
-  >
-    <CardContent className="flex flex-col items-start gap-3 text-left">
-      <CardTitle className="flex min-w-0 items-center gap-1.5">
-        <span className="text-sm leading-snug font-medium">
-          {workout.title}
+}: BlockProps & React.ComponentProps<"div">) => {
+  const tagOverflowCount = getTagAccentOverflowCount(workout.tags);
+  const tagLabel =
+    workout.tags.length > 0 ? workout.tags.join(", ") : "No tags";
+
+  return (
+    <Card
+      aria-label={`${workout.title}, ${formatBlockDuration(
+        workout.trainingMinutes,
+      )}, RPE ${workout.rpe}, tags: ${tagLabel}`}
+      className={cn(
+        className,
+        "group/block relative h-13 w-full cursor-pointer gap-0 overflow-hidden rounded-lg bg-card py-0 text-card-foreground ring-1 ring-border transition-all duration-150 sm:hover:-translate-y-px sm:hover:bg-accent sm:hover:ring-border",
+      )}
+      title={tagLabel}
+      {...props}
+    >
+      <TagAccentMarker tags={workout.tags} />
+      <CardContent className="flex h-13 min-w-0 flex-col items-start gap-1.5 px-2 py-2 text-left">
+        <CardTitle className="flex w-full min-w-0 items-center gap-1.5 text-xs font-semibold">
+          <span className="min-w-0 flex-1 truncate">{workout.title}</span>
+          {tagOverflowCount > 0 && (
+            <span
+              aria-hidden
+              className="shrink-0 text-xs font-medium text-muted-foreground tabular-nums"
+            >
+              +{tagOverflowCount}
+            </span>
+          )}
+        </CardTitle>
+        <span className="max-w-full truncate text-xs font-normal text-muted-foreground tabular-nums">
+          {formatBlockDuration(workout.trainingMinutes)} • RPE {workout.rpe}
         </span>
-      </CardTitle>
-      <div className="flex items-center gap-1.5">
-        <span className="text-xs tabular-nums">
-          {formatMinutesToTime(workout.trainingMinutes)} • RPE {workout.rpe}/10
-        </span>
-      </div>
-      <div className="flex flex-wrap items-center gap-1.5">
-        {workout.tags.map((tag) => (
-          <TagBadge key={tag} tag={tag} />
-        ))}
-      </div>
-    </CardContent>
-  </Card>
-);
+      </CardContent>
+    </Card>
+  );
+};
 
 export function Block({ workout, className }: BlockProps) {
   const tagConfig = TAG_CONFIG.find((t) => t.tag === workout.tags[0]);
@@ -75,7 +94,6 @@ export function Block({ workout, className }: BlockProps) {
           render={
             <BaseCard
               className={cn(className, "hidden w-full sm:inline-flex")}
-              tagConfig={tagConfig}
               workout={workout}
             />
           }
@@ -91,10 +109,10 @@ export function Block({ workout, className }: BlockProps) {
                   )}
                 />
               )}
-              <span className="text-left leading-snug">{workout.title}</span>
+              <span className="text-left">{workout.title}</span>
             </DialogTitle>
           </DialogHeader>
-          <BlockContent workout={workout} />
+          <BlockContent className="max-h-[70svh]" workout={workout} />
         </DialogContent>
       </Dialog>
       <Drawer>
@@ -103,7 +121,6 @@ export function Block({ workout, className }: BlockProps) {
           render={
             <BaseCard
               className={cn(className, "inline-flex w-full sm:hidden")}
-              tagConfig={tagConfig}
               workout={workout}
             />
           }
@@ -119,7 +136,7 @@ export function Block({ workout, className }: BlockProps) {
                   )}
                 />
               )}
-              <span className="text-left leading-snug">{workout.title}</span>
+              <span className="text-left">{workout.title}</span>
             </DrawerTitle>
           </DrawerHeader>
           <BlockContent workout={workout} />

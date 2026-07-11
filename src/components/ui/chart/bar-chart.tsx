@@ -116,9 +116,7 @@ const LegendItem = ({
       className={cn(
         // base
         "group inline-flex flex-nowrap items-center gap-1.5 rounded-sm px-2 py-1 whitespace-nowrap transition",
-        hasOnValueChange
-          ? "cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
-          : "cursor-default",
+        hasOnValueChange ? "cursor-pointer hover:bg-muted" : "cursor-default",
       )}
       onClick={(e) => {
         e.stopPropagation();
@@ -144,9 +142,8 @@ const LegendItem = ({
           // base
           "truncate text-xs whitespace-nowrap",
           // text color
-          "text-gray-700 dark:text-gray-300",
-          hasOnValueChange &&
-            "group-hover:text-gray-900 dark:group-hover:text-gray-50",
+          "text-muted-foreground",
+          hasOnValueChange && "group-hover:text-foreground",
           activeLegend && activeLegend !== dataKey
             ? "opacity-40"
             : "opacity-100",
@@ -193,8 +190,8 @@ const ScrollButton = ({ icon, onClick, disabled }: ScrollButtonProps) => {
         // base
         "group inline-flex size-5 items-center truncate rounded-sm transition",
         disabled
-          ? "cursor-not-allowed text-gray-400 dark:text-gray-600"
-          : "cursor-pointer text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-50",
+          ? "cursor-not-allowed text-muted-foreground opacity-50"
+          : "cursor-pointer text-muted-foreground hover:bg-muted hover:text-foreground",
       )}
       disabled={disabled}
       onClick={(e) => {
@@ -365,7 +362,7 @@ const Legend = React.forwardRef<HTMLOListElement, LegendProps>((props, ref) => {
             // base
             "absolute top-0 right-0 bottom-0 flex h-full items-center justify-center pr-1",
             // background color
-            "bg-white dark:bg-gray-950",
+            "bg-background",
           )}
         >
           <ScrollButton
@@ -401,6 +398,7 @@ const ChartLegend = (
   enableLegendSlider?: boolean,
   legendPosition?: "left" | "center" | "right",
   categoryLabelMap?: Map<string, string>,
+  categoryLabelOrder?: string[],
 ) => {
   // biome-ignore lint/correctness/useHookAtTopLevel: <tremor>
   const legendRef = React.useRef<HTMLDivElement>(null);
@@ -412,7 +410,19 @@ const ChartLegend = (
     setLegendHeight(calculateHeight(legendRef.current?.clientHeight));
   });
 
-  const filteredPayload = payload.filter((item: any) => item.type !== "none");
+  const categoryLabelOrderMap = new Map(
+    categoryLabelOrder?.map((category, index) => [category, index]),
+  );
+  const filteredPayload = payload
+    .filter((item: any) => item.type !== "none")
+    .toSorted((a: any, b: any) => {
+      const aIndex = categoryLabelOrderMap.get(a.dataKey);
+      const bIndex = categoryLabelOrderMap.get(b.dataKey);
+
+      if (aIndex === undefined) return bIndex === undefined ? 0 : 1;
+      if (bIndex === undefined) return -1;
+      return aIndex - bIndex;
+    });
 
   const legendItems = filteredPayload.map((entry: any) => {
     const dataKey = entry.dataKey as string;
@@ -431,7 +441,7 @@ const ChartLegend = (
         "flex items-center",
         { "justify-center": legendPosition === "center" },
         {
-          "justify-start pl-1.5": legendPosition === "left",
+          "-ml-1 justify-start": legendPosition === "left",
         },
         { "justify-end": legendPosition === "right" },
       )}
@@ -481,9 +491,9 @@ const ChartTooltip = ({
           // base
           "rounded-md border text-sm shadow-md",
           // border color
-          "border-gray-200 dark:border-gray-800",
+          "border-border",
           // background color
-          "bg-white dark:bg-gray-950",
+          "bg-background",
         )}
       >
         <div className={cn("border-b border-inherit px-4 py-2")}>
@@ -492,7 +502,7 @@ const ChartTooltip = ({
               // base
               "font-medium",
               // text color
-              "text-gray-900 dark:text-gray-50",
+              "text-foreground",
             )}
           >
             {label}
@@ -517,7 +527,7 @@ const ChartTooltip = ({
                     // base
                     "text-right whitespace-nowrap",
                     // text color
-                    "text-gray-700 dark:text-gray-300",
+                    "text-muted-foreground",
                   )}
                 >
                   {category}
@@ -528,7 +538,7 @@ const ChartTooltip = ({
                   // base
                   "text-right font-medium whitespace-nowrap tabular-nums",
                   // text color
-                  "text-gray-900 dark:text-gray-50",
+                  "text-foreground",
                 )}
               >
                 {valueFormatter(value)}
@@ -557,6 +567,7 @@ interface BarChartProps extends React.HTMLAttributes<HTMLDivElement> {
   index: string;
   categories: string[];
   categoryLabels?: Partial<Record<string, string>>;
+  categoryLabelOrder?: string[];
   colors?: AvailableChartColorsKeys[];
   valueFormatter?: (value: number) => string;
   startEndOnly?: boolean;
@@ -593,6 +604,7 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
       categories = [],
       index,
       categoryLabels,
+      categoryLabelOrder,
       colors = AvailableChartColors,
       valueFormatter = defaultValueFormatter,
       startEndOnly = false,
@@ -600,7 +612,7 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
       xTicksFormatter,
       showYAxis = true,
       showGridLines = true,
-      yAxisWidth = 56,
+      yAxisWidth = 44,
       intervalType = "equidistantPreserveStart",
       showTooltip = true,
       showLegend = true,
@@ -642,7 +654,10 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
     const [activeBar, setActiveBar] = React.useState<any | undefined>(
       undefined,
     );
-    const yAxisDomain = getYAxisDomain(autoMinValue, minValue, maxValue);
+    const yAxisDomain =
+      type === "percent"
+        ? ([0, 1] satisfies AxisDomain)
+        : getYAxisDomain(autoMinValue, minValue, maxValue);
     const hasOnValueChange = !!onValueChange;
     const stacked = type === "stacked" || type === "percent";
 
@@ -687,7 +702,7 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
 
     return (
       <div
-        className={cn("h-64 w-full sm:h-80", className)}
+        className={cn("h-64 w-full sm:h-60", className)}
         data-tremor-id="tremor-raw"
         ref={forwardedRef}
         {...other}
@@ -834,6 +849,7 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
                     enableLegendSlider,
                     legendPosition,
                     categoryLabelMap,
+                    categoryLabelOrder,
                   )
                 }
                 height={legendHeight}

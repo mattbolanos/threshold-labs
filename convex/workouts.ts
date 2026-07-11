@@ -1,5 +1,5 @@
 import { ConvexError, v } from "convex/values";
-import { addWeeks, format, startOfWeek } from "date-fns";
+import { addDays, addWeeks, format, startOfWeek } from "date-fns";
 import {
   type MutationCtx,
   mutation,
@@ -150,6 +150,11 @@ const isVisibleWorkout = (workout: { isHidden?: boolean }) =>
   workout.isHidden !== true;
 
 const TRAINING_LOAD_SCALE_FACTOR = 3;
+const BASE_TIME_CONSTANT_DAYS = 42;
+const IMPACT_TIME_CONSTANT_DAYS = 7;
+
+const BASE_ALPHA = 1 - Math.exp(-1 / BASE_TIME_CONSTANT_DAYS);
+const IMPACT_ALPHA = 1 - Math.exp(-1 / IMPACT_TIME_CONSTANT_DAYS);
 
 const calculateTrainingLoad = (workout: {
   rpe: number;
@@ -164,6 +169,13 @@ const calculateTrainingLoad = (workout: {
     TRAINING_LOAD_SCALE_FACTOR
   );
 };
+
+const parseQueryDate = (value: string) => new Date(`${value}T00:00:00.000Z`);
+
+const isValidDateRange = (from: string, to: string) =>
+  !Number.isNaN(parseQueryDate(from).getTime()) &&
+  !Number.isNaN(parseQueryDate(to).getTime()) &&
+  from <= to;
 
 export const createWorkout = mutation({
   args: {
@@ -367,6 +379,128 @@ export const getRunVolumeMix = query({
         week,
       }))
       .sort((a, b) => a.week.localeCompare(b.week));
+  },
+});
+
+export const getSessionIntensity = query({
+  args: {
+    from: v.optional(v.string()),
+    to: v.optional(v.string()),
+  },
+  handler: async (ctx, { from, to }) => {
+    const fromDate = from ?? getDefaultFromDate();
+
+    let workoutsQuery = ctx.db
+      .query("workouts")
+      .withIndex("by_workout_date", (q) => q.gte("workoutDate", fromDate));
+
+    if (to) {
+      workoutsQuery = ctx.db
+        .query("workouts")
+        .withIndex("by_workout_date", (q) =>
+          q.gte("workoutDate", fromDate).lte("workoutDate", to),
+        );
+    }
+
+    const workouts = (await workoutsQuery.collect()).filter(isVisibleWorkout);
+    const weeklyData = new Map<
+      string,
+      {
+        easySessions: number;
+        moderateSessions: number;
+        hardSessions: number;
+        veryHardSessions: number;
+      }
+    >();
+
+    for (const workout of workouts) {
+      if (workout.rpe < 1 || workout.rpe > 10) continue;
+
+      const existing = weeklyData.get(workout.week) ?? {
+        easySessions: 0,
+        hardSessions: 0,
+        moderateSessions: 0,
+        veryHardSessions: 0,
+      };
+
+      if (workout.rpe <= 3) existing.easySessions += 1;
+      else if (workout.rpe <= 6) existing.moderateSessions += 1;
+      else if (workout.rpe <= 8) existing.hardSessions += 1;
+      else existing.veryHardSessions += 1;
+
+      weeklyData.set(workout.week, existing);
+    }
+
+    return Array.from(weeklyData.entries())
+      .map(([week, data]) => ({ week, ...data }))
+      .sort((a, b) => a.week.localeCompare(b.week));
+  },
+});
+
+export const getBaseFitness = query({
+  args: {
+    from: v.optional(v.string()),
+    to: v.optional(v.string()),
+  },
+  handler: async (ctx, { from, to }) => {
+    const fromDate = from ?? getDefaultFromDate();
+    const toDate = to ?? format(new Date(), "yyyy-MM-dd");
+
+    if (!isValidDateRange(fromDate, toDate)) {
+      return [];
+    }
+
+    const workouts = (
+      await ctx.db
+        .query("workouts")
+        .withIndex("by_workout_date", (q) => q.lte("workoutDate", toDate))
+        .collect()
+    )
+      .filter(isVisibleWorkout)
+      .sort((a, b) => a.workoutDate.localeCompare(b.workoutDate));
+
+    const dailyLoads = new Map<string, number>();
+
+    for (const workout of workouts) {
+      const load = calculateTrainingLoad(workout);
+      dailyLoads.set(
+        workout.workoutDate,
+        (dailyLoads.get(workout.workoutDate) ?? 0) + load,
+      );
+    }
+
+    const firstWorkoutDate = workouts[0]?.workoutDate;
+    const smoothingStartDate =
+      firstWorkoutDate && firstWorkoutDate < fromDate
+        ? firstWorkoutDate
+        : fromDate;
+
+    let baseFitness = 0;
+    let trainingImpact = 0;
+    const data = [];
+
+    for (
+      let date = parseQueryDate(smoothingStartDate);
+      format(date, "yyyy-MM-dd") <= toDate;
+      date = addDays(date, 1)
+    ) {
+      const dateKey = format(date, "yyyy-MM-dd");
+      const load = dailyLoads.get(dateKey) ?? 0;
+
+      baseFitness += (load - baseFitness) * BASE_ALPHA;
+      trainingImpact += (load - trainingImpact) * IMPACT_ALPHA;
+
+      if (dateKey >= fromDate) {
+        data.push({
+          baseFitness,
+          dailyLoad: load,
+          date: dateKey,
+          trainingImpact,
+        });
+      }
+    }
+
+    return data;
   },
 });
 

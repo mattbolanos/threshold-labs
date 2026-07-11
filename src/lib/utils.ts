@@ -1,8 +1,11 @@
 import { type ClassValue, clsx } from "clsx";
-import { addDays } from "date-fns";
+import { addDays, format, isValid, parse } from "date-fns";
 import { twMerge } from "tailwind-merge";
 
 const TRAINING_LOAD_SCALE_FACTOR = 3;
+const QUERY_DATE_FORMAT = "yyyy-MM-dd";
+const QUERY_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+const QUERY_DATE_REFERENCE = new Date(2000, 0, 1);
 const WEEK_RANGE_MONTH_FORMATTER = new Intl.DateTimeFormat("default", {
   month: "short",
 });
@@ -67,7 +70,17 @@ export function formatWeekRangeLabel(
 }
 
 export function formatQueryDate(date: Date): string {
-  return date.toISOString().split("T")[0];
+  return format(date, QUERY_DATE_FORMAT);
+}
+
+export function parseQueryDate(value: string): Date | null {
+  if (!QUERY_DATE_PATTERN.test(value)) return null;
+
+  const parsed = parse(value, QUERY_DATE_FORMAT, QUERY_DATE_REFERENCE);
+
+  if (!isValid(parsed) || formatQueryDate(parsed) !== value) return null;
+
+  return parsed;
 }
 
 export function calculateSTL(

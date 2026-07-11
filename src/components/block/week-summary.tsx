@@ -1,10 +1,13 @@
+"use client";
+
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Card, CardContent } from "@/components/ui/card";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { calculateSTL, cn } from "@/lib/utils";
 import type { Doc } from "../../../convex/_generated/dataModel";
 
@@ -14,23 +17,55 @@ interface WeekSummaryProps {
   className?: string;
 }
 
-function StatRow({
+const ONE_DECIMAL_FORMAT = {
+  maximumFractionDigits: 1,
+  minimumFractionDigits: 1,
+};
+
+const oneDecimalFormatter = new Intl.NumberFormat("en-US", ONE_DECIMAL_FORMAT);
+
+const CARDIO_TAGS = new Set([
+  "Aerobic Cross Training",
+  "Aerobic Run",
+  "Bad Heart Rate Data",
+  "Quality Cross Training",
+  "Quality HYROX",
+  "Quality Running",
+  "Race",
+  "Sleds",
+]);
+
+function isCardioWorkout(workout: Workouts) {
+  const hasDistance =
+    (workout.totalRunMiles ?? 0) > 0 ||
+    (workout.totalBikeMiles ?? 0) > 0 ||
+    (workout.totalSkiKs ?? 0) > 0 ||
+    (workout.totalRowKs ?? 0) > 0;
+
+  if (hasDistance) return true;
+
+  return workout.tags.some((tag) => CARDIO_TAGS.has(tag));
+}
+
+function SummaryMetric({
   label,
+  loading,
   value,
-  unit,
 }: {
   label: string;
-  value: number | string;
-  unit?: string;
+  loading?: boolean;
+  value: number;
 }) {
+  const isLargeValue = label === "Subjective Load";
   return (
-    <div className="border-border/60 flex items-center justify-between border-b py-2 last:border-b-0">
-      <span className="text-muted-foreground text-sm">{label}</span>
-      <div className="flex items-baseline gap-1">
-        <span className="font-semibold tabular-nums">{value}</span>
-        {unit && (
-          <span className="text-muted-foreground font-mono text-[10px] uppercase">
-            {unit}
+    <div className="min-h-13 rounded-lg border bg-card px-3 py-2">
+      <p className="text-xs font-bold text-muted-foreground">{label}</p>
+      <div className="mt-0.5 flex items-end gap-3">
+        {loading ? (
+          <Skeleton className={cn("h-7 w-11", isLargeValue && "w-18")} />
+        ) : (
+          <span className="text-xl font-bold tabular-nums">
+            {oneDecimalFormatter.format(value)}
           </span>
         )}
       </div>
@@ -39,122 +74,67 @@ function StatRow({
 }
 
 export function WeekSummary({ workouts, className }: WeekSummaryProps) {
-  if (!workouts)
-    return (
-      <Card className={cn(className, "bg-muted/40 py-0")}>
-        <CardContent>
-          <Accordion>
-            <AccordionItem value="item-1">
-              <AccordionTrigger className="hover:no-underline" disabled>
-                <div className="flex flex-1 items-center justify-between pr-2 text-left">
-                  <span className="text-sm font-medium">Week Summary</span>
-                </div>
-              </AccordionTrigger>
-            </AccordionItem>
-          </Accordion>
-        </CardContent>
-      </Card>
-    );
+  const isLoading = workouts === undefined;
+  const weeklyWorkouts = workouts ?? [];
 
-  const totalWorkouts = workouts.length;
-  const totalTrainingMinutes = workouts.reduce(
-    (sum, w) => sum + (w.trainingMinutes || 0),
+  const totalTrainingMinutes = weeklyWorkouts.reduce(
+    (sum, workout) => sum + (workout.trainingMinutes || 0),
     0,
   );
-  const totalRunMiles = workouts.reduce(
-    (sum, w) => sum + (w.totalRunMiles || 0),
+  const totalRunMiles = weeklyWorkouts.reduce(
+    (sum, workout) => sum + (workout.totalRunMiles || 0),
     0,
   );
-  const totalBikeMiles = workouts.reduce(
-    (sum, w) => sum + (w.totalBikeMiles || 0),
+  const totalCardioMinutes = weeklyWorkouts.reduce(
+    (sum, workout) =>
+      isCardioWorkout(workout) ? sum + (workout.trainingMinutes || 0) : sum,
     0,
   );
-  const totalSkiKs = workouts.reduce((sum, w) => sum + (w.totalSkiKs || 0), 0);
-  const totalRowKs = workouts.reduce((sum, w) => sum + (w.totalRowKs || 0), 0);
-  const totalSubjectiveTrainingLoad = workouts.reduce(
-    (sum, w) =>
-      sum + calculateSTL(w.rpe, w.trainingMinutes, w.totalRunMiles ?? null),
+  const totalSubjectiveTrainingLoad = weeklyWorkouts.reduce(
+    (sum, workout) =>
+      sum +
+      calculateSTL(
+        workout.rpe,
+        workout.trainingMinutes,
+        workout.totalRunMiles ?? null,
+      ),
     0,
   );
-
-  const hasRunning = totalRunMiles > 0;
-  const hasBiking = totalBikeMiles > 0;
-  const hasRowing = totalRowKs > 0;
-  const hasSkiing = totalSkiKs > 0;
-  const hasActivity = hasRunning || hasBiking || hasRowing || hasSkiing;
 
   return (
-    <Card className={cn(className, "bg-muted/40 py-0")}>
-      <CardContent>
-        <Accordion>
-          <AccordionItem value="item-1">
-            <AccordionTrigger
-              className="hover:no-underline"
-              disabled={totalWorkouts === 0}
-            >
-              <div className="flex flex-1 items-center justify-between pr-2 text-left">
-                <span className="text-sm font-medium">Week Summary</span>
-                <span className="text-muted-foreground font-mono text-xs tabular-nums">
-                  {totalWorkouts}{" "}
-                  {workouts.length === 1 ? "workout" : "workouts"}
-                </span>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="space-y-2 pt-4">
-              <div className="space-y-0">
-                <h4 className="text-muted-foreground mb-2 text-[10px] font-semibold tracking-[0.15em] uppercase">
-                  Overview
-                </h4>
-                <StatRow label="Total Workouts" value={totalWorkouts} />
-                <StatRow
-                  label="Training Time"
-                  unit="hrs"
-                  value={(totalTrainingMinutes / 60).toFixed(1)}
-                />
-                <StatRow
-                  label="Total Subjective Load"
-                  value={totalSubjectiveTrainingLoad.toFixed(1)}
-                />
-              </div>
-
-              {hasActivity && (
-                <div className="space-y-0 pt-2">
-                  <h4 className="text-muted-foreground mb-2 text-[10px] font-semibold tracking-[0.15em] uppercase">
-                    Activity
-                  </h4>
-                  {hasRunning && (
-                    <StatRow
-                      label="Running"
-                      unit="mi"
-                      value={totalRunMiles.toFixed(1)}
-                    />
-                  )}
-                  {hasBiking && (
-                    <StatRow
-                      label="Biking"
-                      unit="mi"
-                      value={totalBikeMiles.toFixed(1)}
-                    />
-                  )}
-                  {hasRowing && (
-                    <StatRow
-                      label="Rowing"
-                      unit="km"
-                      value={totalRowKs.toFixed(1)}
-                    />
-                  )}
-                  {hasSkiing && (
-                    <StatRow
-                      label="Skiing"
-                      unit="km"
-                      value={totalSkiKs.toFixed(1)}
-                    />
-                  )}
-                </div>
-              )}
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+    <Card
+      className={cn(
+        "hidden min-h-38 gap-0 rounded-xl border bg-card py-0 text-card-foreground lg:flex",
+        className,
+      )}
+    >
+      <CardHeader className="gap-1 px-5 pt-4 pb-0">
+        <CardTitle className="text-base font-bold">Weekly Summary</CardTitle>
+        <CardDescription className="text-xs text-muted-foreground">
+          A fast read on the selected week.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="grid gap-3 px-5 pt-3 pb-4 sm:grid-cols-2">
+        <SummaryMetric
+          label="True Training Hours"
+          loading={isLoading}
+          value={totalTrainingMinutes / 60}
+        />
+        <SummaryMetric
+          label="Subjective Training Load"
+          loading={isLoading}
+          value={totalSubjectiveTrainingLoad}
+        />
+        <SummaryMetric
+          label="Run Miles"
+          loading={isLoading}
+          value={totalRunMiles}
+        />
+        <SummaryMetric
+          label="Cardio Hours"
+          loading={isLoading}
+          value={totalCardioMinutes / 60}
+        />
       </CardContent>
     </Card>
   );

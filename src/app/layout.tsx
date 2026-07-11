@@ -18,6 +18,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  appleWebApp: {
+    title: "Threshold Lab",
+  },
   description: "Train Smarter. Race Faster.",
   title: "Threshold Lab",
 };
@@ -40,7 +43,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      className={`${outfit.variable} ${jetbrainsMono.variable}`}
+      className={`${outfit.variable} ${jetbrainsMono.variable} dark`}
       lang="en"
       suppressHydrationWarning
     >
@@ -53,7 +56,7 @@ export default function RootLayout({
           />
         )}
       </head>
-      <body className="bg-background text-foreground min-h-full overscroll-y-contain antialiased">
+      <body className="min-h-full overscroll-y-contain bg-background text-foreground antialiased">
         <main>
           <Suspense fallback={<Providers>{null}</Providers>}>
             <AppShell>{children}</AppShell>

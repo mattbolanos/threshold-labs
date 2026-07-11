@@ -62,7 +62,7 @@ const renderDefaultContent = ({
 
     const colorClassName = payloadItem.color
       ? getColorClassName(payloadItem.color, "bg")
-      : "bg-gray-300";
+      : "bg-muted";
 
     return (
       <div className="flex items-center justify-between" key={dataKey}>
@@ -71,9 +71,9 @@ const renderDefaultContent = ({
             aria-hidden="true"
             className={`size-2.5 shrink-0 rounded-xs ${colorClassName}`}
           />
-          <p className="text-gray-700 dark:text-gray-400">{displayLabel}</p>
+          <p className="text-muted-foreground">{displayLabel}</p>
         </div>
-        <p className="font-medium text-gray-900 tabular-nums dark:text-gray-50">
+        <p className="text-foreground font-medium tabular-nums">
           {formattedValue}
         </p>
       </div>
@@ -110,7 +110,7 @@ export function createTooltip(
       : label;
 
     return (
-      <div className="bg-card w-56 rounded-lg border text-sm shadow-xs dark:border-gray-800">
+      <div className="bg-card w-56 rounded-lg border text-sm shadow-xs">
         <p className="mb-2 px-3 pt-2 font-medium">{labelTitle}</p>
         <Separator />
         <div className="flex flex-col space-y-2 p-3 py-2">{innerContent}</div>

@@ -19,7 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useChartState } from "@/hooks/use-chart-state";
+import { useChartRange } from "@/hooks/use-chart-state";
 import { cn, formatWorkoutDate } from "@/lib/utils";
 import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/button";
@@ -234,7 +234,7 @@ function TableSkeleton() {
 export function TotalsTable() {
   "use no memo";
 
-  const { range } = useChartState();
+  const range = useChartRange();
 
   const data = useQuery(api.workouts.getWeeklyTotals, {
     from: range?.from ?? undefined,
@@ -291,7 +291,7 @@ export function TotalsTable() {
               colSpan={group.columns.length}
               key={group.label}
             >
-              <span className="text-muted-foreground text-[10px] font-semibold tracking-[0.1em] uppercase">
+              <span className="text-muted-foreground text-xs font-semibold tracking-widest uppercase">
                 {group.label}
               </span>
             </TableHead>

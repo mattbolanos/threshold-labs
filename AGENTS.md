@@ -1,1 +1,1 @@
-instead of npm commands, run them with bun.
+instead of npm commands, run them with bun. avoid writing tailwind classes with brackets (e.g. `rounded-[6px]`), prefer `rounded-sm` or `rounded-md`, for example. try to keep files less than 500 lines of code. favor block-based architecture by making reusable component files rather than master files.

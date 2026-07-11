@@ -1,16 +1,24 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import { RUN_MIX_CATEGORY_LABELS, type RunMixCategory } from "@/app/constants";
+import {
+  RUN_MIX_CATEGORY_LABELS,
+  RUN_MIX_COLORS,
+  type RunMixCategory,
+} from "@/app/constants";
 import { ChartSkeleton } from "@/components/skeletons/chart";
 import { BarChart } from "@/components/ui/chart/bar-chart";
-import { useChartState } from "@/hooks/use-chart-state";
+import { useChartRange } from "@/hooks/use-chart-state";
 import { getColorClassName } from "@/lib/chart-utils";
 import { api } from "../../../convex/_generated/api";
 import { createTooltip } from "./tooltip";
 
-export function RunMixChart() {
-  const { range } = useChartState();
+export interface RunMixChartProps {
+  yAxisWidth?: number;
+}
+
+export function RunMixChart({ yAxisWidth }: RunMixChartProps) {
+  const range = useChartRange();
 
   const data = useQuery(api.workouts.getRunVolumeMix, {
     from: range?.from ?? undefined,
@@ -26,12 +34,12 @@ export function RunMixChart() {
     <BarChart
       categories={[...Object.keys(RUN_MIX_CATEGORY_LABELS)]}
       categoryLabels={RUN_MIX_CATEGORY_LABELS}
+      colors={RUN_MIX_COLORS}
       customTooltip={RunMixTooltip}
       data={data}
       index="week"
       legendPosition="left"
       type="stacked"
-      xAxisLabel="Week"
       xAxisPadding={4}
       xTicksFormatter={(value) =>
         new Date(value).toLocaleDateString("en-US", {
@@ -40,6 +48,7 @@ export function RunMixChart() {
           timeZone: "UTC",
         })
       }
+      yAxisWidth={yAxisWidth}
     />
   );
 }
@@ -94,7 +103,7 @@ const RunMixTooltip = createTooltip(
           });
           const colorClassName = payloadItem.color
             ? getColorClassName(payloadItem.color, "bg")
-            : "bg-gray-300";
+            : "bg-muted";
 
           return (
             <div className="flex items-center justify-between" key={dataKey}>

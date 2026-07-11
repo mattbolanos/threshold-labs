@@ -145,7 +145,7 @@ export function WorkoutEditorFields({
               return (
                 <button
                   className={cn(
-                    "inline-flex items-center gap-1 rounded-[6px] border px-2 py-1 text-[13px] font-medium transition-colors",
+                    "inline-flex items-center gap-1 rounded-sm border px-2 py-1 text-xs font-medium transition-colors",
                     isSelected
                       ? cn("border-transparent", tagConfig.color)
                       : "border-border text-muted-foreground hover:bg-muted",

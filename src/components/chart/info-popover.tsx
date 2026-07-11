@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-interface Definition {
+export interface Definition {
   label: string;
   description: string;
   colorClassName?: string;
@@ -39,7 +39,7 @@ export function InfoPopover({
       </PopoverTrigger>
       <PopoverContent align="end" className="w-84 p-4">
         <div className="space-y-5">
-          <h4 className="leading-none font-semibold">{title}</h4>
+          <h4 className="font-semibold">{title}</h4>
           <div className="grid gap-3">
             {definitions.map((item) => (
               <div className="grid gap-1" key={item.label}>
@@ -52,11 +52,9 @@ export function InfoPopover({
                       )}
                     />
                   )}
-                  <span className="text-sm leading-none font-medium">
-                    {item.label}
-                  </span>
+                  <span className="text-sm font-medium">{item.label}</span>
                 </div>
-                <p className="text-muted-foreground text-sm leading-normal">
+                <p className="text-muted-foreground text-sm">
                   {item.description}
                 </p>
               </div>

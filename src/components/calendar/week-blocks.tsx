@@ -2,103 +2,29 @@
 
 import { useQuery } from "convex/react";
 import { addDays, isSameDay } from "date-fns";
-import {
-  AnimatePresence,
-  domAnimation,
-  LazyMotion,
-  m,
-  useReducedMotion,
-  type Variants,
-} from "framer-motion";
 import { Block } from "@/components/block/block";
 import { EmptyWeekState } from "@/components/block/empty-week-state";
-import { WeekSummary } from "@/components/block/week-summary";
+import { DailyLoadBar } from "@/components/calendar/daily-load-bar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useCalendarNav } from "@/hooks/use-calendar-nav";
-import { cn, formatQueryDate, getWeekDays } from "@/lib/utils";
+import { calculateSTL, cn, formatQueryDate, getWeekDays } from "@/lib/utils";
 import { api } from "../../../convex/_generated/api";
+import { HiddenWorkoutsDialog } from "./hidden-workouts-dialog";
 
-// Shared spring config for organic feel
-const springConfig = {
-  damping: 30,
-  stiffness: 300,
-  type: "spring" as const,
-};
+const MAX_DESKTOP_WORKOUTS_PER_DAY = 3;
 
-// Card enter/exit animation variants
-const cardVariants = {
-  exit: {
-    opacity: 0,
-    transition: { duration: 0.15, ease: "easeIn" },
-    y: -8,
-  },
-  hidden: {
-    opacity: 0,
-    scale: 0.97,
-    y: 12,
-  },
-  visible: (i: number) => ({
-    opacity: 1,
-    scale: 1,
-    transition: {
-      ...springConfig,
-      delay: i * 0.05, // 50ms stagger per card
-    },
-    y: 0,
-  }),
-};
-
-// Container variants for coordinated children
-const containerVariants = {
-  exit: {
-    opacity: 0,
-    transition: { duration: 0.12 },
-  },
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      delayChildren: 0.1,
-      staggerChildren: 0.03,
-    },
-  },
-};
-
-// Empty state animation
-const emptyStateVariants = {
-  exit: {
-    opacity: 0,
-    scale: 0.98,
-    transition: { duration: 0.12 },
-  },
-  hidden: { opacity: 0, scale: 0.98 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: springConfig,
-  },
-};
-
-const reducedContainerVariants = {
-  exit: { opacity: 0 },
-  hidden: { opacity: 0 },
-  visible: { opacity: 1 },
-};
-
-const reducedCardVariants = {
-  exit: { opacity: 0 },
-  hidden: { opacity: 0 },
-  visible: { opacity: 1 },
-};
-
-const reducedEmptyStateVariants = {
-  exit: { opacity: 0 },
-  hidden: { opacity: 0 },
-  visible: { opacity: 1 },
-};
+function WeekBlocksLoading() {
+  return (
+    <div className="flex w-full flex-1 flex-col gap-1.5">
+      <Skeleton className="h-13 rounded-lg bg-muted motion-reduce:animate-none" />
+      <Skeleton className="h-13 rounded-lg bg-muted motion-reduce:animate-none" />
+      <Skeleton className="h-13 rounded-lg bg-muted motion-reduce:animate-none" />
+    </div>
+  );
+}
 
 export function WeekBlocks() {
   const { weekStartDate } = useCalendarNav();
-  const shouldReduceMotion = useReducedMotion();
 
   const data = useQuery(api.workouts.getWorkouts, {
     from: formatQueryDate(weekStartDate),
@@ -107,19 +33,10 @@ export function WeekBlocks() {
 
   const weekDays = getWeekDays(weekStartDate);
 
-  const containerAnimationVariants = shouldReduceMotion
-    ? reducedContainerVariants
-    : containerVariants;
-  const cardAnimationVariants = shouldReduceMotion
-    ? reducedCardVariants
-    : cardVariants;
-  const emptyAnimationVariants = shouldReduceMotion
-    ? reducedEmptyStateVariants
-    : emptyStateVariants;
+  const isLoading = data === undefined;
+  const workouts = data ?? [];
 
-  if (data === undefined) return null;
-
-  const workoutsByDay = data.reduce<Record<string, typeof data>>(
+  const workoutsByDay = workouts.reduce<Record<string, typeof workouts>>(
     (acc, workout) => {
       const dayWorkouts = acc[workout.workoutDate] ?? [];
       dayWorkouts.push(workout);
@@ -129,101 +46,105 @@ export function WeekBlocks() {
     {},
   );
 
-  const dayStartIndices = weekDays.reduce<Record<string, number>>(
-    (acc, day, index) => {
-      const dayString = formatQueryDate(day);
-
-      if (index === 0) {
-        acc[dayString] = 0;
-        return acc;
-      }
-
-      const previousDay = weekDays[index - 1];
-      const previousDayString = formatQueryDate(previousDay);
-      const previousDayCount = workoutsByDay[previousDayString]?.length ?? 0;
-      acc[dayString] = (acc[previousDayString] ?? 0) + previousDayCount;
-      return acc;
-    },
-    {},
-  );
+  const dailyLoads = weekDays.reduce<Record<string, number>>((acc, day) => {
+    const dayString = formatQueryDate(day);
+    acc[dayString] = (workoutsByDay[dayString] ?? []).reduce(
+      (total, workout) =>
+        total +
+        calculateSTL(
+          workout.rpe,
+          workout.trainingMinutes,
+          workout.totalRunMiles ?? null,
+        ),
+      0,
+    );
+    return acc;
+  }, {});
+  const maxWeeklyDailyLoad = Math.max(0, ...Object.values(dailyLoads));
 
   return (
-    <LazyMotion features={domAnimation}>
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-7 lg:gap-2">
-        <WeekSummary
-          className="mb-1 lg:hidden"
-          key={weekStartDate.toISOString()}
-          workouts={data}
-        />
-        <AnimatePresence mode="wait">
-          {data.length === 0 ? (
-            <m.div
-              animate="visible"
-              className="w-full lg:col-span-7 lg:mt-2"
-              exit="exit"
-              initial="hidden"
-              key="empty"
-              variants={emptyAnimationVariants}
-            >
-              <EmptyWeekState />
-            </m.div>
-          ) : (
-            <m.div
-              animate="visible"
-              className="contents w-full"
-              exit="exit"
-              initial="hidden"
-              key={weekStartDate.toISOString()}
-              variants={containerAnimationVariants}
-            >
-              {weekDays.map((day) => {
-                const dayString = formatQueryDate(day);
-                const dayWorkouts = workoutsByDay[dayString] ?? [];
-                const isToday = isSameDay(new Date(), day);
-                const dayStartIndex = dayStartIndices[dayString] ?? 0;
-
-                return (
-                  <m.div
-                    className={cn("w-full flex-col gap-2")}
-                    key={dayString}
-                    variants={{
-                      exit: { opacity: 0 },
-                      hidden: { opacity: 0 },
-                      visible: { opacity: 1 },
-                    }}
-                  >
-                    <h3
-                      className={cn(
-                        "pb-2 text-sm font-semibold lg:hidden",
-                        isToday && "text-primary",
-                      )}
-                    >
-                      {day.toLocaleDateString("en-US", {
-                        day: "numeric",
-                        month: "short",
-                        weekday: "long",
-                        year: "numeric",
-                      })}
-                    </h3>
-                    <div className="flex w-full flex-col gap-2">
+    <div aria-busy={isLoading} data-slot="week-blocks">
+      {data?.length === 0 ? (
+        <div className="w-full">
+          <EmptyWeekState className="bg-card text-card-foreground lg:min-h-70" />
+        </div>
+      ) : (
+        <div className="grid w-full grid-cols-1 gap-2.5 lg:grid-cols-7">
+          {weekDays.map((day) => {
+            const dayString = formatQueryDate(day);
+            const dayWorkouts = workoutsByDay[dayString] ?? [];
+            const dailyLoad = dailyLoads[dayString] ?? 0;
+            const isToday = isSameDay(new Date(), day);
+            const weekday = day
+              .toLocaleString("en-US", { weekday: "short" })
+              .toUpperCase();
+            const hiddenWorkoutCount = Math.max(
+              0,
+              dayWorkouts.length - MAX_DESKTOP_WORKOUTS_PER_DAY,
+            );
+            return (
+              <div
+                className={cn(
+                  "flex w-full flex-col overflow-hidden rounded-lg border bg-card p-2 transition-shadow lg:min-h-70",
+                  isToday && "border-primary/70 shadow-sm",
+                )}
+                key={dayString}
+              >
+                <div className="mb-2 flex items-start justify-between px-1 pt-0.5">
+                  <div className="w-full min-w-0">
+                    <div className="flex items-center justify-between">
+                      <p
+                        className={cn(
+                          "text-xs font-bold text-muted-foreground",
+                          isToday && "text-primary",
+                        )}
+                      >
+                        {weekday}
+                      </p>
+                      <DailyLoadBar
+                        dailyLoad={dailyLoad}
+                        isLoading={isLoading}
+                        maxWeeklyDailyLoad={maxWeeklyDailyLoad}
+                      />
+                    </div>
+                    <p className="mt-1 text-lg font-bold tabular-nums">
+                      {day.getDate()}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex w-full flex-1">
+                  {isLoading ? (
+                    <WeekBlocksLoading />
+                  ) : (
+                    <div className="flex w-full flex-1 flex-col gap-1.5">
                       {dayWorkouts.map((workout, workoutIndex) => (
-                        <m.div
-                          className="w-full"
-                          custom={dayStartIndex + workoutIndex}
+                        <div
+                          className={cn(
+                            "w-full",
+                            workoutIndex >= MAX_DESKTOP_WORKOUTS_PER_DAY &&
+                              "lg:hidden",
+                          )}
                           key={workout._id.toString()}
-                          variants={cardAnimationVariants as Variants}
                         >
                           <Block className="w-full" workout={workout} />
-                        </m.div>
+                        </div>
                       ))}
+                      {hiddenWorkoutCount > 0 && (
+                        <HiddenWorkoutsDialog
+                          day={day}
+                          hiddenWorkoutCount={hiddenWorkoutCount}
+                          visibleWorkoutCount={MAX_DESKTOP_WORKOUTS_PER_DAY}
+                          workouts={dayWorkouts}
+                        />
+                      )}
                     </div>
-                  </m.div>
-                );
-              })}
-            </m.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </LazyMotion>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 }

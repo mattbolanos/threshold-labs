@@ -119,7 +119,7 @@ function getRangeLabel(range: Range | null) {
   const from = parseQueryDate(range?.from);
   const to = parseQueryDate(range?.to);
 
-  if (!from || !to) return "Select Date Range";
+  if (!from || !to) return "Date Range";
 
   return `${format(from, "MMM d, yyyy")} - ${format(to, "MMM d, yyyy")}`;
 }
@@ -173,7 +173,7 @@ export function DateFilter({ range, setRange }: DateFilterProps) {
         render={
           <Button
             className={cn(
-              "max-w-72 justify-start text-left font-normal",
+              "h-10 w-full justify-start text-left font-normal lg:h-8 lg:max-w-52",
               !range?.from || !range?.to ? "text-muted-foreground" : false,
             )}
             variant="outline"

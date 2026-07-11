@@ -1,18 +1,25 @@
 import { Separator } from "@/components/ui/separator";
 import { WORKOUT_PROPERTY_CONFIG } from "@/components/workouts/workout-property-config";
+import { cn } from "@/lib/utils";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { FreeText } from "./free-text";
 import { PropertyRow } from "./property-row";
 
 interface BlockContentProps {
   workout: Doc<"workouts">;
+  className?: string;
 }
 
-export function BlockContent({ workout }: BlockContentProps) {
+export function BlockContent({ className, workout }: BlockContentProps) {
   const hasText = workout.workoutPlan || workout.notes;
 
   return (
-    <div className="mb-4 space-y-1 overflow-y-auto px-2 md:-ms-1.5 md:px-0">
+    <div
+      className={cn(
+        "mb-4 space-y-1 overflow-y-auto px-2 md:-ms-1.5 md:px-0",
+        className,
+      )}
+    >
       {WORKOUT_PROPERTY_CONFIG.map((property) => (
         <PropertyRow
           key={property.label}

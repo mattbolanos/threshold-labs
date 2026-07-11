@@ -1,17 +1,30 @@
-import { ThemeToggle } from "@/components/theme/toggle";
+"use client";
+
+import { IconLoader2, IconLogout } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
+interface User {
+  email: string;
+  name: string;
+}
+
 interface NavUserProps {
-  user?: {
-    email: string;
-    name: string;
-  } | null;
+  user?: User | null;
+}
+
+interface LogOutButtonProps {
+  className?: string;
+  onLoggedOut?: () => void;
 }
 
 export function NavUser({ user }: NavUserProps) {
@@ -29,7 +42,7 @@ export function NavUser({ user }: NavUserProps) {
         render={
           <button
             aria-label={`${username} menu`}
-            className="max-md:hidden rounded-full outline-hidden transition-[opacity,transform] duration-150 ease-in-out hover:scale-105 hover:opacity-85 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="focus-visible:ring-ring focus-visible:ring-offset-background rounded-full outline-hidden transition-all duration-150 ease-in-out hover:scale-105 hover:opacity-85 focus-visible:ring-2 focus-visible:ring-offset-2 max-md:hidden"
             type="button"
           />
         }
@@ -41,21 +54,64 @@ export function NavUser({ user }: NavUserProps) {
         </Avatar>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-56 p-1 shadow-md">
-        <div className="mb-2 flex flex-col gap-1 px-2 py-1.5">
+        <div className="mb-1 flex flex-col gap-1 px-2 py-1.5">
           <span className="text-sm font-medium">{username}</span>
           <span className="text-muted-foreground text-xs">{email}</span>
         </div>
-
-        <MenuItem className="focus:text-muted-foreground hover:text-muted-foreground cursor-default justify-between hover:bg-transparent focus:bg-transparent">
-          Theme
-          <ThemeToggle />
-        </MenuItem>
+        <LogOutButton />
       </PopoverContent>
     </Popover>
   );
 }
 
-function getInitials(name: string, email: string) {
+export function LogOutButton({ className, onLoggedOut }: LogOutButtonProps) {
+  const router = useRouter();
+  const [isPending, setIsPending] = useState(false);
+  const [hasError, setHasError] = useState(false);
+
+  const handleLogOut = async () => {
+    setHasError(false);
+    setIsPending(true);
+
+    await authClient
+      .signOut({
+        fetchOptions: {
+          onError: () => setHasError(true),
+          onSuccess: () => {
+            onLoggedOut?.();
+            router.push("/login");
+            router.refresh();
+          },
+        },
+      })
+      .catch(() => setHasError(true))
+      .finally(() => setIsPending(false));
+  };
+
+  return (
+    <Button
+      className={cn("w-full justify-start", className)}
+      disabled={isPending}
+      onClick={handleLogOut}
+      variant="ghost"
+    >
+      {isPending ? (
+        <IconLoader2 className="animate-spin" data-icon="inline-start" />
+      ) : (
+        <IconLogout data-icon="inline-start" />
+      )}
+      <span aria-live="polite">
+        {isPending
+          ? "Logging out…"
+          : hasError
+            ? "Log out failed. Try again"
+            : "Log out"}
+      </span>
+    </Button>
+  );
+}
+
+export function getInitials(name: string, email: string) {
   const parts = name.split(/\s+/).filter(Boolean);
 
   if (parts.length > 1) {
@@ -64,22 +120,4 @@ function getInitials(name: string, email: string) {
 
   const fallback = parts[0] || email.split("@")[0] || "";
   return fallback.slice(0, 2).toUpperCase();
-}
-
-function MenuItem({
-  children,
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
-  return (
-    <div
-      className={cn(
-        "focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground text-muted-foreground relative flex h-9 cursor-default items-center gap-2 rounded-sm px-2.5 py-2 text-sm outline-hidden transition-colors duration-200 select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        className,
-      )}
-      {...props}
-    >
-      {children}
-    </div>
-  );
 }

@@ -10,7 +10,7 @@ export function AuthHeader({ title, description }: AuthHeaderProps) {
     <div className="mb-6 text-center">
       <div className="mb-4 inline-flex items-center justify-center">
         <div className="relative">
-          <div className="bg-primary text-primary-foreground flex size-14 items-center justify-center rounded-xl shadow-[0_0_24px_-4px] shadow-primary/30">
+          <div className="bg-primary text-primary-foreground shadow-primary/30 flex size-14 items-center justify-center rounded-xl shadow-lg">
             <Image
               alt="Threshold Lab"
               className="size-10 md:size-11"

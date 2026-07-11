@@ -398,6 +398,7 @@ const ChartLegend = (
   enableLegendSlider?: boolean,
   legendPosition?: "left" | "center" | "right",
   categoryLabelMap?: Map<string, string>,
+  categoryLabelOrder?: string[],
 ) => {
   // biome-ignore lint/correctness/useHookAtTopLevel: <tremor>
   const legendRef = React.useRef<HTMLDivElement>(null);
@@ -409,7 +410,19 @@ const ChartLegend = (
     setLegendHeight(calculateHeight(legendRef.current?.clientHeight));
   });
 
-  const filteredPayload = payload.filter((item: any) => item.type !== "none");
+  const categoryLabelOrderMap = new Map(
+    categoryLabelOrder?.map((category, index) => [category, index]),
+  );
+  const filteredPayload = payload
+    .filter((item: any) => item.type !== "none")
+    .toSorted((a: any, b: any) => {
+      const aIndex = categoryLabelOrderMap.get(a.dataKey);
+      const bIndex = categoryLabelOrderMap.get(b.dataKey);
+
+      if (aIndex === undefined) return bIndex === undefined ? 0 : 1;
+      if (bIndex === undefined) return -1;
+      return aIndex - bIndex;
+    });
 
   const legendItems = filteredPayload.map((entry: any) => {
     const dataKey = entry.dataKey as string;
@@ -554,6 +567,7 @@ interface BarChartProps extends React.HTMLAttributes<HTMLDivElement> {
   index: string;
   categories: string[];
   categoryLabels?: Partial<Record<string, string>>;
+  categoryLabelOrder?: string[];
   colors?: AvailableChartColorsKeys[];
   valueFormatter?: (value: number) => string;
   startEndOnly?: boolean;
@@ -590,6 +604,7 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
       categories = [],
       index,
       categoryLabels,
+      categoryLabelOrder,
       colors = AvailableChartColors,
       valueFormatter = defaultValueFormatter,
       startEndOnly = false,
@@ -687,7 +702,7 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
 
     return (
       <div
-        className={cn("h-64 w-full sm:h-52", className)}
+        className={cn("h-64 w-full sm:h-60", className)}
         data-tremor-id="tremor-raw"
         ref={forwardedRef}
         {...other}
@@ -834,6 +849,7 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
                     enableLegendSlider,
                     legendPosition,
                     categoryLabelMap,
+                    categoryLabelOrder,
                   )
                 }
                 height={legendHeight}

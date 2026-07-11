@@ -5,23 +5,17 @@ import {
   RUN_MIX_DEFINITIONS,
   SESSION_INTENSITY_DEFINITIONS,
 } from "@/app/constants";
+import { DesktopWeekSummary } from "@/components/calendar/desktop-week-summary";
 import { MobileWeekSummary } from "@/components/calendar/mobile-week-summary";
 import { TrainingPageHeader } from "@/components/calendar/training-page-header";
 import { WeekBlocks } from "@/components/calendar/week-blocks";
 import { WeekRangeLabel } from "@/components/calendar/week-range-label";
 import { BaseFitnessChart } from "@/components/chart/base-fitness";
+import { ChartCard } from "@/components/chart/chart-card";
 import { ChartControls } from "@/components/chart/controls";
-import { InfoPopover } from "@/components/chart/info-popover";
 import { RollingLoadChart } from "@/components/chart/rolling-load";
 import { RunMixChart } from "@/components/chart/run-mix";
 import { SessionIntensityChart } from "@/components/chart/session-intensity";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ChartStateProvider } from "@/hooks/use-chart-state";
 import { checkAuth } from "@/lib/auth";
@@ -42,11 +36,12 @@ export default async function Home() {
       {/* Calendar Section */}
       <section className="route-padding-x">
         <div className="rounded-xl border bg-card px-4 pt-4 pb-5 text-card-foreground shadow-lg lg:min-h-90 lg:px-5 lg:pt-4 lg:pb-5">
-          <div className="mb-3.5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="mb-3.5 flex items-start gap-6">
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
               <h2 className="text-lg font-bold">Schedule</h2>
               <WeekRangeLabel />
             </div>
+            <DesktopWeekSummary />
           </div>
           <MobileWeekSummary />
           <WeekBlocks />
@@ -64,85 +59,38 @@ export default async function Home() {
           <ChartControls />
         </div>
         <section className="route-padding-x grid gap-4 lg:grid-cols-2">
-          <Card className="min-h-54 w-full gap-0 rounded-xl py-0">
-            <CardHeader className="flex flex-row items-start justify-between gap-4 px-5 pt-4 pb-0">
-              <div className="min-w-0">
-                <CardTitle className="text-base font-bold">
-                  Base Fitness + Impact
-                </CardTitle>
-                <CardDescription className="text-xs text-muted-foreground">
-                  42d base fitness vs 7d training impact.
-                </CardDescription>
-              </div>
-              <InfoPopover
-                definitions={BASE_FITNESS_DEFINITIONS}
-                title="Base Fitness"
-              />
-            </CardHeader>
-            <CardContent className="px-5 pb-3">
-              <BaseFitnessChart yAxisWidth={32} />
-            </CardContent>
-          </Card>
+          <ChartCard
+            definitions={BASE_FITNESS_DEFINITIONS}
+            description="42d base fitness vs 7d training impact."
+            infoTitle="Base Fitness"
+            title="Base Fitness + Impact"
+          >
+            <BaseFitnessChart yAxisWidth={32} />
+          </ChartCard>
 
-          <Card className="min-h-54 w-full gap-0 rounded-xl py-0">
-            <CardHeader className="flex flex-row items-start justify-between gap-4 px-5 pt-4 pb-0">
-              <div className="min-w-0">
-                <CardTitle className="text-base font-bold">
-                  Session Intensity
-                </CardTitle>
-                <CardDescription className="text-xs text-muted-foreground">
-                  Weekly session share by RPE band.
-                </CardDescription>
-              </div>
-              <InfoPopover
-                definitions={SESSION_INTENSITY_DEFINITIONS}
-                title="Session Intensity"
-              />
-            </CardHeader>
-            <CardContent className="px-5 pb-3">
-              <SessionIntensityChart />
-            </CardContent>
-          </Card>
+          <ChartCard
+            definitions={SESSION_INTENSITY_DEFINITIONS}
+            description="Weekly session share by RPE band."
+            title="Session Intensity"
+          >
+            <SessionIntensityChart />
+          </ChartCard>
 
-          <Card className="min-h-54 w-full gap-0 rounded-xl py-0">
-            <CardHeader className="flex flex-row items-start justify-between gap-4 px-5 pt-4 pb-0">
-              <div className="min-w-0">
-                <CardTitle className="text-base font-bold">
-                  Run Volume Mix
-                </CardTitle>
-                <CardDescription className="text-xs text-muted-foreground">
-                  Easy, quality, trail, warmup/cooldown.
-                </CardDescription>
-              </div>
-              <InfoPopover
-                definitions={RUN_MIX_DEFINITIONS}
-                title="Run Volume Mix"
-              />
-            </CardHeader>
-            <CardContent className="px-5 pb-3">
-              <RunMixChart yAxisWidth={30} />
-            </CardContent>
-          </Card>
+          <ChartCard
+            definitions={RUN_MIX_DEFINITIONS}
+            description="Easy, quality, trail, warmup/cooldown."
+            title="Run Volume Mix"
+          >
+            <RunMixChart yAxisWidth={30} />
+          </ChartCard>
 
-          <Card className="min-h-54 w-full gap-0 rounded-xl py-0">
-            <CardHeader className="flex flex-row items-start justify-between gap-4 px-5 pt-4 pb-0">
-              <div className="min-w-0">
-                <CardTitle className="text-base font-bold">
-                  Training Load
-                </CardTitle>
-                <CardDescription className="text-xs text-muted-foreground">
-                  Weekly load with target range.
-                </CardDescription>
-              </div>
-              <InfoPopover
-                definitions={ROLLING_LOAD_DEFINITIONS}
-                title="Training Load"
-              />
-            </CardHeader>
-            <CardContent className="px-5 pb-3">
-              <RollingLoadChart leftYAxisWidth={36} />
-            </CardContent>
-          </Card>
+          <ChartCard
+            definitions={ROLLING_LOAD_DEFINITIONS}
+            description="Weekly load with target range."
+            title="Training Load"
+          >
+            <RollingLoadChart leftYAxisWidth={36} />
+          </ChartCard>
         </section>
       </ChartStateProvider>
     </div>

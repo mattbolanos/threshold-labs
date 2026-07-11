@@ -914,7 +914,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
 
     return (
       <div
-        className={cn("h-64 w-full sm:h-52", className)}
+        className={cn("h-64 w-full sm:h-60", className)}
         data-tremor-id="tremor-raw"
         ref={forwardedRef}
         {...other}

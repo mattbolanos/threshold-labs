@@ -3,6 +3,10 @@
 import { useQuery } from "convex/react";
 import { addDays } from "date-fns";
 import {
+  getWeekSummary,
+  oneDecimalFormatter,
+} from "@/components/calendar/week-summary-utils";
+import {
   Accordion,
   AccordionContent,
   AccordionItem,
@@ -10,37 +14,8 @@ import {
 } from "@/components/ui/accordion";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCalendarNav } from "@/hooks/use-calendar-nav";
-import { calculateSTL, formatQueryDate } from "@/lib/utils";
+import { formatQueryDate } from "@/lib/utils";
 import { api } from "../../../convex/_generated/api";
-import type { Doc } from "../../../convex/_generated/dataModel";
-
-type Workout = Doc<"workouts">;
-
-const CARDIO_TAGS = new Set([
-  "Aerobic Cross Training",
-  "Aerobic Run",
-  "Bad Heart Rate Data",
-  "Quality Cross Training",
-  "Quality HYROX",
-  "Quality Running",
-  "Race",
-  "Sleds",
-]);
-
-const oneDecimalFormatter = new Intl.NumberFormat("en-US", {
-  maximumFractionDigits: 1,
-  minimumFractionDigits: 1,
-});
-
-function isCardioWorkout(workout: Workout) {
-  const hasDistance =
-    (workout.totalRunMiles ?? 0) > 0 ||
-    (workout.totalBikeMiles ?? 0) > 0 ||
-    (workout.totalSkiKs ?? 0) > 0 ||
-    (workout.totalRowKs ?? 0) > 0;
-
-  return hasDistance || workout.tags.some((tag) => CARDIO_TAGS.has(tag));
-}
 
 function StatRow({
   label,
@@ -98,29 +73,7 @@ export function MobileWeekSummary() {
 
   if (!workouts) return <MobileWeekSummarySkeleton />;
 
-  const totalTrainingMinutes = workouts.reduce(
-    (sum, workout) => sum + (workout.trainingMinutes || 0),
-    0,
-  );
-  const totalRunMiles = workouts.reduce(
-    (sum, workout) => sum + (workout.totalRunMiles || 0),
-    0,
-  );
-  const totalCardioMinutes = workouts.reduce(
-    (sum, workout) =>
-      isCardioWorkout(workout) ? sum + (workout.trainingMinutes || 0) : sum,
-    0,
-  );
-  const totalSubjectiveTrainingLoad = workouts.reduce(
-    (sum, workout) =>
-      sum +
-      calculateSTL(
-        workout.rpe,
-        workout.trainingMinutes,
-        workout.totalRunMiles ?? null,
-      ),
-    0,
-  );
+  const summary = getWeekSummary(workouts);
 
   return (
     <Card className="mb-4 gap-0 rounded-lg bg-muted/40 py-0 lg:hidden">
@@ -149,22 +102,22 @@ export function MobileWeekSummary() {
                 <StatRow
                   label="True Training Hours"
                   unit="hrs"
-                  value={totalTrainingMinutes / 60}
+                  value={summary.trainingHours}
                 />
                 <StatRow
                   label="Subjective Training Load"
-                  value={totalSubjectiveTrainingLoad}
+                  value={summary.subjectiveLoad}
                 />
               </div>
               <div className="pt-4">
                 <p className="mb-1 text-xs font-bold tracking-widest uppercase">
                   Cardio
                 </p>
-                <StatRow label="Run Miles" unit="mi" value={totalRunMiles} />
+                <StatRow label="Run Miles" unit="mi" value={summary.runMiles} />
                 <StatRow
                   label="Cardio Hours"
                   unit="hrs"
-                  value={totalCardioMinutes / 60}
+                  value={summary.cardioHours}
                 />
               </div>
             </AccordionContent>

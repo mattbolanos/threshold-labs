@@ -9,7 +9,7 @@ export function TrainingPageHeader() {
   const weekLabel = formatWeekRangeLabel(weekStartDate, true);
 
   return (
-    <section className="route-padding-x flex flex-col gap-5 pt-3 md:flex-row md:items-start md:justify-between md:pt-6">
+    <section className="route-padding-x flex flex-col gap-5 pt-3 md:pt-6 lg:flex-row lg:items-start lg:justify-between">
       <div className="min-w-0">
         <p className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
           Training
@@ -20,7 +20,7 @@ export function TrainingPageHeader() {
           totals, and load trends.
         </p>
       </div>
-      <div className="shrink-0 md:pt-9">
+      <div className="w-full lg:w-auto lg:shrink-0 lg:pt-9">
         <WeekNavigation />
       </div>
     </section>

@@ -39,6 +39,7 @@ export function SessionIntensityChart({
     <BarChart
       allowDecimals={false}
       categories={categories}
+      categoryLabelOrder={categories}
       categoryLabels={SESSION_INTENSITY_CATEGORY_LABELS}
       colors={SESSION_INTENSITY_COLORS}
       customTooltip={SessionIntensityTooltip}

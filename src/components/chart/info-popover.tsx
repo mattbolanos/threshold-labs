@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-interface Definition {
+export interface Definition {
   label: string;
   description: string;
   colorClassName?: string;

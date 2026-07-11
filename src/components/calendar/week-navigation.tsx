@@ -2,7 +2,7 @@
 
 import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
 import { useQuery } from "convex/react";
-import { addDays } from "date-fns";
+import { isAfter, isBefore, isSameWeek, parseISO, startOfWeek } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { useCalendarNav } from "@/hooks/use-calendar-nav";
@@ -11,21 +11,41 @@ import { api } from "../../../convex/_generated/api";
 export function WeekNavigation() {
   const workoutsDateRange = useQuery(api.workouts.getWorkoutsDateRange);
 
-  const { addWeektoStart, jumpToToday, subtractWeekfromStart, weekStartDate } =
-    useCalendarNav();
+  const {
+    addWeektoStart,
+    jumpToToday,
+    subtractWeekfromStart,
+    today,
+    weekStartDate,
+  } = useCalendarNav();
 
-  const canGoForward = !workoutsDateRange?.maxWorkoutDate
-    ? false
-    : new Date(workoutsDateRange?.maxWorkoutDate?.workoutDate) >
-      addDays(weekStartDate, 6);
+  const selectedWeekStart = startOfWeek(weekStartDate, { weekStartsOn: 1 });
+  const currentWeekStart = startOfWeek(today, { weekStartsOn: 1 });
+  const maxWorkoutWeekStart = workoutsDateRange?.maxWorkoutDate
+    ? startOfWeek(parseISO(workoutsDateRange.maxWorkoutDate.workoutDate), {
+        weekStartsOn: 1,
+      })
+    : null;
+  const minWorkoutWeekStart = workoutsDateRange?.minWorkoutDate
+    ? startOfWeek(parseISO(workoutsDateRange.minWorkoutDate.workoutDate), {
+        weekStartsOn: 1,
+      })
+    : null;
+  const latestNavigableWeekStart =
+    maxWorkoutWeekStart && isAfter(maxWorkoutWeekStart, currentWeekStart)
+      ? maxWorkoutWeekStart
+      : currentWeekStart;
 
-  const canGoBack = !workoutsDateRange?.minWorkoutDate
-    ? false
-    : new Date(workoutsDateRange?.minWorkoutDate?.workoutDate) <
-      addDays(weekStartDate, -6);
+  const canGoForward = isBefore(selectedWeekStart, latestNavigableWeekStart);
+  const canGoBack = minWorkoutWeekStart
+    ? isAfter(selectedWeekStart, minWorkoutWeekStart)
+    : false;
+  const isCurrentWeek = isSameWeek(selectedWeekStart, currentWeekStart, {
+    weekStartsOn: 1,
+  });
 
   return (
-    <ButtonGroup>
+    <ButtonGroup className="w-full lg:w-fit">
       <ButtonGroup className="mr-auto hidden lg:flex">
         <Button
           aria-label="Go Back"
@@ -40,6 +60,7 @@ export function WeekNavigation() {
       <ButtonGroup className="mr-auto lg:hidden">
         <Button
           aria-label="Go Back"
+          className="size-10"
           disabled={!canGoBack}
           onClick={subtractWeekfromStart}
           size="icon-sm"
@@ -52,6 +73,7 @@ export function WeekNavigation() {
       <ButtonGroup className="hidden lg:flex">
         <Button
           aria-label="Go to Today"
+          disabled={isCurrentWeek}
           onClick={jumpToToday}
           size="sm"
           variant="outline"
@@ -59,10 +81,11 @@ export function WeekNavigation() {
           Today
         </Button>
       </ButtonGroup>
-      <ButtonGroup className="lg:hidden">
+      <ButtonGroup className="flex-1 lg:hidden">
         <Button
           aria-label="Go to This Week"
-          className="w-full text-xs"
+          className="h-10 w-full text-sm"
+          disabled={isCurrentWeek}
           onClick={jumpToToday}
           size="sm"
           variant="outline"
@@ -84,6 +107,7 @@ export function WeekNavigation() {
       <ButtonGroup className="ml-auto lg:hidden">
         <Button
           aria-label="Go Forward"
+          className="size-10"
           disabled={!canGoForward}
           onClick={addWeektoStart}
           size="icon-sm"

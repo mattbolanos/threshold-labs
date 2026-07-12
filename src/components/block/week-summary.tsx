@@ -8,43 +8,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { calculateSTL, cn } from "@/lib/utils";
+import { cn, formatOneDecimal } from "@/lib/utils";
+import { getWeekSummary } from "@/lib/workout-summary";
 import type { Doc } from "../../../convex/_generated/dataModel";
 
 type Workouts = Doc<"workouts">;
 interface WeekSummaryProps {
   workouts: Workouts[] | undefined;
   className?: string;
-}
-
-const ONE_DECIMAL_FORMAT = {
-  maximumFractionDigits: 1,
-  minimumFractionDigits: 1,
-};
-
-const oneDecimalFormatter = new Intl.NumberFormat("en-US", ONE_DECIMAL_FORMAT);
-
-const CARDIO_TAGS = new Set([
-  "Aerobic Cross Training",
-  "Aerobic Run",
-  "Bad Heart Rate Data",
-  "Quality Cross Training",
-  "Quality HYROX",
-  "Quality Running",
-  "Race",
-  "Sleds",
-]);
-
-function isCardioWorkout(workout: Workouts) {
-  const hasDistance =
-    (workout.totalRunMiles ?? 0) > 0 ||
-    (workout.totalBikeMiles ?? 0) > 0 ||
-    (workout.totalSkiKs ?? 0) > 0 ||
-    (workout.totalRowKs ?? 0) > 0;
-
-  if (hasDistance) return true;
-
-  return workout.tags.some((tag) => CARDIO_TAGS.has(tag));
 }
 
 function SummaryMetric({
@@ -65,7 +36,7 @@ function SummaryMetric({
           <Skeleton className={cn("h-7 w-11", isLargeValue && "w-18")} />
         ) : (
           <span className="text-xl font-bold tabular-nums">
-            {oneDecimalFormatter.format(value)}
+            {formatOneDecimal(value)}
           </span>
         )}
       </div>
@@ -76,30 +47,7 @@ function SummaryMetric({
 export function WeekSummary({ workouts, className }: WeekSummaryProps) {
   const isLoading = workouts === undefined;
   const weeklyWorkouts = workouts ?? [];
-
-  const totalTrainingMinutes = weeklyWorkouts.reduce(
-    (sum, workout) => sum + (workout.trainingMinutes || 0),
-    0,
-  );
-  const totalRunMiles = weeklyWorkouts.reduce(
-    (sum, workout) => sum + (workout.totalRunMiles || 0),
-    0,
-  );
-  const totalCardioMinutes = weeklyWorkouts.reduce(
-    (sum, workout) =>
-      isCardioWorkout(workout) ? sum + (workout.trainingMinutes || 0) : sum,
-    0,
-  );
-  const totalSubjectiveTrainingLoad = weeklyWorkouts.reduce(
-    (sum, workout) =>
-      sum +
-      calculateSTL(
-        workout.rpe,
-        workout.trainingMinutes,
-        workout.totalRunMiles ?? null,
-      ),
-    0,
-  );
+  const summary = getWeekSummary(weeklyWorkouts);
 
   return (
     <Card
@@ -118,22 +66,22 @@ export function WeekSummary({ workouts, className }: WeekSummaryProps) {
         <SummaryMetric
           label="True Training Hours"
           loading={isLoading}
-          value={totalTrainingMinutes / 60}
+          value={summary.trainingHours}
         />
         <SummaryMetric
           label="Subjective Training Load"
           loading={isLoading}
-          value={totalSubjectiveTrainingLoad}
+          value={summary.subjectiveLoad}
         />
         <SummaryMetric
           label="Run Miles"
           loading={isLoading}
-          value={totalRunMiles}
+          value={summary.runMiles}
         />
         <SummaryMetric
           label="Cardio Hours"
           loading={isLoading}
-          value={totalCardioMinutes / 60}
+          value={summary.cardioHours}
         />
       </CardContent>
     </Card>

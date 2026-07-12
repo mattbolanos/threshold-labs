@@ -20,7 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useChartRange } from "@/hooks/use-chart-state";
-import { cn, formatWorkoutDate } from "@/lib/utils";
+import { cn, formatOneDecimal, formatWorkoutDate } from "@/lib/utils";
 import { api } from "../../../convex/_generated/api";
 import { Button } from "../ui/button";
 
@@ -55,17 +55,17 @@ const COLUMN_GROUPS: ColumnGroup[] = [
   {
     columns: [
       {
-        format: (v) => (v / 60).toFixed(1),
+        format: (v) => formatOneDecimal(v / 60),
         key: "trainingMinutes",
         label: "Training Hrs",
       },
       {
-        format: (v) => (v / 60).toFixed(1),
+        format: (v) => formatOneDecimal(v / 60),
         key: "cardioMinutes",
         label: "Cardio Hrs",
       },
       {
-        format: (v) => v.toFixed(1),
+        format: formatOneDecimal,
         key: "stl",
         label: "Subj. Load",
       },
@@ -75,22 +75,22 @@ const COLUMN_GROUPS: ColumnGroup[] = [
   {
     columns: [
       {
-        format: (v) => v.toFixed(1),
+        format: formatOneDecimal,
         key: "totalRunMiles",
         label: "Run Mi",
       },
       {
-        format: (v) => v.toFixed(1),
+        format: formatOneDecimal,
         key: "totalBikeMiles",
         label: "Bike Mi",
       },
       {
-        format: (v) => v.toFixed(1),
+        format: formatOneDecimal,
         key: "totalRowKs",
         label: "Row Km",
       },
       {
-        format: (v) => v.toFixed(1),
+        format: formatOneDecimal,
         key: "totalSkiKs",
         label: "Ski Km",
       },
@@ -100,27 +100,27 @@ const COLUMN_GROUPS: ColumnGroup[] = [
   {
     columns: [
       {
-        format: (v) => v.toFixed(1),
+        format: formatOneDecimal,
         key: "easyMiles",
         label: "Easy",
       },
       {
-        format: (v) => v.toFixed(1),
+        format: formatOneDecimal,
         key: "lt1Miles",
         label: "LT1",
       },
       {
-        format: (v) => v.toFixed(1),
+        format: formatOneDecimal,
         key: "lt2Miles",
         label: "LT2",
       },
       {
-        format: (v) => v.toFixed(1),
+        format: formatOneDecimal,
         key: "vo2Miles",
         label: "VO2",
       },
       {
-        format: (v) => v.toFixed(1),
+        format: formatOneDecimal,
         key: "speedMiles",
         label: "Speed",
       },

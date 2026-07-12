@@ -2,12 +2,9 @@
 
 import { useQuery } from "convex/react";
 import { addDays } from "date-fns";
-import {
-  getWeekSummary,
-  oneDecimalFormatter,
-} from "@/components/calendar/week-summary-utils";
 import { useCalendarNav } from "@/hooks/use-calendar-nav";
-import { formatQueryDate } from "@/lib/utils";
+import { formatOneDecimal, formatQueryDate } from "@/lib/utils";
+import { getWeekSummary } from "@/lib/workout-summary";
 import { api } from "../../../convex/_generated/api";
 
 function DesktopStat({
@@ -27,7 +24,7 @@ function DesktopStat({
         {label}
       </span>
       <span className="min-h-6 font-semibold whitespace-nowrap tabular-nums">
-        {loading ? "—" : oneDecimalFormatter.format(value)}
+        {loading ? "—" : formatOneDecimal(value)}
         {unit ? (
           <span className="ml-1 text-xs font-medium text-muted-foreground uppercase">
             {unit}

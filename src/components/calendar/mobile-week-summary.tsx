@@ -3,10 +3,6 @@
 import { useQuery } from "convex/react";
 import { addDays } from "date-fns";
 import {
-  getWeekSummary,
-  oneDecimalFormatter,
-} from "@/components/calendar/week-summary-utils";
-import {
   Accordion,
   AccordionContent,
   AccordionItem,
@@ -14,7 +10,8 @@ import {
 } from "@/components/ui/accordion";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCalendarNav } from "@/hooks/use-calendar-nav";
-import { formatQueryDate } from "@/lib/utils";
+import { formatOneDecimal, formatQueryDate } from "@/lib/utils";
+import { getWeekSummary } from "@/lib/workout-summary";
 import { api } from "../../../convex/_generated/api";
 
 function StatRow({
@@ -31,7 +28,7 @@ function StatRow({
       <span className="text-sm text-muted-foreground">{label}</span>
       <div className="flex items-baseline gap-1.5">
         <span className="font-semibold tabular-nums">
-          {oneDecimalFormatter.format(value)}
+          {formatOneDecimal(value)}
         </span>
         {unit ? (
           <span className="text-xs font-medium text-muted-foreground uppercase">

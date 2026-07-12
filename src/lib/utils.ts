@@ -13,9 +13,17 @@ const WEEK_RANGE_DAY_FORMATTER = new Intl.DateTimeFormat("default", {
   day: "numeric",
   month: "short",
 });
+const ONE_DECIMAL_FORMATTER = new Intl.NumberFormat("en-US", {
+  maximumFractionDigits: 1,
+  minimumFractionDigits: 1,
+});
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+export function formatOneDecimal(value: number): string {
+  return ONE_DECIMAL_FORMATTER.format(value);
 }
 
 export function formatMinutesToTime(minutes: number | null): string | null {

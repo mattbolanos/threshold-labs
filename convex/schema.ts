@@ -9,6 +9,21 @@ export default defineSchema({
     role: v.union(v.literal("admin"), v.literal("client"), v.literal("coach")),
   }).index("by_email", ["email"]),
 
+  posts: defineTable({
+    category: v.string(),
+    content: v.string(),
+    createdAt: v.number(),
+    excerpt: v.string(),
+    isVisible: v.boolean(),
+    publishedAt: v.number(),
+    slug: v.string(),
+    title: v.string(),
+    updatedAt: v.number(),
+  })
+    .index("by_slug", ["slug"])
+    .index("by_published_at", ["publishedAt"])
+    .index("by_visibility_and_published_at", ["isVisible", "publishedAt"]),
+
   workouts: defineTable({
     burpees: v.optional(v.number()),
     carbs: v.optional(v.number()),

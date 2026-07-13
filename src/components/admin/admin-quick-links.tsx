@@ -1,4 +1,4 @@
-import { IconTable, IconUserPlus } from "@tabler/icons-react";
+import { IconNotebook, IconTable, IconUserPlus } from "@tabler/icons-react";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -60,6 +60,26 @@ export function AdminQuickLinks() {
               >
                 <IconTable aria-hidden />
                 <span>Open Totals</span>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="border-primary/20 from-card via-card to-muted/30 bg-gradient-to-br py-0 shadow-sm">
+            <CardHeader className="px-4 pt-4 md:px-5 md:pt-5">
+              <CardTitle className="text-base font-semibold tracking-tight">
+                Manage Lab Notes
+              </CardTitle>
+              <CardDescription>
+                Write, preview, publish, and hide posts from one workspace.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="px-4 pb-4 md:px-5 md:pb-5">
+              <Link
+                className={buttonVariants({ className: "min-h-11" })}
+                href="/admin/posts"
+              >
+                <IconNotebook data-icon="inline-start" />
+                <span>Open Lab Notes</span>
               </Link>
             </CardContent>
           </Card>

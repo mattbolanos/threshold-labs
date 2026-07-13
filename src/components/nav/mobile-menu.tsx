@@ -68,9 +68,6 @@ export function MobileMenu() {
           id="mobile-menu"
         >
           <ul className="p-2.5 pt-4">
-            <li className={ITEM_CLASS}>
-              <Link href="/">Home Page</Link>
-            </li>
             {SITE_ROUTES.map((route) => {
               if (route.isAdmin && user?.role !== "admin") {
                 return null;

@@ -1,10 +1,10 @@
-import { IconPlus } from "@tabler/icons-react";
+import { IconNotebook, IconPlus } from "@tabler/icons-react";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 
 export function AdminPageHeader() {
   return (
-    <div className="route-padding-x flex items-end justify-between">
+    <div className="route-padding-x flex flex-col items-stretch gap-3 sm:flex-row sm:items-end sm:justify-between">
       <div>
         <p className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
           Admin
@@ -13,10 +13,19 @@ export function AdminPageHeader() {
           Workout Manager
         </h2>
       </div>
-      <Link className={buttonVariants()} href="/admin/workout/new">
-        <IconPlus aria-hidden />
-        <span>New Workout</span>
-      </Link>
+      <div className="flex flex-wrap items-center gap-2">
+        <Link
+          className={buttonVariants({ variant: "outline" })}
+          href="/admin/posts/new"
+        >
+          <IconNotebook data-icon="inline-start" />
+          <span>New Post</span>
+        </Link>
+        <Link className={buttonVariants()} href="/admin/workout/new">
+          <IconPlus data-icon="inline-start" />
+          <span>New Workout</span>
+        </Link>
+      </div>
     </div>
   );
 }

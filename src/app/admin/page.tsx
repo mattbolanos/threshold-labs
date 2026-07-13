@@ -7,7 +7,7 @@ import { preloadAuthQuery } from "@/lib/auth-server";
 import { api } from "../../../convex/_generated/api";
 
 export const metadata: Metadata = {
-  description: "Manage workouts, invites, and weekly totals.",
+  description: "Manage workouts, Lab Notes, invites, and weekly totals.",
   title: "Admin | Workout Manager",
 };
 

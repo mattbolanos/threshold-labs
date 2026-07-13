@@ -12,6 +12,17 @@
     --typeset-leading: 1.75;
     --typeset-flow: 1.25em;
   }
+
+  .typeset-lab-note {
+    --typeset-size: 18px;
+    --typeset-flow: 1.5em;
+  }
+
+  .typeset-lab-note-card {
+    --typeset-size: 15px;
+    --typeset-leading: 1.5;
+    --typeset-flow: 0.9em;
+  }
 }
 
 @layer components {
@@ -40,19 +51,17 @@
   .typeset
     *:not(
       :where(
-        .not-typeset,
-        [data-not-typeset],
-        .not-typeset *,
-        [data-not-typeset] *
-      )
+          .not-typeset,
+          [data-not-typeset],
+          .not-typeset *,
+          [data-not-typeset] *
+        )
     ) {
-    /* Paragraphs. */
     &:where(p) {
       margin-block-start: var(--typeset-flow);
       margin-block-end: 0;
     }
 
-    /* Headings. */
     &:where(h1, h2, h3, h4, h5, h6) {
       color: var(--color-foreground, currentColor);
       font-family: var(--typeset-font-heading);
@@ -95,7 +104,6 @@
       color: var(--typeset-muted);
       margin-block-start: calc(var(--typeset-flow) / 0.8125);
     }
-    /* Anchors. */
     &:where([id]) {
       scroll-margin-block-start: var(--typeset-flow);
     }
@@ -450,23 +458,23 @@
 
   /* First child adds no space above. Last so it wins ties. */
   .typeset
-    > :where(:first-child):not(
-      :where(
+  > :where(:first-child):not(
+    :where(
         .not-typeset,
         [data-not-typeset],
         .not-typeset *,
         [data-not-typeset] *
       )
-    ),
+  ),
   .typeset
     > :where(:first-child)
     > :where(:first-child):not(
       :where(
-        .not-typeset,
-        [data-not-typeset],
-        .not-typeset *,
-        [data-not-typeset] *
-      )
+          .not-typeset,
+          [data-not-typeset],
+          .not-typeset *,
+          [data-not-typeset] *
+        )
     ),
   .typeset
     :where(
@@ -479,11 +487,11 @@
       figure > picture > img
     ):not(
       :where(
-        .not-typeset,
-        [data-not-typeset],
-        .not-typeset *,
-        [data-not-typeset] *
-      )
+          .not-typeset,
+          [data-not-typeset],
+          .not-typeset *,
+          [data-not-typeset] *
+        )
     ) {
     margin-block-start: 0;
   }

@@ -65,7 +65,7 @@ export function AdminPostList({ preloadedUserQuery }: AdminPostListProps) {
   };
 
   return (
-    <div className="route-padding-x flex flex-col gap-6">
+    <div className="flex flex-col gap-6">
       <header className="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-muted-foreground text-xs font-medium tracking-widest uppercase">

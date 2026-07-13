@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function LabNotesPage() {
   return (
-    <div className="route-padding-y route-padding-x mx-auto flex max-w-4xl flex-col gap-8 bg-background md:gap-10">
+    <div className="flex flex-col gap-8 bg-background md:gap-10">
       <header className="flex max-w-2xl flex-col gap-3">
         <p className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
           Threshold Lab

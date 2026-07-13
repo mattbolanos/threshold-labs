@@ -31,7 +31,9 @@ async function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <Providers initialToken={token}>
       <NavBar />
-      <Suspense>{children}</Suspense>
+      <div className="route-padding-y route-padding-x mx-auto w-full max-w-7xl">
+        <Suspense>{children}</Suspense>
+      </div>
     </Providers>
   );
 }

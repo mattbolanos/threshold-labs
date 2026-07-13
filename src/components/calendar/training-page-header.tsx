@@ -9,13 +9,13 @@ export function TrainingPageHeader() {
   const weekLabel = formatWeekRangeLabel(weekStartDate, true);
 
   return (
-    <section className="route-padding-x flex flex-col gap-5 pt-3 md:pt-6 lg:flex-row lg:items-start lg:justify-between">
+    <section className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
       <div className="min-w-0">
-        <p className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
+        <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
           Training
         </p>
         <h1 className="mt-3 text-3xl font-bold">Week of {weekLabel}</h1>
-        <p className="text-muted-foreground max-w-3xl">
+        <p className="max-w-3xl text-muted-foreground">
           Stephen&apos;s selected training week with the schedule, weekly
           totals, and load trends.
         </p>

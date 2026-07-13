@@ -20,12 +20,12 @@ export default async function TotalsPage() {
 
   return (
     <>
-      <div className="route-padding-x">
+      <div>
         <AdminBackLink />
       </div>
 
       <ChartStateProvider>
-        <div className="route-padding-x flex items-end justify-between">
+        <div className="flex items-end justify-between">
           <div>
             <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
               Admin
@@ -37,7 +37,7 @@ export default async function TotalsPage() {
           <ChartControls />
         </div>
 
-        <div className="route-padding-x grid gap-4 lg:grid-cols-2">
+        <div className="grid gap-4 lg:grid-cols-2">
           <Card className="w-full gap-0 overflow-hidden lg:col-span-2">
             <CardHeader className="pl-5">
               <CardTitle className="text-sm font-medium">

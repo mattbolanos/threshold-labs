@@ -14,7 +14,7 @@ export default async function LabNotePage({
   const { slug } = await params;
 
   return (
-    <main className="route-padding-y route-padding-x mx-auto max-w-3xl">
+    <main className="mx-auto max-w-3xl">
       <PostDetail slug={slug} />
     </main>
   );

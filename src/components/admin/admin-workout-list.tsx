@@ -210,7 +210,7 @@ export const AdminWorkoutList = ({
 
       {errorMessage ? (
         <div
-          className="route-padding-x rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+          className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
           role="alert"
         >
           {errorMessage}

@@ -4,7 +4,7 @@ import { buttonVariants } from "@/components/ui/button";
 
 export function AdminPageHeader() {
   return (
-    <div className="route-padding-x flex flex-col items-stretch gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-end sm:justify-between">
       <div>
         <p className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
           Admin

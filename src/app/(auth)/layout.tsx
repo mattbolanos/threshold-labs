@@ -10,7 +10,7 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="noise-texture route-padding-x relative flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden py-10">
+    <div className="noise-texture relative flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden py-10">
       {/* Diagonal slash lines — athletic motif */}
       <div
         aria-hidden="true"

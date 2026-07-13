@@ -65,7 +65,7 @@ function EditPostLoader({ postId }: { postId: string }) {
 
   if (post === undefined) {
     return (
-      <div className="route-padding-x flex flex-col gap-3">
+      <div className="flex flex-col gap-3">
         <AdminBackLink href="/admin/posts" label="Back to Posts" />
         <p className="text-muted-foreground text-sm">Loading post...</p>
       </div>
@@ -74,7 +74,7 @@ function EditPostLoader({ postId }: { postId: string }) {
 
   if (post === null) {
     return (
-      <div className="route-padding-x flex flex-col gap-3">
+      <div className="flex flex-col gap-3">
         <AdminBackLink href="/admin/posts" label="Back to Posts" />
         <h1 className="text-xl font-semibold">Post not found</h1>
         <p className="text-muted-foreground text-sm">
@@ -159,7 +159,7 @@ function PostWriter({ initialForm, mode, postId }: PostWriterProps) {
     Date.parse(`${form.publishedDate}T12:00:00.000Z`) || Date.now();
 
   return (
-    <div className="route-padding-x flex flex-col gap-6">
+    <div className="flex flex-col gap-6">
       <AdminBackLink href="/admin/posts" label="Back to Posts" />
 
       <header className="flex flex-col gap-1">

@@ -30,10 +30,10 @@ export default async function TrainingPage() {
   await checkAuth({ allowUnauthenticatedPreview: true });
 
   return (
-    <div className="route-padding-y mx-auto flex max-w-7xl flex-col gap-4 bg-background">
+    <div className="flex flex-col gap-4 bg-background">
       <TrainingPageHeader />
 
-      <section className="route-padding-x">
+      <section>
         <div className="rounded-xl border bg-card px-4 pt-4 pb-5 text-card-foreground shadow-lg lg:min-h-90 lg:px-5 lg:pt-4 lg:pb-5">
           <div className="mb-3.5 flex items-start gap-6">
             <div className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 lg:w-fit">
@@ -47,16 +47,16 @@ export default async function TrainingPage() {
         </div>
       </section>
 
-      <div className="route-padding-x">
+      <div>
         <Separator className="lg:hidden" />
       </div>
 
       <ChartStateProvider>
-        <div className="route-padding-x flex items-center justify-between">
+        <div className="flex items-center justify-between">
           <h3 className="hidden text-2xl font-semibold lg:block">Summaries</h3>
           <ChartControls />
         </div>
-        <section className="route-padding-x grid gap-4 lg:grid-cols-2">
+        <section className="grid gap-4 lg:grid-cols-2">
           <ChartCard
             definitions={BASE_FITNESS_DEFINITIONS}
             description="42d base fitness vs 7d training impact."

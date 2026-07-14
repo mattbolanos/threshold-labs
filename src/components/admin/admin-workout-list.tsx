@@ -47,8 +47,6 @@ async function withMinimumDuration<T>(promise: Promise<T>, minimumMs = 350) {
 export const AdminWorkoutList = ({
   preloadedUserQuery,
 }: AdminWorkoutListProps) => {
-  "use no memo";
-
   const user = usePreloadedAuthQuery(preloadedUserQuery);
   const workouts = useQuery(convexApi.workouts.getWorkoutsForAdmin, {
     includeHidden: true,

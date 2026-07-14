@@ -12,8 +12,6 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminPage() {
-  "use no memo";
-
   const [, preloadedUserQuery] = await Promise.all([
     checkAuth(),
     preloadAuthQuery(api.auth.getCurrentUser),

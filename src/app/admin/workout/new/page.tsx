@@ -10,7 +10,6 @@ export const metadata: Metadata = {
 };
 
 export default async function NewWorkoutPage() {
-  "use no memo";
   await checkAuth();
   const preloadedUserQuery = await preloadAuthQuery(api.auth.getCurrentUser);
 

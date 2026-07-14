@@ -183,32 +183,30 @@ function buildColumns(): ColumnDef<WeeklyTotal>[] {
   };
 
   const dataCols: ColumnDef<WeeklyTotal>[] = COLUMN_GROUPS.flatMap((group) =>
-    group.columns.map(
-      (col): ColumnDef<WeeklyTotal> => ({
-        accessorKey: col.key,
-        cell: ({ getValue }) => {
-          const value = getValue<number>();
-          if (value === 0) {
-            return <span className="text-muted-foreground/40">&mdash;</span>;
-          }
-          return col.format(value);
-        },
-        header: ({ column }) => (
-          <Button
-            className="px-1.5!"
-            disabled={!column.getCanSort()}
-            onClick={column.getToggleSortingHandler()}
-            size="sm"
-            type="button"
-            variant="ghost"
-          >
-            {col.label}
-            <SortIcon column={column} />
-          </Button>
-        ),
-        meta: { groupStart: isGroupStart(col.key) },
-      }),
-    ),
+    group.columns.map((col): ColumnDef<WeeklyTotal> => ({
+      accessorKey: col.key,
+      cell: ({ getValue }) => {
+        const value = getValue<number>();
+        if (value === 0) {
+          return <span className="text-muted-foreground/40">&mdash;</span>;
+        }
+        return col.format(value);
+      },
+      header: ({ column }) => (
+        <Button
+          className="px-1.5!"
+          disabled={!column.getCanSort()}
+          onClick={column.getToggleSortingHandler()}
+          size="sm"
+          type="button"
+          variant="ghost"
+        >
+          {col.label}
+          <SortIcon column={column} />
+        </Button>
+      ),
+      meta: { groupStart: isGroupStart(col.key) },
+    })),
   );
 
   return [weekCol, ...dataCols];
@@ -232,8 +230,6 @@ function TableSkeleton() {
 }
 
 export function TotalsTable() {
-  "use no memo";
-
   const range = useChartRange();
 
   const data = useQuery(api.workouts.getWeeklyTotals, {
@@ -259,7 +255,7 @@ export function TotalsTable() {
 
   if (data.length === 0) {
     return (
-      <div className="text-muted-foreground flex h-32 items-center justify-center text-sm">
+      <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
         No workout data for the selected range.
       </div>
     );
@@ -276,7 +272,7 @@ export function TotalsTable() {
         {/* Group header row */}
         <TableRow className="border-b-0">
           <TableHead
-            className="bg-background sticky left-0 z-10 border-b"
+            className="sticky left-0 z-10 border-b bg-background"
             rowSpan={2}
           >
             {weekHeader &&
@@ -291,7 +287,7 @@ export function TotalsTable() {
               colSpan={group.columns.length}
               key={group.label}
             >
-              <span className="text-muted-foreground text-xs font-semibold tracking-widest uppercase">
+              <span className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">
                 {group.label}
               </span>
             </TableHead>
@@ -301,8 +297,7 @@ export function TotalsTable() {
         <TableRow>
           {headerGroups[0].headers.map((header) => {
             const meta = header.column.columnDef.meta as
-              | { sticky?: boolean; groupStart?: boolean }
-              | undefined;
+              { sticky?: boolean; groupStart?: boolean } | undefined;
             if (meta?.sticky) {
               // Week column — already rendered as rowSpan={2} above, but we
               // need the sort button. We render it inside the rowSpan cell
@@ -332,13 +327,12 @@ export function TotalsTable() {
           <TableRow key={row.id}>
             {row.getVisibleCells().map((cell) => {
               const meta = cell.column.columnDef.meta as
-                | { sticky?: boolean; groupStart?: boolean }
-                | undefined;
+                { sticky?: boolean; groupStart?: boolean } | undefined;
               return (
                 <TableCell
                   className={cn(
                     meta?.sticky
-                      ? "bg-background sticky left-0 z-10 font-medium"
+                      ? "sticky left-0 z-10 bg-background font-medium"
                       : "text-right tabular-nums",
                     meta?.groupStart && "border-l",
                   )}

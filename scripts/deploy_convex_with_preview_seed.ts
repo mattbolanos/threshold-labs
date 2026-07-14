@@ -51,16 +51,25 @@ if (!previewName) {
   );
 }
 
-const seedPath =
+const workoutSeedPath =
   process.env.CONVEX_PREVIEW_SEED_PATH ??
   ".generated/convex-preview-workouts.jsonl";
+const postSeedPath =
+  process.env.CONVEX_PREVIEW_POSTS_SEED_PATH ??
+  ".generated/convex-preview-posts.jsonl";
 
 run("bun", [
   "scripts/generate_preview_workouts_import.ts",
   "--output",
-  seedPath,
+  workoutSeedPath,
   "--seed",
   previewName,
+]);
+
+run("bun", [
+  "scripts/generate_preview_posts_import.ts",
+  "--output",
+  postSeedPath,
 ]);
 
 run("bunx", [
@@ -72,5 +81,17 @@ run("bunx", [
   "workouts",
   "--replace",
   "--yes",
-  seedPath,
+  workoutSeedPath,
+]);
+
+run("bunx", [
+  "convex",
+  "import",
+  "--preview-name",
+  previewName,
+  "--table",
+  "posts",
+  "--replace",
+  "--yes",
+  postSeedPath,
 ]);

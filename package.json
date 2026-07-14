@@ -55,6 +55,7 @@
     "doctor": "npx react-doctor@latest",
     "format": "biome format --write",
     "lint": "biome check",
+    "seed:preview-posts": "bun scripts/generate_preview_posts_import.ts",
     "seed:preview-workouts": "bun scripts/generate_preview_workouts_import.ts",
     "start": "next start",
     "typecheck": "tsc --noEmit"

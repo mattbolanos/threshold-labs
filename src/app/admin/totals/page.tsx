@@ -8,7 +8,7 @@ import { RunMixChart } from "@/components/chart/run-mix";
 import { TotalsTable } from "@/components/totals/totals-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartStateProvider } from "@/hooks/use-chart-state";
-import { checkAuth } from "@/lib/auth";
+import { checkAdmin } from "@/lib/auth";
 
 export const metadata: Metadata = {
   description: "Weekly training totals and performance dashboard.",
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 };
 
 export default async function TotalsPage() {
-  await checkAuth();
+  await checkAdmin();
 
   return (
     <>

@@ -1,11 +1,12 @@
 import { NoInvite } from "@/components/auth/no-invite";
 
 export default async function UnauthorizedPage({
-  params,
+  searchParams,
 }: {
-  params: Promise<{ email: string }>;
+  searchParams: Promise<{ email?: string | string[] }>;
 }) {
-  const { email } = await params;
+  const { email: emailParam } = await searchParams;
+  const email = Array.isArray(emailParam) ? emailParam[0] : emailParam;
 
-  return <NoInvite email={email} />;
+  return <NoInvite email={email ?? ""} />;
 }

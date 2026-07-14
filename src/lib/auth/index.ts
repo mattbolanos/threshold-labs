@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
-import { isAuthenticated } from "@/lib/auth-server";
+import { fetchAuthQuery, isAuthenticated } from "@/lib/auth-server";
+import { api } from "../../../convex/_generated/api";
 
 type CheckAuthOptions = {
   allowUnauthenticatedPreview?: boolean;
@@ -24,4 +25,16 @@ export const checkAuth = async ({
   }
 
   return true;
+};
+
+export const checkAdmin = async () => {
+  await checkAuth();
+
+  const user = await fetchAuthQuery(api.auth.getCurrentUser);
+
+  if (user?.role !== "admin") {
+    redirect("/");
+  }
+
+  return user;
 };

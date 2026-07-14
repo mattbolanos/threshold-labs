@@ -146,6 +146,14 @@ const assertAdmin = async (ctx: QueryCtx | MutationCtx) => {
   }
 };
 
+const assertAuthenticated = async (ctx: QueryCtx) => {
+  const user = await authComponent.safeGetAuthUser(ctx);
+
+  if (!user) {
+    throw new ConvexError("Authentication is required to view workouts.");
+  }
+};
+
 const isVisibleWorkout = (workout: { isHidden?: boolean }) =>
   workout.isHidden !== true;
 
@@ -266,6 +274,7 @@ export const getRollingLoad = query({
     to: v.optional(v.string()),
   },
   handler: async (ctx, { from, to }) => {
+    await assertAuthenticated(ctx);
     const fromDate = from ?? getDefaultFromDate();
 
     let workoutsQuery = ctx.db
@@ -318,6 +327,7 @@ export const getRunVolumeMix = query({
     to: v.optional(v.string()),
   },
   handler: async (ctx, { from, to }) => {
+    await assertAuthenticated(ctx);
     const fromDate = from ?? getDefaultFromDate();
 
     let workoutsQuery = ctx.db
@@ -388,6 +398,7 @@ export const getSessionIntensity = query({
     to: v.optional(v.string()),
   },
   handler: async (ctx, { from, to }) => {
+    await assertAuthenticated(ctx);
     const fromDate = from ?? getDefaultFromDate();
 
     let workoutsQuery = ctx.db
@@ -443,6 +454,7 @@ export const getBaseFitness = query({
     to: v.optional(v.string()),
   },
   handler: async (ctx, { from, to }) => {
+    await assertAuthenticated(ctx);
     const fromDate = from ?? getDefaultFromDate();
     const toDate = to ?? format(new Date(), "yyyy-MM-dd");
 
@@ -510,6 +522,7 @@ export const getWeeklyTotals = query({
     to: v.optional(v.string()),
   },
   handler: async (ctx, { from, to }) => {
+    await assertAuthenticated(ctx);
     const fromDate = from ?? getDefaultFromDate();
 
     let workoutsQuery = ctx.db
@@ -606,6 +619,7 @@ export const getWorkouts = query({
     to: v.string(),
   },
   handler: async (ctx, { from, to }) => {
+    await assertAuthenticated(ctx);
     return (
       await ctx.db
         .query("workouts")
@@ -619,6 +633,7 @@ export const getWorkouts = query({
 
 export const getWorkoutsDateRange = query({
   handler: async (ctx) => {
+    await assertAuthenticated(ctx);
     const visibleWorkouts = (await ctx.db.query("workouts").collect()).filter(
       isVisibleWorkout,
     );

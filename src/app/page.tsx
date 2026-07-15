@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageHeader } from "@/components/page-header";
 import { LabNotesFeed } from "@/components/posts/lab-notes-feed";
 import { PlannedRaces } from "@/components/races/planned-races";
 import { Separator } from "@/components/ui/separator";
@@ -12,18 +13,7 @@ export const metadata: Metadata = {
 export default function LabNotesPage() {
   return (
     <div className="flex flex-col gap-8 bg-background md:gap-10">
-      <header className="flex max-w-2xl flex-col gap-3">
-        <p className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
-          Threshold Lab
-        </p>
-        <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
-          Lab Notes
-        </h1>
-        <p className="text-muted-foreground max-w-xl text-base leading-relaxed">
-          Training decisions, observations, and experiments from the work in
-          progress.
-        </p>
-      </header>
+      <PageHeader eyebrow="Threshold Lab" title="Lab Notes" />
       <PlannedRaces />
       <div>
         <Separator className="lg:hidden" />

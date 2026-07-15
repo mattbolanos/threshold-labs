@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/empty";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 import { api } from "../../../convex/_generated/api";
 
 export function PostDetail({ slug }: { slug: string }) {
@@ -57,10 +58,13 @@ export function PostDetail({ slug }: { slug: string }) {
   return (
     <article className="flex flex-col gap-6">
       <Link
-        className={buttonVariants({
-          className: "w-fit px-0",
-          variant: "link",
-        })}
+        className={cn(
+          buttonVariants({
+            className: "w-fit px-0",
+            variant: "link",
+          }),
+          "pl-0!",
+        )}
         href="/"
       >
         <IconArrowLeft data-icon="inline-start" />

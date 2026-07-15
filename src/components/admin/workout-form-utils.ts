@@ -4,6 +4,7 @@ export type Workout = Doc<"workouts">;
 
 export type WorkoutFormState = {
   burpees: string;
+  carbs: string;
   cardioMinutes: string;
   isHidden: boolean;
   lt1Miles: string;
@@ -52,6 +53,12 @@ export const METRIC_FIELD_CONFIG = [
     isRequired: false,
     label: "Cardio Minutes",
     placeholder: "e.g., 30…",
+  },
+  {
+    id: "carbs",
+    isRequired: false,
+    label: "Carbs (g)",
+    placeholder: "e.g., 60…",
   },
   {
     id: "totalRunMiles",
@@ -117,6 +124,7 @@ export const METRIC_FIELD_CONFIG = [
 
 export const EMPTY_WORKOUT_FORM: WorkoutFormState = {
   burpees: "",
+  carbs: "",
   cardioMinutes: "",
   isHidden: false,
   lt1Miles: "",
@@ -141,6 +149,7 @@ export const EMPTY_WORKOUT_FORM: WorkoutFormState = {
 export function toWorkoutFormState(workout: Workout): WorkoutFormState {
   return {
     burpees: workout.burpees?.toString() ?? "",
+    carbs: workout.carbs?.toString() ?? "",
     cardioMinutes: workout.cardioMinutes?.toString() ?? "",
     isHidden: workout.isHidden === true,
     lt1Miles: workout.lt1Miles?.toString() ?? "",
@@ -267,6 +276,7 @@ export function validateWorkoutForm(form: WorkoutFormState) {
     errors,
     workout: {
       burpees: parseOptionalNumber(form.burpees).value,
+      carbs: parseOptionalNumber(form.carbs).value,
       cardioMinutes: parseOptionalNumber(form.cardioMinutes).value,
       isHidden: form.isHidden,
       lt1Miles: parseOptionalNumber(form.lt1Miles).value,

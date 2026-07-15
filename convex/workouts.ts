@@ -16,6 +16,7 @@ const getDefaultFromDate = () =>
 
 const workoutInputValidator = v.object({
   burpees: v.optional(v.union(v.number(), v.null())),
+  carbs: v.optional(v.union(v.number(), v.null())),
   cardioMinutes: v.optional(v.union(v.number(), v.null())),
   isHidden: v.optional(v.boolean()),
   lt1Miles: v.optional(v.union(v.number(), v.null())),
@@ -60,6 +61,7 @@ const compactObject = <T extends Record<string, unknown>>(value: T) => {
 
 const normalizeWorkout = (workout: {
   burpees?: number | null;
+  carbs?: number | null;
   cardioMinutes?: number | null;
   isHidden?: boolean;
   lt1Miles?: number | null;
@@ -116,6 +118,7 @@ const normalizeWorkout = (workout: {
 
   return compactObject({
     burpees: toOptionalNumber(workout.burpees),
+    carbs: toOptionalNumber(workout.carbs),
     cardioMinutes: toOptionalNumber(workout.cardioMinutes),
     isHidden: workout.isHidden ?? false,
     lt1Miles: toOptionalNumber(workout.lt1Miles),

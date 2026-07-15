@@ -1,4 +1,3 @@
-import type { RefObject } from "react";
 import {
   Field,
   FieldContent,
@@ -11,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import type { PostFormErrors, PostFormState } from "./post-form-utils";
-import { PostMarkdownToolbar } from "./post-markdown-toolbar";
 
 type PostEditorFieldsProps = {
   errors: PostFormErrors;
@@ -21,7 +19,6 @@ type PostEditorFieldsProps = {
     value: PostFormState[K],
   ) => void;
   onTitleChange: (value: string) => void;
-  textareaRef: RefObject<HTMLTextAreaElement | null>;
 };
 
 export function PostEditorFields({
@@ -29,7 +26,6 @@ export function PostEditorFields({
   form,
   onChange,
   onTitleChange,
-  textareaRef,
 }: PostEditorFieldsProps) {
   return (
     <FieldGroup className="grid gap-5 md:grid-cols-2">
@@ -119,30 +115,6 @@ export function PostEditorFields({
           This Markdown appears under the title in the Lab Notes feed.
         </FieldDescription>
         <FieldError>{errors.excerpt}</FieldError>
-      </Field>
-
-      <Field className="md:col-span-2" data-invalid={Boolean(errors.content)}>
-        <FieldLabel htmlFor="post-content">Post content</FieldLabel>
-        <PostMarkdownToolbar
-          onChange={(value) => onChange("content", value)}
-          textareaRef={textareaRef}
-          value={form.content}
-        />
-        <Textarea
-          aria-invalid={Boolean(errors.content)}
-          className="min-h-96 font-mono"
-          id="post-content"
-          onChange={(event) => onChange("content", event.target.value)}
-          placeholder="Write in Markdown, or insert a block above."
-          ref={textareaRef}
-          required
-          value={form.content}
-        />
-        <FieldDescription>
-          Headings, paragraphs, lists, quotes, code, links, and tables render
-          through Typeset.
-        </FieldDescription>
-        <FieldError>{errors.content}</FieldError>
       </Field>
     </FieldGroup>
   );

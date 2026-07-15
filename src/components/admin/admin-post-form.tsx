@@ -1,13 +1,16 @@
 "use client";
 
-import { IconDeviceFloppy, IconLoader2 } from "@tabler/icons-react";
+import {
+  IconDeviceFloppy,
+  IconEdit,
+  IconEye,
+  IconLoader2,
+} from "@tabler/icons-react";
 import { useMutation, useQuery } from "convex/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { AdminBackLink } from "@/components/admin/admin-back-link";
-import { PostMarkdown } from "@/components/posts/post-markdown";
-import { PostMeta } from "@/components/posts/post-meta";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -18,10 +21,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { slugifyPostTitle } from "@/lib/posts";
 import { api as convexApi } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { PostContentEditor } from "./post-content-editor";
 import { PostEditorFields } from "./post-editor-fields";
 import {
   createEmptyPostForm,
@@ -30,6 +34,7 @@ import {
   toPostFormState,
   validatePostForm,
 } from "./post-form-utils";
+import { PostPreview } from "./post-preview";
 
 type AdminPostFormProps =
   | {
@@ -99,6 +104,7 @@ function PostWriter({ initialForm, mode, postId }: PostWriterProps) {
   const [errors, setErrors] = useState<PostFormErrors>({});
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [activeContentTab, setActiveContentTab] = useState("edit");
 
   const setField = <K extends keyof PostFormState>(
     field: K,
@@ -126,6 +132,7 @@ function PostWriter({ initialForm, mode, postId }: PostWriterProps) {
 
     if (!validation.post) {
       setErrorMessage("Review the highlighted fields before saving.");
+      setActiveContentTab("edit");
       return;
     }
 
@@ -144,9 +151,6 @@ function PostWriter({ initialForm, mode, postId }: PostWriterProps) {
       setIsSaving(false);
     }
   };
-
-  const previewPublishedAt =
-    Date.parse(`${form.publishedDate}T12:00:00.000Z`) || Date.now();
 
   return (
     <div className="flex flex-col gap-6">
@@ -171,110 +175,96 @@ function PostWriter({ initialForm, mode, postId }: PostWriterProps) {
         </p>
       ) : null}
 
-      <div className="grid items-start gap-6 xl:grid-cols-2">
-        <form onSubmit={handleSubmit}>
-          <Card>
-            <CardHeader>
-              <CardTitle>Post settings and content</CardTitle>
-              <CardDescription>
-                Drafts stay private until visibility is enabled.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <PostEditorFields
-                errors={errors}
-                form={form}
-                onChange={setField}
-                onTitleChange={handleTitleChange}
-                textareaRef={textareaRef}
-              />
-            </CardContent>
-            <CardFooter className="flex-wrap justify-between gap-3">
-              <Badge variant={form.isVisible ? "default" : "secondary"}>
-                {form.isVisible ? "Visible" : "Hidden"}
-              </Badge>
-              <div className="flex items-center gap-2">
-                <Link
-                  className={buttonVariants({ variant: "ghost" })}
-                  href="/admin/posts"
-                >
-                  Cancel
-                </Link>
-                <Button disabled={isSaving} type="submit">
-                  {isSaving ? (
-                    <IconLoader2
-                      className="animate-spin"
-                      data-icon="inline-start"
-                    />
-                  ) : (
-                    <IconDeviceFloppy data-icon="inline-start" />
-                  )}
-                  {isSaving ? "Saving..." : "Save Post"}
-                </Button>
-              </div>
-            </CardFooter>
-          </Card>
-        </form>
-
-        <Card className="xl:sticky xl:top-20">
+      <form className="flex w-full flex-col gap-6" onSubmit={handleSubmit}>
+        <Card>
           <CardHeader>
-            <CardTitle>Typeset preview</CardTitle>
+            <CardTitle>Post settings</CardTitle>
             <CardDescription>
-              This uses the same renderer as the public post.
+              Drafts stay private until visibility is enabled.
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col gap-5">
-            <section
-              aria-labelledby="feed-preview-title"
-              className="flex flex-col gap-2"
-            >
-              <h2 className="text-sm font-medium" id="feed-preview-title">
-                Feed card
-              </h2>
-              <Card size="sm">
-                <CardHeader>
-                  <CardDescription>
-                    <PostMeta
-                      category={form.category || "Uncategorized"}
-                      publishedAt={previewPublishedAt}
-                    />
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <PostMarkdown
-                    content={
-                      form.excerpt || "Add an excerpt to preview the feed card."
-                    }
-                    title={form.title || "Untitled note"}
-                    titleAs="h2"
-                    variant="card"
-                  />
-                </CardContent>
-                <CardFooter className="bg-transparent text-primary">
-                  Expand
-                </CardFooter>
-              </Card>
-            </section>
-            <Separator />
-            <section
-              aria-labelledby="post-preview-title"
-              className="flex flex-col gap-4"
-            >
-              <h2 className="text-sm font-medium" id="post-preview-title">
-                Full post
-              </h2>
-              <PostMeta
-                category={form.category || "Uncategorized"}
-                publishedAt={previewPublishedAt}
-              />
-              <PostMarkdown
-                content={form.content || "Start writing to preview the post."}
-                title={form.title || "Untitled note"}
-              />
-            </section>
+          <CardContent>
+            <PostEditorFields
+              errors={errors}
+              form={form}
+              onChange={setField}
+              onTitleChange={handleTitleChange}
+            />
           </CardContent>
         </Card>
-      </div>
+
+        <Card className="gap-0">
+          <CardHeader className="pb-4">
+            <CardTitle>Post content</CardTitle>
+            <CardDescription>
+              Write in Markdown, then preview the rendered post.
+            </CardDescription>
+          </CardHeader>
+
+          <Tabs
+            className="w-full flex-col gap-0"
+            onValueChange={setActiveContentTab}
+            value={activeContentTab}
+          >
+            <TabsList
+              aria-label="Post content view"
+              className="h-10 w-full justify-start rounded-none border-y px-4"
+              variant="line"
+            >
+              <TabsTrigger className="flex-none px-3" value="edit">
+                <IconEdit data-icon="inline-start" />
+                Edit
+              </TabsTrigger>
+              <TabsTrigger className="flex-none px-3" value="preview">
+                <IconEye data-icon="inline-start" />
+                Preview
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent className="w-full" value="edit">
+              <CardContent className="py-4">
+                <PostContentEditor
+                  error={errors.content}
+                  onChange={(value) => setField("content", value)}
+                  textareaRef={textareaRef}
+                  value={form.content}
+                />
+              </CardContent>
+            </TabsContent>
+
+            <TabsContent className="w-full" value="preview">
+              <CardContent className="py-4">
+                <PostPreview content={form.content} />
+              </CardContent>
+            </TabsContent>
+          </Tabs>
+
+          <CardFooter className="flex-wrap justify-between gap-3">
+            <Badge variant={form.isVisible ? "default" : "secondary"}>
+              {form.isVisible ? "Visible" : "Hidden"}
+            </Badge>
+            <div className="flex items-center gap-2">
+              <Link
+                className={buttonVariants({ variant: "ghost" })}
+                href="/admin/posts"
+              >
+                Cancel
+              </Link>
+              <Button disabled={isSaving} type="submit">
+                {isSaving ? (
+                  <IconLoader2
+                    className="animate-spin"
+                    data-icon="inline-start"
+                  />
+                ) : (
+                  <IconDeviceFloppy data-icon="inline-start" />
+                )}
+                {isSaving ? "Saving..." : "Save Post"}
+              </Button>
+            </div>
+          </CardFooter>
+        </Card>
+      </form>
     </div>
   );
 }

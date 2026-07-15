@@ -2,12 +2,7 @@
 
 import { IconNotebook } from "@tabler/icons-react";
 import { useQuery } from "convex/react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   Empty,
   EmptyDescription,
@@ -30,9 +25,6 @@ function PostCardSkeleton() {
         <Skeleton className="h-4 w-full" />
         <Skeleton className="h-4 w-5/6" />
       </CardContent>
-      <CardFooter className="bg-transparent">
-        <Skeleton className="h-7 w-20" />
-      </CardFooter>
     </Card>
   );
 }
@@ -42,7 +34,7 @@ export function LabNotesFeed() {
 
   if (posts === undefined) {
     return (
-      <div className="flex flex-col gap-4">
+      <div className="grid gap-4 md:grid-cols-2">
         <span className="sr-only">Loading Lab Notes</span>
         <PostCardSkeleton />
         <PostCardSkeleton />
@@ -67,7 +59,7 @@ export function LabNotesFeed() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="grid gap-4 md:grid-cols-2">
       {posts.map((post) => (
         <PostCard key={post._id} post={post} />
       ))}

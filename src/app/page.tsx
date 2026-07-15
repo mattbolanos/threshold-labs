@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { LabNotesFeed } from "@/components/posts/lab-notes-feed";
+import { PlannedRaces } from "@/components/races/planned-races";
 import { Separator } from "@/components/ui/separator";
 
 export const metadata: Metadata = {
@@ -23,6 +24,7 @@ export default function LabNotesPage() {
           progress.
         </p>
       </header>
+      <PlannedRaces />
       <div>
         <Separator className="lg:hidden" />
       </div>

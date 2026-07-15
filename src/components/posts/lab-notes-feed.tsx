@@ -34,7 +34,7 @@ export function LabNotesFeed() {
 
   if (posts === undefined) {
     return (
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-3">
         <span className="sr-only">Loading Lab Notes</span>
         <PostCardSkeleton />
         <PostCardSkeleton />
@@ -59,7 +59,7 @@ export function LabNotesFeed() {
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2">
+    <div className="grid gap-4 md:grid-cols-3">
       {posts.map((post) => (
         <PostCard key={post._id} post={post} />
       ))}

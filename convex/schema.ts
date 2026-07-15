@@ -9,6 +9,27 @@ export default defineSchema({
     role: v.union(v.literal("admin"), v.literal("client"), v.literal("coach")),
   }).index("by_email", ["email"]),
 
+  hyroxRaces: defineTable({
+    country: v.string(),
+    endDate: v.string(),
+    externalKey: v.string(),
+    locality: v.string(),
+    name: v.string(),
+    officialUrl: v.optional(v.string()),
+    source: v.literal("hyrox-lab"),
+    sourceUrl: v.string(),
+    startDate: v.string(),
+    syncedAt: v.number(),
+    venueName: v.string(),
+  })
+    .index("by_external_key", ["externalKey"])
+    .index("by_start_date", ["startDate"]),
+
+  plannedHyroxRaces: defineTable({
+    plannedAt: v.number(),
+    raceId: v.id("hyroxRaces"),
+  }).index("by_race_id", ["raceId"]),
+
   posts: defineTable({
     category: v.string(),
     content: v.string(),

@@ -5,7 +5,8 @@ import { AdminWorkoutList } from "@/components/admin/admin-workout-list";
 import { checkAdmin } from "@/lib/auth";
 
 export const metadata: Metadata = {
-  description: "Manage workouts, Lab Notes, invites, and weekly totals.",
+  description:
+    "Manage workouts, HYROX races, Lab Notes, invites, and weekly totals.",
   title: "Admin | Workout Manager",
 };
 

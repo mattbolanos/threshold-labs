@@ -1,21 +1,19 @@
 import { redirect } from "next/navigation";
 import { fetchAuthQuery, isAuthenticated } from "@/lib/auth-server";
 import { api } from "../../../convex/_generated/api";
+import { getPreviewAuthState, isVercelPreview } from "./preview.server";
 
 type CheckAuthOptions = {
   allowUnauthenticatedPreview?: boolean;
 };
 
-const isVercelPreview = process.env.VERCEL_ENV === "preview";
 const isDev = process.env.NODE_ENV === "development";
 
 export const checkAuth = async ({
   allowUnauthenticatedPreview = false,
 }: CheckAuthOptions = {}) => {
-  if (allowUnauthenticatedPreview) {
-    if (isVercelPreview || isDev) {
-      return true;
-    }
+  if (isVercelPreview || (allowUnauthenticatedPreview && isDev)) {
+    return true;
   }
 
   const hasToken = await isAuthenticated();
@@ -28,11 +26,27 @@ export const checkAuth = async ({
 };
 
 export const checkAdmin = async () => {
-  await checkAuth();
+  const preview = await getPreviewAuthState();
 
-  const user = await fetchAuthQuery(api.auth.getCurrentUser);
+  if (preview.enabled) {
+    if (preview.role !== "admin") {
+      redirect("/");
+    }
 
-  if (user?.role !== "admin") {
+    return {
+      email: "preview@threshold.local",
+      name: "Preview Admin",
+      role: preview.role,
+    };
+  }
+
+  const user = await fetchAuthQuery(api.auth.getCurrentUser, {});
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  if (user.role !== "admin") {
     redirect("/");
   }
 

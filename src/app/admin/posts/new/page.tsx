@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { AdminPostForm } from "@/components/admin/admin-post-form";
-import { checkAuth } from "@/lib/auth";
-import { preloadAuthQuery } from "@/lib/auth-server";
-import { api } from "../../../../../convex/_generated/api";
+import { checkAdmin } from "@/lib/auth";
 
 export const metadata: Metadata = {
   description: "Create a Lab Note.",
@@ -10,12 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default async function NewPostPage() {
-  const [, preloadedUserQuery] = await Promise.all([
-    checkAuth(),
-    preloadAuthQuery(api.auth.getCurrentUser),
-  ]);
+  await checkAdmin();
 
-  return (
-    <AdminPostForm mode="create" preloadedUserQuery={preloadedUserQuery} />
-  );
+  return <AdminPostForm mode="create" />;
 }

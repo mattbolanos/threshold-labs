@@ -6,6 +6,7 @@ import {
   query,
 } from "./_generated/server";
 import { authComponent } from "./auth";
+import { isPreviewAuthEnabled } from "./previewAuth";
 
 const postInputValidator = v.object({
   category: v.string(),
@@ -28,6 +29,10 @@ type PostInput = {
 };
 
 const assertAdmin = async (ctx: QueryCtx | MutationCtx) => {
+  if (isPreviewAuthEnabled()) {
+    return;
+  }
+
   const user = await authComponent.safeGetAuthUser(ctx);
 
   if (!user || user.role !== "admin") {

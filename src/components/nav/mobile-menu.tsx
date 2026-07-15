@@ -1,24 +1,29 @@
 "use client";
 
-import { useQuery } from "convex/react";
 import Link from "next/link";
 import * as React from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
+import type { PreviewRole } from "@/lib/auth/preview-role";
 import { SITE_ROUTES } from "@/lib/routes";
 import { cn } from "@/lib/utils";
-import { api } from "../../../convex/_generated/api";
-import { getInitials, LogOutButton } from "./nav-user";
+import { getInitials, LogOutButton, type NavUserData } from "./nav-user";
+import { PreviewRoleSwitch } from "./preview-role-switch";
 
 const ITEM_CLASS =
   "hover:bg-accent text-muted-foreground hover:text-foreground flex h-13 cursor-pointer items-center rounded-md px-2.5 text-base transition-colors duration-100";
 
-export function MobileMenu() {
+interface MobileMenuProps {
+  isPreview: boolean;
+  previewRole: PreviewRole;
+  user?: NavUserData | null;
+}
+
+export function MobileMenu({ isPreview, previewRole, user }: MobileMenuProps) {
   const [open, setOpen] = React.useState(false);
   const isMobile = useIsMobile();
-  const user = useQuery(api.auth.getCurrentUser);
   const email = user?.email.trim();
   const username = user ? user.name.trim() || email : undefined;
 
@@ -69,7 +74,10 @@ export function MobileMenu() {
         >
           <ul className="p-2.5 pt-4">
             {SITE_ROUTES.map((route) => {
-              if (route.isAdmin && user?.role !== "admin") {
+              if (
+                route.isAdmin &&
+                (isPreview ? previewRole : user?.role) !== "admin"
+              ) {
                 return null;
               }
               return (
@@ -102,13 +110,17 @@ export function MobileMenu() {
                   </div>
                 </li>
                 <li className="px-2.5 py-1.5">
-                  <LogOutButton
-                    className="h-10 text-base"
-                    onLoggedOut={() => {
-                      document.body.style.overflow = "scroll";
-                      setOpen(false);
-                    }}
-                  />
+                  {isPreview ? (
+                    <PreviewRoleSwitch role={previewRole} />
+                  ) : (
+                    <LogOutButton
+                      className="h-10 text-base"
+                      onLoggedOut={() => {
+                        document.body.style.overflow = "scroll";
+                        setOpen(false);
+                      }}
+                    />
+                  )}
                 </li>
               </>
             ) : null}

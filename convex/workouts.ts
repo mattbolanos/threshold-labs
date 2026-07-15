@@ -7,6 +7,7 @@ import {
   query,
 } from "./_generated/server";
 import { authComponent } from "./auth";
+import { isPreviewAuthEnabled } from "./previewAuth";
 
 const getDefaultFromDate = () =>
   format(
@@ -139,6 +140,10 @@ const normalizeWorkout = (workout: {
 };
 
 const assertAdmin = async (ctx: QueryCtx | MutationCtx) => {
+  if (isPreviewAuthEnabled()) {
+    return;
+  }
+
   const user = await authComponent.safeGetAuthUser(ctx);
 
   if (!user || user.role !== "admin") {
@@ -147,6 +152,10 @@ const assertAdmin = async (ctx: QueryCtx | MutationCtx) => {
 };
 
 const assertAuthenticated = async (ctx: QueryCtx) => {
+  if (isPreviewAuthEnabled()) {
+    return;
+  }
+
   const user = await authComponent.safeGetAuthUser(ctx);
 
   if (!user) {

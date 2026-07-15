@@ -1,16 +1,13 @@
 "use client";
 
-import { usePreloadedAuthQuery } from "@convex-dev/better-auth/nextjs/client";
 import { IconCheck, IconLoader2, IconPlus } from "@tabler/icons-react";
 import { useForm } from "@tanstack/react-form";
-import type { Preloaded } from "convex/react";
 import { useMutation, useQuery } from "convex/react";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AdminBackLink } from "@/components/admin/admin-back-link";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import type { api } from "../../../convex/_generated/api";
 import { api as convexApi } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { WorkoutEditorFields } from "./workout-editor-fields";
@@ -25,11 +22,9 @@ import {
 type AdminWorkoutFormProps =
   | {
       mode: "create";
-      preloadedUserQuery: Preloaded<typeof api.auth.getCurrentUser>;
     }
   | {
       mode: "edit";
-      preloadedUserQuery: Preloaded<typeof api.auth.getCurrentUser>;
       workoutId: string;
     };
 
@@ -48,16 +43,6 @@ async function withMinimumDuration<T>(promise: Promise<T>, minimumMs = 350) {
 }
 
 export function AdminWorkoutForm(props: AdminWorkoutFormProps) {
-  const user = usePreloadedAuthQuery(props.preloadedUserQuery);
-
-  if (!user) {
-    redirect("/login");
-  }
-
-  if (user.role !== "admin") {
-    redirect("/");
-  }
-
   if (props.mode === "create") {
     return <CreateWorkoutForm />;
   }

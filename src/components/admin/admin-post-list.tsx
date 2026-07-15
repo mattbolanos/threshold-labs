@@ -1,11 +1,8 @@
 "use client";
 
-import { usePreloadedAuthQuery } from "@convex-dev/better-auth/nextjs/client";
 import { IconEdit, IconEye, IconEyeOff, IconPlus } from "@tabler/icons-react";
-import type { Preloaded } from "convex/react";
 import { useMutation, useQuery } from "convex/react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { useState } from "react";
 import { PostMarkdown } from "@/components/posts/post-markdown";
 import { PostMeta } from "@/components/posts/post-meta";
@@ -29,22 +26,13 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { api } from "../../../convex/_generated/api";
 import { api as convexApi } from "../../../convex/_generated/api";
 
-type AdminPostListProps = {
-  preloadedUserQuery: Preloaded<typeof api.auth.getCurrentUser>;
-};
-
-export function AdminPostList({ preloadedUserQuery }: AdminPostListProps) {
-  const user = usePreloadedAuthQuery(preloadedUserQuery);
+export function AdminPostList() {
   const posts = useQuery(convexApi.posts.getPostsForAdmin);
   const setPostVisibility = useMutation(convexApi.posts.setPostVisibility);
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  if (!user) redirect("/login");
-  if (user.role !== "admin") redirect("/");
 
   const toggleVisibility = async (post: NonNullable<typeof posts>[number]) => {
     setErrorMessage(null);

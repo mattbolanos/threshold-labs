@@ -1,29 +1,9 @@
 "use client";
 
-import { usePreloadedAuthQuery } from "@convex-dev/better-auth/nextjs/client";
-import type { Preloaded } from "convex/react";
-import { redirect } from "next/navigation";
 import { AdminBackLink } from "@/components/admin/admin-back-link";
-import type { api } from "../../../convex/_generated/api";
 import { AdminClientInviteForm } from "./admin-client-invite-form";
 
-interface AdminAddClientPageProps {
-  preloadedUserQuery: Preloaded<typeof api.auth.getCurrentUser>;
-}
-
-export function AdminAddClientPage({
-  preloadedUserQuery,
-}: AdminAddClientPageProps) {
-  const user = usePreloadedAuthQuery(preloadedUserQuery);
-
-  if (!user) {
-    redirect("/login");
-  }
-
-  if (user.role !== "admin") {
-    redirect("/");
-  }
-
+export function AdminAddClientPage() {
   return (
     <div className="flex w-full flex-col gap-6">
       <div>

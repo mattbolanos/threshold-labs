@@ -1,11 +1,9 @@
 "use client";
 
-import { usePreloadedAuthQuery } from "@convex-dev/better-auth/nextjs/client";
 import { IconDeviceFloppy, IconLoader2 } from "@tabler/icons-react";
-import type { Preloaded } from "convex/react";
 import { useMutation, useQuery } from "convex/react";
 import Link from "next/link";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { AdminBackLink } from "@/components/admin/admin-back-link";
 import { PostMarkdown } from "@/components/posts/post-markdown";
@@ -22,7 +20,6 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { slugifyPostTitle } from "@/lib/posts";
-import type { api } from "../../../convex/_generated/api";
 import { api as convexApi } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { PostEditorFields } from "./post-editor-fields";
@@ -37,20 +34,13 @@ import {
 type AdminPostFormProps =
   | {
       mode: "create";
-      preloadedUserQuery: Preloaded<typeof api.auth.getCurrentUser>;
     }
   | {
       mode: "edit";
       postId: string;
-      preloadedUserQuery: Preloaded<typeof api.auth.getCurrentUser>;
     };
 
 export function AdminPostForm(props: AdminPostFormProps) {
-  const user = usePreloadedAuthQuery(props.preloadedUserQuery);
-
-  if (!user) redirect("/login");
-  if (user.role !== "admin") redirect("/");
-
   if (props.mode === "create") {
     return <PostWriter initialForm={createEmptyPostForm()} mode="create" />;
   }

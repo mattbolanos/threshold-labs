@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { AdminPostForm } from "@/components/admin/admin-post-form";
-import { checkAuth } from "@/lib/auth";
-import { preloadAuthQuery } from "@/lib/auth-server";
-import { api } from "../../../../../convex/_generated/api";
+import { checkAdmin } from "@/lib/auth";
 
 export const metadata: Metadata = {
   description: "Edit a Lab Note.",
@@ -14,17 +12,7 @@ export default async function EditPostPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const [, { id }, preloadedUserQuery] = await Promise.all([
-    checkAuth(),
-    params,
-    preloadAuthQuery(api.auth.getCurrentUser),
-  ]);
+  const [, { id }] = await Promise.all([checkAdmin(), params]);
 
-  return (
-    <AdminPostForm
-      mode="edit"
-      postId={id}
-      preloadedUserQuery={preloadedUserQuery}
-    />
-  );
+  return <AdminPostForm mode="edit" postId={id} />;
 }

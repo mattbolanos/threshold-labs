@@ -14,3 +14,11 @@ export const slugifyPostTitle = (value: string) =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
+
+export const summarizeMarkdown = (value: string) =>
+  value
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/[`*_>#~-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();

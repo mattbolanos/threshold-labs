@@ -1,4 +1,5 @@
 import {
+  IconCalendarStats,
   IconFlag3,
   IconNotebook,
   IconTable,
@@ -92,10 +93,10 @@ export function AdminQuickLinks() {
           <Card className="border-primary/20 from-card via-card to-muted/30 bg-gradient-to-br py-0 shadow-sm">
             <CardHeader className="px-4 pt-4 md:px-5 md:pt-5">
               <CardTitle className="text-base font-semibold tracking-tight">
-                Plan HYROX Races
+                Manage Races
               </CardTitle>
               <CardDescription>
-                Refresh upcoming events and choose which races appear publicly.
+                Add HYROX, Elite 15, run races, and other events manually.
               </CardDescription>
             </CardHeader>
             <CardContent className="px-4 pb-4 md:px-5 md:pb-5">
@@ -104,7 +105,27 @@ export function AdminQuickLinks() {
                 href="/admin/races"
               >
                 <IconFlag3 data-icon="inline-start" />
-                <span>Open Race Planner</span>
+                <span>Open Races</span>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="border-primary/20 from-card via-card to-muted/30 bg-gradient-to-br py-0 shadow-sm">
+            <CardHeader className="px-4 pt-4 md:px-5 md:pt-5">
+              <CardTitle className="text-base font-semibold tracking-tight">
+                Manage Training Blocks
+              </CardTitle>
+              <CardDescription>
+                Set the dated focus that appears alongside Lab Notes.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="px-4 pb-4 md:px-5 md:pb-5">
+              <Link
+                className={buttonVariants({ className: "min-h-11" })}
+                href="/admin/blocks"
+              >
+                <IconCalendarStats data-icon="inline-start" />
+                <span>Open Training Blocks</span>
               </Link>
             </CardContent>
           </Card>

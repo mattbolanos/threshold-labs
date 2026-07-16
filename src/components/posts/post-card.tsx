@@ -1,11 +1,14 @@
+import { IconArrowUpRight } from "@tabler/icons-react";
 import Link from "next/link";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
-import { PostMarkdown } from "./post-markdown";
+import { summarizeMarkdown } from "@/lib/posts";
 import { PostMeta } from "./post-meta";
 
 type PostCardProps = {
@@ -19,25 +22,31 @@ type PostCardProps = {
 };
 
 export function PostCard({ post }: PostCardProps) {
+  const summary = summarizeMarkdown(post.excerpt);
+
   return (
     <Link
-      className="block rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+      className="group block rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
       href={`/notes/${post.slug}`}
       prefetch
     >
-      <Card className="h-full cursor-pointer transition-colors hover:ring-primary/40">
+      <Card
+        className="cursor-pointer transition-colors group-hover:ring-primary/40"
+        size="sm"
+      >
         <CardHeader>
           <CardDescription>
             <PostMeta category={post.category} publishedAt={post.publishedAt} />
           </CardDescription>
+          <CardTitle className="text-lg font-semibold tracking-tight transition-colors group-hover:text-primary">
+            {post.title}
+          </CardTitle>
+          <CardAction className="text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary">
+            <IconArrowUpRight aria-hidden />
+          </CardAction>
         </CardHeader>
-        <CardContent>
-          <PostMarkdown
-            content={post.excerpt}
-            title={post.title}
-            titleAs="h2"
-            variant="card"
-          />
+        <CardContent className="text-muted-foreground">
+          <p className="line-clamp-2 leading-relaxed">{summary}</p>
         </CardContent>
       </Card>
     </Link>

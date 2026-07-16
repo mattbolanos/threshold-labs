@@ -2,7 +2,7 @@ import { format, isSameDay, isSameMonth, isSameYear, parseISO } from "date-fns";
 
 export const getTodayDate = () => format(new Date(), "yyyy-MM-dd");
 
-export const formatRaceDateRange = (startDate: string, endDate: string) => {
+export const formatDateRange = (startDate: string, endDate: string) => {
   const start = parseISO(startDate);
   const end = parseISO(endDate);
 
@@ -18,3 +18,5 @@ export const formatRaceDateRange = (startDate: string, endDate: string) => {
 
   return `${format(start, "MMM d, yyyy")}–${format(end, "MMM d, yyyy")}`;
 };
+
+export const formatRaceDateRange = formatDateRange;

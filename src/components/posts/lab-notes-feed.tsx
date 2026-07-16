@@ -28,8 +28,9 @@ function PostCardSkeleton() {
 
 export function LabNotesFeedSkeleton() {
   return (
-    <div className="grid gap-4 md:grid-cols-3">
+    <div className="flex flex-col gap-3">
       <span className="sr-only">Loading Lab Notes</span>
+      <PostCardSkeleton />
       <PostCardSkeleton />
       <PostCardSkeleton />
     </div>
@@ -46,7 +47,7 @@ type LabNotesFeedProps = {
 export function LabNotesFeed({ posts }: LabNotesFeedProps) {
   if (posts.length === 0) {
     return (
-      <Empty className="min-h-72 border">
+      <Empty className="min-h-64 border">
         <EmptyHeader>
           <EmptyMedia variant="icon">
             <IconNotebook aria-hidden />
@@ -61,7 +62,7 @@ export function LabNotesFeed({ posts }: LabNotesFeedProps) {
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-3">
+    <div className="flex flex-col gap-3">
       {posts.map((post) => (
         <PostCard key={post._id} post={post} />
       ))}

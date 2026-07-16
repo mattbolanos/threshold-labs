@@ -45,6 +45,30 @@ export default defineSchema({
     .index("by_published_at", ["publishedAt"])
     .index("by_visibility_and_published_at", ["isVisible", "publishedAt"]),
 
+  races: defineTable({
+    createdAt: v.number(),
+    division: v.optional(v.string()),
+    endDate: v.string(),
+    eventType: v.union(
+      v.literal("hyrox"),
+      v.literal("run"),
+      v.literal("other"),
+    ),
+    location: v.optional(v.string()),
+    name: v.string(),
+    startDate: v.string(),
+    updatedAt: v.number(),
+  }).index("by_start_date", ["startDate"]),
+
+  trainingBlocks: defineTable({
+    createdAt: v.number(),
+    description: v.string(),
+    endDate: v.string(),
+    startDate: v.string(),
+    title: v.string(),
+    updatedAt: v.number(),
+  }).index("by_start_date", ["startDate"]),
+
   workouts: defineTable({
     burpees: v.optional(v.number()),
     carbs: v.optional(v.number()),

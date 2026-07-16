@@ -14,6 +14,7 @@ import type * as posts from "../posts.js";
 import type * as previewAuth from "../previewAuth.js";
 import type * as raceSync from "../raceSync.js";
 import type * as races from "../races.js";
+import type * as trainingBlocks from "../trainingBlocks.js";
 import type * as workouts from "../workouts.js";
 
 import type {
@@ -29,6 +30,7 @@ declare const fullApi: ApiFromModules<{
   previewAuth: typeof previewAuth;
   raceSync: typeof raceSync;
   races: typeof races;
+  trainingBlocks: typeof trainingBlocks;
   workouts: typeof workouts;
 }>;
 

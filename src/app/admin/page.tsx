@@ -6,7 +6,7 @@ import { checkAdmin } from "@/lib/auth";
 
 export const metadata: Metadata = {
   description:
-    "Manage workouts, HYROX races, Lab Notes, invites, and weekly totals.",
+    "Manage workouts, races, training blocks, Lab Notes, invites, and weekly totals.",
   title: "Admin | Workout Manager",
 };
 

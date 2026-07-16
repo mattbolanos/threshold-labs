@@ -1,8 +1,5 @@
 import { ConvexError, v } from "convex/values";
-import { internal } from "./_generated/api";
 import {
-  type ActionCtx,
-  action,
   type MutationCtx,
   mutation,
   type QueryCtx,
@@ -11,240 +8,141 @@ import {
 import { authComponent } from "./auth";
 import { isPreviewAuthEnabled } from "./previewAuth";
 
-const HYROX_LAB_CALENDAR_URL = "https://hyroxlab.com/calendar";
-const EVENT_SCRIPT_PATTERN =
-  /<script type="application\/ld\+json">([\s\S]*?)<\/script>/g;
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+const HYROX_DIVISIONS = new Set([
+  "Pro Singles",
+  "Pro Doubles",
+  "Mixed Doubles",
+  "Elite 15 Singles",
+  "Elite 15 Doubles",
+]);
 
-type JsonObject = Record<string, unknown>;
+const raceInputValidator = v.object({
+  division: v.optional(v.union(v.string(), v.null())),
+  endDate: v.string(),
+  eventType: v.union(v.literal("hyrox"), v.literal("run"), v.literal("other")),
+  location: v.optional(v.union(v.string(), v.null())),
+  name: v.string(),
+  startDate: v.string(),
+});
 
-const isObject = (value: unknown): value is JsonObject =>
-  typeof value === "object" && value !== null && !Array.isArray(value);
-
-const getString = (value: unknown) =>
-  typeof value === "string" && value.trim().length > 0
-    ? value.trim()
-    : undefined;
-
-const normalizeKeyPart = (value: string) =>
-  value
-    .trim()
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-
-const getExternalKey = ({
-  country,
-  locality,
-  officialUrl,
-  startDate,
-}: {
-  country: string;
-  locality: string;
-  officialUrl?: string;
+type RaceInput = {
+  division?: string | null;
+  endDate: string;
+  eventType: "hyrox" | "run" | "other";
+  location?: string | null;
+  name: string;
   startDate: string;
-}) => {
-  if (officialUrl) {
-    try {
-      const path = new URL(officialUrl).pathname.replace(/\/+$/, "");
-      if (path.startsWith("/event/")) {
-        return `hyrox:${path}:${startDate.slice(0, 4)}`;
-      }
-    } catch {
-      // Fall through to the stable location/date key.
-    }
-  }
-
-  return ["hyrox-lab", country, locality, startDate]
-    .map(normalizeKeyPart)
-    .join(":");
 };
 
-const parseRace = (value: unknown, syncedAt: number) => {
-  if (!isObject(value) || value["@type"] !== "Event") {
-    return null;
-  }
-
-  const location = isObject(value.location) ? value.location : undefined;
-  const address =
-    location && isObject(location.address) ? location.address : undefined;
-  const name = getString(value.name);
-  const startDate = getString(value.startDate);
-  const endDate = getString(value.endDate) ?? startDate;
-  const locality = getString(address?.addressLocality);
-  const country = getString(address?.addressCountry);
-  const venueName = getString(location?.name) ?? locality;
-  const officialUrl = getString(value.url);
-
-  if (
-    !name ||
-    !startDate ||
-    !endDate ||
-    !DATE_PATTERN.test(startDate) ||
-    !DATE_PATTERN.test(endDate) ||
-    !locality ||
-    !country ||
-    !venueName
-  ) {
-    return null;
-  }
-
-  return {
-    country,
-    endDate,
-    externalKey: getExternalKey({
-      country,
-      locality,
-      officialUrl,
-      startDate,
-    }),
-    locality,
-    name,
-    officialUrl,
-    source: "hyrox-lab" as const,
-    sourceUrl: HYROX_LAB_CALENDAR_URL,
-    startDate,
-    syncedAt,
-    venueName,
-  };
-};
-
-const parseCalendar = (html: string, syncedAt: number) => {
-  const races = new Map<string, NonNullable<ReturnType<typeof parseRace>>>();
-
-  for (const match of html.matchAll(EVENT_SCRIPT_PATTERN)) {
-    try {
-      const decoded: unknown = JSON.parse(match[1]);
-      const values = Array.isArray(decoded) ? decoded : [decoded];
-
-      for (const value of values) {
-        const race = parseRace(value, syncedAt);
-        if (race) {
-          races.set(race.externalKey, race);
-        }
-      }
-    } catch {
-      // Ignore unrelated or malformed JSON-LD blocks.
-    }
-  }
-
-  return Array.from(races.values());
-};
-
-type SyncResult = {
-  added: number;
-  syncedAt: number;
-  total: number;
-  updated: number;
-};
-
-const assertAdmin = async (ctx: QueryCtx | MutationCtx | ActionCtx) => {
-  if (isPreviewAuthEnabled()) {
-    return;
-  }
+const assertAdmin = async (ctx: QueryCtx | MutationCtx) => {
+  if (isPreviewAuthEnabled()) return;
 
   const user = await authComponent.safeGetAuthUser(ctx);
   if (!user || user.role !== "admin") {
-    throw new ConvexError("Only admins can manage HYROX races.");
+    throw new ConvexError("Only admins can manage races.");
   }
 };
 
-export const syncHyroxLabRaces = action({
-  args: {},
-  handler: async (ctx): Promise<SyncResult> => {
+const toOptionalString = (value: string | null | undefined) => {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : undefined;
+};
+
+const normalizeRace = (race: RaceInput) => {
+  const name = race.name.trim();
+  const startDate = race.startDate.trim();
+  const endDate = race.endDate.trim();
+  const location = toOptionalString(race.location);
+  const division = toOptionalString(race.division);
+
+  if (!name) throw new ConvexError("Race name is required.");
+  if (!DATE_PATTERN.test(startDate) || !DATE_PATTERN.test(endDate)) {
+    throw new ConvexError("Choose valid race dates.");
+  }
+  if (endDate < startDate) {
+    throw new ConvexError("The end date cannot be before the start date.");
+  }
+  if (race.eventType === "hyrox" && !division) {
+    throw new ConvexError("Choose a HYROX division.");
+  }
+  if (
+    division &&
+    race.eventType === "hyrox" &&
+    !HYROX_DIVISIONS.has(division)
+  ) {
+    throw new ConvexError("Choose a supported HYROX division.");
+  }
+
+  return {
+    ...(division && race.eventType === "hyrox" ? { division } : {}),
+    endDate,
+    eventType: race.eventType,
+    ...(location ? { location } : {}),
+    name,
+    startDate,
+  };
+};
+
+export const createRace = mutation({
+  args: { race: raceInputValidator },
+  handler: async (ctx, { race }) => {
     await assertAdmin(ctx);
-    const response = await fetch(HYROX_LAB_CALENDAR_URL, {
-      headers: { Accept: "text/html" },
+    const now = Date.now();
+    return await ctx.db.insert("races", {
+      ...normalizeRace(race),
+      createdAt: now,
+      updatedAt: now,
     });
+  },
+});
 
-    if (!response.ok) {
-      throw new ConvexError(
-        `HYROX Lab returned ${response.status} while refreshing races.`,
-      );
-    }
+export const updateRace = mutation({
+  args: { race: raceInputValidator, raceId: v.id("races") },
+  handler: async (ctx, { race, raceId }) => {
+    await assertAdmin(ctx);
+    const existing = await ctx.db.get(raceId);
+    if (!existing) throw new ConvexError("Race not found.");
 
-    const syncedAt = Date.now();
-    const races = parseCalendar(await response.text(), syncedAt);
-    if (races.length === 0) {
-      throw new ConvexError("No HYROX races were found in the calendar feed.");
-    }
+    await ctx.db.replace(raceId, {
+      ...normalizeRace(race),
+      createdAt: existing.createdAt,
+      updatedAt: Date.now(),
+    });
+    return raceId;
+  },
+});
 
-    const result: Pick<SyncResult, "added" | "updated"> = await ctx.runMutation(
-      internal.raceSync.upsertRaceCatalog,
-      { races },
-    );
-
-    return { ...result, syncedAt, total: races.length };
+export const deleteRace = mutation({
+  args: { raceId: v.id("races") },
+  handler: async (ctx, { raceId }) => {
+    await assertAdmin(ctx);
+    if (!(await ctx.db.get(raceId))) throw new ConvexError("Race not found.");
+    await ctx.db.delete(raceId);
+    return raceId;
   },
 });
 
 export const getRacesForAdmin = query({
-  args: { fromDate: v.string() },
-  handler: async (ctx, { fromDate }) => {
+  args: {},
+  handler: async (ctx) => {
     await assertAdmin(ctx);
-    const [races, plannedRaces] = await Promise.all([
-      ctx.db
-        .query("hyroxRaces")
-        .withIndex("by_start_date", (q) => q.gte("startDate", fromDate))
-        .order("asc")
-        .collect(),
-      ctx.db.query("plannedHyroxRaces").collect(),
-    ]);
-    const plannedIds = new Set(plannedRaces.map(({ raceId }) => raceId));
-
-    return races.map((race) => ({
-      ...race,
-      isPlanned: plannedIds.has(race._id),
-    }));
+    return await ctx.db
+      .query("races")
+      .withIndex("by_start_date")
+      .order("asc")
+      .collect();
   },
 });
 
-export const setRacePlanned = mutation({
-  args: {
-    isPlanned: v.boolean(),
-    raceId: v.id("hyroxRaces"),
-  },
-  handler: async (ctx, { isPlanned, raceId }) => {
-    await assertAdmin(ctx);
-    const race = await ctx.db.get(raceId);
-    if (!race) {
-      throw new ConvexError("HYROX race not found.");
-    }
-
-    const existing = await ctx.db
-      .query("plannedHyroxRaces")
-      .withIndex("by_race_id", (q) => q.eq("raceId", raceId))
-      .first();
-
-    if (isPlanned && !existing) {
-      return await ctx.db.insert("plannedHyroxRaces", {
-        plannedAt: Date.now(),
-        raceId,
-      });
-    }
-    if (!isPlanned && existing) {
-      await ctx.db.delete(existing._id);
-    }
-
-    return existing?._id ?? null;
-  },
-});
-
-export const getPlannedRaces = query({
+export const getUpcomingRaces = query({
   args: { fromDate: v.string() },
   handler: async (ctx, { fromDate }) => {
-    const plannedRaces = await ctx.db.query("plannedHyroxRaces").collect();
-    const races = await Promise.all(
-      plannedRaces.map(({ raceId }) => ctx.db.get(raceId)),
-    );
-
-    const upcomingRaces = races.filter(
-      (race): race is NonNullable<typeof race> =>
-        race !== null && race.endDate >= fromDate,
-    );
-
-    return upcomingRaces.sort((a, b) => a.startDate.localeCompare(b.startDate));
+    if (!DATE_PATTERN.test(fromDate)) return [];
+    const races = await ctx.db
+      .query("races")
+      .withIndex("by_start_date")
+      .collect();
+    return races.filter(({ endDate }) => endDate >= fromDate);
   },
 });

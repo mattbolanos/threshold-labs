@@ -30,24 +30,20 @@ export function BlockContent({ className, workout }: BlockContentProps) {
           value={property.getValue(workout)}
         />
       ))}
-      <PropertyRow
-        label={{ icon: IconCalendarStats, title: "Training block" }}
-        value={
-          workout.trainingBlock ? (
-            <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-              <span className="font-medium">{workout.trainingBlock.title}</span>
-              <span className="text-xs text-muted-foreground">
-                {formatDateRange(
-                  workout.trainingBlock.startDate,
-                  workout.trainingBlock.endDate,
-                )}
-              </span>
-            </div>
-          ) : (
-            <span className="text-muted-foreground">No training block</span>
-          )
-        }
-      />
+      {workout.trainingBlock ? (
+        <PropertyRow
+          label={{ icon: IconCalendarStats, title: "Training block" }}
+          value={
+            <span>
+              {workout.trainingBlock.title} /{" "}
+              {formatDateRange(
+                workout.trainingBlock.startDate,
+                workout.trainingBlock.endDate,
+              )}
+            </span>
+          }
+        />
+      ) : null}
       {hasText && (
         <div className="space-y-2 px-2.5">
           <Separator />

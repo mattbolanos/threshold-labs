@@ -7,16 +7,16 @@ export const formatDateRange = (startDate: string, endDate: string) => {
   const end = parseISO(endDate);
 
   if (isSameDay(start, end)) {
-    return format(start, "MMM d, yyyy");
+    return format(start, "MMM dd, yyyy");
   }
   if (isSameMonth(start, end)) {
-    return `${format(start, "MMM d")}–${format(end, "d, yyyy")}`;
+    return `${format(start, "MMM dd")}–${format(end, "dd, yyyy")}`;
   }
   if (isSameYear(start, end)) {
-    return `${format(start, "MMM d")}–${format(end, "MMM d, yyyy")}`;
+    return `${format(start, "MMM dd")}–${format(end, "MMM dd, yyyy")}`;
   }
 
-  return `${format(start, "MMM d, yyyy")}–${format(end, "MMM d, yyyy")}`;
+  return `${format(start, "MMM dd, yyyy")}–${format(end, "MMM dd, yyyy")}`;
 };
 
 export const formatRaceDateRange = formatDateRange;

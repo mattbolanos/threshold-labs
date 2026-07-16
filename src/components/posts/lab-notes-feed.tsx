@@ -1,7 +1,4 @@
-"use client";
-
 import { IconNotebook } from "@tabler/icons-react";
-import { useQuery } from "convex/react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   Empty,
@@ -11,7 +8,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
-import { api } from "../../../convex/_generated/api";
+import type { Doc } from "../../../convex/_generated/dataModel";
 import { PostCard } from "./post-card";
 
 function PostCardSkeleton() {
@@ -29,19 +26,24 @@ function PostCardSkeleton() {
   );
 }
 
-export function LabNotesFeed() {
-  const posts = useQuery(api.posts.getPublishedPosts);
+export function LabNotesFeedSkeleton() {
+  return (
+    <div className="grid gap-4 md:grid-cols-3">
+      <span className="sr-only">Loading Lab Notes</span>
+      <PostCardSkeleton />
+      <PostCardSkeleton />
+    </div>
+  );
+}
 
-  if (posts === undefined) {
-    return (
-      <div className="grid gap-4 md:grid-cols-3">
-        <span className="sr-only">Loading Lab Notes</span>
-        <PostCardSkeleton />
-        <PostCardSkeleton />
-      </div>
-    );
-  }
+type LabNotesFeedProps = {
+  posts: Pick<
+    Doc<"posts">,
+    "_id" | "category" | "excerpt" | "publishedAt" | "slug" | "title"
+  >[];
+};
 
+export function LabNotesFeed({ posts }: LabNotesFeedProps) {
   if (posts.length === 0) {
     return (
       <Empty className="min-h-72 border">

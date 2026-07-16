@@ -1,7 +1,4 @@
-"use client";
-
 import { IconCalendarEvent, IconMapPin } from "@tabler/icons-react";
-import { useQuery } from "convex/react";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -12,10 +9,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatRaceDateRange, getTodayDate } from "@/lib/race-dates";
-import { api } from "../../../convex/_generated/api";
+import { formatRaceDateRange } from "@/lib/race-dates";
+import type { Doc } from "../../../convex/_generated/dataModel";
 
-function PlannedRacesSkeleton() {
+export function PlannedRacesSkeleton() {
   return (
     <section aria-hidden className="flex flex-col gap-4">
       <Skeleton className="h-7 w-44" />
@@ -27,14 +24,11 @@ function PlannedRacesSkeleton() {
   );
 }
 
-export function PlannedRaces() {
-  const races = useQuery(api.races.getPlannedRaces, {
-    fromDate: getTodayDate(),
-  });
+type PlannedRacesProps = {
+  races: Doc<"hyroxRaces">[];
+};
 
-  if (races === undefined) {
-    return <PlannedRacesSkeleton />;
-  }
+export function PlannedRaces({ races }: PlannedRacesProps) {
   if (races.length === 0) {
     return null;
   }

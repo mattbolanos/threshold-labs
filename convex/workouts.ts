@@ -8,6 +8,10 @@ import {
 } from "./_generated/server";
 import { authComponent } from "./auth";
 import { isPreviewAuthEnabled } from "./previewAuth";
+import {
+  findTrainingBlockForDate,
+  getTrainingBlocksOverlappingRange,
+} from "./trainingBlockDates";
 
 const getDefaultFromDate = () =>
   format(
@@ -468,15 +472,17 @@ export const getBaseFitness = query({
     const toDate = to ?? format(new Date(), "yyyy-MM-dd");
 
     if (!isValidDateRange(fromDate, toDate)) {
-      return [];
+      return { data: [], trainingBlocks: [] };
     }
 
-    const workouts = (
-      await ctx.db
+    const [workoutResults, trainingBlocks] = await Promise.all([
+      ctx.db
         .query("workouts")
         .withIndex("by_workout_date", (q) => q.lte("workoutDate", toDate))
-        .collect()
-    )
+        .collect(),
+      getTrainingBlocksOverlappingRange(ctx, fromDate, toDate),
+    ]);
+    const workouts = workoutResults
       .filter(isVisibleWorkout)
       .sort((a, b) => a.workoutDate.localeCompare(b.workoutDate));
 
@@ -521,7 +527,7 @@ export const getBaseFitness = query({
       }
     }
 
-    return data;
+    return { data, trainingBlocks };
   },
 });
 
@@ -629,14 +635,23 @@ export const getWorkouts = query({
   },
   handler: async (ctx, { from, to }) => {
     await assertAuthenticated(ctx);
-    return (
-      await ctx.db
+    const [workouts, trainingBlocks] = await Promise.all([
+      ctx.db
         .query("workouts")
         .withIndex("by_workout_date", (q) =>
           q.gte("workoutDate", from).lte("workoutDate", to),
         )
-        .collect()
-    ).filter(isVisibleWorkout);
+        .collect(),
+      getTrainingBlocksOverlappingRange(ctx, from, to),
+    ]);
+
+    return workouts.filter(isVisibleWorkout).map((workout) => ({
+      ...workout,
+      trainingBlock: findTrainingBlockForDate(
+        trainingBlocks,
+        workout.workoutDate,
+      ),
+    }));
   },
 });
 

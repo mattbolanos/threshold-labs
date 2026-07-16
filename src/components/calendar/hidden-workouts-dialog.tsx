@@ -16,11 +16,11 @@ import {
   getTagAccentOverflowCount,
   TagAccentMarker,
 } from "@/components/workouts/tag-accent-marker";
+import type { WorkoutWithTrainingBlock } from "@/lib/training-blocks";
 import { cn } from "@/lib/utils";
-import type { Doc } from "../../../convex/_generated/dataModel";
 import { Button } from "../ui/button";
 
-type Workout = Doc<"workouts">;
+type Workout = WorkoutWithTrainingBlock;
 
 const DAY_DIALOG_DATE_FORMATTER = new Intl.DateTimeFormat("en-US", {
   day: "numeric",

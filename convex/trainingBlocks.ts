@@ -7,6 +7,10 @@ import {
 } from "./_generated/server";
 import { authComponent } from "./auth";
 import { isPreviewAuthEnabled } from "./previewAuth";
+import {
+  findTrainingBlockForDate,
+  getTrainingBlocksOverlappingRange,
+} from "./trainingBlockDates";
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const trainingBlockInputValidator = v.object({
@@ -111,12 +115,8 @@ export const getCurrentTrainingBlock = query({
   handler: async (ctx, { onDate }) => {
     if (!DATE_PATTERN.test(onDate)) return null;
 
-    const blocks = await ctx.db
-      .query("trainingBlocks")
-      .withIndex("by_start_date", (q) => q.lte("startDate", onDate))
-      .order("desc")
-      .collect();
+    const blocks = await getTrainingBlocksOverlappingRange(ctx, onDate, onDate);
 
-    return blocks.find(({ endDate }) => endDate >= onDate) ?? null;
+    return findTrainingBlockForDate(blocks, onDate);
   },
 });

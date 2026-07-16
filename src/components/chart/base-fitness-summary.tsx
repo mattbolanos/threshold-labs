@@ -31,8 +31,8 @@ export function BaseFitnessSummary() {
     return <Skeleton className="h-72 w-full rounded-xl" />;
   }
 
-  const first = data[0];
-  const latest = data.at(-1);
+  const first = data.data[0];
+  const latest = data.data.at(-1);
   const change = first && latest ? latest.baseFitness - first.baseFitness : 0;
 
   return (
@@ -58,7 +58,11 @@ export function BaseFitnessSummary() {
                 {formatFitness(change)}
               </p>
             </div>
-            <BaseFitnessChartView compact data={data} />
+            <BaseFitnessChartView
+              compact
+              data={data.data}
+              trainingBlocks={data.trainingBlocks}
+            />
           </>
         ) : (
           <p className="text-muted-foreground py-8 text-center text-sm">

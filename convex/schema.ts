@@ -9,6 +9,66 @@ export default defineSchema({
     role: v.union(v.literal("admin"), v.literal("client"), v.literal("coach")),
   }).index("by_email", ["email"]),
 
+  hyroxRaces: defineTable({
+    country: v.string(),
+    endDate: v.string(),
+    externalKey: v.string(),
+    locality: v.string(),
+    name: v.string(),
+    officialUrl: v.optional(v.string()),
+    source: v.literal("hyrox-lab"),
+    sourceUrl: v.string(),
+    startDate: v.string(),
+    syncedAt: v.number(),
+    venueName: v.string(),
+  })
+    .index("by_external_key", ["externalKey"])
+    .index("by_start_date", ["startDate"]),
+
+  plannedHyroxRaces: defineTable({
+    plannedAt: v.number(),
+    raceId: v.id("hyroxRaces"),
+  }).index("by_race_id", ["raceId"]),
+
+  posts: defineTable({
+    category: v.string(),
+    content: v.string(),
+    createdAt: v.number(),
+    excerpt: v.string(),
+    isVisible: v.boolean(),
+    publishedAt: v.number(),
+    slug: v.string(),
+    title: v.string(),
+    updatedAt: v.number(),
+  })
+    .index("by_slug", ["slug"])
+    .index("by_published_at", ["publishedAt"])
+    .index("by_visibility_and_published_at", ["isVisible", "publishedAt"]),
+
+  races: defineTable({
+    createdAt: v.number(),
+    division: v.optional(v.string()),
+    endDate: v.string(),
+    eventType: v.union(
+      v.literal("hyrox"),
+      v.literal("run"),
+      v.literal("other"),
+    ),
+    location: v.optional(v.string()),
+    name: v.string(),
+    startDate: v.string(),
+    updatedAt: v.number(),
+  }).index("by_start_date", ["startDate"]),
+
+  trainingBlocks: defineTable({
+    createdAt: v.number(),
+    description: v.string(),
+    endDate: v.string(),
+    startDate: v.string(),
+    title: v.string(),
+    updatedAt: v.number(),
+  }).index("by_start_date", ["startDate"]),
+
   workouts: defineTable({
     burpees: v.optional(v.number()),
     carbs: v.optional(v.number()),

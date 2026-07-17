@@ -10,16 +10,22 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
+import type { PreviewRole } from "@/lib/auth/preview-role";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
+import { PreviewRoleSwitch } from "./preview-role-switch";
 
-interface User {
+export interface NavUserData {
   email: string;
   name: string;
+  role?: string | null;
 }
 
 interface NavUserProps {
-  user?: User | null;
+  isPreview: boolean;
+  previewRole: PreviewRole;
+  user?: NavUserData | null;
 }
 
 interface LogOutButtonProps {
@@ -27,7 +33,7 @@ interface LogOutButtonProps {
   onLoggedOut?: () => void;
 }
 
-export function NavUser({ user }: NavUserProps) {
+export function NavUser({ isPreview, previewRole, user }: NavUserProps) {
   if (!user) {
     return null;
   }
@@ -58,7 +64,14 @@ export function NavUser({ user }: NavUserProps) {
           <span className="text-sm font-medium">{username}</span>
           <span className="text-muted-foreground text-xs">{email}</span>
         </div>
-        <LogOutButton />
+        {isPreview ? (
+          <>
+            <Separator className="my-1" />
+            <PreviewRoleSwitch className="px-2 py-1.5" role={previewRole} />
+          </>
+        ) : (
+          <LogOutButton />
+        )}
       </PopoverContent>
     </Popover>
   );

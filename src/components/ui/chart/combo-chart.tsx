@@ -507,6 +507,7 @@ interface ChartTooltipProps {
   payload: PayloadItem[];
   label: string;
   labelFormatter?: (label: string) => string;
+  contextFormatter?: (payload: PayloadItem[]) => React.ReactNode;
   areaValueFormatter?: (value: number) => string;
   barValueFormatter?: (value: number) => string;
   lineValueFormatter?: (value: number) => string;
@@ -517,12 +518,14 @@ const ChartTooltip = ({
   payload,
   label,
   labelFormatter,
+  contextFormatter,
   areaValueFormatter = defaultValueFormatter,
   barValueFormatter = defaultValueFormatter,
   lineValueFormatter = defaultValueFormatter,
 }: ChartTooltipProps) => {
   if (active && payload && payload.length) {
     const filteredPayload = payload.filter((item: any) => item.type !== "none");
+    const context = contextFormatter?.(filteredPayload);
     return (
       <div
         className={cn(
@@ -545,6 +548,11 @@ const ChartTooltip = ({
           >
             {labelFormatter ? labelFormatter(label) : label}
           </p>
+          {context ? (
+            <div className="mt-0.5 text-xs text-muted-foreground">
+              {context}
+            </div>
+          ) : null}
         </div>
         <div className={cn("space-y-1 px-4 py-2")}>
           {filteredPayload.map(
@@ -683,6 +691,9 @@ interface ComboChartProps extends React.HTMLAttributes<HTMLDivElement> {
     valueFormatter?: (value: number) => string;
   };
   tooltipLabelFormatter?: (label: string) => string;
+  tooltipContextFormatter?: (
+    payload: TooltipProps["payload"],
+  ) => React.ReactNode;
 }
 
 const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
@@ -735,6 +746,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
       xAxisLabel,
       enableBiaxial = false,
       tooltipLabelFormatter,
+      tooltipContextFormatter,
       xTicksFormatter,
       xAxisPadding,
       areaSeries = defaultAreaSeries,
@@ -1141,6 +1153,7 @@ const ComboChart = React.forwardRef<HTMLDivElement, ComboChartProps>(
                       active={active}
                       areaValueFormatter={mergedAreaSeries.valueFormatter}
                       barValueFormatter={mergedBarSeries.valueFormatter}
+                      contextFormatter={tooltipContextFormatter}
                       label={label as string}
                       labelFormatter={tooltipLabelFormatter}
                       lineValueFormatter={mergedLineSeries.valueFormatter}

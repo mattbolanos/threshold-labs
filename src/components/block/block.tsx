@@ -24,12 +24,12 @@ import {
   TagAccentMarker,
 } from "@/components/workouts/tag-accent-marker";
 import { TAG_CONFIG } from "@/components/workouts/tag-config";
+import type { WorkoutWithTrainingBlock } from "@/lib/training-blocks";
 import { cn } from "@/lib/utils";
-import type { Doc } from "../../../convex/_generated/dataModel";
 import { BlockContent } from "./block-content";
 
 interface BlockProps {
-  workout: Doc<"workouts">;
+  workout: WorkoutWithTrainingBlock;
   className?: string;
 }
 

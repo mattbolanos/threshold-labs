@@ -1,5 +1,15 @@
 @import "tailwindcss";
+@import "./typeset.css";
 @import "tw-animate-css";
+
+.typeset-docs {
+  --typeset-font-body: var(--font-outfit);
+  --typeset-font-heading: var(--font-outfit);
+  --typeset-font-mono: var(--font-jetbrains-mono);
+  --typeset-size: 14px;
+  --typeset-leading: 1.75;
+  --typeset-flow: 1em;
+}
 
 @custom-variant dark (&:is(.dark *));
 

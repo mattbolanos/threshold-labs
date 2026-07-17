@@ -1,19 +1,15 @@
 "use client";
 
-import { usePreloadedAuthQuery } from "@convex-dev/better-auth/nextjs/client";
 import {
   getCoreRowModel,
   getPaginationRowModel,
   type PaginationState,
   useReactTable,
 } from "@tanstack/react-table";
-import type { Preloaded } from "convex/react";
 import { useMutation, useQuery } from "convex/react";
-import { redirect } from "next/navigation";
 import { parseAsInteger, parseAsString, useQueryState } from "nuqs";
 import { useCallback, useMemo, useState } from "react";
 import { formatWorkoutDate } from "@/lib/utils";
-import type { api } from "../../../convex/_generated/api";
 import { api as convexApi } from "../../../convex/_generated/api";
 import {
   FILTER_VALUES,
@@ -23,10 +19,6 @@ import {
 } from "./workout-form-utils";
 import { LoggedWorkoutsSection } from "./workout-list/logged-workouts-section";
 import { getWorkoutColumns } from "./workout-list/workout-table-columns";
-
-interface AdminWorkoutListProps {
-  preloadedUserQuery: Preloaded<typeof api.auth.getCurrentUser>;
-}
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50] as const;
 const DEFAULT_PAGE_SIZE = 10;
@@ -44,12 +36,7 @@ async function withMinimumDuration<T>(promise: Promise<T>, minimumMs = 350) {
   }
 }
 
-export const AdminWorkoutList = ({
-  preloadedUserQuery,
-}: AdminWorkoutListProps) => {
-  "use no memo";
-
-  const user = usePreloadedAuthQuery(preloadedUserQuery);
+export const AdminWorkoutList = () => {
   const workouts = useQuery(convexApi.workouts.getWorkoutsForAdmin, {
     includeHidden: true,
   });
@@ -129,14 +116,6 @@ export const AdminWorkoutList = ({
   const pageCount = Math.max(Math.ceil(filteredWorkouts.length / pageSize), 1);
   const currentPage = Math.min(Math.max(pageQuery, 1), pageCount);
 
-  if (!user) {
-    redirect("/login");
-  }
-
-  if (user.role !== "admin") {
-    redirect("/");
-  }
-
   const handleToggleVisibility = useCallback(
     async (workout: Workout) => {
       setErrorMessage(null);
@@ -210,7 +189,7 @@ export const AdminWorkoutList = ({
 
       {errorMessage ? (
         <div
-          className="route-padding-x rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+          className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
           role="alert"
         >
           {errorMessage}

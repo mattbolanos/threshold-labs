@@ -8,7 +8,7 @@ import { RunMixChart } from "@/components/chart/run-mix";
 import { TotalsTable } from "@/components/totals/totals-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartStateProvider } from "@/hooks/use-chart-state";
-import { checkAuth } from "@/lib/auth";
+import { checkAdmin } from "@/lib/auth";
 
 export const metadata: Metadata = {
   description: "Weekly training totals and performance dashboard.",
@@ -16,16 +16,16 @@ export const metadata: Metadata = {
 };
 
 export default async function TotalsPage() {
-  await checkAuth();
+  await checkAdmin();
 
   return (
     <>
-      <div className="route-padding-x">
+      <div>
         <AdminBackLink />
       </div>
 
       <ChartStateProvider>
-        <div className="route-padding-x flex items-end justify-between">
+        <div className="flex items-end justify-between">
           <div>
             <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
               Admin
@@ -37,7 +37,7 @@ export default async function TotalsPage() {
           <ChartControls />
         </div>
 
-        <div className="route-padding-x grid gap-4 lg:grid-cols-2">
+        <div className="grid gap-4 lg:grid-cols-2">
           <Card className="w-full gap-0 overflow-hidden lg:col-span-2">
             <CardHeader className="pl-5">
               <CardTitle className="text-sm font-medium">

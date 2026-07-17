@@ -7,6 +7,11 @@ import {
   query,
 } from "./_generated/server";
 import { authComponent } from "./auth";
+import { isPreviewAuthEnabled } from "./previewAuth";
+import {
+  findTrainingBlockForDate,
+  getTrainingBlocksOverlappingRange,
+} from "./trainingBlockDates";
 
 const getDefaultFromDate = () =>
   format(
@@ -142,10 +147,26 @@ const normalizeWorkout = (workout: {
 };
 
 const assertAdmin = async (ctx: QueryCtx | MutationCtx) => {
+  if (isPreviewAuthEnabled()) {
+    return;
+  }
+
   const user = await authComponent.safeGetAuthUser(ctx);
 
   if (!user || user.role !== "admin") {
     throw new ConvexError("Only admins can manage workouts.");
+  }
+};
+
+const assertAuthenticated = async (ctx: QueryCtx) => {
+  if (isPreviewAuthEnabled()) {
+    return;
+  }
+
+  const user = await authComponent.safeGetAuthUser(ctx);
+
+  if (!user) {
+    throw new ConvexError("Authentication is required to view workouts.");
   }
 };
 
@@ -269,6 +290,7 @@ export const getRollingLoad = query({
     to: v.optional(v.string()),
   },
   handler: async (ctx, { from, to }) => {
+    await assertAuthenticated(ctx);
     const fromDate = from ?? getDefaultFromDate();
 
     let workoutsQuery = ctx.db
@@ -321,6 +343,7 @@ export const getRunVolumeMix = query({
     to: v.optional(v.string()),
   },
   handler: async (ctx, { from, to }) => {
+    await assertAuthenticated(ctx);
     const fromDate = from ?? getDefaultFromDate();
 
     let workoutsQuery = ctx.db
@@ -391,6 +414,7 @@ export const getSessionIntensity = query({
     to: v.optional(v.string()),
   },
   handler: async (ctx, { from, to }) => {
+    await assertAuthenticated(ctx);
     const fromDate = from ?? getDefaultFromDate();
 
     let workoutsQuery = ctx.db
@@ -446,19 +470,22 @@ export const getBaseFitness = query({
     to: v.optional(v.string()),
   },
   handler: async (ctx, { from, to }) => {
+    await assertAuthenticated(ctx);
     const fromDate = from ?? getDefaultFromDate();
     const toDate = to ?? format(new Date(), "yyyy-MM-dd");
 
     if (!isValidDateRange(fromDate, toDate)) {
-      return [];
+      return { data: [], trainingBlocks: [] };
     }
 
-    const workouts = (
-      await ctx.db
+    const [workoutResults, trainingBlocks] = await Promise.all([
+      ctx.db
         .query("workouts")
         .withIndex("by_workout_date", (q) => q.lte("workoutDate", toDate))
-        .collect()
-    )
+        .collect(),
+      getTrainingBlocksOverlappingRange(ctx, fromDate, toDate),
+    ]);
+    const workouts = workoutResults
       .filter(isVisibleWorkout)
       .sort((a, b) => a.workoutDate.localeCompare(b.workoutDate));
 
@@ -503,7 +530,7 @@ export const getBaseFitness = query({
       }
     }
 
-    return data;
+    return { data, trainingBlocks };
   },
 });
 
@@ -513,6 +540,7 @@ export const getWeeklyTotals = query({
     to: v.optional(v.string()),
   },
   handler: async (ctx, { from, to }) => {
+    await assertAuthenticated(ctx);
     const fromDate = from ?? getDefaultFromDate();
 
     let workoutsQuery = ctx.db
@@ -609,19 +637,30 @@ export const getWorkouts = query({
     to: v.string(),
   },
   handler: async (ctx, { from, to }) => {
-    return (
-      await ctx.db
+    await assertAuthenticated(ctx);
+    const [workouts, trainingBlocks] = await Promise.all([
+      ctx.db
         .query("workouts")
         .withIndex("by_workout_date", (q) =>
           q.gte("workoutDate", from).lte("workoutDate", to),
         )
-        .collect()
-    ).filter(isVisibleWorkout);
+        .collect(),
+      getTrainingBlocksOverlappingRange(ctx, from, to),
+    ]);
+
+    return workouts.filter(isVisibleWorkout).map((workout) => ({
+      ...workout,
+      trainingBlock: findTrainingBlockForDate(
+        trainingBlocks,
+        workout.workoutDate,
+      ),
+    }));
   },
 });
 
 export const getWorkoutsDateRange = query({
   handler: async (ctx) => {
+    await assertAuthenticated(ctx);
     const visibleWorkouts = (await ctx.db.query("workouts").collect()).filter(
       isVisibleWorkout,
     );

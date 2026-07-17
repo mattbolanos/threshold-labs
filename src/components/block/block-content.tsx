@@ -1,12 +1,14 @@
+import { IconCalendarStats } from "@tabler/icons-react";
 import { Separator } from "@/components/ui/separator";
 import { WORKOUT_PROPERTY_CONFIG } from "@/components/workouts/workout-property-config";
+import { formatDateRange } from "@/lib/race-dates";
+import type { WorkoutWithTrainingBlock } from "@/lib/training-blocks";
 import { cn } from "@/lib/utils";
-import type { Doc } from "../../../convex/_generated/dataModel";
 import { FreeText } from "./free-text";
 import { PropertyRow } from "./property-row";
 
 interface BlockContentProps {
-  workout: Doc<"workouts">;
+  workout: WorkoutWithTrainingBlock;
   className?: string;
 }
 
@@ -28,6 +30,20 @@ export function BlockContent({ className, workout }: BlockContentProps) {
           value={property.getValue(workout)}
         />
       ))}
+      {workout.trainingBlock ? (
+        <PropertyRow
+          label={{ icon: IconCalendarStats, title: "Training block" }}
+          value={
+            <span>
+              {workout.trainingBlock.title} /{" "}
+              {formatDateRange(
+                workout.trainingBlock.startDate,
+                workout.trainingBlock.endDate,
+              )}
+            </span>
+          }
+        />
+      ) : null}
       {hasText && (
         <div className="space-y-2 px-2.5">
           <Separator />

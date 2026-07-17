@@ -3,9 +3,5 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <div className="bg-background route-padding-y mx-auto flex max-w-7xl flex-col gap-6">
-      {children}
-    </div>
-  );
+  return <div className="flex flex-col gap-6 bg-background">{children}</div>;
 }

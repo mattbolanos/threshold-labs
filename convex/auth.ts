@@ -13,6 +13,11 @@ import {
 } from "./_generated/server";
 import authConfig from "./auth.config";
 import authSchema from "./betterAuth/schema";
+import {
+  createPreviewUser,
+  isPreviewAuthEnabled,
+  type PreviewRole,
+} from "./previewAuth";
 
 export const authComponent = createClient<DataModel, typeof authSchema>(
   components.betterAuth,
@@ -76,6 +81,10 @@ export const createAuth = (ctx: GenericCtx<DataModel>) =>
   betterAuth(createAuthOptions(ctx));
 
 const assertAdmin = async (ctx: QueryCtx | MutationCtx) => {
+  if (isPreviewAuthEnabled()) {
+    return;
+  }
+
   const user = await authComponent.safeGetAuthUser(ctx);
 
   if (!user || user.role !== "admin") {
@@ -105,8 +114,14 @@ export const isClientAllowedForSignup = internalQuery({
 });
 
 export const getCurrentUser = query({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    previewRole: v.optional(v.union(v.literal("admin"), v.literal("client"))),
+  },
+  handler: async (ctx, { previewRole }) => {
+    if (isPreviewAuthEnabled()) {
+      return createPreviewUser(previewRole as PreviewRole | undefined);
+    }
+
     return (await authComponent.safeGetAuthUser(ctx)) ?? null;
   },
 });

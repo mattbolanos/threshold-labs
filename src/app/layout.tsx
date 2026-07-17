@@ -4,6 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import { Suspense } from "react";
 import { NavBar } from "@/components/nav/nav-bar";
+import { getPreviewAuthState } from "@/lib/auth/preview.server";
 import { getToken } from "@/lib/auth-server";
 import { Providers } from "./providers";
 
@@ -26,12 +27,17 @@ export const metadata: Metadata = {
 };
 
 async function AppShell({ children }: { children: React.ReactNode }) {
-  const token = await getToken();
+  const [token, preview] = await Promise.all([
+    getToken(),
+    getPreviewAuthState(),
+  ]);
 
   return (
     <Providers initialToken={token}>
-      <NavBar />
-      <Suspense>{children}</Suspense>
+      <NavBar isPreview={preview.enabled} previewRole={preview.role} />
+      <div className="route-padding-y route-padding-x mx-auto w-full max-w-7xl">
+        <Suspense>{children}</Suspense>
+      </div>
     </Providers>
   );
 }

@@ -1,16 +1,13 @@
 "use client";
 
-import { usePreloadedAuthQuery } from "@convex-dev/better-auth/nextjs/client";
 import { IconCheck, IconLoader2, IconPlus } from "@tabler/icons-react";
 import { useForm } from "@tanstack/react-form";
-import type { Preloaded } from "convex/react";
 import { useMutation, useQuery } from "convex/react";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AdminBackLink } from "@/components/admin/admin-back-link";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import type { api } from "../../../convex/_generated/api";
 import { api as convexApi } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { WorkoutEditorFields } from "./workout-editor-fields";
@@ -25,11 +22,9 @@ import {
 type AdminWorkoutFormProps =
   | {
       mode: "create";
-      preloadedUserQuery: Preloaded<typeof api.auth.getCurrentUser>;
     }
   | {
       mode: "edit";
-      preloadedUserQuery: Preloaded<typeof api.auth.getCurrentUser>;
       workoutId: string;
     };
 
@@ -48,16 +43,6 @@ async function withMinimumDuration<T>(promise: Promise<T>, minimumMs = 350) {
 }
 
 export function AdminWorkoutForm(props: AdminWorkoutFormProps) {
-  const user = usePreloadedAuthQuery(props.preloadedUserQuery);
-
-  if (!user) {
-    redirect("/login");
-  }
-
-  if (user.role !== "admin") {
-    redirect("/");
-  }
-
   if (props.mode === "create") {
     return <CreateWorkoutForm />;
   }
@@ -109,20 +94,20 @@ function CreateWorkoutForm() {
 
   return (
     <div className="flex w-full flex-col gap-6">
-      <div className="route-padding-x">
+      <div>
         <AdminBackLink />
       </div>
 
       {errorMessage ? (
         <div
-          className="route-padding-x rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+          className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
           role="alert"
         >
           {errorMessage}
         </div>
       ) : null}
 
-      <div className="route-padding-x flex items-end justify-between">
+      <div className="flex items-end justify-between">
         <div>
           <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
             Admin
@@ -134,8 +119,8 @@ function CreateWorkoutForm() {
         </div>
       </div>
 
-      <div className="route-padding-x relative border-t border-primary/20 pt-4">
-        <div className="absolute top-0 left-5 h-0.5 w-16 bg-primary/40 md:left-8" />
+      <div className="relative border-t border-primary/20 pt-4">
+        <div className="absolute top-0 left-0 h-0.5 w-16 bg-primary/40" />
         <form
           action={handleCreateSubmit}
           className="mx-auto max-w-4xl space-y-5"
@@ -195,10 +180,10 @@ function EditWorkoutForm({ workoutId }: { workoutId: string }) {
   if (workout === undefined) {
     return (
       <div className="flex w-full flex-col gap-6">
-        <div className="route-padding-x">
+        <div>
           <AdminBackLink />
         </div>
-        <div className="route-padding-x">
+        <div>
           <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
             Admin
           </p>
@@ -211,10 +196,10 @@ function EditWorkoutForm({ workoutId }: { workoutId: string }) {
   if (workout === null) {
     return (
       <div className="flex w-full flex-col gap-6">
-        <div className="route-padding-x">
+        <div>
           <AdminBackLink />
         </div>
-        <div className="route-padding-x">
+        <div>
           <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
             Admin
           </p>
@@ -280,20 +265,20 @@ function LoadedEditWorkoutForm({ workout }: { workout: Workout }) {
 
   return (
     <div className="flex w-full flex-col gap-6">
-      <div className="route-padding-x">
+      <div>
         <AdminBackLink />
       </div>
 
       {errorMessage ? (
         <div
-          className="route-padding-x rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+          className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
           role="alert"
         >
           {errorMessage}
         </div>
       ) : null}
 
-      <div className="route-padding-x flex items-end justify-between">
+      <div className="flex items-end justify-between">
         <div>
           <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
             Admin
@@ -305,8 +290,8 @@ function LoadedEditWorkoutForm({ workout }: { workout: Workout }) {
         </div>
       </div>
 
-      <div className="route-padding-x relative border-t border-primary/20 pt-4">
-        <div className="absolute top-0 left-5 h-0.5 w-16 bg-primary/40 md:left-8" />
+      <div className="relative border-t border-primary/20 pt-4">
+        <div className="absolute top-0 left-0 h-0.5 w-16 bg-primary/40" />
         <form action={handleEditSubmit} className="mx-auto max-w-4xl space-y-5">
           <form.Subscribe selector={(state) => state.values}>
             {(values) => (

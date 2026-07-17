@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { AdminWorkoutForm } from "@/components/admin/admin-workout-form";
-import { checkAuth } from "@/lib/auth";
-import { preloadAuthQuery } from "@/lib/auth-server";
-import { api } from "../../../../../convex/_generated/api";
+import { checkAdmin } from "@/lib/auth";
 
 export const metadata: Metadata = {
   description: "Edit workout",
@@ -14,17 +12,7 @@ export default async function EditWorkoutPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const [, { id }, preloadedUserQuery] = await Promise.all([
-    checkAuth(),
-    params,
-    preloadAuthQuery(api.auth.getCurrentUser),
-  ]);
+  const [, { id }] = await Promise.all([checkAdmin(), params]);
 
-  return (
-    <AdminWorkoutForm
-      mode="edit"
-      preloadedUserQuery={preloadedUserQuery}
-      workoutId={id}
-    />
-  );
+  return <AdminWorkoutForm mode="edit" workoutId={id} />;
 }

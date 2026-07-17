@@ -7,13 +7,22 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
+import type { PreviewRole } from "@/lib/auth/preview-role";
 import { SITE_ROUTES } from "@/lib/routes";
 import { api } from "../../../convex/_generated/api";
 import { MobileMenu } from "./mobile-menu";
 import { NavUser } from "./nav-user";
 
-export function NavBar() {
-  const user = useQuery(api.auth.getCurrentUser);
+interface NavBarProps {
+  isPreview: boolean;
+  previewRole: PreviewRole;
+}
+
+export function NavBar({ isPreview, previewRole }: NavBarProps) {
+  const user = useQuery(api.auth.getCurrentUser, {
+    previewRole: isPreview ? previewRole : undefined,
+  });
+  const role = isPreview ? previewRole : user?.role;
 
   return (
     <header className="bg-background/95 border-border/80 sticky top-0 z-40 w-full border-b backdrop-blur-sm">
@@ -36,7 +45,7 @@ export function NavBar() {
           <NavigationMenu className="max-md:hidden">
             <NavigationMenuList className="gap-1">
               {SITE_ROUTES.map((link) => {
-                if (link.isAdmin && user?.role !== "admin") {
+                if (link.isAdmin && role !== "admin") {
                   return null;
                 }
                 return (
@@ -53,9 +62,13 @@ export function NavBar() {
             </NavigationMenuList>
           </NavigationMenu>
         </div>
-        <NavUser user={user} />
+        <NavUser isPreview={isPreview} previewRole={previewRole} user={user} />
         {/* mobile */}
-        <MobileMenu />
+        <MobileMenu
+          isPreview={isPreview}
+          previewRole={previewRole}
+          user={user}
+        />
       </nav>
     </header>
   );

@@ -1,36 +1,16 @@
 "use client";
 
-import { usePreloadedAuthQuery } from "@convex-dev/better-auth/nextjs/client";
-import type { Preloaded } from "convex/react";
-import { redirect } from "next/navigation";
 import { AdminBackLink } from "@/components/admin/admin-back-link";
-import type { api } from "../../../convex/_generated/api";
 import { AdminClientInviteForm } from "./admin-client-invite-form";
 
-interface AdminAddClientPageProps {
-  preloadedUserQuery: Preloaded<typeof api.auth.getCurrentUser>;
-}
-
-export function AdminAddClientPage({
-  preloadedUserQuery,
-}: AdminAddClientPageProps) {
-  const user = usePreloadedAuthQuery(preloadedUserQuery);
-
-  if (!user) {
-    redirect("/login");
-  }
-
-  if (user.role !== "admin") {
-    redirect("/");
-  }
-
+export function AdminAddClientPage() {
   return (
     <div className="flex w-full flex-col gap-6">
-      <div className="route-padding-x">
+      <div>
         <AdminBackLink />
       </div>
 
-      <div className="route-padding-x">
+      <div>
         <p className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
           Access
         </p>
@@ -40,8 +20,8 @@ export function AdminAddClientPage({
         </p>
       </div>
 
-      <div className="route-padding-x border-primary/20 relative border-t pt-4">
-        <div className="bg-primary/40 absolute top-0 left-5 h-0.5 w-16 md:left-8" />
+      <div className="border-primary/20 relative border-t pt-4">
+        <div className="bg-primary/40 absolute top-0 left-0 h-0.5 w-16" />
         <AdminClientInviteForm />
       </div>
     </div>

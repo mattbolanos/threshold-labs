@@ -5,7 +5,12 @@ import {
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 
-export type CalendarDayStatus = "logged" | "not-logged" | "planned" | "rest";
+export type CalendarDayStatus =
+  | "empty"
+  | "logged"
+  | "not-logged"
+  | "planned"
+  | "rest";
 
 export function getCalendarDayStatus({
   day,
@@ -16,8 +21,8 @@ export function getCalendarDayStatus({
   hasWorkouts: boolean;
   today: string | null;
 }): CalendarDayStatus {
-  if (today === null) return hasWorkouts ? "logged" : "rest";
-  if (day > today) return hasWorkouts ? "planned" : "rest";
+  if (today === null) return hasWorkouts ? "logged" : "empty";
+  if (day > today) return hasWorkouts ? "planned" : "empty";
   if (day === today && !hasWorkouts) return "not-logged";
 
   return hasWorkouts ? "logged" : "rest";
@@ -44,7 +49,7 @@ const DAY_STATUS_CONFIG = {
 export function DayStatus({
   status,
 }: {
-  status: Exclude<CalendarDayStatus, "logged">;
+  status: Exclude<CalendarDayStatus, "empty" | "logged">;
 }) {
   const config = DAY_STATUS_CONFIG[status];
   const Icon = config.icon;

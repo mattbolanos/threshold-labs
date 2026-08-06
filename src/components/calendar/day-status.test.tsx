@@ -36,14 +36,14 @@ describe("getCalendarDayStatus", () => {
     ).toBe("logged");
   });
 
-  test("treats an empty future day as a rest day", () => {
+  test("leaves an empty future day unlabelled", () => {
     expect(
       getCalendarDayStatus({
         day: "2026-08-06",
         hasWorkouts: false,
         today: "2026-08-05",
       }),
-    ).toBe("rest");
+    ).toBe("empty");
   });
 });
 

@@ -172,11 +172,12 @@ export function WeekBlocks() {
                   <div className="flex w-full flex-1">
                     {isInitialLoading ? (
                       <WeekBlocksLoading />
-                    ) : dayWorkouts.length === 0 &&
-                      (dayStatus === "rest" || dayStatus === "not-logged") ? (
-                      <div className="flex w-full flex-1 items-center justify-center pb-8">
-                        <DayStatus status={dayStatus} />
-                      </div>
+                    ) : dayWorkouts.length === 0 ? (
+                      dayStatus === "rest" || dayStatus === "not-logged" ? (
+                        <div className="flex w-full flex-1 items-center justify-center pb-8">
+                          <DayStatus status={dayStatus} />
+                        </div>
+                      ) : null
                     ) : (
                       <div className="flex w-full flex-1 flex-col gap-1.5">
                         {dayWorkouts.map((workout, workoutIndex) => (

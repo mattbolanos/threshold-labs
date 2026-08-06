@@ -1,6 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
-import { DayStatus, getCalendarDayStatus } from "./day-status";
+import {
+  DayStatus,
+  getCalendarDayStatus,
+  isFutureCalendarDay,
+} from "./day-status";
 
 describe("getCalendarDayStatus", () => {
   test("distinguishes rest, unlogged, planned, and logged days", () => {
@@ -45,6 +49,13 @@ describe("getCalendarDayStatus", () => {
       }),
     ).toBe("empty");
   });
+});
+
+test("identifies only dates after today as future dates", () => {
+  expect(isFutureCalendarDay("2026-08-06", "2026-08-05")).toBeTrue();
+  expect(isFutureCalendarDay("2026-08-05", "2026-08-05")).toBeFalse();
+  expect(isFutureCalendarDay("2026-08-04", "2026-08-05")).toBeFalse();
+  expect(isFutureCalendarDay("2026-08-06", null)).toBeFalse();
 });
 
 test("renders a clear text label for each visible status", () => {

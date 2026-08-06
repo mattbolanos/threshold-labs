@@ -12,6 +12,10 @@ export type CalendarDayStatus =
   | "planned"
   | "rest";
 
+export function isFutureCalendarDay(day: string, today: string | null) {
+  return today !== null && day > today;
+}
+
 export function getCalendarDayStatus({
   day,
   hasWorkouts,
@@ -22,7 +26,9 @@ export function getCalendarDayStatus({
   today: string | null;
 }): CalendarDayStatus {
   if (today === null) return hasWorkouts ? "logged" : "empty";
-  if (day > today) return hasWorkouts ? "planned" : "empty";
+  if (isFutureCalendarDay(day, today)) {
+    return hasWorkouts ? "planned" : "empty";
+  }
   if (day === today && !hasWorkouts) return "not-logged";
 
   return hasWorkouts ? "logged" : "rest";

@@ -9,6 +9,7 @@ import { DailyLoadBar } from "@/components/calendar/daily-load-bar";
 import {
   DayStatus,
   getCalendarDayStatus,
+  isFutureCalendarDay,
 } from "@/components/calendar/day-status";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCalendarNav } from "@/hooks/use-calendar-nav";
@@ -121,6 +122,7 @@ export function WeekBlocks() {
               const dayWorkouts = workoutsByDay[dayString] ?? [];
               const dailyLoad = dailyLoads[dayString] ?? 0;
               const isToday = localToday === dayString;
+              const isFutureDay = isFutureCalendarDay(dayString, localToday);
               const dayStatus = getCalendarDayStatus({
                 day: dayString,
                 hasWorkouts: dayWorkouts.length > 0,
@@ -164,7 +166,12 @@ export function WeekBlocks() {
                           <DayStatus status={dayStatus} />
                         ) : null}
                       </div>
-                      <p className="mt-1 text-lg font-bold tabular-nums">
+                      <p
+                        className={cn(
+                          "mt-1 text-lg font-bold tabular-nums",
+                          isFutureDay && "text-muted-foreground",
+                        )}
+                      >
                         {day.getDate()}
                       </p>
                     </div>

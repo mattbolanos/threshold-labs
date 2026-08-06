@@ -6,6 +6,11 @@ import { useState, useSyncExternalStore } from "react";
 import { Block } from "@/components/block/block";
 import { EmptyWeekState } from "@/components/block/empty-week-state";
 import { DailyLoadBar } from "@/components/calendar/daily-load-bar";
+import {
+  DayStatus,
+  getCalendarDayStatus,
+  isFutureCalendarDay,
+} from "@/components/calendar/day-status";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCalendarNav } from "@/hooks/use-calendar-nav";
 import {
@@ -117,6 +122,12 @@ export function WeekBlocks() {
               const dayWorkouts = workoutsByDay[dayString] ?? [];
               const dailyLoad = dailyLoads[dayString] ?? 0;
               const isToday = localToday === dayString;
+              const isFutureDay = isFutureCalendarDay(dayString, localToday);
+              const dayStatus = getCalendarDayStatus({
+                day: dayString,
+                hasWorkouts: dayWorkouts.length > 0,
+                today: localToday,
+              });
               const weekday = day
                 .toLocaleString("en-US", { weekday: "short" })
                 .toUpperCase();
@@ -129,7 +140,9 @@ export function WeekBlocks() {
                   className={cn(
                     "flex w-full flex-col overflow-hidden rounded-lg border bg-card p-2 transition-shadow lg:min-h-70",
                     isToday && "border-primary/70 shadow-sm",
+                    dayStatus === "planned" && "border-chart-3/30 bg-chart-3/5",
                   )}
+                  data-state={dayStatus}
                   key={dayString}
                 >
                   <div className="mb-2 flex items-start justify-between px-1 pt-0.5">
@@ -143,13 +156,22 @@ export function WeekBlocks() {
                         >
                           {weekday}
                         </p>
-                        <DailyLoadBar
-                          dailyLoad={dailyLoad}
-                          isLoading={isInitialLoading}
-                          maxWeeklyDailyLoad={maxWeeklyDailyLoad}
-                        />
+                        {isInitialLoading || dayStatus === "logged" ? (
+                          <DailyLoadBar
+                            dailyLoad={dailyLoad}
+                            isLoading={isInitialLoading}
+                            maxWeeklyDailyLoad={maxWeeklyDailyLoad}
+                          />
+                        ) : dayStatus === "planned" ? (
+                          <DayStatus status={dayStatus} />
+                        ) : null}
                       </div>
-                      <p className="mt-1 text-lg font-bold tabular-nums">
+                      <p
+                        className={cn(
+                          "mt-1 text-lg font-bold tabular-nums",
+                          isFutureDay && "text-muted-foreground",
+                        )}
+                      >
                         {day.getDate()}
                       </p>
                     </div>
@@ -157,6 +179,12 @@ export function WeekBlocks() {
                   <div className="flex w-full flex-1">
                     {isInitialLoading ? (
                       <WeekBlocksLoading />
+                    ) : dayWorkouts.length === 0 ? (
+                      dayStatus === "rest" || dayStatus === "not-logged" ? (
+                        <div className="flex w-full flex-1 items-center justify-center pb-8">
+                          <DayStatus status={dayStatus} />
+                        </div>
+                      ) : null
                     ) : (
                       <div className="flex w-full flex-1 flex-col gap-1.5">
                         {dayWorkouts.map((workout, workoutIndex) => (

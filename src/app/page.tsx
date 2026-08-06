@@ -52,7 +52,7 @@ async function LabNotesContent() {
 }
 
 export default async function LabNotesPage() {
-  await checkAuth({ allowUnauthenticatedPreview: true });
+  await checkAuth();
 
   return (
     <div className="flex flex-col gap-8 bg-background">

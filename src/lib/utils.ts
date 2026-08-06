@@ -6,10 +6,10 @@ const TRAINING_LOAD_SCALE_FACTOR = 3;
 const QUERY_DATE_FORMAT = "yyyy-MM-dd";
 const QUERY_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const QUERY_DATE_REFERENCE = new Date(2000, 0, 1);
-const WEEK_RANGE_MONTH_FORMATTER = new Intl.DateTimeFormat("default", {
+const WEEK_RANGE_MONTH_FORMATTER = new Intl.DateTimeFormat("en-US", {
   month: "short",
 });
-const WEEK_RANGE_DAY_FORMATTER = new Intl.DateTimeFormat("default", {
+const WEEK_RANGE_DAY_FORMATTER = new Intl.DateTimeFormat("en-US", {
   day: "numeric",
   month: "short",
 });

@@ -1,20 +1,40 @@
 import { fetchQuery } from "convex/nextjs";
 import type { Metadata } from "next";
+import { cache } from "react";
 import { PostDetail } from "@/components/posts/post-detail";
+import { summarizeMarkdown } from "@/lib/posts";
 import { api } from "../../../../convex/_generated/api";
 
-export const metadata: Metadata = {
-  description: "A training note from Threshold Lab.",
-  title: "Lab Note | Threshold Lab",
+type LabNotePageProps = {
+  params: Promise<{ slug: string }>;
 };
 
-export default async function LabNotePage({
+const getPublishedPost = cache((slug: string) =>
+  fetchQuery(api.posts.getPublishedPostBySlug, { slug }),
+);
+
+export async function generateMetadata({
   params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+}: LabNotePageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = await fetchQuery(api.posts.getPublishedPostBySlug, { slug });
+  const post = await getPublishedPost(slug);
+
+  if (post === null) {
+    return {
+      description: "This Lab Note is unavailable or has not been published.",
+      title: "Lab Note not found | Threshold Lab",
+    };
+  }
+
+  return {
+    description: summarizeMarkdown(post.excerpt),
+    title: `${post.title} | Threshold Lab`,
+  };
+}
+
+export default async function LabNotePage({ params }: LabNotePageProps) {
+  const { slug } = await params;
+  const post = await getPublishedPost(slug);
 
   return (
     <main className="mx-auto max-w-3xl">

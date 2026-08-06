@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 };
 
 export default async function TrainingPage() {
-  await checkAuth({ allowUnauthenticatedPreview: true });
+  await checkAuth();
 
   return (
     <div className="flex flex-col gap-4 bg-background">

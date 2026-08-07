@@ -110,6 +110,19 @@ export const ROLLING_LOAD_DEFINITIONS = [
   },
 ];
 
+export const SUBJECTIVE_LOAD_DEFINITIONS = [
+  {
+    description:
+      "A unitless estimate that combines how hard each workout felt with how long it lasted.",
+    label: "What it means",
+  },
+  {
+    description: "Runs receive an additional 10%.",
+    formula: "RPE × (training minutes ÷ 10) × 3",
+    label: "How it’s calculated",
+  },
+];
+
 export const BASE_FITNESS_DEFINITIONS = [
   {
     colorClassName: getColorClassName("chart-3", "bg"),

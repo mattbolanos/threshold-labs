@@ -11,31 +11,38 @@ export interface Definition {
   label: string;
   description: string;
   colorClassName?: string;
+  formula?: string;
 }
 
 interface InfoPopoverProps {
   title: string;
   definitions: Definition[];
   className?: string;
+  size?: "sm" | "xs";
 }
 
 export function InfoPopover({
   title = "Definitions",
   definitions,
+  className,
+  size = "sm",
 }: InfoPopoverProps) {
   return (
     <Popover>
       <PopoverTrigger
         render={
           <Button
-            className="data-[state=open]:bg-accent data-[state=open]:text-foreground text-muted-foreground hover:text-foreground"
-            size="icon-sm"
+            className={cn(
+              "data-[state=open]:bg-accent data-[state=open]:text-foreground text-muted-foreground hover:text-foreground",
+              className,
+            )}
+            size={size === "xs" ? "icon-xs" : "icon-sm"}
             variant="ghost"
           />
         }
       >
-        <IconInfoCircle className="size-5" />
-        <span className="sr-only">View definitions</span>
+        <IconInfoCircle className={size === "xs" ? "size-4" : "size-5"} />
+        <span className="sr-only">Learn more about {title}</span>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-84 p-4">
         <div className="space-y-5">
@@ -54,6 +61,11 @@ export function InfoPopover({
                   )}
                   <span className="text-sm font-medium">{item.label}</span>
                 </div>
+                {item.formula && (
+                  <code className="block rounded-md bg-muted px-3 py-2 font-mono text-xs font-semibold text-foreground">
+                    {item.formula}
+                  </code>
+                )}
                 <p className="text-muted-foreground text-sm">
                   {item.description}
                 </p>

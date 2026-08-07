@@ -26,24 +26,6 @@ export function formatOneDecimal(value: number): string {
   return ONE_DECIMAL_FORMATTER.format(value);
 }
 
-export function formatMinutesToTime(minutes: number | null): string | null {
-  if (minutes === null) return null;
-
-  const totalSeconds = Math.round(minutes * 60);
-  const hours = Math.floor(totalSeconds / 3600);
-  const remainingSeconds = totalSeconds % 3600;
-  const mins = Math.floor(remainingSeconds / 60);
-  const secs = remainingSeconds % 60;
-
-  const parts = [];
-
-  parts.push(String(hours).padStart(2, "0"));
-  parts.push(String(mins).padStart(2, "0"));
-  parts.push(String(secs).padStart(2, "0"));
-
-  return parts.join(":");
-}
-
 export function getWeekDays(weekStart: Date): Date[] {
   return Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 }

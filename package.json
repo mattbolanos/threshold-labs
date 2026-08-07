@@ -57,6 +57,7 @@
     "doctor": "npx react-doctor@latest",
     "format": "biome format --write",
     "lint": "biome check",
+    "seed:dev": "bun scripts/seed_convex_data.ts --deployment dev",
     "seed:preview-posts": "bun scripts/generate_preview_posts_import.ts",
     "seed:preview-races": "bun scripts/generate_preview_races_import.ts",
     "seed:preview-training-blocks": "bun scripts/generate_preview_training_blocks_import.ts",

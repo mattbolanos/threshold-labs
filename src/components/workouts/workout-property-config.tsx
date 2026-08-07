@@ -20,15 +20,15 @@ import {
 } from "@tabler/icons-react";
 import type { ReactNode } from "react";
 import { CircularProgress } from "@/components/ui/circular-progress";
-import {
-  calculateSTL,
-  formatMinutesToTime,
-  formatWorkoutDate,
-} from "@/lib/utils";
+import { calculateSTL, formatWorkoutDate } from "@/lib/utils";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { TagBadge } from "./tag-badge";
 
 type Workout = Doc<"workouts">;
+
+function formatMinutes(minutes: number | null | undefined): string | null {
+  return minutes == null ? null : `${minutes} min`;
+}
 
 interface WorkoutPropertyConfig {
   icon: TablerIcon;
@@ -60,9 +60,9 @@ export const WORKOUT_PROPERTY_CONFIG: WorkoutPropertyConfig[] = [
     label: "Tags",
   },
   {
-    getValue: (workout) => formatMinutesToTime(workout.trainingMinutes),
+    getValue: (workout) => formatMinutes(workout.trainingMinutes),
     icon: IconStopwatch,
-    label: "Training mins",
+    label: "Training time",
   },
   {
     getValue: (workout) => (
@@ -85,9 +85,9 @@ export const WORKOUT_PROPERTY_CONFIG: WorkoutPropertyConfig[] = [
     label: "Subjective training load",
   },
   {
-    getValue: (workout) => formatMinutesToTime(workout.cardioMinutes ?? null),
+    getValue: (workout) => formatMinutes(workout.cardioMinutes),
     icon: IconHeart,
-    label: "Cardio mins",
+    label: "Cardio time",
   },
   {
     getValue: (workout) => workout.totalRunMiles,

@@ -57,15 +57,15 @@ const BaseCard = ({
       )}, RPE ${workout.rpe}, tags: ${tagLabel}`}
       className={cn(
         className,
-        "group/block relative h-13 w-full cursor-pointer gap-0 overflow-hidden rounded-lg bg-card py-0 text-card-foreground ring-1 ring-border transition-all duration-150 sm:hover:-translate-y-px sm:hover:bg-accent sm:hover:ring-border",
+        "group/block relative min-h-16 w-full cursor-pointer gap-0 overflow-hidden rounded-lg bg-card py-0 text-card-foreground ring-1 ring-border transition-all duration-150 sm:hover:-translate-y-px sm:hover:bg-accent sm:hover:ring-border",
       )}
       title={tagLabel}
       {...props}
     >
       <TagAccentMarker tags={workout.tags} />
-      <CardContent className="flex h-13 min-w-0 flex-col items-start gap-1.5 px-2 py-2 text-left">
-        <CardTitle className="flex w-full min-w-0 items-center gap-1.5 text-xs font-semibold">
-          <span className="min-w-0 flex-1 truncate">{workout.title}</span>
+      <CardContent className="flex min-h-16 min-w-0 flex-col items-start gap-1.5 px-2 py-2 text-left">
+        <CardTitle className="flex w-full min-w-0 items-start gap-1.5 text-xs leading-tight font-semibold">
+          <span className="line-clamp-2 min-w-0 flex-1">{workout.title}</span>
           {tagOverflowCount > 0 && (
             <span
               aria-hidden

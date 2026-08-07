@@ -31,9 +31,9 @@ const getServerDate = () => null;
 function WeekBlocksLoading() {
   return (
     <div className="flex w-full flex-1 flex-col gap-1.5">
-      <Skeleton className="h-13 rounded-lg bg-muted motion-reduce:animate-none" />
-      <Skeleton className="h-13 rounded-lg bg-muted motion-reduce:animate-none" />
-      <Skeleton className="h-13 rounded-lg bg-muted motion-reduce:animate-none" />
+      <Skeleton className="h-16 rounded-lg bg-muted motion-reduce:animate-none" />
+      <Skeleton className="h-16 rounded-lg bg-muted motion-reduce:animate-none" />
+      <Skeleton className="h-16 rounded-lg bg-muted motion-reduce:animate-none" />
     </div>
   );
 }

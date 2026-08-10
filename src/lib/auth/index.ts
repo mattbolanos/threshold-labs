@@ -30,7 +30,7 @@ export const checkAdmin = async () => {
 
   if (preview.enabled) {
     if (preview.role !== "admin") {
-      redirect("/");
+      redirect("/lab-notes");
     }
 
     return {
@@ -47,7 +47,7 @@ export const checkAdmin = async () => {
   }
 
   if (user.role !== "admin") {
-    redirect("/");
+    redirect("/lab-notes");
   }
 
   return user;

@@ -47,7 +47,7 @@ export function LoginForm() {
 
       await authClient.signIn.email(
         {
-          callbackURL: "/",
+          callbackURL: "/lab-notes",
           email: value.email,
           password: value.password,
         },
@@ -56,7 +56,7 @@ export function LoginForm() {
             setError(ctx.error.message || "Invalid email or password");
           },
           onSuccess: () => {
-            router.push("/");
+            router.push("/lab-notes");
             router.refresh();
           },
         },
@@ -70,7 +70,7 @@ export function LoginForm() {
 
     await authClient.signIn
       .social({
-        callbackURL: "/",
+        callbackURL: "/lab-notes",
         errorCallbackURL: `${window.location.origin}/unauthorized`,
         provider: "google",
       })
@@ -90,7 +90,7 @@ export function LoginForm() {
   };
 
   return (
-    <div className="bg-card/85 shadow-foreground/5 rounded-xl border p-7 shadow-xl backdrop-blur-sm">
+    <div className="rounded-xl border bg-card/85 p-7 shadow-xl shadow-foreground/5 backdrop-blur-sm">
       <form action={handleLoginSubmit} className="space-y-4">
         <form.Field
           name="email"
@@ -122,7 +122,7 @@ export function LoginForm() {
                   value={field.state.value}
                 />
                 {emailError ? (
-                  <p className="text-destructive text-xs" id="email-error">
+                  <p className="text-xs text-destructive" id="email-error">
                     {emailError}
                   </p>
                 ) : null}
@@ -164,7 +164,7 @@ export function LoginForm() {
                 />
                 {passwordError ? (
                   <p
-                    className="text-destructive text-xs"
+                    className="text-xs text-destructive"
                     id="login-password-error"
                   >
                     {passwordError}
@@ -178,7 +178,7 @@ export function LoginForm() {
         {error && (
           <div
             aria-live="polite"
-            className="bg-destructive/10 text-destructive rounded-lg px-4 py-3 text-sm"
+            className="rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive"
             role="alert"
           >
             {error}
@@ -211,7 +211,7 @@ export function LoginForm() {
           <div className="w-full border-t" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-card text-muted-foreground px-3 tracking-widest">
+          <span className="bg-card px-3 tracking-widest text-muted-foreground">
             Or
           </span>
         </div>
@@ -241,10 +241,10 @@ export function LoginForm() {
         )}
       </form.Subscribe>
 
-      <p className="text-muted-foreground mt-6 text-center text-sm">
+      <p className="mt-6 text-center text-sm text-muted-foreground">
         Don&apos;t have an account?{" "}
         <Link
-          className="text-primary font-medium underline-offset-4 transition-colors hover:underline"
+          className="font-medium text-primary underline-offset-4 transition-colors hover:underline"
           href="/signup"
         >
           Sign up

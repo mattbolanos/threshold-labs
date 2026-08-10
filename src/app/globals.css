@@ -143,6 +143,40 @@
   @apply px-5 md:px-10;
 }
 
+.marketing-grid {
+  background-image:
+    linear-gradient(oklch(0.863 0.238 137.733 / 0.08) 1px, transparent 1px),
+    linear-gradient(
+      90deg,
+      oklch(0.863 0.238 137.733 / 0.08) 1px,
+      transparent 1px
+    );
+  background-size: 48px 48px;
+  mask-image: radial-gradient(75% 65% at 50% 25%, black 40%, transparent 100%);
+}
+
+.marketing-glow {
+  background:
+    radial-gradient(
+      circle at 8% 45%,
+      oklch(0.863 0.238 137.733 / 0.13),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 92% 35%,
+      oklch(0.863 0.238 137.733 / 0.12),
+      transparent 26%
+    );
+}
+
+.marketing-slider {
+  scrollbar-width: none;
+}
+
+.marketing-slider::-webkit-scrollbar {
+  display: none;
+}
+
 .recharts-surface {
   @apply outline-none focus-within:outline-none focus:outline-none focus-visible:outline-none;
 }

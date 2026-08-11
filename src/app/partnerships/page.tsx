@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function PartnershipsPage() {
   return (
-    <div className="min-h-screen overflow-hidden bg-neutral-950 text-white">
+    <div className="min-h-screen overflow-x-clip bg-neutral-950 text-white">
       <MarketingHeader />
       <main>
         <PartnershipHero />

@@ -3,6 +3,9 @@ import Image from "next/image";
 import { firstPhormProducts, firstPhormUrl } from "@/lib/partnership-content";
 import { PartnerProductCard } from "./partner-product-card";
 
+const affiliateDisclosure =
+  "Affiliate disclosure: I may earn a commission from qualifying purchases.";
+
 export function FirstPhormSection() {
   return (
     <section
@@ -24,7 +27,7 @@ export function FirstPhormSection() {
               training blocks.
             </p>
           </div>
-          <div className="lg:text-right">
+          <div className="flex flex-col items-start gap-3 lg:items-end lg:text-right">
             <a
               className="inline-flex items-center gap-2 rounded-full border border-lime-300/30 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-lime-300 hover:text-neutral-950"
               href={firstPhormUrl}
@@ -34,6 +37,9 @@ export function FirstPhormSection() {
               Shop 1st Phorm with my link
               <IconArrowUpRight aria-hidden className="size-4" />
             </a>
+            <p className="max-w-sm text-xs leading-5 text-neutral-300">
+              {affiliateDisclosure}
+            </p>
           </div>
         </div>
 
@@ -57,6 +63,7 @@ export function FirstPhormSection() {
           </div>
           {firstPhormProducts.map((product, index) => (
             <PartnerProductCard
+              affiliateDisclosure={affiliateDisclosure}
               brand="1st Phorm"
               index={index}
               key={product.title}

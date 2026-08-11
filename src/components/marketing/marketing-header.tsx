@@ -47,7 +47,7 @@ export function MarketingHeader() {
           </a>
         </div>
 
-        <details className="group relative sm:hidden">
+        <details className="group relative xl:hidden">
           <summary className="flex size-10 cursor-pointer list-none items-center justify-center rounded-full border border-lime-300/25 text-white">
             <IconMenu2 aria-hidden className="size-5" />
             <span className="sr-only">Open navigation</span>

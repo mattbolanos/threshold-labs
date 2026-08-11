@@ -89,7 +89,7 @@ export function TestimonialsSection() {
           </h2>
         </div>
 
-        <div className="hidden shrink-0 gap-2 sm:flex">
+        <div className="flex shrink-0 gap-2">
           <button
             aria-label="View previous athlete result"
             className="flex size-11 items-center justify-center rounded-full border border-lime-300/20 bg-neutral-900 text-lime-300 transition hover:border-lime-300/50 hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-30"

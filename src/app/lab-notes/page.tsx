@@ -63,6 +63,9 @@ export default async function LabNotesPage() {
           aria-labelledby="latest-notes"
           className="flex min-w-0 flex-col gap-4 lg:col-span-2"
         >
+          <h2 className="sr-only" id="latest-notes">
+            Latest notes
+          </h2>
           <Suspense fallback={<LabNotesFeedSkeleton />}>
             <LabNotesContent />
           </Suspense>

@@ -29,7 +29,7 @@ export function NavBar({ isPreview, previewRole }: NavBarProps) {
       <nav className="route-padding-x mx-auto flex h-12 w-full max-w-7xl items-center justify-between gap-4 md:h-14">
         <div className="flex items-center gap-6">
           <Link
-            aria-label="Threshold Lab home"
+            aria-label="Threshold Lab: Lab Notes"
             className="group/brand flex items-center gap-2"
             href="/lab-notes"
             prefetch

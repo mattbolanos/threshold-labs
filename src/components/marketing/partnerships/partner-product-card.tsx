@@ -6,6 +6,7 @@ import type {
 } from "@/lib/partnership-content";
 
 type PartnerProductCardProps = {
+  affiliateDisclosure?: string;
   brand: string;
   index: number;
   product: PartnerProduct | FeaturedPartnerProduct;
@@ -18,6 +19,7 @@ function hasImage(
 }
 
 export function PartnerProductCard({
+  affiliateDisclosure,
   brand,
   index,
   product,
@@ -56,15 +58,22 @@ export function PartnerProductCard({
         <p className="mt-3 flex-1 text-sm leading-7 text-neutral-400">
           {product.description}
         </p>
-        <a
-          className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-white transition-colors hover:text-lime-300"
-          href={product.href}
-          rel="noreferrer"
-          target="_blank"
-        >
-          View {product.title}
-          <IconArrowUpRight aria-hidden className="size-4" />
-        </a>
+        <div className="mt-6 flex flex-col items-start gap-2">
+          <a
+            className="inline-flex items-center gap-2 text-sm font-bold text-white transition-colors hover:text-lime-300"
+            href={product.href}
+            rel="noreferrer"
+            target="_blank"
+          >
+            View {product.title}
+            <IconArrowUpRight aria-hidden className="size-4" />
+          </a>
+          {affiliateDisclosure ? (
+            <p className="text-xs leading-5 text-neutral-400">
+              {affiliateDisclosure}
+            </p>
+          ) : null}
+        </div>
       </div>
     </article>
   );

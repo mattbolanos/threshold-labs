@@ -27,7 +27,7 @@ export function PostCard({ post }: PostCardProps) {
   return (
     <Link
       className="group block rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-      href={`/notes/${post.slug}`}
+      href={`/lab/lab-notes/${post.slug}`}
       prefetch
     >
       <Card

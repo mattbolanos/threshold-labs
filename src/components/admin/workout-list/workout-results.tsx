@@ -67,7 +67,7 @@ export function WorkoutResults({
                       className: "min-h-11",
                       variant: "outline",
                     })}
-                    href={`/admin/workout/${workoutId}`}
+                    href={`/lab/admin/workout/${workoutId}`}
                   >
                     Edit
                   </Link>

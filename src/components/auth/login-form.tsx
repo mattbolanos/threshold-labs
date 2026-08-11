@@ -47,7 +47,7 @@ export function LoginForm() {
 
       await authClient.signIn.email(
         {
-          callbackURL: "/lab-notes",
+          callbackURL: "/lab/lab-notes",
           email: value.email,
           password: value.password,
         },
@@ -56,7 +56,7 @@ export function LoginForm() {
             setError(ctx.error.message || "Invalid email or password");
           },
           onSuccess: () => {
-            router.push("/lab-notes");
+            router.push("/lab/lab-notes");
             router.refresh();
           },
         },
@@ -70,7 +70,7 @@ export function LoginForm() {
 
     await authClient.signIn
       .social({
-        callbackURL: "/lab-notes",
+        callbackURL: "/lab/lab-notes",
         errorCallbackURL: `${window.location.origin}/unauthorized`,
         provider: "google",
       })

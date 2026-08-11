@@ -82,7 +82,7 @@ export function getWorkoutColumns({
               size: "sm",
               variant: "outline",
             })}
-            href={`/admin/workout/${row.original._id}`}
+            href={`/lab/admin/workout/${row.original._id}`}
           >
             Edit
           </Link>

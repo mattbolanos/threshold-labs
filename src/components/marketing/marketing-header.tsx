@@ -1,8 +1,18 @@
-import { IconArrowUpRight, IconMenu2 } from "@tabler/icons-react";
+import {
+  IconArrowDown,
+  IconFlask,
+  IconLogin2,
+  IconMenu2,
+} from "@tabler/icons-react";
 import Link from "next/link";
+import { isAppAuthenticated } from "@/lib/auth";
 import { marketingNav } from "@/lib/marketing-content";
 
-export function MarketingHeader() {
+export async function MarketingHeader() {
+  const isLoggedIn = await isAppAuthenticated();
+  const accountHref = isLoggedIn ? "/lab/lab-notes" : "/login";
+  const accountLabel = isLoggedIn ? "Open Lab" : "Sign in";
+
   return (
     <header className="sticky top-3 z-50 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
       <div className="flex h-16 items-center justify-between rounded-full border border-lime-300/20 bg-neutral-950/90 px-3 shadow-2xl backdrop-blur-xl sm:px-4">
@@ -33,17 +43,22 @@ export function MarketingHeader() {
 
         <div className="hidden items-center gap-2 sm:flex">
           <Link
-            className="rounded-full px-4 py-2 text-sm font-semibold text-neutral-200 transition-colors hover:text-lime-300"
-            href="/login"
+            className="inline-flex h-10 items-center gap-2 rounded-full border border-lime-300/30 bg-neutral-900 px-4 text-sm font-bold text-white transition-colors hover:border-lime-300/60 hover:bg-neutral-800 hover:text-lime-300 active:scale-96"
+            href={accountHref}
           >
-            Sign in
+            {isLoggedIn ? (
+              <IconFlask aria-hidden className="size-4" />
+            ) : (
+              <IconLogin2 aria-hidden className="size-4" />
+            )}
+            {accountLabel}
           </Link>
           <a
-            className="inline-flex items-center gap-1.5 rounded-full bg-lime-300 px-4 py-2.5 text-sm font-bold text-neutral-950 transition-colors hover:bg-lime-200"
+            className="inline-flex h-10 items-center gap-2 rounded-full bg-lime-300 px-4 text-sm font-bold text-neutral-950 transition-colors hover:bg-lime-200 active:scale-96"
             href="/#work-with-me"
           >
             Find your fit
-            <IconArrowUpRight aria-hidden className="size-4" />
+            <IconArrowDown aria-hidden className="size-4" />
           </a>
         </div>
 
@@ -66,10 +81,15 @@ export function MarketingHeader() {
               </a>
             ))}
             <Link
-              className="mt-1 rounded-xl bg-lime-300 px-4 py-3 text-center text-sm font-bold text-neutral-950"
-              href="/login"
+              className="mt-1 inline-flex items-center justify-center gap-2 rounded-xl bg-lime-300 px-4 py-3 text-center text-sm font-bold text-neutral-950 active:scale-96"
+              href={accountHref}
             >
-              Sign in
+              {isLoggedIn ? (
+                <IconFlask aria-hidden className="size-4" />
+              ) : (
+                <IconLogin2 aria-hidden className="size-4" />
+              )}
+              {accountLabel}
             </Link>
           </nav>
         </details>

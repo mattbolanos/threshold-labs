@@ -58,7 +58,7 @@ export function SignUpForm() {
 
       await authClient.signUp.email(
         {
-          callbackURL: "/lab-notes",
+          callbackURL: "/lab/lab-notes",
           email: value.email,
           name: value.name,
           password: value.password,
@@ -76,7 +76,7 @@ export function SignUpForm() {
           },
           onSuccess: () => {
             // Hard navigation to ensure fresh cookie read by server
-            window.location.href = "/lab-notes";
+            window.location.href = "/lab/lab-notes";
           },
         },
       );
@@ -90,9 +90,9 @@ export function SignUpForm() {
 
     await authClient.signIn
       .social({
-        callbackURL: "/lab-notes",
+        callbackURL: "/lab/lab-notes",
         errorCallbackURL: `${window.location.origin}/unauthorized`,
-        newUserCallbackURL: "/lab-notes",
+        newUserCallbackURL: "/lab/lab-notes",
         provider: "google",
       })
       .catch((error) => {

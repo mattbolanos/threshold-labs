@@ -31,7 +31,7 @@ export function NavBar({ isPreview, previewRole }: NavBarProps) {
           <Link
             aria-label="Threshold Lab: Lab Notes"
             className="group/brand flex items-center gap-2"
-            href="/lab-notes"
+            href="/lab/lab-notes"
             prefetch
           >
             <span className="flex size-7 items-center justify-center rounded-md bg-primary text-xs font-bold text-primary-foreground">

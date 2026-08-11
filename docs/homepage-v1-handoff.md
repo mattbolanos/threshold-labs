@@ -26,9 +26,11 @@ Inside the Lab is deliberately shown as a separate beta product. Its current CTA
 ## Routing changes in this mockup
 
 - `/` is now the public homepage.
-- The existing member feed moved to `/lab-notes`.
-- Login and signup callbacks now return members to `/lab-notes`.
-- The member navigation logo now links to `/lab-notes`.
+- The member product lives beneath the `/lab` namespace.
+- The existing member feed moved to `/lab/lab-notes`.
+- Login and signup callbacks now return members to `/lab/lab-notes`.
+- The member navigation logo now links to `/lab/lab-notes`.
+- `/lab` is the authenticated member gateway and redirects to Lab Notes.
 
 ## Implementation map
 
@@ -42,12 +44,12 @@ The partnership strip currently links to the existing live partnership page. It 
 
 ## Inside the Lab integration decision
 
-This is the recommended routing and access model for the implementation PR. It is not part of the current marketing-page pass.
+This is the routing and access model used by the member product.
 
 - Keep the public site and member product in this repository, deployment, and domain.
 - `/` always renders the public marketing homepage, regardless of login state.
-- `/inside` is the member gateway. Logged-out users go to login, authorized users go to `/inside/lab-notes`, and authenticated users without access see an access-required state.
-- Place member features beneath the `/inside` namespace, beginning with `/inside/lab-notes` and `/inside/training`.
+- `/lab` is the member gateway. Logged-out users go to login and authorized users go to `/lab/lab-notes`.
+- Place member features beneath the `/lab` namespace, beginning with `/lab/lab-notes`, `/lab/training`, and `/lab/admin`.
 - Use the current member application navbar inside this area, with Lab Notes and Training as sub-navigation and room for future tabs.
 - Keep Lab Notes as the default destination after a successful login.
 - Add an explicit Inside the Lab entitlement rather than inferring product access from the existing client, coach, or admin role.

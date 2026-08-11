@@ -61,7 +61,7 @@ export function AdminPostList() {
           </p>
           <h1 className="text-2xl font-semibold tracking-tight">Lab Notes</h1>
         </div>
-        <Link className={buttonVariants()} href="/admin/posts/new">
+        <Link className={buttonVariants()} href="/lab/admin/posts/new">
           <IconPlus data-icon="inline-start" />
           New Post
         </Link>
@@ -92,7 +92,7 @@ export function AdminPostList() {
             </EmptyDescription>
           </EmptyHeader>
           <EmptyContent>
-            <Link className={buttonVariants()} href="/admin/posts/new">
+            <Link className={buttonVariants()} href="/lab/admin/posts/new">
               Create Post
             </Link>
           </EmptyContent>
@@ -133,7 +133,7 @@ export function AdminPostList() {
             </Button>
             <Link
               className={buttonVariants()}
-              href={`/admin/posts/${post._id}`}
+              href={`/lab/admin/posts/${post._id}`}
             >
               <IconEdit data-icon="inline-start" />
               Edit

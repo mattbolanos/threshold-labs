@@ -37,7 +37,7 @@ export function PostDetail({ post }: PostDetailProps) {
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
-          <Link className={buttonVariants()} href="/lab-notes">
+          <Link className={buttonVariants()} href="/lab/lab-notes">
             View Lab Notes
           </Link>
         </EmptyContent>
@@ -55,7 +55,7 @@ export function PostDetail({ post }: PostDetailProps) {
           }),
           "pl-0!",
         )}
-        href="/lab-notes"
+        href="/lab/lab-notes"
       >
         <IconArrowLeft data-icon="inline-start" />
         Lab Notes

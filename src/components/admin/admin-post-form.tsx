@@ -61,7 +61,7 @@ function EditPostLoader({ postId }: { postId: string }) {
   if (post === undefined) {
     return (
       <div className="flex flex-col gap-3">
-        <AdminBackLink href="/admin/posts" label="Back to Posts" />
+        <AdminBackLink href="/lab/admin/posts" label="Back to Posts" />
         <p className="text-muted-foreground text-sm">Loading post...</p>
       </div>
     );
@@ -70,7 +70,7 @@ function EditPostLoader({ postId }: { postId: string }) {
   if (post === null) {
     return (
       <div className="flex flex-col gap-3">
-        <AdminBackLink href="/admin/posts" label="Back to Posts" />
+        <AdminBackLink href="/lab/admin/posts" label="Back to Posts" />
         <h1 className="text-xl font-semibold">Post not found</h1>
         <p className="text-muted-foreground text-sm">
           This post may have been removed.
@@ -143,7 +143,7 @@ function PostWriter({ initialForm, mode, postId }: PostWriterProps) {
       } else if (postId) {
         await updatePost({ post: validation.post, postId });
       }
-      router.push("/admin/posts");
+      router.push("/lab/admin/posts");
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : "The post could not be saved.",
@@ -154,7 +154,7 @@ function PostWriter({ initialForm, mode, postId }: PostWriterProps) {
 
   return (
     <div className="flex flex-col gap-6">
-      <AdminBackLink href="/admin/posts" label="Back to Posts" />
+      <AdminBackLink href="/lab/admin/posts" label="Back to Posts" />
 
       <header className="flex flex-col gap-1">
         <p className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
@@ -246,7 +246,7 @@ function PostWriter({ initialForm, mode, postId }: PostWriterProps) {
             <div className="flex items-center gap-2">
               <Link
                 className={buttonVariants({ variant: "ghost" })}
-                href="/admin/posts"
+                href="/lab/admin/posts"
               >
                 Cancel
               </Link>

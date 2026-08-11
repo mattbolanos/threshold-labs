@@ -18,7 +18,7 @@ import {
 } from "@/components/training-blocks/current-training-block";
 import { checkAuth } from "@/lib/auth";
 import { getTodayDate } from "@/lib/race-dates";
-import { api } from "../../../convex/_generated/api";
+import { api } from "../../../../convex/_generated/api";
 
 export const metadata: Metadata = {
   description:

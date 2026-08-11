@@ -55,7 +55,9 @@ export function PostEditorFields({
           required
           value={form.slug}
         />
-        <FieldDescription>Published at /notes/your-slug.</FieldDescription>
+        <FieldDescription>
+          Published at /lab/lab-notes/your-slug.
+        </FieldDescription>
         <FieldError>{errors.slug}</FieldError>
       </Field>
 

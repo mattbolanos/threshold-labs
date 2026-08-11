@@ -10,12 +10,12 @@ export function AdminPageHeader() {
         <>
           <Link
             className={buttonVariants({ variant: "outline" })}
-            href="/admin/posts/new"
+            href="/lab/admin/posts/new"
           >
             <IconNotebook data-icon="inline-start" />
             <span>New Post</span>
           </Link>
-          <Link className={buttonVariants()} href="/admin/workout/new">
+          <Link className={buttonVariants()} href="/lab/admin/workout/new">
             <IconPlus data-icon="inline-start" />
             <span>New Workout</span>
           </Link>

@@ -1,8 +1,9 @@
 "use client";
 
 import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
-import { useQuery } from "convex/react";
+import { useConvex, useQuery } from "convex/react";
 import {
+  addDays,
   addWeeks,
   isAfter,
   isBefore,
@@ -13,9 +14,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { useCalendarNav } from "@/hooks/use-calendar-nav";
+import { formatQueryDate } from "@/lib/utils";
 import { api } from "../../../convex/_generated/api";
 
 export function WeekNavigation() {
+  const convex = useConvex();
   const workoutsDateRange = useQuery(api.workouts.getWorkoutsDateRange);
 
   const { jumpToToday, setWeekStart, today, weekStartDate } = useCalendarNav();
@@ -44,26 +47,61 @@ export function WeekNavigation() {
   const isCurrentWeek = isSameWeek(selectedWeekStart, currentWeekStart, {
     weekStartsOn: 1,
   });
+  const previousWeekCandidate = addWeeks(selectedWeekStart, -1);
+  const previousWeekStart = canGoBack
+    ? minWorkoutWeekStart &&
+      isBefore(previousWeekCandidate, minWorkoutWeekStart)
+      ? minWorkoutWeekStart
+      : previousWeekCandidate
+    : null;
+  const nextWeekCandidate = addWeeks(selectedWeekStart, 1);
+  const nextWeekStart = canGoForward
+    ? isAfter(nextWeekCandidate, latestNavigableWeekStart)
+      ? latestNavigableWeekStart
+      : nextWeekCandidate
+    : null;
 
-  const goToPreviousWeek = () => {
-    void setWeekStart((weekStart) => {
-      const previousWeek = addWeeks(weekStart, -1);
+  const prewarmWeek = (targetWeekStart: Date | null) => {
+    if (!targetWeekStart) {
+      return;
+    }
 
-      if (minWorkoutWeekStart && isBefore(previousWeek, minWorkoutWeekStart)) {
-        return minWorkoutWeekStart;
-      }
-
-      return previousWeek;
+    convex.prewarmQuery({
+      args: {
+        from: formatQueryDate(targetWeekStart),
+        to: formatQueryDate(addDays(targetWeekStart, 6)),
+      },
+      query: api.workouts.getWorkouts,
     });
   };
 
+  const goToPreviousWeek = () => {
+    if (!previousWeekStart) {
+      return;
+    }
+
+    void setWeekStart(previousWeekStart);
+
+    const weekBeforePrevious = addWeeks(previousWeekStart, -1);
+    if (
+      !minWorkoutWeekStart ||
+      !isBefore(weekBeforePrevious, minWorkoutWeekStart)
+    ) {
+      prewarmWeek(weekBeforePrevious);
+    }
+  };
+
   const goToNextWeek = () => {
-    void setWeekStart((weekStart) => {
-      const nextWeek = addWeeks(weekStart, 1);
-      return isAfter(nextWeek, latestNavigableWeekStart)
-        ? latestNavigableWeekStart
-        : nextWeek;
-    });
+    if (!nextWeekStart) {
+      return;
+    }
+
+    void setWeekStart(nextWeekStart);
+
+    const weekAfterNext = addWeeks(nextWeekStart, 1);
+    if (!isAfter(weekAfterNext, latestNavigableWeekStart)) {
+      prewarmWeek(weekAfterNext);
+    }
   };
 
   return (
@@ -73,6 +111,8 @@ export function WeekNavigation() {
           aria-label="Previous week"
           disabled={!canGoBack}
           onClick={goToPreviousWeek}
+          onFocus={() => prewarmWeek(previousWeekStart)}
+          onPointerEnter={() => prewarmWeek(previousWeekStart)}
           size="icon-sm"
           variant="ghost"
         >
@@ -85,6 +125,8 @@ export function WeekNavigation() {
           className="size-10"
           disabled={!canGoBack}
           onClick={goToPreviousWeek}
+          onFocus={() => prewarmWeek(previousWeekStart)}
+          onPointerEnter={() => prewarmWeek(previousWeekStart)}
           size="icon-sm"
           variant="outline"
         >
@@ -97,6 +139,8 @@ export function WeekNavigation() {
           aria-label="Go to current week"
           disabled={isCurrentWeek}
           onClick={jumpToToday}
+          onFocus={() => prewarmWeek(currentWeekStart)}
+          onPointerEnter={() => prewarmWeek(currentWeekStart)}
           size="sm"
           variant="outline"
         >
@@ -109,6 +153,8 @@ export function WeekNavigation() {
           className="h-10 w-full text-sm"
           disabled={isCurrentWeek}
           onClick={jumpToToday}
+          onFocus={() => prewarmWeek(currentWeekStart)}
+          onPointerEnter={() => prewarmWeek(currentWeekStart)}
           size="sm"
           variant="outline"
         >
@@ -120,6 +166,8 @@ export function WeekNavigation() {
           aria-label="Next week"
           disabled={!canGoForward}
           onClick={goToNextWeek}
+          onFocus={() => prewarmWeek(nextWeekStart)}
+          onPointerEnter={() => prewarmWeek(nextWeekStart)}
           size="icon-sm"
           variant="ghost"
         >
@@ -132,6 +180,8 @@ export function WeekNavigation() {
           className="size-10"
           disabled={!canGoForward}
           onClick={goToNextWeek}
+          onFocus={() => prewarmWeek(nextWeekStart)}
+          onPointerEnter={() => prewarmWeek(nextWeekStart)}
           size="icon-sm"
           variant="outline"
         >

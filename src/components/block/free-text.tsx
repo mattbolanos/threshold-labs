@@ -1,4 +1,5 @@
 import ReactMarkdown from "react-markdown";
+import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 
 interface FreeTextProps {
@@ -12,7 +13,9 @@ export function FreeText({ text, title }: FreeTextProps) {
   return (
     <div className="typeset typeset-docs max-w-[42em]">
       <h3>{title}</h3>
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>
+      <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
+        {text}
+      </ReactMarkdown>
     </div>
   );
 }

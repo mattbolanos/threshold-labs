@@ -9,7 +9,6 @@ import { DesktopWeekSummary } from "@/components/calendar/desktop-week-summary";
 import { MobileWeekSummary } from "@/components/calendar/mobile-week-summary";
 import { TrainingPageHeader } from "@/components/calendar/training-page-header";
 import { WeekBlocks } from "@/components/calendar/week-blocks";
-import { WeekRangeLabel } from "@/components/calendar/week-range-label";
 import { BaseFitnessChart } from "@/components/chart/base-fitness";
 import { ChartCard } from "@/components/chart/chart-card";
 import { ChartControls } from "@/components/chart/controls";
@@ -27,7 +26,7 @@ export const metadata: Metadata = {
 };
 
 export default async function TrainingPage() {
-  await checkAuth({ allowUnauthenticatedPreview: true });
+  await checkAuth();
 
   return (
     <div className="flex flex-col gap-4 bg-background">
@@ -36,10 +35,7 @@ export default async function TrainingPage() {
       <section>
         <div className="rounded-xl border bg-card px-4 pt-4 pb-5 text-card-foreground shadow-lg lg:min-h-90 lg:px-5 lg:pt-4 lg:pb-5">
           <div className="mb-3.5 flex items-start gap-6">
-            <div className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 lg:w-fit">
-              <h2 className="text-lg font-bold">Schedule</h2>
-              <WeekRangeLabel />
-            </div>
+            <h2 className="text-lg font-bold">Schedule</h2>
             <DesktopWeekSummary />
           </div>
           <MobileWeekSummary />

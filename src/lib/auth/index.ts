@@ -3,16 +3,8 @@ import { fetchAuthQuery, isAuthenticated } from "@/lib/auth-server";
 import { api } from "../../../convex/_generated/api";
 import { getPreviewAuthState, isVercelPreview } from "./preview.server";
 
-type CheckAuthOptions = {
-  allowUnauthenticatedPreview?: boolean;
-};
-
-const isDev = process.env.NODE_ENV === "development";
-
-export const checkAuth = async ({
-  allowUnauthenticatedPreview = false,
-}: CheckAuthOptions = {}) => {
-  if (isVercelPreview || (allowUnauthenticatedPreview && isDev)) {
+export const checkAuth = async () => {
+  if (isVercelPreview) {
     return true;
   }
 

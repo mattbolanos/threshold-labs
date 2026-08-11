@@ -6,10 +6,10 @@ const TRAINING_LOAD_SCALE_FACTOR = 3;
 const QUERY_DATE_FORMAT = "yyyy-MM-dd";
 const QUERY_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const QUERY_DATE_REFERENCE = new Date(2000, 0, 1);
-const WEEK_RANGE_MONTH_FORMATTER = new Intl.DateTimeFormat("default", {
+const WEEK_RANGE_MONTH_FORMATTER = new Intl.DateTimeFormat("en-US", {
   month: "short",
 });
-const WEEK_RANGE_DAY_FORMATTER = new Intl.DateTimeFormat("default", {
+const WEEK_RANGE_DAY_FORMATTER = new Intl.DateTimeFormat("en-US", {
   day: "numeric",
   month: "short",
 });
@@ -24,24 +24,6 @@ export function cn(...inputs: ClassValue[]) {
 
 export function formatOneDecimal(value: number): string {
   return ONE_DECIMAL_FORMATTER.format(value);
-}
-
-export function formatMinutesToTime(minutes: number | null): string | null {
-  if (minutes === null) return null;
-
-  const totalSeconds = Math.round(minutes * 60);
-  const hours = Math.floor(totalSeconds / 3600);
-  const remainingSeconds = totalSeconds % 3600;
-  const mins = Math.floor(remainingSeconds / 60);
-  const secs = remainingSeconds % 60;
-
-  const parts = [];
-
-  parts.push(String(hours).padStart(2, "0"));
-  parts.push(String(mins).padStart(2, "0"));
-  parts.push(String(secs).padStart(2, "0"));
-
-  return parts.join(":");
 }
 
 export function getWeekDays(weekStart: Date): Date[] {

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AdminBackLink } from "@/components/admin/admin-back-link";
 import { AdminPostList } from "@/components/admin/admin-post-list";
 import { checkAdmin } from "@/lib/auth";
 
@@ -10,5 +11,10 @@ export const metadata: Metadata = {
 export default async function AdminPostsPage() {
   await checkAdmin();
 
-  return <AdminPostList />;
+  return (
+    <div className="flex flex-col gap-6">
+      <AdminBackLink />
+      <AdminPostList />
+    </div>
+  );
 }

@@ -1,19 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import * as React from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogPopup,
+  DialogPortal,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { useIsMobile } from "@/hooks/use-mobile";
 import type { PreviewRole } from "@/lib/auth/preview-role";
 import { SITE_ROUTES } from "@/lib/routes";
-import { cn } from "@/lib/utils";
 import { getInitials, LogOutButton, type NavUserData } from "./nav-user";
 import { PreviewRoleSwitch } from "./preview-role-switch";
 
 const ITEM_CLASS =
-  "hover:bg-accent text-muted-foreground hover:text-foreground flex h-13 cursor-pointer items-center rounded-md px-2.5 text-base transition-colors duration-100";
+  "hover:bg-accent text-muted-foreground hover:text-foreground flex h-13 w-full items-center rounded-md px-2.5 text-base transition-colors duration-100";
 
 interface MobileMenuProps {
   isPreview: boolean;
@@ -22,63 +27,27 @@ interface MobileMenuProps {
 }
 
 export function MobileMenu({ isPreview, previewRole, user }: MobileMenuProps) {
-  const [open, setOpen] = React.useState(false);
-  const isMobile = useIsMobile();
   const email = user?.email.trim();
   const username = user ? user.name.trim() || email : undefined;
 
-  const toggleOpen = () => {
-    if (typeof document !== "undefined") {
-      document.body.style.overflow = open ? "scroll" : "hidden";
-    }
-    setOpen(!open);
-  };
-
-  const closeMenu = () => {
-    if (typeof document !== "undefined") {
-      document.body.style.overflow = "scroll";
-    }
-    setOpen(false);
-  };
-
-  React.useEffect(() => {
-    if (!isMobile && open) {
-      if (typeof document !== "undefined") {
-        document.body.style.overflow = "scroll";
-      }
-      setOpen(false);
-    }
-  }, [isMobile, open]);
-
   return (
-    <>
-      <Button
-        aria-controls="mobile-menu"
-        aria-expanded={open}
-        aria-label={open ? "Close menu" : "Open menu"}
-        className="group flex cursor-pointer flex-col items-center justify-center gap-1 rounded-full md:hidden"
-        onClick={toggleOpen}
-        size="icon-sm"
-        variant="outline"
+    <Dialog modal={false}>
+      <DialogTrigger
+        render={
+          <Button
+            aria-label="Navigation menu"
+            className="group flex cursor-pointer flex-col items-center justify-center gap-1 rounded-full md:hidden"
+            size="icon-sm"
+            variant="outline"
+          />
+        }
       >
-        <div
-          className={cn(
-            "h-0.5 w-3.5 bg-foreground transition-transform duration-200",
-            open && "translate-y-0.75 scale-105 -rotate-45",
-          )}
-        />
-        <div
-          className={cn(
-            "h-0.5 w-3.5 bg-foreground transition-transform duration-200",
-            open && "-translate-y-0.75 scale-105 rotate-45",
-          )}
-        />
-      </Button>
-      {open && (
-        <div
-          className="fixed top-0 left-0 z-50 mt-12.5 min-h-screen w-full animate-in overflow-y-auto bg-background transition-opacity duration-200 fade-out"
-          id="mobile-menu"
-        >
+        <div className="h-0.5 w-3.5 bg-foreground transition-transform duration-200 group-data-popup-open:translate-y-0.75 group-data-popup-open:scale-105 group-data-popup-open:-rotate-45" />
+        <div className="h-0.5 w-3.5 bg-foreground transition-transform duration-200 group-data-popup-open:-translate-y-0.75 group-data-popup-open:scale-105 group-data-popup-open:rotate-45" />
+      </DialogTrigger>
+      <DialogPortal>
+        <DialogPopup className="fixed inset-x-0 top-12 bottom-0 z-50 overflow-y-auto overscroll-contain bg-background transition-opacity duration-200 ease-out-quint outline-none data-ending-style:opacity-0 data-ending-style:duration-150 data-starting-style:opacity-0 motion-reduce:transition-none md:hidden">
+          <DialogTitle className="sr-only">Navigation</DialogTitle>
           <ul className="p-2.5 pt-4">
             {SITE_ROUTES.map((route) => {
               if (
@@ -88,10 +57,12 @@ export function MobileMenu({ isPreview, previewRole, user }: MobileMenuProps) {
                 return null;
               }
               return (
-                <li className={ITEM_CLASS} key={route.href}>
-                  <Link href={route.href} onClick={closeMenu} prefetch>
+                <li key={route.href}>
+                  <DialogClose
+                    render={<Link className={ITEM_CLASS} href={route.href} />}
+                  >
                     {route.label}
-                  </Link>
+                  </DialogClose>
                 </li>
               );
             })}
@@ -120,17 +91,14 @@ export function MobileMenu({ isPreview, previewRole, user }: MobileMenuProps) {
                   {isPreview ? (
                     <PreviewRoleSwitch role={previewRole} />
                   ) : (
-                    <LogOutButton
-                      className="h-10 text-base"
-                      onLoggedOut={closeMenu}
-                    />
+                    <LogOutButton className="h-10 text-base" />
                   )}
                 </li>
               </>
             ) : null}
           </ul>
-        </div>
-      )}
-    </>
+        </DialogPopup>
+      </DialogPortal>
+    </Dialog>
   );
 }

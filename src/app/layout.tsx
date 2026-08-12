@@ -5,6 +5,7 @@ import "./globals.css";
 import { Suspense } from "react";
 import { SiteShell } from "@/components/site-shell";
 import { getPreviewAuthState } from "@/lib/auth/preview.server";
+import { getToken } from "@/lib/auth-server";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -25,10 +26,17 @@ export const metadata: Metadata = {
 };
 
 async function AppShell({ children }: { children: React.ReactNode }) {
-  const preview = await getPreviewAuthState();
+  const [initialToken, preview] = await Promise.all([
+    getToken(),
+    getPreviewAuthState(),
+  ]);
 
   return (
-    <SiteShell isPreview={preview.enabled} previewRole={preview.role}>
+    <SiteShell
+      initialToken={initialToken}
+      isPreview={preview.enabled}
+      previewRole={preview.role}
+    >
       <Suspense>{children}</Suspense>
     </SiteShell>
   );

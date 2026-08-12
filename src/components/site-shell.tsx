@@ -16,10 +16,12 @@ const PUBLIC_ROUTES = new Set([
 
 export function SiteShell({
   children,
+  initialToken,
   isPreview,
   previewRole,
 }: {
   children: React.ReactNode;
+  initialToken?: string | null;
   isPreview: boolean;
   previewRole: PreviewRole;
 }) {
@@ -31,11 +33,17 @@ export function SiteShell({
   }
 
   return (
-    <Providers>
+    <Providers initialToken={initialToken}>
       <NavBar isPreview={isPreview} previewRole={previewRole} />
-      <div className="route-padding-y route-padding-x mx-auto w-full max-w-7xl">
-        {children}
-      </div>
+      <PrivatePage>{children}</PrivatePage>
     </Providers>
+  );
+}
+
+function PrivatePage({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="route-padding-y route-padding-x mx-auto w-full max-w-7xl">
+      {children}
+    </div>
   );
 }

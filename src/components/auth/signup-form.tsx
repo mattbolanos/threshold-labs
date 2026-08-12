@@ -322,7 +322,6 @@ export function SignUpForm() {
           <Link
             className="font-medium text-primary underline-offset-4 transition-colors hover:underline"
             href="/login"
-            prefetch
           >
             Sign in
           </Link>

@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import * as React from "react";
+import { createPortal } from "react-dom";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -22,33 +24,59 @@ interface MobileMenuProps {
 }
 
 export function MobileMenu({ isPreview, previewRole, user }: MobileMenuProps) {
+  const [isMounted, setIsMounted] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const isMobile = useIsMobile();
+  const pathname = usePathname();
+  const previousPathname = React.useRef(pathname);
   const email = user?.email.trim();
   const username = user ? user.name.trim() || email : undefined;
 
   const toggleOpen = () => {
-    if (typeof document !== "undefined") {
-      document.body.style.overflow = open ? "scroll" : "hidden";
-    }
-    setOpen(!open);
+    setOpen((isOpen) => !isOpen);
   };
 
-  const closeMenu = () => {
-    if (typeof document !== "undefined") {
-      document.body.style.overflow = "scroll";
-    }
+  const closeMenu = React.useCallback(() => {
     setOpen(false);
-  };
+  }, []);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  React.useEffect(() => {
+    if (previousPathname.current !== pathname) {
+      previousPathname.current = pathname;
+      closeMenu();
+    }
+  }, [closeMenu, pathname]);
+
+  React.useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeMenu();
+      }
+    };
+
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [closeMenu, open]);
 
   React.useEffect(() => {
     if (!isMobile && open) {
-      if (typeof document !== "undefined") {
-        document.body.style.overflow = "scroll";
-      }
-      setOpen(false);
+      closeMenu();
     }
-  }, [isMobile, open]);
+  }, [closeMenu, isMobile, open]);
 
   return (
     <>
@@ -74,63 +102,76 @@ export function MobileMenu({ isPreview, previewRole, user }: MobileMenuProps) {
           )}
         />
       </Button>
-      {open && (
-        <div
-          className="fixed top-0 left-0 z-50 mt-12.5 min-h-screen w-full animate-in overflow-y-auto bg-background transition-opacity duration-200 fade-out"
-          id="mobile-menu"
-        >
-          <ul className="p-2.5 pt-4">
-            {SITE_ROUTES.map((route) => {
-              if (
-                route.isAdmin &&
-                (isPreview ? previewRole : user?.role) !== "admin"
-              ) {
-                return null;
-              }
-              return (
-                <li className={ITEM_CLASS} key={route.href}>
-                  <Link href={route.href} onClick={closeMenu} prefetch>
-                    {route.label}
-                  </Link>
-                </li>
-              );
-            })}
+      {isMounted
+        ? createPortal(
+            <div
+              aria-hidden={!open}
+              className={cn(
+                "fixed inset-x-0 top-12 bottom-0 z-50 overflow-y-auto bg-background transition duration-200 ease-out-quint motion-reduce:transition-none",
+                open
+                  ? "translate-y-0 opacity-100"
+                  : "pointer-events-none -translate-y-2 opacity-0 duration-150",
+              )}
+              id="mobile-menu"
+              inert={!open}
+            >
+              <ul className="p-2.5 pt-4">
+                {SITE_ROUTES.map((route) => {
+                  if (
+                    route.isAdmin &&
+                    (isPreview ? previewRole : user?.role) !== "admin"
+                  ) {
+                    return null;
+                  }
+                  return (
+                    <li className={ITEM_CLASS} key={route.href}>
+                      <Link
+                        href={route.href}
+                        onClick={
+                          pathname === route.href ? closeMenu : undefined
+                        }
+                        prefetch
+                      >
+                        {route.label}
+                      </Link>
+                    </li>
+                  );
+                })}
 
-            {user && email && username ? (
-              <>
-                <li aria-hidden="true" className="py-2">
-                  <Separator />
-                </li>
-                <li className="flex min-w-0 items-center gap-3 px-2.5 py-1.75">
-                  <Avatar>
-                    <AvatarFallback className="text-xs font-semibold uppercase">
-                      {getInitials(username, email)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex min-w-0 flex-col gap-0.5">
-                    <span className="truncate text-sm font-medium">
-                      {username}
-                    </span>
-                    <span className="truncate text-xs text-muted-foreground">
-                      {email}
-                    </span>
-                  </div>
-                </li>
-                <li className="px-2.5 py-1.5">
-                  {isPreview ? (
-                    <PreviewRoleSwitch role={previewRole} />
-                  ) : (
-                    <LogOutButton
-                      className="h-10 text-base"
-                      onLoggedOut={closeMenu}
-                    />
-                  )}
-                </li>
-              </>
-            ) : null}
-          </ul>
-        </div>
-      )}
+                {user && email && username ? (
+                  <>
+                    <li aria-hidden="true" className="py-2">
+                      <Separator />
+                    </li>
+                    <li className="flex min-w-0 items-center gap-3 px-2.5 py-1.75">
+                      <Avatar>
+                        <AvatarFallback className="text-xs font-semibold uppercase">
+                          {getInitials(username, email)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex min-w-0 flex-col gap-0.5">
+                        <span className="truncate text-sm font-medium">
+                          {username}
+                        </span>
+                        <span className="truncate text-xs text-muted-foreground">
+                          {email}
+                        </span>
+                      </div>
+                    </li>
+                    <li className="px-2.5 py-1.5">
+                      {isPreview ? (
+                        <PreviewRoleSwitch role={previewRole} />
+                      ) : (
+                        <LogOutButton className="h-10 text-base" />
+                      )}
+                    </li>
+                  </>
+                ) : null}
+              </ul>
+            </div>,
+            document.body,
+          )
+        : null}
     </>
   );
 }

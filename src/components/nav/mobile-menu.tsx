@@ -34,6 +34,13 @@ export function MobileMenu({ isPreview, previewRole, user }: MobileMenuProps) {
     setOpen(!open);
   };
 
+  const closeMenu = () => {
+    if (typeof document !== "undefined") {
+      document.body.style.overflow = "scroll";
+    }
+    setOpen(false);
+  };
+
   React.useEffect(() => {
     if (!isMobile && open) {
       if (typeof document !== "undefined") {
@@ -56,20 +63,20 @@ export function MobileMenu({ isPreview, previewRole, user }: MobileMenuProps) {
       >
         <div
           className={cn(
-            "bg-foreground h-0.5 w-3.5 transition-transform duration-200",
+            "h-0.5 w-3.5 bg-foreground transition-transform duration-200",
             open && "translate-y-0.75 scale-105 -rotate-45",
           )}
         />
         <div
           className={cn(
-            "bg-foreground h-0.5 w-3.5 transition-transform duration-200",
+            "h-0.5 w-3.5 bg-foreground transition-transform duration-200",
             open && "-translate-y-0.75 scale-105 rotate-45",
           )}
         />
       </Button>
       {open && (
         <div
-          className="bg-background animate-in fade-out fixed top-0 left-0 z-50 mt-12.5 min-h-screen w-full overflow-y-auto transition-opacity duration-200"
+          className="fixed top-0 left-0 z-50 mt-12.5 min-h-screen w-full animate-in overflow-y-auto bg-background transition-opacity duration-200 fade-out"
           id="mobile-menu"
         >
           <ul className="p-2.5 pt-4">
@@ -82,7 +89,7 @@ export function MobileMenu({ isPreview, previewRole, user }: MobileMenuProps) {
               }
               return (
                 <li className={ITEM_CLASS} key={route.href}>
-                  <Link href={route.href} prefetch>
+                  <Link href={route.href} onClick={closeMenu} prefetch>
                     {route.label}
                   </Link>
                 </li>
@@ -104,7 +111,7 @@ export function MobileMenu({ isPreview, previewRole, user }: MobileMenuProps) {
                     <span className="truncate text-sm font-medium">
                       {username}
                     </span>
-                    <span className="text-muted-foreground truncate text-xs">
+                    <span className="truncate text-xs text-muted-foreground">
                       {email}
                     </span>
                   </div>
@@ -115,10 +122,7 @@ export function MobileMenu({ isPreview, previewRole, user }: MobileMenuProps) {
                   ) : (
                     <LogOutButton
                       className="h-10 text-base"
-                      onLoggedOut={() => {
-                        document.body.style.overflow = "scroll";
-                        setOpen(false);
-                      }}
+                      onLoggedOut={closeMenu}
                     />
                   )}
                 </li>

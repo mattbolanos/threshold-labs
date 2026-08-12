@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogPopup,
   DialogPortal,
   DialogTitle,
@@ -27,15 +27,16 @@ interface MobileMenuProps {
 }
 
 export function MobileMenu({ isPreview, previewRole, user }: MobileMenuProps) {
+  const [open, setOpen] = useState(false);
   const email = user?.email.trim();
   const username = user ? user.name.trim() || email : undefined;
 
   return (
-    <Dialog modal={false}>
+    <Dialog modal={false} onOpenChange={setOpen} open={open}>
       <DialogTrigger
         render={
           <Button
-            aria-label="Navigation menu"
+            aria-label={open ? "Close menu" : "Open menu"}
             className="group flex cursor-pointer flex-col items-center justify-center gap-1 rounded-full md:hidden"
             size="icon-sm"
             variant="outline"
@@ -58,11 +59,13 @@ export function MobileMenu({ isPreview, previewRole, user }: MobileMenuProps) {
               }
               return (
                 <li key={route.href}>
-                  <DialogClose
-                    render={<Link className={ITEM_CLASS} href={route.href} />}
+                  <Link
+                    className={ITEM_CLASS}
+                    href={route.href}
+                    onClick={() => setOpen(false)}
                   >
                     {route.label}
-                  </DialogClose>
+                  </Link>
                 </li>
               );
             })}
@@ -91,7 +94,10 @@ export function MobileMenu({ isPreview, previewRole, user }: MobileMenuProps) {
                   {isPreview ? (
                     <PreviewRoleSwitch role={previewRole} />
                   ) : (
-                    <LogOutButton className="h-10 text-base" />
+                    <LogOutButton
+                      className="h-10 text-base"
+                      onLoggedOut={() => setOpen(false)}
+                    />
                   )}
                 </li>
               </>

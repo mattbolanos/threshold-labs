@@ -6,6 +6,7 @@ import {
   query,
 } from "./_generated/server";
 import { authComponent } from "./auth";
+import { sortPostsByPinnedThenPublishedAt } from "./postSorting";
 import { isPreviewAuthEnabled } from "./previewAuth";
 
 const postInputValidator = v.object({
@@ -112,6 +113,7 @@ export const createPost = mutation({
     return await ctx.db.insert("posts", {
       ...normalizedPost,
       createdAt: now,
+      isPinned: false,
       updatedAt: now,
     });
   },
@@ -159,6 +161,24 @@ export const setPostVisibility = mutation({
   },
 });
 
+export const setPostPinned = mutation({
+  args: {
+    isPinned: v.boolean(),
+    postId: v.id("posts"),
+  },
+  handler: async (ctx, { isPinned, postId }) => {
+    await assertAdmin(ctx);
+    const existingPost = await ctx.db.get(postId);
+
+    if (!existingPost) {
+      throw new ConvexError("Post not found.");
+    }
+
+    await ctx.db.patch(postId, { isPinned, updatedAt: Date.now() });
+    return postId;
+  },
+});
+
 export const getPublishedPosts = query({
   args: {},
   handler: async (ctx) => {
@@ -170,10 +190,11 @@ export const getPublishedPosts = query({
       .order("desc")
       .collect();
 
-    return posts.map((post) => ({
+    return sortPostsByPinnedThenPublishedAt(posts).map((post) => ({
       _id: post._id,
       category: post.category,
       excerpt: post.excerpt,
+      isPinned: post.isPinned ?? false,
       publishedAt: post.publishedAt,
       slug: post.slug,
       title: post.title,

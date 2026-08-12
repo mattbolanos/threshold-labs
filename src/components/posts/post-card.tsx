@@ -1,5 +1,6 @@
-import { IconArrowUpRight } from "@tabler/icons-react";
+import { IconArrowUpRight, IconPinnedFilled } from "@tabler/icons-react";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardAction,
@@ -15,6 +16,7 @@ type PostCardProps = {
   post: {
     category: string;
     excerpt: string;
+    isPinned?: boolean;
     publishedAt: number;
     slug: string;
     title: string;
@@ -35,7 +37,13 @@ export function PostCard({ post }: PostCardProps) {
         size="sm"
       >
         <CardHeader>
-          <CardDescription>
+          <CardDescription className="flex flex-wrap items-center gap-2">
+            {post.isPinned ? (
+              <Badge className="text-primary" variant="secondary">
+                <IconPinnedFilled aria-hidden data-icon="inline-start" />
+                Pinned
+              </Badge>
+            ) : null}
             <PostMeta category={post.category} publishedAt={post.publishedAt} />
           </CardDescription>
           <CardTitle className="text-lg font-semibold tracking-tight transition-colors group-hover:text-primary">

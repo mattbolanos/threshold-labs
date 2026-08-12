@@ -35,6 +35,7 @@ export default defineSchema({
     content: v.string(),
     createdAt: v.number(),
     excerpt: v.string(),
+    isPinned: v.optional(v.boolean()),
     isVisible: v.boolean(),
     publishedAt: v.number(),
     slug: v.string(),

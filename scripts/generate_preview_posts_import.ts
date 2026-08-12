@@ -6,6 +6,7 @@ type PostDoc = {
   content: string;
   createdAt: number;
   excerpt: string;
+  isPinned: boolean;
   isVisible: boolean;
   publishedAt: number;
   slug: string;
@@ -15,7 +16,7 @@ type PostDoc = {
 
 type PostTemplate = Omit<
   PostDoc,
-  "createdAt" | "isVisible" | "publishedAt" | "updatedAt"
+  "createdAt" | "isPinned" | "isVisible" | "publishedAt" | "updatedAt"
 > & {
   daysAgo: number;
 };
@@ -195,12 +196,13 @@ const parseIsoDate = (value: string) => {
 const generatePosts = (endDate: string): PostDoc[] => {
   const latestPublishedAt = parseIsoDate(endDate).getTime();
 
-  return POST_TEMPLATES.map(({ daysAgo, ...post }) => {
+  return POST_TEMPLATES.map(({ daysAgo, ...post }, index) => {
     const publishedAt = latestPublishedAt - daysAgo * MS_PER_DAY;
 
     return {
       ...post,
       createdAt: publishedAt - 2 * MS_PER_DAY,
+      isPinned: index === 0,
       isVisible: true,
       publishedAt,
       updatedAt: publishedAt,

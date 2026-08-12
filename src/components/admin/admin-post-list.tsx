@@ -1,6 +1,14 @@
 "use client";
 
-import { IconEdit, IconEye, IconEyeOff, IconPlus } from "@tabler/icons-react";
+import {
+  IconEdit,
+  IconEye,
+  IconEyeOff,
+  IconPin,
+  IconPinnedFilled,
+  IconPinnedOff,
+  IconPlus,
+} from "@tabler/icons-react";
 import { useMutation, useQuery } from "convex/react";
 import Link from "next/link";
 import { useState } from "react";
@@ -30,6 +38,7 @@ import { api as convexApi } from "../../../convex/_generated/api";
 
 export function AdminPostList() {
   const posts = useQuery(convexApi.posts.getPostsForAdmin);
+  const setPostPinned = useMutation(convexApi.posts.setPostPinned);
   const setPostVisibility = useMutation(convexApi.posts.setPostVisibility);
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -48,8 +57,28 @@ export function AdminPostList() {
           ? error.message
           : "Visibility could not be updated.",
       );
+    } finally {
+      setPendingId(null);
     }
-    setPendingId(null);
+  };
+
+  const togglePinned = async (post: NonNullable<typeof posts>[number]) => {
+    setErrorMessage(null);
+    setPendingId(post._id);
+    try {
+      await setPostPinned({
+        isPinned: !post.isPinned,
+        postId: post._id,
+      });
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Pinned status could not be updated.",
+      );
+    } finally {
+      setPendingId(null);
+    }
   };
 
   return (
@@ -109,7 +138,13 @@ export function AdminPostList() {
                 publishedAt={post.publishedAt}
               />
             </CardDescription>
-            <CardAction>
+            <CardAction className="flex flex-wrap justify-end gap-1.5">
+              {post.isPinned ? (
+                <Badge variant="secondary">
+                  <IconPinnedFilled aria-hidden data-icon="inline-start" />
+                  Pinned
+                </Badge>
+              ) : null}
               <Badge variant={post.isVisible ? "default" : "secondary"}>
                 {post.isVisible ? "Visible" : "Hidden"}
               </Badge>
@@ -118,7 +153,19 @@ export function AdminPostList() {
           <CardContent>
             <PostMarkdown content={post.excerpt} variant="card" />
           </CardContent>
-          <CardFooter className="justify-end gap-2">
+          <CardFooter className="flex-wrap justify-end gap-2">
+            <Button
+              disabled={pendingId === post._id}
+              onClick={() => void togglePinned(post)}
+              variant="outline"
+            >
+              {post.isPinned ? (
+                <IconPinnedOff data-icon="inline-start" />
+              ) : (
+                <IconPin data-icon="inline-start" />
+              )}
+              {post.isPinned ? "Unpin" : "Pin"}
+            </Button>
             <Button
               disabled={pendingId === post._id}
               onClick={() => void toggleVisibility(post)}

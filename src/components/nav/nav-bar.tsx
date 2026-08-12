@@ -32,7 +32,6 @@ export function NavBar({ isPreview, previewRole }: NavBarProps) {
             aria-label="Threshold Lab: Lab Notes"
             className="group/brand flex items-center gap-2"
             href="/lab/lab-notes"
-            prefetch
           >
             <span className="flex size-7 items-center justify-center rounded-md bg-primary text-xs font-bold text-primary-foreground">
               TL
@@ -52,7 +51,7 @@ export function NavBar({ isPreview, previewRole }: NavBarProps) {
                   <NavigationMenuItem key={link.href}>
                     <NavigationMenuLink
                       className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors duration-150 ease-in-out hover:text-foreground"
-                      render={<Link href={link.href} prefetch />}
+                      render={<Link href={link.href} />}
                     >
                       {link.label}
                     </NavigationMenuLink>

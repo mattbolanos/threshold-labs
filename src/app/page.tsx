@@ -15,8 +15,6 @@ export const metadata: Metadata = {
   title: "Threshold Lab | Train Year-Round",
 };
 
-export const prefetch = "partial";
-
 export default function MarketingHomePage() {
   return (
     <div className="min-h-screen overflow-hidden bg-neutral-950 text-white">

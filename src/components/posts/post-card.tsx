@@ -30,7 +30,6 @@ export function PostCard({ post }: PostCardProps) {
     <Link
       className="group block rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
       href={`/lab/lab-notes/${post.slug}`}
-      prefetch
     >
       <Card
         className="cursor-pointer transition-colors group-hover:ring-primary/40"
@@ -49,7 +48,7 @@ export function PostCard({ post }: PostCardProps) {
           <CardTitle className="text-lg font-semibold tracking-tight transition-colors group-hover:text-primary">
             {post.title}
           </CardTitle>
-          <CardAction className="text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary">
+          <CardAction className="text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary">
             <IconArrowUpRight aria-hidden />
           </CardAction>
         </CardHeader>

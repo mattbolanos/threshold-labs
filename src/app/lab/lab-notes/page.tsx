@@ -20,8 +20,6 @@ import { checkAuth } from "@/lib/auth";
 import { getTodayDate } from "@/lib/race-dates";
 import { api } from "../../../../convex/_generated/api";
 
-export const prefetch = "partial";
-
 export const metadata: Metadata = {
   description:
     "Training decisions, observations, and experiments from Threshold Lab.",

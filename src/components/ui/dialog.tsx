@@ -18,8 +18,18 @@ function DialogPortal({ ...props }: DialogPrimitive.Portal.Props) {
   return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />;
 }
 
+function DialogPopup({ ...props }: DialogPrimitive.Popup.Props) {
+  return <DialogPrimitive.Popup data-slot="dialog-popup" {...props} />;
+}
+
 function DialogClose({ ...props }: DialogPrimitive.Close.Props) {
-  return <DialogPrimitive.Close data-slot="dialog-close" {...props} />;
+  return (
+    <DialogPrimitive.Close
+      data-slot="dialog-close"
+      nativeButton={false}
+      {...props}
+    />
+  );
 }
 
 function DialogOverlay({
@@ -29,7 +39,7 @@ function DialogOverlay({
   return (
     <DialogPrimitive.Backdrop
       className={cn(
-        "data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0 bg-background/80 fixed inset-0 isolate z-50 duration-100 supports-backdrop-filter:backdrop-blur-xs",
+        "fixed inset-0 isolate z-50 bg-background/80 duration-100 data-closed:animate-out data-closed:fade-out-0 data-open:animate-in data-open:fade-in-0 supports-backdrop-filter:backdrop-blur-xs",
         className,
       )}
       data-slot="dialog-overlay"
@@ -51,7 +61,7 @@ function DialogContent({
       <DialogOverlay />
       <DialogPrimitive.Popup
         className={cn(
-          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed inset-x-4 top-1/2 z-50 mx-auto grid max-h-svh w-auto max-w-xl -translate-y-1/2 gap-4 overflow-y-auto rounded-lg border p-6 shadow-lg duration-200",
+          "fixed inset-x-4 top-1/2 z-50 mx-auto grid max-h-svh w-auto max-w-xl -translate-y-1/2 gap-4 overflow-y-auto rounded-lg border bg-background p-6 shadow-lg duration-200 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
           className,
         )}
         data-slot="dialog-content"
@@ -99,7 +109,7 @@ function DialogFooter({
   return (
     <div
       className={cn(
-        "bg-muted/50 -mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-xl border-t p-4 sm:flex-row sm:justify-end",
+        "-mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-xl border-t bg-muted/50 p-4 sm:flex-row sm:justify-end",
         className,
       )}
       data-slot="dialog-footer"
@@ -132,7 +142,7 @@ function DialogDescription({
   return (
     <DialogPrimitive.Description
       className={cn(
-        "text-muted-foreground *:[a]:hover:text-foreground text-sm *:[a]:underline *:[a]:underline-offset-3",
+        "text-sm text-muted-foreground *:[a]:underline *:[a]:underline-offset-3 *:[a]:hover:text-foreground",
         className,
       )}
       data-slot="dialog-description"
@@ -149,6 +159,7 @@ export {
   DialogFooter,
   DialogHeader,
   DialogOverlay,
+  DialogPopup,
   DialogPortal,
   DialogTitle,
   DialogTrigger,

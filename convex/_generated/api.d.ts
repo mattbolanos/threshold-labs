@@ -10,6 +10,7 @@
 
 import type * as auth from "../auth.js";
 import type * as http from "../http.js";
+import type * as postSorting from "../postSorting.js";
 import type * as posts from "../posts.js";
 import type * as previewAuth from "../previewAuth.js";
 import type * as raceSync from "../raceSync.js";
@@ -27,6 +28,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   http: typeof http;
+  postSorting: typeof postSorting;
   posts: typeof posts;
   previewAuth: typeof previewAuth;
   raceSync: typeof raceSync;

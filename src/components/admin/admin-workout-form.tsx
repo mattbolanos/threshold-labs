@@ -72,7 +72,7 @@ function CreateWorkoutForm() {
           createWorkout({ workout: validation.workout }),
         );
         form.reset();
-        router.push("/admin");
+        router.push("/lab/admin");
       } catch (error) {
         setErrorMessage(
           error instanceof Error ? error.message : "Failed to create workout.",
@@ -140,7 +140,7 @@ function CreateWorkoutForm() {
               <div className="flex flex-wrap items-center justify-end gap-2">
                 <Button
                   className="min-h-11"
-                  onClick={() => router.push("/admin")}
+                  onClick={() => router.push("/lab/admin")}
                   type="button"
                   variant="ghost"
                 >
@@ -243,7 +243,7 @@ function LoadedEditWorkoutForm({ workout }: { workout: Workout }) {
         );
         setShowSaved(true);
         await wait(1000);
-        router.push("/admin");
+        router.push("/lab/admin");
       } catch (error) {
         setErrorMessage(
           error instanceof Error ? error.message : "Failed to update workout.",
@@ -335,7 +335,7 @@ function LoadedEditWorkoutForm({ workout }: { workout: Workout }) {
               <div className="flex flex-wrap items-center justify-end gap-2">
                 <Button
                   className="min-h-11"
-                  onClick={() => router.push("/admin")}
+                  onClick={() => router.push("/lab/admin")}
                   type="button"
                   variant="ghost"
                 >

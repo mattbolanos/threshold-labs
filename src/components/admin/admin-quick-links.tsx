@@ -42,7 +42,7 @@ export function AdminQuickLinks() {
             <CardContent className="px-4 pb-4 md:px-5 md:pb-5">
               <Link
                 className={buttonVariants({ className: "min-h-11" })}
-                href="/admin/add-client"
+                href="/lab/admin/add-client"
               >
                 <IconUserPlus aria-hidden />
                 <span>Open Add Client</span>
@@ -62,7 +62,7 @@ export function AdminQuickLinks() {
             <CardContent className="px-4 pb-4 md:px-5 md:pb-5">
               <Link
                 className={buttonVariants({ className: "min-h-11" })}
-                href="/admin/totals"
+                href="/lab/admin/totals"
               >
                 <IconTable aria-hidden />
                 <span>Open Totals</span>
@@ -82,7 +82,7 @@ export function AdminQuickLinks() {
             <CardContent className="px-4 pb-4 md:px-5 md:pb-5">
               <Link
                 className={buttonVariants({ className: "min-h-11" })}
-                href="/admin/posts"
+                href="/lab/admin/posts"
               >
                 <IconNotebook data-icon="inline-start" />
                 <span>Open Lab Notes</span>
@@ -102,7 +102,7 @@ export function AdminQuickLinks() {
             <CardContent className="px-4 pb-4 md:px-5 md:pb-5">
               <Link
                 className={buttonVariants({ className: "min-h-11" })}
-                href="/admin/races"
+                href="/lab/admin/races"
               >
                 <IconFlag3 data-icon="inline-start" />
                 <span>Open Races</span>
@@ -122,7 +122,7 @@ export function AdminQuickLinks() {
             <CardContent className="px-4 pb-4 md:px-5 md:pb-5">
               <Link
                 className={buttonVariants({ className: "min-h-11" })}
-                href="/admin/blocks"
+                href="/lab/admin/blocks"
               >
                 <IconCalendarStats data-icon="inline-start" />
                 <span>Open Training Blocks</span>

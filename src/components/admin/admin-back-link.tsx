@@ -11,7 +11,7 @@ interface AdminBackLinkProps {
 
 export function AdminBackLink({
   className,
-  href = "/admin",
+  href = "/lab/admin",
   label = "Back to Admin",
 }: AdminBackLinkProps) {
   return (

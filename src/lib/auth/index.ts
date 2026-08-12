@@ -3,12 +3,11 @@ import { fetchAuthQuery, isAuthenticated } from "@/lib/auth-server";
 import { api } from "../../../convex/_generated/api";
 import { getPreviewAuthState, isVercelPreview } from "./preview.server";
 
-export const checkAuth = async () => {
-  if (isVercelPreview) {
-    return true;
-  }
+export const isAppAuthenticated = async () =>
+  isVercelPreview || (await isAuthenticated());
 
-  const hasToken = await isAuthenticated();
+export const checkAuth = async () => {
+  const hasToken = await isAppAuthenticated();
 
   if (!hasToken) {
     redirect("/login");
@@ -22,7 +21,7 @@ export const checkAdmin = async () => {
 
   if (preview.enabled) {
     if (preview.role !== "admin") {
-      redirect("/");
+      redirect("/lab/lab-notes");
     }
 
     return {
@@ -39,7 +38,7 @@ export const checkAdmin = async () => {
   }
 
   if (user.role !== "admin") {
-    redirect("/");
+    redirect("/lab/lab-notes");
   }
 
   return user;

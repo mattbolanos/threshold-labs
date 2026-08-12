@@ -4,7 +4,7 @@ import { AdminPostList } from "@/components/admin/admin-post-list";
 import { checkAdmin } from "@/lib/auth";
 
 export const metadata: Metadata = {
-  description: "Create, edit, and publish Threshold Lab posts.",
+  description: "Create, edit, publish, and pin Threshold Lab posts.",
   title: "Lab Notes | Admin",
 };
 

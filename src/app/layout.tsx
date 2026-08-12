@@ -3,10 +3,8 @@ import { JetBrains_Mono, Outfit } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { Suspense } from "react";
-import { NavBar } from "@/components/nav/nav-bar";
+import { SiteShell } from "@/components/site-shell";
 import { getPreviewAuthState } from "@/lib/auth/preview.server";
-import { getToken } from "@/lib/auth-server";
-import { Providers } from "./providers";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -27,18 +25,12 @@ export const metadata: Metadata = {
 };
 
 async function AppShell({ children }: { children: React.ReactNode }) {
-  const [token, preview] = await Promise.all([
-    getToken(),
-    getPreviewAuthState(),
-  ]);
+  const preview = await getPreviewAuthState();
 
   return (
-    <Providers initialToken={token}>
-      <NavBar isPreview={preview.enabled} previewRole={preview.role} />
-      <div className="route-padding-y route-padding-x mx-auto w-full max-w-7xl">
-        <Suspense>{children}</Suspense>
-      </div>
-    </Providers>
+    <SiteShell isPreview={preview.enabled} previewRole={preview.role}>
+      <Suspense>{children}</Suspense>
+    </SiteShell>
   );
 }
 
@@ -54,7 +46,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        {process.env.NODE_ENV === "development" && (
+        {process.env.NEXT_PUBLIC_REACT_SCAN === "true" && (
           <Script
             crossOrigin="anonymous"
             src="//unpkg.com/react-scan/dist/auto.global.js"
@@ -64,7 +56,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full overscroll-y-contain bg-background text-foreground antialiased">
         <main>
-          <Suspense fallback={<Providers>{null}</Providers>}>
+          <Suspense>
             <AppShell>{children}</AppShell>
           </Suspense>
         </main>

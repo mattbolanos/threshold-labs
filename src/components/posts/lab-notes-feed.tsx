@@ -40,7 +40,13 @@ export function LabNotesFeedSkeleton() {
 type LabNotesFeedProps = {
   posts: Pick<
     Doc<"posts">,
-    "_id" | "category" | "excerpt" | "publishedAt" | "slug" | "title"
+    | "_id"
+    | "category"
+    | "excerpt"
+    | "isPinned"
+    | "publishedAt"
+    | "slug"
+    | "title"
   >[];
 };
 

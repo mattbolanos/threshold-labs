@@ -58,7 +58,7 @@ export function SignUpForm() {
 
       await authClient.signUp.email(
         {
-          callbackURL: "/",
+          callbackURL: "/lab/lab-notes",
           email: value.email,
           name: value.name,
           password: value.password,
@@ -76,7 +76,7 @@ export function SignUpForm() {
           },
           onSuccess: () => {
             // Hard navigation to ensure fresh cookie read by server
-            window.location.href = "/";
+            window.location.href = "/lab/lab-notes";
           },
         },
       );
@@ -90,9 +90,9 @@ export function SignUpForm() {
 
     await authClient.signIn
       .social({
-        callbackURL: "/",
+        callbackURL: "/lab/lab-notes",
         errorCallbackURL: `${window.location.origin}/unauthorized`,
-        newUserCallbackURL: "/",
+        newUserCallbackURL: "/lab/lab-notes",
         provider: "google",
       })
       .catch((error) => {
@@ -113,18 +113,18 @@ export function SignUpForm() {
   return (
     <>
       {/* Invite-only notice */}
-      <div className="border-primary/20 bg-primary/5 mb-4 flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm">
-        <div className="bg-primary/20 flex size-5 items-center justify-center rounded">
-          <div className="bg-primary size-1.5 rounded-full" />
+      <div className="mb-4 flex items-center justify-center gap-2 rounded-lg border border-primary/20 bg-primary/5 px-4 py-2.5 text-sm">
+        <div className="flex size-5 items-center justify-center rounded bg-primary/20">
+          <div className="size-1.5 rounded-full bg-primary" />
         </div>
         <span className="font-medium">Invite Only</span>
-        <span className="text-muted-foreground text-xs">
+        <span className="text-xs text-muted-foreground">
           Coach invitation required
         </span>
       </div>
 
       {/* Form Card */}
-      <div className="bg-card/85 shadow-foreground/5 rounded-xl border p-7 shadow-xl backdrop-blur-sm">
+      <div className="rounded-xl border bg-card/85 p-7 shadow-xl shadow-foreground/5 backdrop-blur-sm">
         <form action={handleSignupSubmit} className="space-y-4">
           <form.Field
             name="name"
@@ -156,7 +156,7 @@ export function SignUpForm() {
                     value={field.state.value}
                   />
                   {nameError ? (
-                    <p className="text-destructive text-xs" id="name-error">
+                    <p className="text-xs text-destructive" id="name-error">
                       {nameError}
                     </p>
                   ) : null}
@@ -195,7 +195,7 @@ export function SignUpForm() {
                     value={field.state.value}
                   />
                   {emailError ? (
-                    <p className="text-destructive text-xs" id="email-error">
+                    <p className="text-xs text-destructive" id="email-error">
                       {emailError}
                     </p>
                   ) : null}
@@ -235,12 +235,12 @@ export function SignUpForm() {
                     type="password"
                     value={field.state.value}
                   />
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-xs text-muted-foreground">
                     Must be at least 8 characters
                   </p>
                   {passwordError ? (
                     <p
-                      className="text-destructive text-xs"
+                      className="text-xs text-destructive"
                       id="signup-password-error"
                     >
                       {passwordError}
@@ -254,7 +254,7 @@ export function SignUpForm() {
           {error && (
             <div
               aria-live="polite"
-              className="bg-destructive/10 text-destructive rounded-lg px-4 py-3 text-sm"
+              className="rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive"
               role="alert"
             >
               {error}
@@ -287,7 +287,7 @@ export function SignUpForm() {
             <div className="w-full border-t" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-card text-muted-foreground px-3 tracking-widest">
+            <span className="bg-card px-3 tracking-widest text-muted-foreground">
               Or
             </span>
           </div>
@@ -317,10 +317,10 @@ export function SignUpForm() {
           )}
         </form.Subscribe>
 
-        <p className="text-muted-foreground mt-6 text-center text-sm">
+        <p className="mt-6 text-center text-sm text-muted-foreground">
           Already have an account?{" "}
           <Link
-            className="text-primary font-medium underline-offset-4 transition-colors hover:underline"
+            className="font-medium text-primary underline-offset-4 transition-colors hover:underline"
             href="/login"
             prefetch
           >

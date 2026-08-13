@@ -1,10 +1,9 @@
-import { subYears } from "date-fns";
 import type { Metadata } from "next";
 import { LabNotesDashboard } from "@/components/lab-notes/lab-notes-dashboard";
 import { PageHeader } from "@/components/page-header";
 import { checkAuth } from "@/lib/auth";
 import { preloadAuthQuery } from "@/lib/auth-server";
-import { formatQueryDate } from "@/lib/utils";
+import { getLabNotesDates } from "@/lib/lab-notes-dates";
 import { api } from "../../../../convex/_generated/api";
 
 export const metadata: Metadata = {
@@ -16,8 +15,7 @@ export const metadata: Metadata = {
 export default async function LabNotesPage() {
   await checkAuth();
 
-  const today = new Date();
-  const todayDate = formatQueryDate(today);
+  const { oneYearAgo, today } = await getLabNotesDates();
   const [
     preloadedPostsQuery,
     preloadedTrainingBlockQuery,
@@ -26,14 +24,14 @@ export default async function LabNotesPage() {
   ] = await Promise.all([
     preloadAuthQuery(api.posts.getPublishedPosts),
     preloadAuthQuery(api.trainingBlocks.getCurrentTrainingBlock, {
-      onDate: todayDate,
+      onDate: today,
     }),
     preloadAuthQuery(api.races.getUpcomingRaces, {
-      fromDate: todayDate,
+      fromDate: today,
     }),
     preloadAuthQuery(api.workouts.getBaseFitness, {
-      from: formatQueryDate(subYears(today, 1)),
-      to: todayDate,
+      from: oneYearAgo,
+      to: today,
     }),
   ]);
 

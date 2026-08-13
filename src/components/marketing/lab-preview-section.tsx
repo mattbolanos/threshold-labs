@@ -1,10 +1,10 @@
 import {
-  IconArrowUpRight,
+  IconArrowRight,
   IconChartLine,
   IconLock,
   IconNotebook,
 } from "@tabler/icons-react";
-import { insideLabEarlyAccessUrl } from "@/lib/marketing-content";
+import Link from "next/link";
 
 export function LabPreviewSection() {
   return (
@@ -17,30 +17,23 @@ export function LabPreviewSection() {
         id="lab-preview"
       >
         <div className="max-w-xl">
-          <div className="flex items-center gap-3">
-            <p className="text-xs font-bold tracking-widest text-lime-300 uppercase">
-              Inside the Lab
-            </p>
-            <span className="rounded-full bg-lime-300 px-2.5 py-1 text-xs font-black text-neutral-950 uppercase">
-              Beta
-            </span>
-          </div>
+          <p className="text-xs font-bold tracking-widest text-lime-300 uppercase">
+            Inside the Lab
+          </p>
           <h2 className="mt-4 text-3xl font-black tracking-tight text-white sm:text-5xl">
             See the work behind the result.
           </h2>
           <p className="mt-5 text-lg leading-8 text-neutral-400">
-            Lab Notes explain the decisions. The training view shows how those
-            decisions become a real week of work.
+            Follow every workout and performance trend, then read the decisions
+            and lessons behind the training.
           </p>
-          <a
+          <Link
             className="mt-8 inline-flex items-center gap-2 rounded-full bg-lime-300 px-5 py-3 text-sm font-bold text-neutral-950 transition-colors hover:bg-lime-200"
-            href={insideLabEarlyAccessUrl}
-            rel="noreferrer"
-            target="_blank"
+            href="/lab"
           >
-            Apply for early access
-            <IconArrowUpRight aria-hidden className="size-4" />
-          </a>
+            Access Inside the Lab
+            <IconArrowRight aria-hidden className="size-4" />
+          </Link>
         </div>
 
         <div className="grid gap-3 rounded-3xl border border-lime-300/15 bg-neutral-950 p-3 shadow-2xl sm:grid-cols-2">

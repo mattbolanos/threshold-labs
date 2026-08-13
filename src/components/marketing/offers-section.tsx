@@ -37,16 +37,9 @@ export function OffersSection() {
               }
               key={offer.title}
             >
-              <div className="flex items-start justify-between gap-3">
-                <p className="text-xs font-bold tracking-widest text-lime-300 uppercase">
-                  {offer.eyebrow}
-                </p>
-                {"badge" in offer ? (
-                  <span className="rounded-full bg-lime-300 px-3 py-1 text-xs font-black tracking-wider text-neutral-950 uppercase">
-                    {offer.badge}
-                  </span>
-                ) : null}
-              </div>
+              <p className="text-xs font-bold tracking-widest text-lime-300 uppercase">
+                {offer.eyebrow}
+              </p>
               <h3 className="mt-5 text-2xl font-black tracking-tight text-white">
                 {offer.title}
               </h3>

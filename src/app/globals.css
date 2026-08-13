@@ -200,32 +200,6 @@
 }
 
 /* Diagonal hash pattern for section accents */
-.hash-pattern {
-  background-image: repeating-linear-gradient(
-    -45deg,
-    transparent,
-    transparent 4px,
-    currentColor 4px,
-    currentColor 5px
-  );
-  opacity: 0.04;
-}
-
-/* Section divider with athletic slash */
-.section-slash {
-  position: relative;
-}
-
-.section-slash::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--primary) 0%, transparent 60%);
-  opacity: 0.4;
-}
 
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -235,5 +209,12 @@
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
   }
 }

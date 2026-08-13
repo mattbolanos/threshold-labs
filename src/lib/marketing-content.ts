@@ -2,9 +2,6 @@ export const coachingApplicationUrl = "https://forms.gle/F6qMZQee6CayBHrMA";
 
 export const appMembershipUrl = "https://coach.everfit.io/package/IT400203";
 
-export const insideLabEarlyAccessUrl =
-  "https://docs.google.com/forms/d/e/1FAIpQLSe4jcdevCCWU0SG2C7BRhlksUH7bLzI6IS6TzBb6_y7V8sDgQ/viewform?usp=publish-editor";
-
 export const marketingNav = [
   { href: "/#work-with-me", label: "Work With Me" },
   { href: "/#results", label: "Athlete Results" },
@@ -13,6 +10,21 @@ export const marketingNav = [
 ] as const;
 
 export const offers = [
+  {
+    cta: {
+      href: "/lab",
+      label: "Access Inside the Lab",
+    },
+    description:
+      "Follow the complete training process behind my pursuit of the highest level of HYROX. Get every workout, performance trend, race recap, and lesson—from September 2025 onward.",
+    details: [
+      "Complete training log and performance trends",
+      "Race schedule, strategy, and recaps",
+      "Lab Notes on decisions and lessons",
+    ],
+    eyebrow: "The process",
+    title: "Inside the Lab",
+  },
   {
     cta: { href: coachingApplicationUrl, label: "Apply for coaching" },
     description:
@@ -37,22 +49,6 @@ export const offers = [
     ],
     eyebrow: "The plan",
     title: "Threshold Lab Membership",
-  },
-  {
-    badge: "Beta",
-    cta: {
-      href: insideLabEarlyAccessUrl,
-      label: "Apply for early access",
-    },
-    description:
-      "I’m documenting the process of becoming one of the best HYROX athletes in the world, and every workout lives inside the Lab. This product is in testing mode, but if you want a 100% unfiltered look into my training log going forward—and back to September 2025—this is it.",
-    details: [
-      "Every session detail + performance trends",
-      "Race schedule and recaps",
-      "Blog posts",
-    ],
-    eyebrow: "The process",
-    title: "Inside the Lab",
   },
 ] as const;
 

@@ -13,6 +13,8 @@ import {
 } from "./_generated/server";
 import authConfig from "./auth.config";
 import authSchema from "./betterAuth/schema";
+import { getAuthEnvironment } from "./lib/authEnvironment";
+import { createStripeAuthPlugin } from "./lib/stripeAuth";
 import {
   createPreviewUser,
   isPreviewAuthEnabled,
@@ -30,7 +32,7 @@ export const authComponent = createClient<DataModel, typeof authSchema>(
 export const createAuthOptions = (ctx: GenericCtx<DataModel>) =>
   ({
     appName: "Threshold Lab",
-    baseURL: process.env.SITE_URL,
+    baseURL: getAuthEnvironment(ctx, "SITE_URL"),
     database: authComponent.adapter(ctx),
     databaseHooks: {
       user: {
@@ -58,11 +60,12 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) =>
     emailAndPassword: {
       enabled: true,
     },
-    plugins: [convex({ authConfig })],
+    plugins: [convex({ authConfig }), createStripeAuthPlugin(ctx)],
+    secret: getAuthEnvironment(ctx, "BETTER_AUTH_SECRET"),
     socialProviders: {
       google: {
-        clientId: process.env.GOOGLE_CLIENT_ID as string,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+        clientId: getAuthEnvironment(ctx, "GOOGLE_CLIENT_ID"),
+        clientSecret: getAuthEnvironment(ctx, "GOOGLE_CLIENT_SECRET"),
       },
     },
     user: {

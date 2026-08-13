@@ -18,22 +18,24 @@ export function UpcomingRacesSkeleton() {
 }
 
 type UpcomingRacesProps = {
-  races: Doc<"races">[];
+  races?: Doc<"races">[] | null;
 };
 
 export function UpcomingRaces({ races }: UpcomingRacesProps) {
+  const upcomingRaces = races ?? [];
+
   return (
     <Card size="sm">
       <CardHeader>
         <CardTitle>Upcoming races</CardTitle>
-        {races.length === 0 && (
+        {upcomingRaces.length === 0 ? (
           <CardDescription>Nothing on the calendar yet.</CardDescription>
-        )}
+        ) : null}
       </CardHeader>
-      {races.length === 0 ? null : (
+      {upcomingRaces.length === 0 ? null : (
         <CardContent>
           <ul className="flex flex-col">
-            {races.slice(0, 5).map((race, index) => (
+            {upcomingRaces.slice(0, 5).map((race, index) => (
               <Fragment key={race._id}>
                 {index > 0 ? <Separator /> : null}
                 <li className="flex items-start justify-between gap-4 py-3 first:pt-0 last:pb-0">

@@ -10,6 +10,8 @@
 
 import type * as auth from "../auth.js";
 import type * as http from "../http.js";
+import type * as lib_authEnvironment from "../lib/authEnvironment.js";
+import type * as lib_stripeAuth from "../lib/stripeAuth.js";
 import type * as postSorting from "../postSorting.js";
 import type * as posts from "../posts.js";
 import type * as previewAuth from "../previewAuth.js";
@@ -28,6 +30,8 @@ import type {
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   http: typeof http;
+  "lib/authEnvironment": typeof lib_authEnvironment;
+  "lib/stripeAuth": typeof lib_stripeAuth;
   postSorting: typeof postSorting;
   posts: typeof posts;
   previewAuth: typeof previewAuth;

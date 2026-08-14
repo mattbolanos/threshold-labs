@@ -10,8 +10,8 @@ export default function SignUpPage() {
   return (
     <div className="relative z-10 w-full max-w-md">
       <AuthHeader
-        description="HYROX Community • Elite Performance"
-        title="Join Threshold Lab"
+        description="Create your account, then complete secure checkout."
+        title="Access Inside the Lab"
       />
       <SignUpForm />
     </div>

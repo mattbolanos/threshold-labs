@@ -38,19 +38,14 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) =>
       user: {
         create: {
           before: async (user) => {
-            const invite = await ctx.runQuery(
-              internal.auth.isClientAllowedForSignup,
-              { email: user.email.trim().toLowerCase() },
-            );
-
-            if (!invite) {
-              throw new Error("You are not authorized to sign up.");
-            }
+            const invite = await ctx.runQuery(internal.auth.getSignupRole, {
+              email: user.email.trim().toLowerCase(),
+            });
 
             return {
               data: {
                 ...user,
-                role: invite.role,
+                role: invite?.role ?? "client",
               },
             };
           },
@@ -95,7 +90,7 @@ const assertAdmin = async (ctx: QueryCtx | MutationCtx) => {
   }
 };
 
-export const isClientAllowedForSignup = internalQuery({
+export const getSignupRole = internalQuery({
   args: {
     email: v.string(),
   },
@@ -126,6 +121,40 @@ export const getCurrentUser = query({
     }
 
     return (await authComponent.safeGetAuthUser(ctx)) ?? null;
+  },
+});
+
+export const getCurrentLabAccess = query({
+  args: {},
+  handler: async (ctx) => {
+    if (isPreviewAuthEnabled()) {
+      return { hasAccess: true, source: "preview" as const };
+    }
+
+    const user = await authComponent.safeGetAuthUser(ctx);
+
+    if (!user) {
+      return { hasAccess: false, source: "none" as const };
+    }
+
+    if (user.role === "admin") {
+      return { hasAccess: true, source: "admin" as const };
+    }
+
+    const adapter = authComponent.adapter(ctx)({});
+    const subscriptions = await adapter.findMany<{
+      status?: string | null;
+    }>({
+      model: "subscription",
+      where: [{ field: "referenceId", value: user._id.toString() }],
+    });
+    const hasActiveSubscription = subscriptions.some(
+      ({ status }) => status === "active" || status === "trialing",
+    );
+
+    return hasActiveSubscription
+      ? { hasAccess: true, source: "subscription" as const }
+      : { hasAccess: false, source: "none" as const };
   },
 });
 

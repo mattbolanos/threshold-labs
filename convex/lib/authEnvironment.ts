@@ -18,6 +18,10 @@ const AUTH_ENVIRONMENT = {
     runtime: () => process.env.SITE_URL,
     schemaGeneration: "http://localhost:3000",
   },
+  STRIPE_INSIDE_LAB_PRICE_ID: {
+    runtime: () => process.env.STRIPE_INSIDE_LAB_PRICE_ID,
+    schemaGeneration: "price_schema_generation_inside_lab",
+  },
   STRIPE_SECRET_KEY: {
     runtime: () => process.env.STRIPE_SECRET_KEY,
     schemaGeneration: "stripe-schema-generation-key",

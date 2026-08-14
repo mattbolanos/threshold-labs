@@ -3,7 +3,6 @@
 import { IconBrandGoogleFilled, IconLoader2 } from "@tabler/icons-react";
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,7 +32,6 @@ function validatePassword(value: string) {
 }
 
 export function LoginForm() {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
@@ -47,7 +45,7 @@ export function LoginForm() {
 
       await authClient.signIn.email(
         {
-          callbackURL: "/lab/lab-notes",
+          callbackURL: "/subscribe",
           email: value.email,
           password: value.password,
         },
@@ -56,8 +54,9 @@ export function LoginForm() {
             setError(ctx.error.message || "Invalid email or password");
           },
           onSuccess: () => {
-            router.push("/lab/lab-notes");
-            router.refresh();
+            // A hard navigation ensures the new session cookie is available
+            // before the authenticated checkout handoff renders.
+            window.location.href = "/subscribe";
           },
         },
       );
@@ -70,8 +69,8 @@ export function LoginForm() {
 
     await authClient.signIn
       .social({
-        callbackURL: "/lab/lab-notes",
-        errorCallbackURL: `${window.location.origin}/unauthorized`,
+        callbackURL: "/subscribe",
+        errorCallbackURL: `${window.location.origin}/login`,
         provider: "google",
       })
       .catch((error) => {
@@ -199,7 +198,7 @@ export function LoginForm() {
                   <span>Signing in…</span>
                 </>
               ) : (
-                "Sign In"
+                "Sign in and continue"
               )}
             </Button>
           )}
@@ -242,12 +241,12 @@ export function LoginForm() {
       </form.Subscribe>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        Don&apos;t have an account?{" "}
+        New to Inside the Lab?{" "}
         <Link
           className="font-medium text-primary underline-offset-4 transition-colors hover:underline"
           href="/signup"
         >
-          Sign up
+          Create an account
         </Link>
       </p>
     </div>

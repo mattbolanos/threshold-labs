@@ -90,6 +90,27 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
                   publicKey: string;
                 };
                 model: "jwks";
+              }
+            | {
+                data: {
+                  billingInterval?: null | string;
+                  cancelAt?: null | number;
+                  cancelAtPeriodEnd?: null | boolean;
+                  canceledAt?: null | number;
+                  endedAt?: null | number;
+                  periodEnd?: null | number;
+                  periodStart?: null | number;
+                  plan: string;
+                  referenceId: string;
+                  seats?: null | number;
+                  status?: null | string;
+                  stripeCustomerId?: null | string;
+                  stripeScheduleId?: null | string;
+                  stripeSubscriptionId?: null | string;
+                  trialEnd?: null | number;
+                  trialStart?: null | number;
+                };
+                model: "subscription";
               };
           onCreateHandle?: string;
           select?: Array<string>;
@@ -256,6 +277,50 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
                     | "privateKey"
                     | "createdAt"
                     | "expiresAt"
+                    | "_id";
+                  mode?: "sensitive" | "insensitive";
+                  operator?:
+                    | "lt"
+                    | "lte"
+                    | "gt"
+                    | "gte"
+                    | "eq"
+                    | "in"
+                    | "not_in"
+                    | "ne"
+                    | "contains"
+                    | "starts_with"
+                    | "ends_with";
+                  value:
+                    | string
+                    | number
+                    | boolean
+                    | Array<string>
+                    | Array<number>
+                    | null;
+                }>;
+              }
+            | {
+                model: "subscription";
+                where?: Array<{
+                  connector?: "AND" | "OR";
+                  field:
+                    | "plan"
+                    | "referenceId"
+                    | "stripeCustomerId"
+                    | "stripeSubscriptionId"
+                    | "status"
+                    | "periodStart"
+                    | "periodEnd"
+                    | "trialStart"
+                    | "trialEnd"
+                    | "cancelAtPeriodEnd"
+                    | "cancelAt"
+                    | "canceledAt"
+                    | "endedAt"
+                    | "seats"
+                    | "billingInterval"
+                    | "stripeScheduleId"
                     | "_id";
                   mode?: "sensitive" | "insensitive";
                   operator?:
@@ -473,6 +538,50 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
                     | Array<number>
                     | null;
                 }>;
+              }
+            | {
+                model: "subscription";
+                where?: Array<{
+                  connector?: "AND" | "OR";
+                  field:
+                    | "plan"
+                    | "referenceId"
+                    | "stripeCustomerId"
+                    | "stripeSubscriptionId"
+                    | "status"
+                    | "periodStart"
+                    | "periodEnd"
+                    | "trialStart"
+                    | "trialEnd"
+                    | "cancelAtPeriodEnd"
+                    | "cancelAt"
+                    | "canceledAt"
+                    | "endedAt"
+                    | "seats"
+                    | "billingInterval"
+                    | "stripeScheduleId"
+                    | "_id";
+                  mode?: "sensitive" | "insensitive";
+                  operator?:
+                    | "lt"
+                    | "lte"
+                    | "gt"
+                    | "gte"
+                    | "eq"
+                    | "in"
+                    | "not_in"
+                    | "ne"
+                    | "contains"
+                    | "starts_with"
+                    | "ends_with";
+                  value:
+                    | string
+                    | number
+                    | boolean
+                    | Array<string>
+                    | Array<number>
+                    | null;
+                }>;
               };
           onDeleteHandle?: string;
         },
@@ -485,7 +594,13 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         {
           join?: any;
           limit?: number;
-          model: "user" | "session" | "account" | "verification" | "jwks";
+          model:
+            | "user"
+            | "session"
+            | "account"
+            | "verification"
+            | "jwks"
+            | "subscription";
           offset?: number;
           paginationOpts: {
             cursor: string | null;
@@ -525,7 +640,13 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         "internal",
         {
           join?: any;
-          model: "user" | "session" | "account" | "verification" | "jwks";
+          model:
+            | "user"
+            | "session"
+            | "account"
+            | "verification"
+            | "jwks"
+            | "subscription";
           select?: Array<string>;
           where?: Array<{
             connector?: "AND" | "OR";
@@ -778,6 +899,68 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
                     | Array<number>
                     | null;
                 }>;
+              }
+            | {
+                model: "subscription";
+                update: {
+                  billingInterval?: null | string;
+                  cancelAt?: null | number;
+                  cancelAtPeriodEnd?: null | boolean;
+                  canceledAt?: null | number;
+                  endedAt?: null | number;
+                  periodEnd?: null | number;
+                  periodStart?: null | number;
+                  plan?: string;
+                  referenceId?: string;
+                  seats?: null | number;
+                  status?: null | string;
+                  stripeCustomerId?: null | string;
+                  stripeScheduleId?: null | string;
+                  stripeSubscriptionId?: null | string;
+                  trialEnd?: null | number;
+                  trialStart?: null | number;
+                };
+                where?: Array<{
+                  connector?: "AND" | "OR";
+                  field:
+                    | "plan"
+                    | "referenceId"
+                    | "stripeCustomerId"
+                    | "stripeSubscriptionId"
+                    | "status"
+                    | "periodStart"
+                    | "periodEnd"
+                    | "trialStart"
+                    | "trialEnd"
+                    | "cancelAtPeriodEnd"
+                    | "cancelAt"
+                    | "canceledAt"
+                    | "endedAt"
+                    | "seats"
+                    | "billingInterval"
+                    | "stripeScheduleId"
+                    | "_id";
+                  mode?: "sensitive" | "insensitive";
+                  operator?:
+                    | "lt"
+                    | "lte"
+                    | "gt"
+                    | "gte"
+                    | "eq"
+                    | "in"
+                    | "not_in"
+                    | "ne"
+                    | "contains"
+                    | "starts_with"
+                    | "ends_with";
+                  value:
+                    | string
+                    | number
+                    | boolean
+                    | Array<string>
+                    | Array<number>
+                    | null;
+                }>;
               };
           onUpdateHandle?: string;
           paginationOpts: {
@@ -998,6 +1181,68 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
                     | "privateKey"
                     | "createdAt"
                     | "expiresAt"
+                    | "_id";
+                  mode?: "sensitive" | "insensitive";
+                  operator?:
+                    | "lt"
+                    | "lte"
+                    | "gt"
+                    | "gte"
+                    | "eq"
+                    | "in"
+                    | "not_in"
+                    | "ne"
+                    | "contains"
+                    | "starts_with"
+                    | "ends_with";
+                  value:
+                    | string
+                    | number
+                    | boolean
+                    | Array<string>
+                    | Array<number>
+                    | null;
+                }>;
+              }
+            | {
+                model: "subscription";
+                update: {
+                  billingInterval?: null | string;
+                  cancelAt?: null | number;
+                  cancelAtPeriodEnd?: null | boolean;
+                  canceledAt?: null | number;
+                  endedAt?: null | number;
+                  periodEnd?: null | number;
+                  periodStart?: null | number;
+                  plan?: string;
+                  referenceId?: string;
+                  seats?: null | number;
+                  status?: null | string;
+                  stripeCustomerId?: null | string;
+                  stripeScheduleId?: null | string;
+                  stripeSubscriptionId?: null | string;
+                  trialEnd?: null | number;
+                  trialStart?: null | number;
+                };
+                where?: Array<{
+                  connector?: "AND" | "OR";
+                  field:
+                    | "plan"
+                    | "referenceId"
+                    | "stripeCustomerId"
+                    | "stripeSubscriptionId"
+                    | "status"
+                    | "periodStart"
+                    | "periodEnd"
+                    | "trialStart"
+                    | "trialEnd"
+                    | "cancelAtPeriodEnd"
+                    | "cancelAt"
+                    | "canceledAt"
+                    | "endedAt"
+                    | "seats"
+                    | "billingInterval"
+                    | "stripeScheduleId"
                     | "_id";
                   mode?: "sensitive" | "insensitive";
                   operator?:

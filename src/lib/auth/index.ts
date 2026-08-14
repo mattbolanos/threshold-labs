@@ -16,6 +16,22 @@ export const checkAuth = async () => {
   return true;
 };
 
+export const checkLabAccess = async () => {
+  await checkAuth();
+
+  if (isVercelPreview || process.env.NODE_ENV === "development") {
+    return true;
+  }
+
+  const access = await fetchAuthQuery(api.auth.getCurrentLabAccess, {});
+
+  if (!access.hasAccess) {
+    redirect("/subscribe");
+  }
+
+  return true;
+};
+
 export const checkAdmin = async () => {
   const preview = await getPreviewAuthState();
 

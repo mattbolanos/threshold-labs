@@ -35,12 +35,13 @@ export function TestimonialsSection() {
     }
 
     updateScrollControls();
+    const resizeObserver = new ResizeObserver(updateScrollControls);
+    resizeObserver.observe(slider);
     slider.addEventListener("scroll", updateScrollControls, { passive: true });
-    window.addEventListener("resize", updateScrollControls);
 
     return () => {
+      resizeObserver.disconnect();
       slider.removeEventListener("scroll", updateScrollControls);
-      window.removeEventListener("resize", updateScrollControls);
     };
   }, [updateScrollControls]);
 

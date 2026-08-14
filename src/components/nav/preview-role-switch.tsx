@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useId, useState, useTransition } from "react";
+import { useId, useOptimistic, useTransition } from "react";
 import { Switch } from "@/components/ui/switch";
 import { setPreviewRole } from "@/lib/auth/preview-actions";
 import type { PreviewRole } from "@/lib/auth/preview-role";
@@ -15,15 +15,13 @@ interface PreviewRoleSwitchProps {
 export function PreviewRoleSwitch({ className, role }: PreviewRoleSwitchProps) {
   const id = useId();
   const router = useRouter();
-  const [selectedRole, setSelectedRole] = useState(role);
+  const [selectedRole, setSelectedRole] = useOptimistic(role);
   const [isPending, startTransition] = useTransition();
-
-  useEffect(() => setSelectedRole(role), [role]);
 
   const handleRoleChange = (isAdmin: boolean) => {
     const nextRole = isAdmin ? "admin" : "client";
-    setSelectedRole(nextRole);
     startTransition(async () => {
+      setSelectedRole(nextRole);
       await setPreviewRole(nextRole);
       router.refresh();
     });

@@ -6,23 +6,26 @@ import {
   IconLoader2,
   IconLock,
 } from "@tabler/icons-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { INSIDE_LAB_PLAN_NAME, insideLabMembership } from "@/lib/billing";
 import { cn } from "@/lib/utils";
 
-type CheckoutStatus = "cancelled" | "error" | "opening" | "ready";
+type CheckoutStatus = "error" | "opening" | "ready";
 
 export function MembershipCheckout() {
+  const searchParams = useSearchParams();
   const checkoutRequestPending = useRef(false);
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<CheckoutStatus>("ready");
 
-  const openCheckout = useCallback(async () => {
+  async function openCheckout() {
     if (checkoutRequestPending.current) return;
 
     checkoutRequestPending.current = true;
+    window.history.replaceState({}, "", "/subscribe");
     setError(null);
     setStatus("opening");
 
@@ -47,23 +50,10 @@ export function MembershipCheckout() {
       );
       setStatus("error");
     }
-  }, []);
+  }
 
-  useEffect(() => {
-    const checkoutWasCancelled =
-      new URLSearchParams(window.location.search).get("checkout") ===
-      "cancelled";
-
-    if (checkoutWasCancelled) setStatus("cancelled");
-  }, []);
-
-  const handleCheckout = () => {
-    checkoutRequestPending.current = false;
-    window.history.replaceState({}, "", "/subscribe");
-    void openCheckout();
-  };
-
-  const checkoutCancelled = status === "cancelled";
+  const checkoutCancelled =
+    status === "ready" && searchParams.get("checkout") === "cancelled";
   const checkoutFailed = status === "error";
   const checkoutOpening = status === "opening";
 
@@ -117,7 +107,7 @@ export function MembershipCheckout() {
       <Button
         className="mt-6 w-full transition-transform active:scale-96"
         disabled={checkoutOpening}
-        onClick={handleCheckout}
+        onClick={() => void openCheckout()}
         size="lg"
         type="button"
       >

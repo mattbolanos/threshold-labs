@@ -2,23 +2,21 @@ export function MarketingHeaderFallback() {
   return (
     <header
       aria-hidden
-      className="sticky top-3 z-50 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8"
+      className="sticky top-0 z-50 w-full border-b border-lime-300/15 bg-neutral-950/90 backdrop-blur-xl"
     >
-      <div className="flex h-16 items-center justify-between rounded-full border border-lime-300/20 bg-neutral-950/90 px-3 shadow-2xl backdrop-blur-xl sm:px-4">
-        <div className="flex items-center gap-2.5">
-          <span className="flex size-9 items-center justify-center rounded-xl bg-lime-300 text-sm font-black text-neutral-950">
+      <div className="mx-auto flex h-14 w-full max-w-7xl items-center justify-between gap-6 px-5 md:px-10">
+        <div className="flex items-center gap-2">
+          <span className="flex size-7 items-center justify-center rounded-md bg-lime-300 text-xs font-bold text-neutral-950">
             TL
           </span>
-          <span className="text-sm font-bold tracking-tight text-white sm:text-base">
-            Threshold Lab
-          </span>
+          <span className="text-sm font-bold text-white">THRESHOLD LAB</span>
         </div>
 
-        <div className="hidden h-4 w-72 rounded-full bg-neutral-800 xl:block" />
+        <div className="mx-auto hidden h-4 w-72 rounded-md bg-neutral-800 xl:block" />
 
-        <div className="hidden items-center gap-2 sm:flex">
-          <div className="h-10 w-28 rounded-full border border-lime-300/30 bg-neutral-900" />
-          <div className="h-10 w-32 rounded-full bg-lime-300" />
+        <div className="hidden items-center gap-3 xl:flex">
+          <div className="h-9 w-28 rounded-md border border-lime-300/30 bg-neutral-900" />
+          <div className="h-9 w-32 rounded-md bg-lime-300" />
         </div>
 
         <div className="size-10 rounded-full border border-lime-300/25 xl:hidden" />

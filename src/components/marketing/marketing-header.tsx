@@ -1,12 +1,8 @@
-import {
-  IconArrowDown,
-  IconFlask,
-  IconLogin2,
-  IconMenu2,
-} from "@tabler/icons-react";
+import { IconArrowDown, IconFlask, IconLogin2 } from "@tabler/icons-react";
 import Link from "next/link";
 import { isAppAuthenticated } from "@/lib/auth";
 import { marketingNav } from "@/lib/marketing-content";
+import { MarketingMobileMenu } from "./marketing-mobile-menu";
 
 export async function MarketingHeader() {
   const isLoggedIn = await isAppAuthenticated();
@@ -14,25 +10,26 @@ export async function MarketingHeader() {
   const accountLabel = isLoggedIn ? "Open Lab" : "Sign in";
 
   return (
-    <header className="sticky top-3 z-50 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div className="flex h-16 items-center justify-between rounded-full border border-lime-300/20 bg-neutral-950/90 px-3 shadow-2xl backdrop-blur-xl sm:px-4">
+    <header className="sticky top-0 z-50 w-full border-b border-lime-300/15 bg-neutral-950/90 backdrop-blur-xl">
+      <div className="mx-auto flex h-14 w-full max-w-7xl items-center justify-between gap-6 px-5 md:px-10">
         <Link
           aria-label="Threshold Lab home"
-          className="flex items-center gap-2.5"
+          className="group/brand flex shrink-0 items-center gap-2"
           href="/"
         >
-          <span className="flex size-9 items-center justify-center rounded-xl bg-lime-300 text-sm font-black text-neutral-950">
+          <span className="flex size-7 items-center justify-center rounded-md bg-lime-300 text-xs font-bold text-neutral-950 transition-transform duration-150 group-hover/brand:scale-105">
             TL
           </span>
-          <span className="text-sm font-bold tracking-tight text-white sm:text-base">
-            Threshold Lab
-          </span>
+          <span className="text-sm font-bold text-white">THRESHOLD LAB</span>
         </Link>
 
-        <nav aria-label="Main" className="hidden items-center gap-5 xl:flex">
+        <nav
+          aria-label="Main"
+          className="mx-auto hidden items-center gap-1 xl:flex"
+        >
           {marketingNav.map((item) => (
             <a
-              className="text-sm font-medium text-neutral-400 transition-colors hover:text-lime-300"
+              className="rounded-md px-3 py-1.5 text-sm font-medium text-neutral-400 transition-colors duration-150 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-300"
               href={item.href}
               key={item.label}
             >
@@ -41,9 +38,9 @@ export async function MarketingHeader() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-2 sm:flex">
+        <div className="hidden shrink-0 items-center gap-3 xl:flex">
           <Link
-            className="inline-flex h-10 items-center gap-2 rounded-full border border-lime-300/30 bg-neutral-900 px-4 text-sm font-bold text-white transition-colors hover:border-lime-300/60 hover:bg-neutral-800 hover:text-lime-300 active:scale-96"
+            className="inline-flex h-9 items-center gap-1.5 rounded-md border border-lime-300/30 bg-neutral-900 px-3 text-sm font-semibold text-white transition duration-150 hover:border-lime-300/60 hover:bg-neutral-800 hover:text-lime-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-300 active:scale-96"
             href={accountHref}
           >
             {isLoggedIn ? (
@@ -54,7 +51,7 @@ export async function MarketingHeader() {
             {accountLabel}
           </Link>
           <a
-            className="inline-flex h-10 items-center gap-2 rounded-full bg-lime-300 px-4 text-sm font-bold text-neutral-950 transition-colors hover:bg-lime-200 active:scale-96"
+            className="inline-flex h-9 items-center gap-1.5 rounded-md bg-lime-300 px-3 text-sm font-semibold text-neutral-950 transition duration-150 hover:bg-lime-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-300 active:scale-96"
             href="/#work-with-me"
           >
             Find your fit
@@ -62,37 +59,11 @@ export async function MarketingHeader() {
           </a>
         </div>
 
-        <details className="group relative xl:hidden">
-          <summary className="flex size-10 cursor-pointer list-none items-center justify-center rounded-full border border-lime-300/25 text-white">
-            <IconMenu2 aria-hidden className="size-5" />
-            <span className="sr-only">Open navigation</span>
-          </summary>
-          <nav
-            aria-label="Mobile navigation"
-            className="absolute top-12 right-0 flex w-64 flex-col gap-1 rounded-2xl border border-lime-300/20 bg-neutral-950 p-2 shadow-2xl"
-          >
-            {marketingNav.map((item) => (
-              <a
-                className="rounded-xl px-4 py-3 text-sm font-medium text-neutral-200 hover:bg-neutral-900"
-                href={item.href}
-                key={item.label}
-              >
-                {item.label}
-              </a>
-            ))}
-            <Link
-              className="mt-1 inline-flex items-center justify-center gap-2 rounded-xl bg-lime-300 px-4 py-3 text-center text-sm font-bold text-neutral-950 active:scale-96"
-              href={accountHref}
-            >
-              {isLoggedIn ? (
-                <IconFlask aria-hidden className="size-4" />
-              ) : (
-                <IconLogin2 aria-hidden className="size-4" />
-              )}
-              {accountLabel}
-            </Link>
-          </nav>
-        </details>
+        <MarketingMobileMenu
+          accountHref={accountHref}
+          accountLabel={accountLabel}
+          isLoggedIn={isLoggedIn}
+        />
       </div>
     </header>
   );

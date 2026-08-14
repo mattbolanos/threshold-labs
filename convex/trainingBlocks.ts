@@ -5,7 +5,7 @@ import {
   type QueryCtx,
   query,
 } from "./_generated/server";
-import { authComponent } from "./auth";
+import { assertLabAccess, authComponent } from "./auth";
 import { isPreviewAuthEnabled } from "./previewAuth";
 import {
   findTrainingBlockForDate,
@@ -113,6 +113,7 @@ export const getTrainingBlocksForAdmin = query({
 export const getCurrentTrainingBlock = query({
   args: { onDate: v.string() },
   handler: async (ctx, { onDate }) => {
+    await assertLabAccess(ctx);
     if (!DATE_PATTERN.test(onDate)) return null;
 
     const blocks = await getTrainingBlocksOverlappingRange(ctx, onDate, onDate);

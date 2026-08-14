@@ -10,7 +10,7 @@ export default function SignUpPage() {
   return (
     <div className="relative z-10 w-full max-w-md">
       <AuthHeader
-        description="Create your account, then complete secure checkout."
+        description="Create your account"
         title="Access Inside the Lab"
       />
       <SignUpForm />

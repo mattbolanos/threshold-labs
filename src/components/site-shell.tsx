@@ -11,6 +11,7 @@ const PUBLIC_ROUTES = new Set([
   "/my-partnerships",
   "/partnerships",
   "/signup",
+  "/subscribe",
   "/unauthorized",
 ]);
 

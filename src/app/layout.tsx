@@ -37,7 +37,7 @@ async function AppShell({ children }: { children: React.ReactNode }) {
       isPreview={preview.enabled}
       previewRole={preview.role}
     >
-      <Suspense>{children}</Suspense>
+      <Suspense fallback={null}>{children}</Suspense>
     </SiteShell>
   );
 }
@@ -64,7 +64,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full overscroll-y-contain bg-background text-foreground antialiased">
         <main>
-          <Suspense>
+          <Suspense fallback={null}>
             <AppShell>{children}</AppShell>
           </Suspense>
         </main>

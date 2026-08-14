@@ -4,7 +4,7 @@ import { IconBrandGoogleFilled, IconLoader2 } from "@tabler/icons-react";
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
@@ -90,6 +90,28 @@ export function LoginForm() {
 
   return (
     <div className="rounded-xl border bg-card/85 p-7 shadow-xl shadow-foreground/5 backdrop-blur-sm">
+      <div className="mb-7 space-y-3">
+        <div className="space-y-1">
+          <p className="font-semibold text-foreground">
+            New to Inside the Lab?
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Create an account to start your membership.
+          </p>
+        </div>
+        <Link
+          className={buttonVariants({
+            className:
+              "h-9 w-full border-primary/50 bg-primary/10 font-semibold text-primary hover:bg-primary/20 hover:text-primary",
+            size: "lg",
+            variant: "outline",
+          })}
+          href="/signup"
+        >
+          Create an account
+        </Link>
+      </div>
+
       <form action={handleLoginSubmit} className="space-y-4">
         <form.Field
           name="email"
@@ -239,16 +261,6 @@ export function LoginForm() {
           </Button>
         )}
       </form.Subscribe>
-
-      <p className="mt-6 text-center text-sm text-muted-foreground">
-        New to Inside the Lab?{" "}
-        <Link
-          className="font-medium text-primary underline-offset-4 transition-colors hover:underline"
-          href="/signup"
-        >
-          Create an account
-        </Link>
-      </p>
     </div>
   );
 }

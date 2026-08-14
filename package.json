@@ -53,7 +53,7 @@
   },
   "private": true,
   "scripts": {
-    "auth:generate": "cd convex/betterAuth && bunx auth@1.6.15 generate --config ./auth.ts --output ./schema.ts --yes",
+    "auth:generate": "cd convex/betterAuth && bunx auth@1.6.15 generate --config ./auth.ts --output ./generatedSchema.ts --yes",
     "build": "next build --turbopack",
     "convex:deploy": "bun scripts/deploy_convex_with_preview_seed.ts",
     "dev": "next dev --turbopack",

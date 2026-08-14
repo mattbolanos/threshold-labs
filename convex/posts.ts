@@ -5,7 +5,7 @@ import {
   type QueryCtx,
   query,
 } from "./_generated/server";
-import { authComponent } from "./auth";
+import { assertLabAccess, authComponent } from "./auth";
 import { sortPostsByPinnedThenPublishedAt } from "./postSorting";
 import { isPreviewAuthEnabled } from "./previewAuth";
 
@@ -182,6 +182,7 @@ export const setPostPinned = mutation({
 export const getPublishedPosts = query({
   args: {},
   handler: async (ctx) => {
+    await assertLabAccess(ctx);
     const posts = await ctx.db
       .query("posts")
       .withIndex("by_visibility_and_published_at", (q) =>
@@ -207,6 +208,7 @@ export const getPublishedPostBySlug = query({
     slug: v.string(),
   },
   handler: async (ctx, { slug }) => {
+    await assertLabAccess(ctx);
     const post = await ctx.db
       .query("posts")
       .withIndex("by_slug", (q) => q.eq("slug", normalizeSlug(slug)))

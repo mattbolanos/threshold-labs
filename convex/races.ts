@@ -5,7 +5,7 @@ import {
   type QueryCtx,
   query,
 } from "./_generated/server";
-import { authComponent } from "./auth";
+import { assertLabAccess, authComponent } from "./auth";
 import { isPreviewAuthEnabled } from "./previewAuth";
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
@@ -138,6 +138,7 @@ export const getRacesForAdmin = query({
 export const getUpcomingRaces = query({
   args: { fromDate: v.string() },
   handler: async (ctx, { fromDate }) => {
+    await assertLabAccess(ctx);
     if (!DATE_PATTERN.test(fromDate)) return [];
     const races = await ctx.db
       .query("races")

@@ -1,11 +1,11 @@
-import { checkLabAccess } from "@/lib/auth";
+import { checkAuth } from "@/lib/auth";
 
 export default async function LabLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  await checkLabAccess();
+  await checkAuth();
 
   return children;
 }

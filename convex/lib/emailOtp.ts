@@ -1,16 +1,11 @@
 export const EMAIL_OTP_EXPIRES_IN_SECONDS = 5 * 60;
 
 export type EmailOtpType =
-  | "change-email"
-  | "email-verification"
-  | "forget-password"
-  | "sign-in";
+  "change-email" | "email-verification" | "forget-password" | "sign-in";
 
 export type EmailOtpMode = "login" | "signup";
 export type EmailOtpRequestStatus =
-  | "login_required"
-  | "sent"
-  | "signup_required";
+  "login_required" | "sent" | "signup_required";
 
 export const getEmailOtpRequestStatus = ({
   mode,
@@ -88,7 +83,7 @@ export function createEmailOtpMessage({
     html: `<!doctype html>
 <html lang="en">
   <body style="margin:0;background:#f4f5f3;color:#171a18;font-family:Arial,sans-serif;">
-    <div style="max-width:560px;margin:0 auto;padding:40px 20px;">
+    <div style="max-width:560px;margin:0 auto;padding:36px 20px;">
       <div style="border:1px solid #d9ddd8;border-radius:12px;background:#ffffff;padding:32px;">
         <p style="margin:0 0 12px;color:#4f5b53;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">Threshold Lab</p>
         <h1 style="margin:0;font-size:24px;line-height:1.25;">${copy.heading}</h1>

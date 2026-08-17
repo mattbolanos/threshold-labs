@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { AuthHeader } from "@/components/auth/auth-header";
 import { MembershipCheckout } from "@/components/auth/membership-checkout";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getPostAuthDestination } from "@/lib/auth";
 
 export const metadata: Metadata = {
@@ -20,9 +21,7 @@ async function MembershipAccessGate() {
 
 function MembershipCheckoutFallback() {
   return (
-    <p aria-live="polite" className="text-muted-foreground text-sm">
-      Checking membership…
-    </p>
+    <Skeleton className="h-60.5 w-full rounded-xl border bg-card/85 p-7 shadow-xl shadow-foreground/5 backdrop-blur-sm" />
   );
 }
 

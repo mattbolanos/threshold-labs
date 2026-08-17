@@ -1,7 +1,8 @@
-import { IconArrowDown, IconFlask, IconLogin2 } from "@tabler/icons-react";
 import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
 import { isAppAuthenticated } from "@/lib/auth";
 import { marketingNav } from "@/lib/marketing-content";
+import { cn } from "@/lib/utils";
 import { MarketingContainer } from "./marketing-container";
 import { MarketingMobileMenu } from "./marketing-mobile-menu";
 
@@ -24,40 +25,28 @@ export async function MarketingHeader() {
           <span className="text-sm font-bold text-white">THRESHOLD LAB</span>
         </Link>
 
-        <nav
-          aria-label="Main"
-          className="mx-auto hidden items-center gap-1 xl:flex"
-        >
-          {marketingNav.map((item) => (
-            <a
-              className="rounded-md px-3 py-1.5 text-sm font-medium text-neutral-400 transition-colors duration-150 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-              href={item.href}
-              key={item.label}
-            >
-              {item.label}
-            </a>
-          ))}
-        </nav>
+        <div className="ms-auto hidden items-center gap-4 md:flex">
+          <nav aria-label="Main" className="flex items-center gap-2">
+            {marketingNav.map((item) => (
+              <a
+                className="rounded-md px-2 py-1.5 text-sm font-medium text-neutral-400 transition-colors duration-150 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                href={item.href}
+                key={item.label}
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
 
-        <div className="hidden shrink-0 items-center gap-3 xl:flex">
           <Link
-            className="inline-flex h-9 items-center gap-1.5 rounded-md border border-primary/30 bg-neutral-900 px-3 text-sm font-semibold text-white transition duration-150 hover:border-primary/60 hover:bg-neutral-800 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:scale-96"
+            className={cn(
+              buttonVariants({ variant: "default" }),
+              "rounded-full",
+            )}
             href={accountHref}
           >
-            {isLoggedIn ? (
-              <IconFlask aria-hidden className="size-4" />
-            ) : (
-              <IconLogin2 aria-hidden className="size-4" />
-            )}
             {accountLabel}
           </Link>
-          <a
-            className="inline-flex h-9 items-center gap-1.5 rounded-md bg-primary px-3 text-sm font-semibold text-neutral-950 transition duration-150 hover:bg-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:scale-96"
-            href="/#work-with-me"
-          >
-            Find your fit
-            <IconArrowDown aria-hidden className="size-4" />
-          </a>
         </div>
 
         <MarketingMobileMenu

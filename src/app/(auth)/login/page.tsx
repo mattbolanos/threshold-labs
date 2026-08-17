@@ -9,10 +9,7 @@ export const metadata: Metadata = {
 export default function LoginPage() {
   return (
     <div className="relative z-10 w-full max-w-md">
-      <AuthHeader
-        description="Use a one-time code to continue"
-        title="Access Inside the Lab"
-      />
+      <AuthHeader title="Access Inside the Lab" />
       <LoginForm />
     </div>
   );

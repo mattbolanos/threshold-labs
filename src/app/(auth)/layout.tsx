@@ -48,7 +48,9 @@ export default function AuthLayout({
         className="border-primary/15 absolute right-8 bottom-8 h-16 w-16 border-r-2 border-b-2"
       />
 
-      {children}
+      <div className="relative z-10 flex w-full -translate-y-6 justify-center sm:translate-y-0">
+        {children}
+      </div>
     </div>
   );
 }

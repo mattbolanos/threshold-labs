@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import {
   Field,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
@@ -73,14 +72,14 @@ function getErrorMessage(error: unknown, fallback: string) {
 
 export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
   const isSignup = mode === "signup";
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("long.athlete.address@example.com");
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [name, setName] = useState("");
   const [notice, setNotice] = useState<string | null>(null);
   const [otp, setOtp] = useState("");
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
   const [requestError, setRequestError] = useState<string | null>(null);
-  const [step, setStep] = useState<AuthStep>("email");
+  const [step, setStep] = useState<AuthStep>("otp");
 
   const isBusy = pendingAction !== null;
 
@@ -116,7 +115,10 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
       setStep("otp");
     } catch (error) {
       setRequestError(
-        getErrorMessage(error, "We couldn't send a code. Try again."),
+        getErrorMessage(
+          error,
+          "Unable to send the verification email. Check your connection and try again.",
+        ),
       );
     } finally {
       setPendingAction(null);
@@ -185,9 +187,14 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
 
       setOtp("");
       setFieldErrors({});
-      setNotice("A new code is on its way.");
+      setNotice("Verification email sent. Check your inbox for the new code.");
     } catch (error) {
-      setRequestError(getErrorMessage(error, "We couldn't resend the code."));
+      setRequestError(
+        getErrorMessage(
+          error,
+          "Unable to resend the verification email. Check your connection and try again.",
+        ),
+      );
     } finally {
       setPendingAction(null);
     }
@@ -215,11 +222,15 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
       });
 
       if (error) {
-        setRequestError(error.message || "Failed to connect with Google.");
+        setRequestError(
+          error.message || "Unable to connect to Google. Try again.",
+        );
         setPendingAction(null);
       }
     } catch (error) {
-      setRequestError(getErrorMessage(error, "Failed to connect with Google."));
+      setRequestError(
+        getErrorMessage(error, "Unable to connect to Google. Try again."),
+      );
       setPendingAction(null);
     }
   };
@@ -233,13 +244,23 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
 
   return (
     <Card className="w-full">
-      <CardContent>
+      <CardContent className={step === "otp" ? "space-y-6" : undefined}>
         {step === "otp" ? (
-          <>
-            We sent a six-digit code to{" "}
-            <span className="font-medium text-foreground">{email}</span>. It
-            expires in five minutes.
-          </>
+          <div className="space-y-1.5">
+            <h2 className="text-base font-medium" id="email-otp-title">
+              Check your email
+            </h2>
+            <p
+              className="leading-relaxed text-muted-foreground"
+              id="email-otp-description"
+            >
+              Enter the six-digit code sent to{" "}
+              <bdi className="break-words font-medium text-foreground">
+                {email}
+              </bdi>
+              . It expires in 5 minutes.
+            </p>
+          </div>
         ) : null}
         {step === "email" ? (
           <form noValidate onSubmit={sendCode}>
@@ -300,18 +321,24 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
                 </Alert>
               ) : null}
 
-              <Button disabled={isBusy} size="lg" type="submit">
+              <Button
+                className="w-full active:scale-96"
+                disabled={isBusy}
+                size="lg"
+                type="submit"
+              >
                 {pendingAction === "send-code" ? (
                   <Spinner data-icon="inline-start" />
                 ) : null}
                 {pendingAction === "send-code"
-                  ? "Sending code…"
-                  : "Email me a code"}
+                  ? "Sending email…"
+                  : "Send verification email"}
               </Button>
 
               <FieldSeparator>Or</FieldSeparator>
 
               <Button
+                className="w-full active:scale-96"
                 disabled={isBusy}
                 onClick={continueWithGoogle}
                 size="lg"
@@ -333,10 +360,10 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
           <form noValidate onSubmit={verifyCode}>
             <FieldGroup>
               <Field
+                className="items-center gap-3"
                 data-disabled={isBusy ? true : undefined}
                 data-invalid={fieldErrors.otp ? true : undefined}
               >
-                <FieldLabel htmlFor="email-otp">Verification code</FieldLabel>
                 <InputOTP
                   aria-describedby={
                     fieldErrors.otp
@@ -344,9 +371,10 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
                       : "email-otp-description"
                   }
                   aria-invalid={Boolean(fieldErrors.otp)}
+                  aria-labelledby="email-otp-title"
                   autoComplete="one-time-code"
                   autoFocus
-                  containerClassName="justify-center"
+                  containerClassName="w-full justify-center"
                   disabled={isBusy}
                   id="email-otp"
                   inputMode="numeric"
@@ -359,6 +387,7 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
                     {otpIndexes.slice(0, 3).map((index) => (
                       <InputOTPSlot
                         aria-invalid={Boolean(fieldErrors.otp)}
+                        className="h-11 w-10 text-xl"
                         index={index}
                         key={index}
                       />
@@ -369,16 +398,17 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
                     {otpIndexes.slice(3).map((index) => (
                       <InputOTPSlot
                         aria-invalid={Boolean(fieldErrors.otp)}
+                        className="h-11 w-10 text-xl"
                         index={index}
                         key={index}
                       />
                     ))}
                   </InputOTPGroup>
                 </InputOTP>
-                <FieldDescription id="email-otp-description">
-                  Paste the code or enter each digit.
-                </FieldDescription>
-                <FieldError id="email-otp-error">{fieldErrors.otp}</FieldError>
+
+                <FieldError className="text-center" id="email-otp-error">
+                  {fieldErrors.otp}
+                </FieldError>
               </Field>
 
               {requestError ? (
@@ -393,17 +423,39 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
                 </Alert>
               ) : null}
 
-              <Button disabled={isBusy} size="lg" type="submit">
-                {pendingAction === "verify-code" ||
-                pendingAction === "redirect" ? (
-                  <Spinner data-icon="inline-start" />
-                ) : null}
-                {pendingAction === "redirect"
-                  ? "Opening the lab…"
-                  : pendingAction === "verify-code"
-                    ? "Verifying…"
-                    : "Verify and continue"}
-              </Button>
+              <div className="flex flex-col gap-3">
+                <Button
+                  className="w-full active:scale-96"
+                  disabled={isBusy}
+                  size="lg"
+                  type="submit"
+                >
+                  {pendingAction === "verify-code" ||
+                  pendingAction === "redirect" ? (
+                    <Spinner data-icon="inline-start" />
+                  ) : null}
+                  {pendingAction === "redirect"
+                    ? "Opening the lab…"
+                    : pendingAction === "verify-code"
+                      ? "Verifying…"
+                      : "Verify and continue"}
+                </Button>
+                <Button
+                  className="w-full active:scale-96"
+                  disabled={isBusy}
+                  onClick={resendCode}
+                  size="lg"
+                  type="button"
+                  variant="outline"
+                >
+                  {pendingAction === "resend-code" ? (
+                    <Spinner data-icon="inline-start" />
+                  ) : null}
+                  {pendingAction === "resend-code"
+                    ? "Resending email…"
+                    : "Resend verification email"}
+                </Button>
+              </div>
             </FieldGroup>
           </form>
         )}
@@ -424,27 +476,15 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
           </Button>
         </CardFooter>
       ) : (
-        <CardFooter className="flex-col gap-2 sm:flex-row">
+        <CardFooter className="justify-center">
           <Button
-            className="w-full"
+            className="w-full active:scale-96"
             disabled={isBusy}
             onClick={changeEmail}
             type="button"
             variant="outline"
           >
             Use another email
-          </Button>
-          <Button
-            className="w-full"
-            disabled={isBusy}
-            onClick={resendCode}
-            type="button"
-            variant="outline"
-          >
-            {pendingAction === "resend-code" ? (
-              <Spinner data-icon="inline-start" />
-            ) : null}
-            {pendingAction === "resend-code" ? "Resending…" : "Resend code"}
           </Button>
         </CardFooter>
       )}

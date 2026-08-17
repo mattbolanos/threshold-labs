@@ -10,8 +10,8 @@ export default function SignUpPage() {
   return (
     <div className="relative z-10 w-full max-w-md">
       <AuthHeader
-        description="Join with a one-time code"
-        title="Access Inside the Lab"
+        description="Sign up with Google, or register with your email"
+        title="Create an Account"
       />
       <SignUpForm />
     </div>

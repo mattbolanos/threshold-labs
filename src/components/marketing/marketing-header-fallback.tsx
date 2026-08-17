@@ -1,10 +1,12 @@
+import { MarketingContainer } from "./marketing-container";
+
 export function MarketingHeaderFallback() {
   return (
     <header
       aria-hidden
       className="sticky top-0 z-50 w-full border-b border-primary/15 bg-neutral-950/90 backdrop-blur-xl"
     >
-      <div className="route-padding-x mx-auto flex h-14 w-full max-w-7xl items-center justify-between gap-6">
+      <MarketingContainer className="route-padding-x flex h-14 w-full items-center justify-between gap-6">
         <div className="flex items-center gap-2">
           <span className="flex size-7 items-center justify-center rounded-md bg-primary text-xs font-bold text-neutral-950">
             TL
@@ -20,7 +22,7 @@ export function MarketingHeaderFallback() {
         </div>
 
         <div className="size-10 rounded-full border border-primary/25 xl:hidden" />
-      </div>
+      </MarketingContainer>
     </header>
   );
 }

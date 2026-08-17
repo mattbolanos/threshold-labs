@@ -1,4 +1,5 @@
 import { IconArrowDown } from "@tabler/icons-react";
+import { MarketingContainer } from "../marketing-container";
 
 export function PartnershipHero() {
   return (
@@ -6,7 +7,7 @@ export function PartnershipHero() {
       <div className="marketing-grid pointer-events-none absolute inset-0 opacity-70" />
       <div className="marketing-glow pointer-events-none absolute inset-0" />
 
-      <div className="route-padding-x relative mx-auto max-w-7xl">
+      <MarketingContainer className="route-padding-x relative">
         <p className="text-xs font-bold tracking-widest text-primary uppercase">
           Threshold Lab Partners
         </p>
@@ -27,7 +28,7 @@ export function PartnershipHero() {
             <IconArrowDown aria-hidden className="size-4" />
           </a>
         </div>
-      </div>
+      </MarketingContainer>
     </section>
   );
 }

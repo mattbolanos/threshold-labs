@@ -13,6 +13,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { marketingNav } from "@/lib/marketing-content";
+import { MarketingContainer } from "./marketing-container";
 
 const MENU_ITEM_CLASS =
   "flex h-13 w-full items-center rounded-md px-2.5 text-base font-medium text-neutral-400 transition-colors duration-100 hover:bg-neutral-900 hover:text-white";
@@ -48,46 +49,45 @@ export function MarketingMobileMenu({
       <DialogPortal>
         <DialogPopup className="fixed inset-x-0 top-14 bottom-0 z-40 overflow-y-auto overscroll-contain bg-neutral-950 transition-opacity duration-200 ease-out-quint outline-none data-ending-style:opacity-0 data-ending-style:duration-150 data-starting-style:opacity-0 motion-reduce:transition-none xl:hidden">
           <DialogTitle className="sr-only">Navigation</DialogTitle>
-          <nav
-            aria-label="Mobile navigation"
-            className="mx-auto w-full max-w-7xl p-2.5 pt-4"
-          >
-            <ul>
-              {marketingNav.map((item) => (
-                <li key={item.label}>
-                  <a
-                    className={MENU_ITEM_CLASS}
-                    href={item.href}
-                    onClick={() => setOpen(false)}
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
+          <nav aria-label="Mobile navigation">
+            <MarketingContainer className="w-full p-2.5 pt-4">
+              <ul>
+                {marketingNav.map((item) => (
+                  <li key={item.label}>
+                    <a
+                      className={MENU_ITEM_CLASS}
+                      href={item.href}
+                      onClick={() => setOpen(false)}
+                    >
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
 
-            <div className="mt-4 grid gap-3 px-2.5">
-              <Link
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-primary px-4 text-base font-semibold text-neutral-950 transition duration-150 hover:bg-primary active:scale-96"
-                href="/#work-with-me"
-                onClick={() => setOpen(false)}
-              >
-                Find your fit
-                <IconArrowDown aria-hidden className="size-5" />
-              </Link>
-              <Link
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-primary/30 bg-neutral-900 px-4 text-base font-semibold text-white transition duration-150 hover:border-primary/60 hover:bg-neutral-800 hover:text-primary active:scale-96"
-                href={accountHref}
-                onClick={() => setOpen(false)}
-              >
-                {isLoggedIn ? (
-                  <IconFlask aria-hidden className="size-5" />
-                ) : (
-                  <IconLogin2 aria-hidden className="size-5" />
-                )}
-                {accountLabel}
-              </Link>
-            </div>
+              <div className="mt-4 grid gap-3 px-2.5">
+                <Link
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-primary px-4 text-base font-semibold text-neutral-950 transition duration-150 hover:bg-primary active:scale-96"
+                  href="/#work-with-me"
+                  onClick={() => setOpen(false)}
+                >
+                  Find your fit
+                  <IconArrowDown aria-hidden className="size-5" />
+                </Link>
+                <Link
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-primary/30 bg-neutral-900 px-4 text-base font-semibold text-white transition duration-150 hover:border-primary/60 hover:bg-neutral-800 hover:text-primary active:scale-96"
+                  href={accountHref}
+                  onClick={() => setOpen(false)}
+                >
+                  {isLoggedIn ? (
+                    <IconFlask aria-hidden className="size-5" />
+                  ) : (
+                    <IconLogin2 aria-hidden className="size-5" />
+                  )}
+                  {accountLabel}
+                </Link>
+              </div>
+            </MarketingContainer>
           </nav>
         </DialogPopup>
       </DialogPortal>

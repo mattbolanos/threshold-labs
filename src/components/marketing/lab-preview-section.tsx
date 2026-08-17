@@ -2,6 +2,7 @@ import { IconArrowRight } from "@tabler/icons-react";
 import Link from "next/link";
 import { LAB_PREVIEW_WEEK } from "@/components/marketing/lab-preview-data";
 import { LabWeekPreview } from "@/components/marketing/lab-week-preview";
+import { MarketingContainer } from "@/components/marketing/marketing-container";
 
 export function LabPreviewSection() {
   return (
@@ -9,8 +10,8 @@ export function LabPreviewSection() {
       className="scroll-mt-24 border-y border-primary/10 bg-neutral-900/45"
       id="inside-the-lab"
     >
-      <div
-        className="route-padding-x mx-auto max-w-7xl scroll-mt-24 py-20 sm:py-24"
+      <MarketingContainer
+        className="route-padding-x scroll-mt-24 py-20 sm:py-24"
         id="lab-preview"
       >
         <div className="grid gap-8 lg:grid-cols-3 lg:items-end lg:gap-12">
@@ -40,7 +41,7 @@ export function LabPreviewSection() {
         </div>
 
         <LabWeekPreview previewWeek={LAB_PREVIEW_WEEK} />
-      </div>
+      </MarketingContainer>
     </section>
   );
 }

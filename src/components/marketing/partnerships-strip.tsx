@@ -1,5 +1,6 @@
 import { IconArrowUpRight } from "@tabler/icons-react";
 import Link from "next/link";
+import { MarketingContainer } from "./marketing-container";
 
 export function PartnershipsStrip() {
   return (
@@ -7,7 +8,7 @@ export function PartnershipsStrip() {
       className="scroll-mt-24 border-y border-primary/10 bg-neutral-900/40"
       id="partnerships"
     >
-      <div className="route-padding-x mx-auto flex max-w-7xl flex-col gap-6 py-8 lg:flex-row lg:items-center lg:justify-between">
+      <MarketingContainer className="route-padding-x flex flex-col gap-6 py-8 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <p className="text-xs font-bold tracking-widest text-primary uppercase">
             Partnerships
@@ -39,7 +40,7 @@ export function PartnershipsStrip() {
             <IconArrowUpRight aria-hidden className="size-4" />
           </Link>
         </div>
-      </div>
+      </MarketingContainer>
     </section>
   );
 }

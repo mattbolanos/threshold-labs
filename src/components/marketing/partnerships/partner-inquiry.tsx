@@ -1,9 +1,10 @@
 import { IconArrowUpRight, IconBrandInstagram } from "@tabler/icons-react";
+import { MarketingContainer } from "../marketing-container";
 
 export function PartnerInquiry() {
   return (
     <section className="scroll-mt-24 py-20 sm:py-28" id="sponsor-inquiry">
-      <div className="mx-auto max-w-7xl overflow-hidden rounded-3xl border border-primary/20 bg-primary/5 px-6 py-12 sm:px-10 lg:flex lg:items-end lg:justify-between lg:gap-12 lg:px-14">
+      <MarketingContainer className="overflow-hidden rounded-3xl border border-primary/20 bg-primary/5 px-6 py-12 sm:px-10 lg:flex lg:items-end lg:justify-between lg:gap-12 lg:px-14">
         <div>
           <p className="text-xs font-bold tracking-widest text-primary uppercase">
             For Brands
@@ -26,7 +27,7 @@ export function PartnerInquiry() {
           Start a conversation
           <IconArrowUpRight aria-hidden className="size-4" />
         </a>
-      </div>
+      </MarketingContainer>
     </section>
   );
 }

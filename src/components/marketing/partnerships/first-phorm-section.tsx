@@ -1,5 +1,6 @@
 import { IconArrowUpRight } from "@tabler/icons-react";
 import Image from "next/image";
+import { MarketingContainer } from "@/components/marketing/marketing-container";
 import { firstPhormProducts, firstPhormUrl } from "@/lib/partnership-content";
 import { PartnerProductCard } from "./partner-product-card";
 
@@ -12,7 +13,7 @@ export function FirstPhormSection() {
       className="scroll-mt-24 border-t border-white/10 py-20 sm:py-28"
       id="1st-phorm"
     >
-      <div className="route-padding-x mx-auto max-w-7xl">
+      <MarketingContainer className="route-padding-x">
         <div className="grid gap-10 lg:grid-cols-2 lg:items-end lg:gap-16">
           <div>
             <p className="text-xs font-bold tracking-widest text-primary uppercase">
@@ -71,7 +72,7 @@ export function FirstPhormSection() {
             />
           ))}
         </div>
-      </div>
+      </MarketingContainer>
     </section>
   );
 }

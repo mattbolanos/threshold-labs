@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 
 export default function MarketingHomePage() {
   return (
-    <div className="min-h-screen overflow-hidden bg-neutral-950 text-white">
+    <div className="min-h-screen overflow-hidden">
       <Suspense fallback={<MarketingHeaderFallback />}>
         <MarketingHeader />
       </Suspense>

@@ -1,6 +1,7 @@
 import { IconArrowDown, IconArrowUpRight } from "@tabler/icons-react";
 import Image from "next/image";
 import { coachingApplicationUrl } from "@/lib/marketing-content";
+import { MarketingContainer } from "./marketing-container";
 
 const stats = [
   { label: "Athletes coached", value: "150+" },
@@ -15,7 +16,7 @@ export function HeroSection() {
       <div className="marketing-grid pointer-events-none absolute inset-0 opacity-70" />
       <div className="marketing-glow pointer-events-none absolute inset-0" />
 
-      <div className="route-padding-x relative mx-auto max-w-7xl">
+      <MarketingContainer className="route-padding-x relative">
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
           <div>
             <p className="mb-5 text-xs font-bold tracking-widest text-primary uppercase">
@@ -85,7 +86,7 @@ export function HeroSection() {
             </div>
           ))}
         </div>
-      </div>
+      </MarketingContainer>
     </section>
   );
 }

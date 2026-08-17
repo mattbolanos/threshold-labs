@@ -2,6 +2,7 @@ import { IconArrowDown, IconFlask, IconLogin2 } from "@tabler/icons-react";
 import Link from "next/link";
 import { isAppAuthenticated } from "@/lib/auth";
 import { marketingNav } from "@/lib/marketing-content";
+import { MarketingContainer } from "./marketing-container";
 import { MarketingMobileMenu } from "./marketing-mobile-menu";
 
 export async function MarketingHeader() {
@@ -11,7 +12,7 @@ export async function MarketingHeader() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-primary/15 bg-neutral-950/90 backdrop-blur-xl">
-      <div className="route-padding-x mx-auto flex h-14 w-full max-w-7xl items-center justify-between gap-6 px-5">
+      <MarketingContainer className="route-padding-x flex h-14 w-full items-center justify-between gap-6 px-5">
         <Link
           aria-label="Threshold Lab home"
           className="group/brand flex shrink-0 items-center gap-2"
@@ -64,7 +65,7 @@ export async function MarketingHeader() {
           accountLabel={accountLabel}
           isLoggedIn={isLoggedIn}
         />
-      </div>
+      </MarketingContainer>
     </header>
   );
 }

@@ -107,7 +107,7 @@ export function SignUpForm() {
         <form.Field
           name="name"
           validators={{
-            onChange: ({ value }) => validateName(value),
+            onBlur: ({ value }) => validateName(value),
             onSubmit: ({ value }) => validateName(value),
           }}
         >
@@ -146,7 +146,7 @@ export function SignUpForm() {
         <form.Field
           name="email"
           validators={{
-            onChange: ({ value }) => validateEmail(value),
+            onBlur: ({ value }) => validateEmail(value),
             onSubmit: ({ value }) => validateEmail(value),
           }}
         >
@@ -185,7 +185,7 @@ export function SignUpForm() {
         <form.Field
           name="password"
           validators={{
-            onChange: ({ value }) => validatePassword(value),
+            onBlur: ({ value }) => validatePassword(value),
             onSubmit: ({ value }) => validatePassword(value),
           }}
         >

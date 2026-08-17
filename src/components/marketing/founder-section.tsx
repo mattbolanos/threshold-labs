@@ -17,7 +17,7 @@ export function FounderSection() {
       className="route-padding-x mx-auto max-w-7xl py-10 sm:py-12"
       id="coach"
     >
-      <div className="grid overflow-hidden rounded-3xl border border-lime-300/15 bg-neutral-900/65 lg:grid-cols-2">
+      <div className="grid overflow-hidden rounded-3xl border border-primary/15 bg-neutral-900/65 lg:grid-cols-2">
         <div className="relative min-h-96 lg:min-h-full">
           <Image
             alt="Stephen Pelkofer competing as an Elite 15 HYROX athlete"
@@ -29,7 +29,7 @@ export function FounderSection() {
           <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent lg:bg-linear-to-r lg:from-transparent lg:to-neutral-900/30" />
         </div>
         <div className="p-7 sm:p-10 lg:p-14">
-          <p className="text-xs font-bold tracking-widest text-lime-300 uppercase">
+          <p className="text-xs font-bold tracking-widest text-primary uppercase">
             Head coach + founder
           </p>
           <h2 className="mt-4 text-3xl font-black tracking-tight text-white sm:text-5xl">
@@ -47,7 +47,7 @@ export function FounderSection() {
                 className="flex items-start gap-2.5 text-sm leading-6 text-neutral-300"
                 key={highlight}
               >
-                <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-lime-300/10 text-lime-300">
+                <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                   <IconCheck aria-hidden className="size-3" />
                 </span>
                 {highlight}
@@ -55,7 +55,7 @@ export function FounderSection() {
             ))}
           </ul>
           <a
-            className="mt-9 inline-flex items-center gap-2 rounded-full border border-lime-300/25 px-5 py-3 text-sm font-bold text-white transition-colors hover:border-lime-300 hover:text-lime-300"
+            className="mt-9 inline-flex items-center gap-2 rounded-full border border-primary/25 px-5 py-3 text-sm font-bold text-white transition-colors hover:border-primary hover:text-primary"
             href={coachingApplicationUrl}
             rel="noreferrer"
             target="_blank"

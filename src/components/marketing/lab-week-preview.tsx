@@ -34,7 +34,7 @@ function PreviewWorkout({
   workout: Extract<LabPreviewWorkout, { isPreview: true }>;
 }) {
   return (
-    <div className="rounded-xl bg-lime-300/10 p-1 ring-1 ring-lime-300/50 transition-shadow duration-150 hover:ring-lime-300">
+    <div className="rounded-xl bg-primary/10 p-1 ring-1 ring-primary/50 transition-shadow duration-150 hover:ring-primary">
       <Block workout={workout.workout} />
     </div>
   );
@@ -70,7 +70,7 @@ export function LabWeekPreview({
   } unlocked. Select a highlighted card.`;
 
   return (
-    <div className="mt-12 overflow-hidden rounded-3xl border border-lime-300/15 bg-neutral-950 shadow-2xl shadow-black/30">
+    <div className="mt-12 overflow-hidden rounded-3xl border border-primary/15 bg-neutral-950 shadow-2xl shadow-black/30">
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-5">
         <div>
           <p className="text-sm font-bold text-white">Training schedule</p>
@@ -79,7 +79,7 @@ export function LabWeekPreview({
             {trainingBlockTitle ? ` · ${trainingBlockTitle}` : null}
           </p>
         </div>
-        <div className="flex max-w-sm items-center gap-2 rounded-xl bg-lime-300/10 px-3 py-2 text-xs font-semibold text-lime-300">
+        <div className="flex max-w-sm items-center gap-2 rounded-xl bg-primary/10 px-3 py-2 text-xs font-semibold text-primary">
           <IconHandClick aria-hidden className="size-4 shrink-0 stroke-2" />
           {previewLabel}
         </div>
@@ -111,7 +111,7 @@ export function LabWeekPreview({
                     </p>
                   </div>
                   {hasPreviewWorkout ? (
-                    <span className="mt-0.5 size-1.5 rounded-full bg-lime-300 shadow-sm shadow-lime-300/50" />
+                    <span className="mt-0.5 size-1.5 rounded-full bg-primary shadow-sm shadow-primary/50" />
                   ) : null}
                 </div>
 

@@ -36,7 +36,7 @@ export function MarketingMobileMenu({
         render={
           <Button
             aria-label={open ? "Close menu" : "Open menu"}
-            className="group flex size-10 flex-col items-center justify-center gap-1 rounded-full border-lime-300/25 bg-neutral-950 text-white hover:border-lime-300/50 hover:bg-neutral-900 xl:hidden"
+            className="group flex size-10 flex-col items-center justify-center gap-1 rounded-full border-primary/25 bg-neutral-950 text-white hover:border-primary/50 hover:bg-neutral-900 xl:hidden"
             size="icon-lg"
             variant="outline"
           />
@@ -68,7 +68,7 @@ export function MarketingMobileMenu({
 
             <div className="mt-4 grid gap-3 px-2.5">
               <Link
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-lime-300 px-4 text-base font-semibold text-neutral-950 transition duration-150 hover:bg-lime-200 active:scale-96"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-primary px-4 text-base font-semibold text-neutral-950 transition duration-150 hover:bg-primary active:scale-96"
                 href="/#work-with-me"
                 onClick={() => setOpen(false)}
               >
@@ -76,7 +76,7 @@ export function MarketingMobileMenu({
                 <IconArrowDown aria-hidden className="size-5" />
               </Link>
               <Link
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-lime-300/30 bg-neutral-900 px-4 text-base font-semibold text-white transition duration-150 hover:border-lime-300/60 hover:bg-neutral-800 hover:text-lime-300 active:scale-96"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-primary/30 bg-neutral-900 px-4 text-base font-semibold text-white transition duration-150 hover:border-primary/60 hover:bg-neutral-800 hover:text-primary active:scale-96"
                 href={accountHref}
                 onClick={() => setOpen(false)}
               >

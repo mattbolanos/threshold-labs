@@ -11,7 +11,7 @@ export function MarketingFooter() {
     <footer className="route-padding-x mx-auto flex max-w-7xl flex-col gap-8 py-12 lg:flex-row lg:items-end lg:justify-between">
       <div>
         <Link className="flex items-center gap-2.5" href="/">
-          <span className="flex size-9 items-center justify-center rounded-xl bg-lime-300 text-sm font-black text-neutral-950">
+          <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-sm font-black text-neutral-950">
             TL
           </span>
           <span className="font-bold text-white">Threshold Lab</span>
@@ -23,7 +23,7 @@ export function MarketingFooter() {
       <div className="flex flex-wrap gap-x-5 gap-y-2">
         {socialLinks.map((link) => (
           <a
-            className="text-sm font-semibold text-neutral-400 transition-colors hover:text-lime-300"
+            className="text-sm font-semibold text-neutral-400 transition-colors hover:text-primary"
             href={link.href}
             key={link.label}
             rel="noreferrer"
@@ -33,13 +33,13 @@ export function MarketingFooter() {
           </a>
         ))}
         <Link
-          className="text-sm font-semibold text-neutral-400 transition-colors hover:text-lime-300"
+          className="text-sm font-semibold text-neutral-400 transition-colors hover:text-primary"
           href="/partnerships"
         >
           Partnerships
         </Link>
         <Link
-          className="text-sm font-semibold text-neutral-400 transition-colors hover:text-lime-300"
+          className="text-sm font-semibold text-neutral-400 transition-colors hover:text-primary"
           href="/login"
         >
           Sign in

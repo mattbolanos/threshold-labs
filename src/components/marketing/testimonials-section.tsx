@@ -82,7 +82,7 @@ export function TestimonialsSection() {
     >
       <div className="mb-10 flex items-end justify-between gap-6">
         <div className="max-w-2xl">
-          <p className="text-xs font-bold tracking-widest text-lime-300 uppercase">
+          <p className="text-xs font-bold tracking-widest text-primary uppercase">
             Athlete results
           </p>
           <h2 className="mt-3 text-3xl font-black tracking-tight text-white sm:text-5xl">
@@ -93,7 +93,7 @@ export function TestimonialsSection() {
         <div className="flex shrink-0 gap-2">
           <button
             aria-label="View previous athlete result"
-            className="flex size-11 items-center justify-center rounded-full border border-lime-300/20 bg-neutral-900 text-lime-300 transition hover:border-lime-300/50 hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-30"
+            className="flex size-11 items-center justify-center rounded-full border border-primary/20 bg-neutral-900 text-primary transition hover:border-primary/50 hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-30"
             disabled={!canScrollLeft}
             onClick={() => scrollTestimonials(-1)}
             type="button"
@@ -102,7 +102,7 @@ export function TestimonialsSection() {
           </button>
           <button
             aria-label="View next athlete result"
-            className="flex size-11 items-center justify-center rounded-full border border-lime-300/20 bg-neutral-900 text-lime-300 transition hover:border-lime-300/50 hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-30"
+            className="flex size-11 items-center justify-center rounded-full border border-primary/20 bg-neutral-900 text-primary transition hover:border-primary/50 hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-30"
             disabled={!canScrollRight}
             onClick={() => scrollTestimonials(1)}
             type="button"
@@ -121,7 +121,7 @@ export function TestimonialsSection() {
 
           return (
             <article
-              className="w-80 flex-none snap-start overflow-hidden rounded-3xl border border-lime-300/15 bg-neutral-900/75 sm:w-96"
+              className="w-80 flex-none snap-start overflow-hidden rounded-3xl border border-primary/15 bg-neutral-900/75 sm:w-96"
               key={testimonial.name}
             >
               <div className="relative h-48 overflow-hidden bg-neutral-800">
@@ -140,7 +140,7 @@ export function TestimonialsSection() {
               <div className="p-5">
                 <div className="flex items-center justify-between gap-4">
                   <p className="font-bold text-white">{testimonial.name}</p>
-                  <span className="text-xs font-bold text-lime-300 uppercase">
+                  <span className="text-xs font-bold text-primary uppercase">
                     {testimonial.program}
                   </span>
                 </div>
@@ -154,7 +154,7 @@ export function TestimonialsSection() {
                 </p>
                 <button
                   aria-expanded={isExpanded}
-                  className="mt-3 cursor-pointer text-sm font-bold text-lime-300"
+                  className="mt-3 cursor-pointer text-sm font-bold text-primary"
                   onClick={() => toggleTestimonial(testimonial.name)}
                   type="button"
                 >

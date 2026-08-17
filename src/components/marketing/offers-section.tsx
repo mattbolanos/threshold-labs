@@ -9,7 +9,7 @@ export function OffersSection() {
       id="work-with-me"
     >
       <div className="mb-10 max-w-2xl">
-        <p className="text-xs font-bold tracking-widest text-lime-300 uppercase">
+        <p className="text-xs font-bold tracking-widest text-primary uppercase">
           How you can work with the Lab
         </p>
         <h2 className="mt-3 text-3xl font-black tracking-tight text-white sm:text-5xl">
@@ -21,7 +21,7 @@ export function OffersSection() {
         {offers.map((offer) => {
           const isExternal = offer.cta.href.startsWith("http");
           const ctaClass =
-            "mt-auto inline-flex items-center justify-between rounded-xl border border-lime-300/20 bg-neutral-950 px-4 py-3 text-sm font-bold text-white transition-colors hover:border-lime-300 hover:text-lime-300";
+            "mt-auto inline-flex items-center justify-between rounded-xl border border-primary/20 bg-neutral-950 px-4 py-3 text-sm font-bold text-white transition-colors hover:border-primary hover:text-primary";
           const ctaContent = (
             <>
               {offer.cta.label}
@@ -31,10 +31,10 @@ export function OffersSection() {
 
           return (
             <article
-              className="flex min-h-96 flex-col rounded-3xl border border-lime-300/15 bg-neutral-900/75 p-6 shadow-xl"
+              className="flex min-h-96 flex-col rounded-3xl border border-primary/15 bg-neutral-900/75 p-6 shadow-xl"
               key={offer.title}
             >
-              <p className="text-xs font-bold tracking-widest text-lime-300 uppercase">
+              <p className="text-xs font-bold tracking-widest text-primary uppercase">
                 {offer.eyebrow}
               </p>
               <h3 className="mt-5 text-2xl font-black tracking-tight text-white">
@@ -49,7 +49,7 @@ export function OffersSection() {
                     className="flex items-center gap-3 text-sm text-neutral-200"
                     key={detail}
                   >
-                    <span className="flex size-6 items-center justify-center rounded-full bg-lime-300/10 text-lime-300">
+                    <span className="flex size-6 items-center justify-center rounded-full bg-primary/10 text-primary">
                       <IconCheck aria-hidden className="size-3.5" />
                     </span>
                     {detail}

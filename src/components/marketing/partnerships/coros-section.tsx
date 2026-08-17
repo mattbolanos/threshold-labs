@@ -11,7 +11,7 @@ export function CorosSection() {
       <div className="route-padding-x mx-auto max-w-7xl">
         <div className="grid gap-8 lg:grid-cols-2 lg:items-end lg:gap-16">
           <div>
-            <p className="text-xs font-bold tracking-widest text-lime-300 uppercase">
+            <p className="text-xs font-bold tracking-widest text-primary uppercase">
               Training Technology
             </p>
             <h2 className="mt-5 text-5xl font-black tracking-tighter text-white sm:text-7xl">
@@ -25,7 +25,7 @@ export function CorosSection() {
           </div>
           <div className="lg:text-right">
             <a
-              className="inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-3 text-sm font-bold text-white transition-colors hover:border-lime-300"
+              className="inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-3 text-sm font-bold text-white transition-colors hover:border-primary"
               href="https://coros.com/"
               rel="noreferrer"
               target="_blank"

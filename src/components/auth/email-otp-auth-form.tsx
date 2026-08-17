@@ -3,7 +3,7 @@
 import { IconBrandGoogleFilled } from "@tabler/icons-react";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import Link from "next/link";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useRef, useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -27,7 +27,11 @@ import {
   getEmailOtpRequestError,
   requestEmailOtp,
 } from "@/lib/auth/request-email-otp";
-import { EMAIL_OTP_SUCCESS_PATH, POST_AUTH_PATH } from "@/lib/auth/routes";
+import {
+  getEmailOtpSuccessPath,
+  POST_AUTH_PATH,
+  SIGNUP_SUCCESS_PATH,
+} from "@/lib/auth/routes";
 import { authClient } from "@/lib/auth-client";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -35,12 +39,7 @@ const otpIndexes = [0, 1, 2, 3, 4, 5] as const;
 
 type AuthStep = "email" | "otp";
 type PendingAction =
-  | "google"
-  | "redirect"
-  | "resend-code"
-  | "send-code"
-  | "verify-code"
-  | null;
+  "google" | "redirect" | "resend-code" | "send-code" | "verify-code" | null;
 
 interface EmailOtpAuthFormProps {
   mode: EmailOtpMode;
@@ -72,14 +71,15 @@ function getErrorMessage(error: unknown, fallback: string) {
 
 export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
   const isSignup = mode === "signup";
-  const [email, setEmail] = useState("long.athlete.address@example.com");
+  const [email, setEmail] = useState("");
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [name, setName] = useState("");
   const [notice, setNotice] = useState<string | null>(null);
   const [otp, setOtp] = useState("");
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
   const [requestError, setRequestError] = useState<string | null>(null);
-  const [step, setStep] = useState<AuthStep>("otp");
+  const [step, setStep] = useState<AuthStep>("email");
+  const verificationInFlight = useRef(false);
 
   const isBusy = pendingAction !== null;
 
@@ -125,16 +125,20 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
     }
   };
 
-  const verifyCode = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const verifyCode = async (code: string) => {
+    if (verificationInFlight.current) {
+      return;
+    }
+
     setNotice(null);
     setRequestError(null);
 
-    if (otp.length !== 6) {
+    if (code.length !== 6) {
       setFieldErrors({ otp: "Enter the six-digit code" });
       return;
     }
 
+    verificationInFlight.current = true;
     setFieldErrors({});
     setPendingAction("verify-code");
     let isRedirecting = false;
@@ -143,7 +147,7 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
       const { error } = await authClient.signIn.emailOtp({
         email,
         name: isSignup ? name.trim() : undefined,
-        otp,
+        otp: code,
       });
 
       if (error) {
@@ -156,7 +160,7 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
 
       isRedirecting = true;
       setPendingAction("redirect");
-      window.location.replace(EMAIL_OTP_SUCCESS_PATH);
+      window.location.replace(getEmailOtpSuccessPath(mode));
     } catch (error) {
       setRequestError(
         getErrorMessage(
@@ -166,9 +170,15 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
       );
     } finally {
       if (!isRedirecting) {
+        verificationInFlight.current = false;
         setPendingAction(null);
       }
     }
+  };
+
+  const submitCode = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    void verifyCode(otp);
   };
 
   const resendCode = async () => {
@@ -217,7 +227,7 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
       const { error } = await authClient.signIn.social({
         callbackURL: POST_AUTH_PATH,
         errorCallbackURL: `${window.location.origin}/${mode}`,
-        newUserCallbackURL: isSignup ? POST_AUTH_PATH : undefined,
+        newUserCallbackURL: SIGNUP_SUCCESS_PATH,
         provider: "google",
       });
 
@@ -237,6 +247,7 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
 
   const updateOtp = (value: string) => {
     setOtp(value);
+    setRequestError(null);
     if (fieldErrors.otp) {
       setFieldErrors({});
     }
@@ -255,7 +266,7 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
               id="email-otp-description"
             >
               Enter the six-digit code sent to{" "}
-              <bdi className="break-words font-medium text-foreground">
+              <bdi className="font-medium break-words text-foreground">
                 {email}
               </bdi>
               . It expires in 5 minutes.
@@ -332,7 +343,7 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
                 ) : null}
                 {pendingAction === "send-code"
                   ? "Sending email…"
-                  : "Send verification email"}
+                  : "Send me a one-time password"}
               </Button>
 
               <FieldSeparator>Or</FieldSeparator>
@@ -357,7 +368,7 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
             </FieldGroup>
           </form>
         ) : (
-          <form noValidate onSubmit={verifyCode}>
+          <form noValidate onSubmit={submitCode}>
             <FieldGroup>
               <Field
                 className="items-center gap-3"
@@ -380,6 +391,7 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
                   inputMode="numeric"
                   maxLength={6}
                   onChange={updateOtp}
+                  onComplete={(value: string) => void verifyCode(value)}
                   pattern={REGEXP_ONLY_DIGITS}
                   value={otp}
                 >
@@ -435,10 +447,12 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
                     <Spinner data-icon="inline-start" />
                   ) : null}
                   {pendingAction === "redirect"
-                    ? "Opening the lab…"
+                    ? isSignup
+                      ? "Opening membership…"
+                      : "Opening the lab…"
                     : pendingAction === "verify-code"
                       ? "Verifying…"
-                      : "Verify and continue"}
+                      : "Verify OTP"}
                 </Button>
                 <Button
                   className="w-full active:scale-96"
@@ -462,11 +476,12 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
       </CardContent>
 
       {step === "email" ? (
-        <CardFooter className="justify-center gap-1">
+        <CardFooter className="justify-center gap-1.5">
           <span className="text-muted-foreground">
-            {isSignup ? "Already have an account?" : "New to Inside the Lab?"}
+            {isSignup ? "Already have an account?" : "New here?"}
           </span>
           <Button
+            className="px-0!"
             nativeButton={false}
             render={<Link href={isSignup ? "/login" : "/signup"} />}
             size="sm"

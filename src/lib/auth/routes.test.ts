@@ -1,8 +1,18 @@
 import { describe, expect, test } from "bun:test";
-import { EMAIL_OTP_SUCCESS_PATH } from "./routes";
+import { getEmailOtpSuccessPath, SIGNUP_SUCCESS_PATH } from "./routes";
 
 describe("email OTP routing", () => {
-  test("opens Lab Notes after verification", () => {
-    expect(EMAIL_OTP_SUCCESS_PATH).toBe("/lab/lab-notes");
+  test("opens the subscription flow after signup", () => {
+    expect(getEmailOtpSuccessPath("signup")).toBe("/subscribe");
+  });
+
+  test("opens Lab Notes after login", () => {
+    expect(getEmailOtpSuccessPath("login")).toBe("/lab/lab-notes");
+  });
+});
+
+describe("social signup routing", () => {
+  test("opens the subscription flow for a new account", () => {
+    expect(SIGNUP_SUCCESS_PATH).toBe("/subscribe");
   });
 });

@@ -6,7 +6,7 @@ export function PartnershipHero() {
       <div className="marketing-grid pointer-events-none absolute inset-0 opacity-70" />
       <div className="marketing-glow pointer-events-none absolute inset-0" />
 
-      <div className="relative mx-auto max-w-7xl px-5 sm:px-8">
+      <div className="route-padding-x relative mx-auto max-w-7xl">
         <p className="text-xs font-bold tracking-widest text-lime-300 uppercase">
           Threshold Lab Partners
         </p>

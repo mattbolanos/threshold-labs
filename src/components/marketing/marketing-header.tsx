@@ -11,7 +11,7 @@ export async function MarketingHeader() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-lime-300/15 bg-neutral-950/90 backdrop-blur-xl">
-      <div className="mx-auto flex h-14 w-full max-w-7xl items-center justify-between gap-6 px-5 md:px-10">
+      <div className="route-padding-x mx-auto flex h-14 w-full max-w-7xl items-center justify-between gap-6 px-5">
         <Link
           aria-label="Threshold Lab home"
           className="group/brand flex shrink-0 items-center gap-2"

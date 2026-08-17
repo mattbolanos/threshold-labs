@@ -8,7 +8,7 @@ const socialLinks = [
 
 export function MarketingFooter() {
   return (
-    <footer className="mx-auto flex max-w-7xl flex-col gap-8 px-5 py-12 sm:px-8 lg:flex-row lg:items-end lg:justify-between">
+    <footer className="route-padding-x mx-auto flex max-w-7xl flex-col gap-8 py-12 lg:flex-row lg:items-end lg:justify-between">
       <div>
         <Link className="flex items-center gap-2.5" href="/">
           <span className="flex size-9 items-center justify-center rounded-xl bg-lime-300 text-sm font-black text-neutral-950">

@@ -14,7 +14,7 @@ const highlights = [
 export function FounderSection() {
   return (
     <section
-      className="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-12"
+      className="route-padding-x mx-auto max-w-7xl py-10 sm:py-12"
       id="coach"
     >
       <div className="grid overflow-hidden rounded-3xl border border-lime-300/15 bg-neutral-900/65 lg:grid-cols-2">

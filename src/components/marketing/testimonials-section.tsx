@@ -77,7 +77,7 @@ export function TestimonialsSection() {
 
   return (
     <section
-      className="mx-auto max-w-7xl scroll-mt-24 px-5 pt-10 pb-16 sm:px-8 sm:pt-12 sm:pb-20"
+      className="route-padding-x mx-auto max-w-7xl scroll-mt-24 pt-10 pb-16 sm:pt-12 sm:pb-20"
       id="results"
     >
       <div className="mb-10 flex items-end justify-between gap-6">

@@ -12,7 +12,7 @@ export function FirstPhormSection() {
       className="scroll-mt-24 border-t border-white/10 py-20 sm:py-28"
       id="1st-phorm"
     >
-      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+      <div className="route-padding-x mx-auto max-w-7xl">
         <div className="grid gap-10 lg:grid-cols-2 lg:items-end lg:gap-16">
           <div>
             <p className="text-xs font-bold tracking-widest text-lime-300 uppercase">

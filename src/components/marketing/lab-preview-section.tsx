@@ -10,7 +10,7 @@ export function LabPreviewSection() {
       id="inside-the-lab"
     >
       <div
-        className="mx-auto max-w-7xl scroll-mt-24 px-5 py-20 sm:px-8 sm:py-24"
+        className="route-padding-x mx-auto max-w-7xl scroll-mt-24 py-20 sm:py-24"
         id="lab-preview"
       >
         <div className="grid gap-8 lg:grid-cols-3 lg:items-end lg:gap-12">

@@ -4,7 +4,7 @@ export function MarketingHeaderFallback() {
       aria-hidden
       className="sticky top-0 z-50 w-full border-b border-lime-300/15 bg-neutral-950/90 backdrop-blur-xl"
     >
-      <div className="mx-auto flex h-14 w-full max-w-7xl items-center justify-between gap-6 px-5 md:px-10">
+      <div className="route-padding-x mx-auto flex h-14 w-full max-w-7xl items-center justify-between gap-6">
         <div className="flex items-center gap-2">
           <span className="flex size-7 items-center justify-center rounded-md bg-lime-300 text-xs font-bold text-neutral-950">
             TL

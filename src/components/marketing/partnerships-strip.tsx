@@ -7,7 +7,7 @@ export function PartnershipsStrip() {
       className="scroll-mt-24 border-y border-lime-300/10 bg-neutral-900/40"
       id="partnerships"
     >
-      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-5 py-8 sm:px-8 lg:flex-row lg:items-center lg:justify-between">
+      <div className="route-padding-x mx-auto flex max-w-7xl flex-col gap-6 py-8 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <p className="text-xs font-bold tracking-widest text-lime-300 uppercase">
             Partnerships

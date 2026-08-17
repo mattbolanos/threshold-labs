@@ -8,7 +8,7 @@ export function CorosSection() {
       className="scroll-mt-24 border-y border-white/10 bg-neutral-900/30 py-20 sm:py-28"
       id="coros"
     >
-      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+      <div className="route-padding-x mx-auto max-w-7xl">
         <div className="grid gap-8 lg:grid-cols-2 lg:items-end lg:gap-16">
           <div>
             <p className="text-xs font-bold tracking-widest text-lime-300 uppercase">

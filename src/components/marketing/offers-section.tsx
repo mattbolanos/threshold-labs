@@ -5,7 +5,7 @@ import { offers } from "@/lib/marketing-content";
 export function OffersSection() {
   return (
     <section
-      className="mx-auto max-w-7xl scroll-mt-24 px-5 pt-16 pb-10 sm:px-8 sm:pt-20 sm:pb-12"
+      className="route-padding-x mx-auto max-w-7xl scroll-mt-24 pt-16 pb-10 sm:pt-20 sm:pb-12"
       id="work-with-me"
     >
       <div className="mb-10 max-w-2xl">

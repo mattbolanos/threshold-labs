@@ -3,9 +3,9 @@ import type { GenericCtx } from "@convex-dev/better-auth";
 import Stripe from "stripe";
 import type { DataModel } from "../_generated/dataModel";
 import { getAuthEnvironment } from "./authEnvironment";
+import { INSIDE_LAB_PLAN_NAME } from "./labAccess";
 
 const STRIPE_API_VERSION = "2026-07-29.dahlia";
-const INSIDE_LAB_PLAN_NAME = "inside-the-lab";
 
 function createStripeClient(ctx: GenericCtx<DataModel>) {
   return new Stripe(getAuthEnvironment(ctx, "STRIPE_SECRET_KEY"), {

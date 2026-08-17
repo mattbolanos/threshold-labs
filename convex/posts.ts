@@ -1,13 +1,7 @@
 import { ConvexError, v } from "convex/values";
-import {
-  type MutationCtx,
-  mutation,
-  type QueryCtx,
-  query,
-} from "./_generated/server";
-import { assertLabAccess, authComponent } from "./auth";
+import { type MutationCtx, mutation, query } from "./_generated/server";
+import { assertAdmin, assertLabAccess } from "./auth";
 import { sortPostsByPinnedThenPublishedAt } from "./postSorting";
-import { isPreviewAuthEnabled } from "./previewAuth";
 
 const postInputValidator = v.object({
   category: v.string(),
@@ -27,18 +21,6 @@ type PostInput = {
   publishedAt: number;
   slug: string;
   title: string;
-};
-
-const assertAdmin = async (ctx: QueryCtx | MutationCtx) => {
-  if (isPreviewAuthEnabled()) {
-    return;
-  }
-
-  const user = await authComponent.safeGetAuthUser(ctx);
-
-  if (!user || user.role !== "admin") {
-    throw new ConvexError("Only admins can manage posts.");
-  }
 };
 
 const normalizeSlug = (value: string) =>

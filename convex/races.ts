@@ -1,12 +1,6 @@
 import { ConvexError, v } from "convex/values";
-import {
-  type MutationCtx,
-  mutation,
-  type QueryCtx,
-  query,
-} from "./_generated/server";
-import { assertLabAccess, authComponent } from "./auth";
-import { isPreviewAuthEnabled } from "./previewAuth";
+import { mutation, query } from "./_generated/server";
+import { assertAdmin, assertLabAccess } from "./auth";
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const HYROX_DIVISIONS = new Set([
@@ -33,15 +27,6 @@ type RaceInput = {
   location?: string | null;
   name: string;
   startDate: string;
-};
-
-const assertAdmin = async (ctx: QueryCtx | MutationCtx) => {
-  if (isPreviewAuthEnabled()) return;
-
-  const user = await authComponent.safeGetAuthUser(ctx);
-  if (!user || user.role !== "admin") {
-    throw new ConvexError("Only admins can manage races.");
-  }
 };
 
 const toOptionalString = (value: string | null | undefined) => {

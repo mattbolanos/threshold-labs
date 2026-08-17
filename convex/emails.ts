@@ -1,17 +1,23 @@
 import { v } from "convex/values";
 import { internalAction } from "./_generated/server";
 import { getAuthEnvironment } from "./lib/authEnvironment";
-import { createVerificationEmail } from "./lib/verificationEmail";
+import { createEmailOtpMessage } from "./lib/emailOtp";
 
 const RESEND_EMAILS_URL = "https://api.resend.com/emails";
 
-export const sendVerificationEmail = internalAction({
+export const sendEmailOtp = internalAction({
   args: {
+    otp: v.string(),
     recipient: v.string(),
-    verificationUrl: v.string(),
+    type: v.union(
+      v.literal("change-email"),
+      v.literal("email-verification"),
+      v.literal("forget-password"),
+      v.literal("sign-in"),
+    ),
   },
-  handler: async (ctx, { recipient, verificationUrl }) => {
-    const email = createVerificationEmail(verificationUrl);
+  handler: async (ctx, { otp, recipient, type }) => {
+    const email = createEmailOtpMessage({ otp, type });
     const response = await fetch(RESEND_EMAILS_URL, {
       body: JSON.stringify({
         from: getAuthEnvironment(ctx, "AUTH_EMAIL_FROM"),
@@ -28,7 +34,7 @@ export const sendVerificationEmail = internalAction({
 
     if (!response.ok) {
       throw new Error(
-        `Resend rejected a verification email with status ${response.status}.`,
+        `Resend rejected an OTP email with status ${response.status}.`,
       );
     }
   },

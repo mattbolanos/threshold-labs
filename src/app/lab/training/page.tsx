@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import {
   BASE_FITNESS_DEFINITIONS,
   ROLLING_LOAD_DEFINITIONS,
@@ -15,6 +16,7 @@ import { ChartControls } from "@/components/chart/controls";
 import { RollingLoadChart } from "@/components/chart/rolling-load";
 import { RunMixChart } from "@/components/chart/run-mix";
 import { SessionIntensityChart } from "@/components/chart/session-intensity";
+import { LabRouteFallback } from "@/components/lab-route-fallback";
 import { Separator } from "@/components/ui/separator";
 import { ChartStateProvider } from "@/hooks/use-chart-state";
 import { checkLabAccess } from "@/lib/auth";
@@ -25,7 +27,7 @@ export const metadata: Metadata = {
   title: "Training Overview | Threshold Lab",
 };
 
-export default async function TrainingPage() {
+async function TrainingPageContent() {
   await checkLabAccess();
 
   return (
@@ -88,5 +90,13 @@ export default async function TrainingPage() {
         </section>
       </ChartStateProvider>
     </div>
+  );
+}
+
+export default function TrainingPage() {
+  return (
+    <Suspense fallback={<LabRouteFallback />}>
+      <TrainingPageContent />
+    </Suspense>
   );
 }

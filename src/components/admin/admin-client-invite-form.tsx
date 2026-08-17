@@ -44,17 +44,17 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const roleOptions = [
   {
-    description: "Default athlete access to the app.",
+    description: "Standard member role; Lab access requires a subscription.",
     label: "Client",
     value: "client",
   },
   {
-    description: "Can administer workouts and invites.",
+    description: "Grants admin and Lab access when applied at first signup.",
     label: "Admin",
     value: "admin",
   },
   {
-    description: "Coach-level access and client support.",
+    description: "Coach label; Lab access still requires a subscription.",
     label: "Coach",
     value: "coach",
   },
@@ -125,7 +125,7 @@ export function AdminClientInviteForm() {
     )
       .then(() => {
         setStatusMessage(
-          `${normalizedEmail} saved as ${selectedRole?.label ?? "Client"} (${form.isActive ? "active" : "paused"}).`,
+          `${normalizedEmail}: ${selectedRole?.label ?? "Client"} role default saved (${form.isActive ? "active" : "paused"}).`,
         );
         setForm((prev) => ({
           ...prev,
@@ -148,15 +148,15 @@ export function AdminClientInviteForm() {
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div className="space-y-1">
             <CardTitle className="text-base font-semibold tracking-tight">
-              Client Access Invites
+              Pre-signup role default
             </CardTitle>
             <CardDescription>
-              Create or update an invite by email. Existing records are updated
-              automatically.
+              Save the role an email should receive at first signup. This does
+              not block account creation or change an existing user.
             </CardDescription>
           </div>
           <Badge variant={form.isActive ? "default" : "secondary"}>
-            {form.isActive ? "Active Invite" : "Paused Invite"}
+            {form.isActive ? "Default active" : "Default paused"}
           </Badge>
         </div>
       </CardHeader>
@@ -187,7 +187,7 @@ export function AdminClientInviteForm() {
           onSubmit={handleSubmit}
         >
           <div className="space-y-2">
-            <Label htmlFor={emailId}>Client Email</Label>
+            <Label htmlFor={emailId}>Member Email</Label>
             <Input
               aria-describedby={emailError ? `${emailId}-error` : undefined}
               aria-invalid={emailError ? true : undefined}
@@ -218,28 +218,29 @@ export function AdminClientInviteForm() {
               </p>
             ) : (
               <p className="text-muted-foreground text-xs">
-                Use the email your client will sign up with.
+                Use the email the member will register with.
               </p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor={nameId}>Client Name (Optional)</Label>
+            <Label htmlFor={nameId}>Member Name (Optional)</Label>
             <Input
               autoComplete="name"
+              className="min-h-11"
               id={nameId}
               name="invite_name"
               onChange={(event) =>
                 setForm((prev) => ({ ...prev, name: event.target.value }))
               }
-              placeholder="Athlete Name…"
+              placeholder="Member Name…"
               type="text"
               value={form.name}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor={roleId}>Role</Label>
+            <Label htmlFor={roleId}>Role at Signup</Label>
             <Select
               id={roleId}
               items={roleOptions}
@@ -251,7 +252,7 @@ export function AdminClientInviteForm() {
               }}
               value={form.role}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="min-h-11 w-full">
                 <SelectValue placeholder="Select a role" />
               </SelectTrigger>
               <SelectContent>
@@ -265,10 +266,13 @@ export function AdminClientInviteForm() {
                 </SelectGroup>
               </SelectContent>
             </Select>
+            <p className="text-muted-foreground text-xs">
+              {selectedRole?.description}
+            </p>
           </div>
 
           <div className="space-y-2">
-            <span className="text-sm font-medium">Invite Status</span>
+            <span className="text-sm font-medium">Role Default Status</span>
             <div className="has-focus-within bg-background rounded-lg border">
               <Label
                 className="cursor-pointer items-start justify-between gap-4 p-3"
@@ -276,12 +280,12 @@ export function AdminClientInviteForm() {
               >
                 <span className="space-y-1">
                   <span className="block text-sm font-medium">
-                    Allow Signup
+                    Apply Preassigned Role
                   </span>
                   <span className="text-muted-foreground block text-xs">
                     {form.isActive
-                      ? "Client can sign up immediately."
-                      : "Invite is saved but sign up is blocked."}
+                      ? "This role will be applied when the member first signs up."
+                      : "This role is ignored; signup defaults to client."}
                   </span>
                 </span>
                 <input
@@ -301,7 +305,7 @@ export function AdminClientInviteForm() {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-end gap-2 lg:col-span-2">
+          <div className="flex flex-wrap items-center justify-end gap-3 lg:col-span-2">
             <Button
               className="min-h-11"
               disabled={isSubmitting}
@@ -327,7 +331,7 @@ export function AdminClientInviteForm() {
               ) : (
                 <IconMailPlus aria-hidden />
               )}
-              <span>Save Invite</span>
+              <span>Save Role Default</span>
             </Button>
           </div>
         </form>

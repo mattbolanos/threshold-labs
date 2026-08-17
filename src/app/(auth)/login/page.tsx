@@ -10,7 +10,7 @@ export default function LoginPage() {
   return (
     <div className="relative z-10 w-full max-w-md">
       <AuthHeader
-        description="Sign in to continue"
+        description="Use a one-time code to continue"
         title="Access Inside the Lab"
       />
       <LoginForm />

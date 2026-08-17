@@ -1,13 +1,7 @@
 import { ConvexError, v } from "convex/values";
 import { addDays, addWeeks, format, startOfWeek } from "date-fns";
-import {
-  type MutationCtx,
-  mutation,
-  type QueryCtx,
-  query,
-} from "./_generated/server";
-import { assertLabAccess, authComponent } from "./auth";
-import { isPreviewAuthEnabled } from "./previewAuth";
+import { mutation, query } from "./_generated/server";
+import { assertAdmin, assertLabAccess } from "./auth";
 import {
   findTrainingBlockForDate,
   getTrainingBlocksOverlappingRange,
@@ -144,18 +138,6 @@ const normalizeWorkout = (workout: {
     workoutDate,
     workoutPlan,
   });
-};
-
-const assertAdmin = async (ctx: QueryCtx | MutationCtx) => {
-  if (isPreviewAuthEnabled()) {
-    return;
-  }
-
-  const user = await authComponent.safeGetAuthUser(ctx);
-
-  if (!user || user.role !== "admin") {
-    throw new ConvexError("Only admins can manage workouts.");
-  }
 };
 
 const isVisibleWorkout = (workout: { isHidden?: boolean }) =>

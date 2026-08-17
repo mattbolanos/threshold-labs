@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { cache } from "react";
+import { cache, Suspense } from "react";
+import { LabRouteFallback } from "@/components/lab-route-fallback";
 import { PostDetail } from "@/components/posts/post-detail";
 import { checkLabAccess } from "@/lib/auth";
 import { fetchAuthQuery } from "@/lib/auth-server";
@@ -34,15 +35,21 @@ export async function generateMetadata({
   };
 }
 
-export default async function LabNotePage({ params }: LabNotePageProps) {
+async function LabNotePageContent({ params }: LabNotePageProps) {
   await checkLabAccess();
 
   const { slug } = await params;
   const post = await getPublishedPost(slug);
 
+  return <PostDetail post={post} />;
+}
+
+export default function LabNotePage({ params }: LabNotePageProps) {
   return (
     <main className="mx-auto max-w-3xl">
-      <PostDetail post={post} />
+      <Suspense fallback={<LabRouteFallback />}>
+        <LabNotePageContent params={params} />
+      </Suspense>
     </main>
   );
 }

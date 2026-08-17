@@ -7,7 +7,11 @@ describe("hasActiveLabSubscription", () => {
     (status) => {
       expect(
         hasActiveLabSubscription([
-          { status, stripeSubscriptionId: "sub_inside_the_lab" },
+          {
+            plan: "inside-the-lab",
+            status,
+            stripeSubscriptionId: "sub_inside_the_lab",
+          },
         ]),
       ).toBe(true);
     },
@@ -18,14 +22,32 @@ describe("hasActiveLabSubscription", () => {
     (status) => {
       expect(
         hasActiveLabSubscription([
-          { status, stripeSubscriptionId: "sub_inside_the_lab" },
+          {
+            plan: "inside-the-lab",
+            status,
+            stripeSubscriptionId: "sub_inside_the_lab",
+          },
         ]),
       ).toBe(false);
     },
   );
 
   test("denies access when Stripe has not created a subscription", () => {
-    expect(hasActiveLabSubscription([{ status: "active" }])).toBe(false);
+    expect(
+      hasActiveLabSubscription([{ plan: "inside-the-lab", status: "active" }]),
+    ).toBe(false);
     expect(hasActiveLabSubscription([])).toBe(false);
+  });
+
+  test("denies access to an active subscription for another plan", () => {
+    expect(
+      hasActiveLabSubscription([
+        {
+          plan: "coaching",
+          status: "active",
+          stripeSubscriptionId: "sub_coaching",
+        },
+      ]),
+    ).toBe(false);
   });
 });

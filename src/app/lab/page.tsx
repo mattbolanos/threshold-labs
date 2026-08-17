@@ -1,7 +1,17 @@
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
+import { LabRouteFallback } from "@/components/lab-route-fallback";
 import { checkLabAccess } from "@/lib/auth";
 
-export default async function LabPage() {
+async function LabRedirect() {
   await checkLabAccess();
-  redirect("/lab/lab-notes");
+  return redirect("/lab/lab-notes");
+}
+
+export default function LabPage() {
+  return (
+    <Suspense fallback={<LabRouteFallback />}>
+      <LabRedirect />
+    </Suspense>
+  );
 }

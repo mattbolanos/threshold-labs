@@ -47,7 +47,7 @@ export const checkLabAccess = cache(async () => {
   return true;
 });
 
-export const checkAdmin = async () => {
+export const checkAdmin = cache(async () => {
   await checkLabAccess();
 
   const preview = await getPreviewAuthState();
@@ -75,4 +75,4 @@ export const checkAdmin = async () => {
   }
 
   return user;
-};
+});

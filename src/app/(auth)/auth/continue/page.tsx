@@ -14,7 +14,7 @@ interface PostAuthRedirectProps {
 async function PostAuthRedirect({ searchParams }: PostAuthRedirectProps) {
   const { error } = await searchParams;
   if (error) {
-    redirect("/verify-email?error=invalid_token");
+    redirect("/login");
   }
 
   return redirect(await getPostAuthDestination());

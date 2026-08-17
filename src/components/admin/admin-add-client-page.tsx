@@ -1,29 +1,21 @@
 "use client";
 
 import { AdminBackLink } from "@/components/admin/admin-back-link";
+import { PageHeader } from "@/components/page-header";
 import { AdminClientInviteForm } from "./admin-client-invite-form";
 
 export function AdminAddClientPage() {
   return (
-    <div className="flex w-full flex-col gap-6">
-      <div>
-        <AdminBackLink />
-      </div>
+    <div className="flex w-full flex-col gap-8">
+      <AdminBackLink href="/lab/admin/users" label="Back to Users & access" />
 
-      <div>
-        <p className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
-          Access
-        </p>
-        <h2 className="text-lg font-semibold tracking-tight">Add Client</h2>
-        <p className="text-muted-foreground mt-0.5 text-xs">
-          Create or update signup invites for clients and coaches.
-        </p>
-      </div>
+      <PageHeader
+        description="Save the role an email should receive at first signup. Manage registered users and their current roles from Users & access."
+        eyebrow="Users & access"
+        title="Add role default"
+      />
 
-      <div className="border-primary/20 relative border-t pt-4">
-        <div className="bg-primary/40 absolute top-0 left-0 h-0.5 w-16" />
-        <AdminClientInviteForm />
-      </div>
+      <AdminClientInviteForm />
     </div>
   );
 }

@@ -1,10 +1,8 @@
 import { describe, expect, test } from "bun:test";
-import { getVerifyEmailPath } from "./routes";
+import { EMAIL_OTP_SUCCESS_PATH } from "./routes";
 
-describe("getVerifyEmailPath", () => {
-  test("normalizes and encodes the email address", () => {
-    expect(getVerifyEmailPath(" Athlete@Example.COM ")).toBe(
-      "/verify-email?email=athlete%40example.com",
-    );
+describe("email OTP routing", () => {
+  test("opens Lab Notes after verification", () => {
+    expect(EMAIL_OTP_SUCCESS_PATH).toBe("/lab/lab-notes");
   });
 });

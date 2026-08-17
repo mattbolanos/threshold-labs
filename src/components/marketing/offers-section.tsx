@@ -32,9 +32,6 @@ export function OffersSection() {
           return (
             <article
               className="flex min-h-96 flex-col rounded-3xl border border-lime-300/15 bg-neutral-900/75 p-6 shadow-xl"
-              id={
-                offer.title === "Inside the Lab" ? "inside-the-lab" : undefined
-              }
               key={offer.title}
             >
               <p className="text-xs font-bold tracking-widest text-lime-300 uppercase">

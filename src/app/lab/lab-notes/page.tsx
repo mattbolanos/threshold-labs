@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { LabNotesDashboard } from "@/components/lab-notes/lab-notes-dashboard";
 import { PageHeader } from "@/components/page-header";
-import { checkAuth } from "@/lib/auth";
+import { checkLabAccess } from "@/lib/auth";
 import { preloadAuthQuery } from "@/lib/auth-server";
 import { getLabNotesDates } from "@/lib/lab-notes-dates";
 import { api } from "../../../../convex/_generated/api";
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 export default async function LabNotesPage() {
-  await checkAuth();
+  await checkLabAccess();
 
   const { oneYearAgo, today } = await getLabNotesDates();
   const [

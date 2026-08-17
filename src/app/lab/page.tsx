@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
-import { checkAuth } from "@/lib/auth";
+import { checkLabAccess } from "@/lib/auth";
 
 export default async function LabPage() {
-  await checkAuth();
+  await checkLabAccess();
   redirect("/lab/lab-notes");
 }

@@ -2,6 +2,10 @@ import type { GenericCtx } from "@convex-dev/better-auth";
 import type { DataModel } from "../_generated/dataModel";
 
 const AUTH_ENVIRONMENT = {
+  AUTH_EMAIL_FROM: {
+    runtime: () => process.env.AUTH_EMAIL_FROM,
+    schemaGeneration: "Threshold Lab <account@example.com>",
+  },
   BETTER_AUTH_SECRET: {
     runtime: () => process.env.BETTER_AUTH_SECRET,
     schemaGeneration: "schema-generation-secret-at-least-32-characters",
@@ -13,6 +17,10 @@ const AUTH_ENVIRONMENT = {
   GOOGLE_CLIENT_SECRET: {
     runtime: () => process.env.GOOGLE_CLIENT_SECRET,
     schemaGeneration: "google-schema-generation-client-secret",
+  },
+  RESEND_API_KEY: {
+    runtime: () => process.env.RESEND_API_KEY,
+    schemaGeneration: "re_schema_generation_key",
   },
   SITE_URL: {
     runtime: () => process.env.SITE_URL,

@@ -3,10 +3,11 @@
 import { IconBrandGoogleFilled, IconLoader2 } from "@tabler/icons-react";
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getVerifyEmailPath, POST_AUTH_PATH } from "@/lib/auth/routes";
 import { authClient } from "@/lib/auth-client";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -33,7 +34,7 @@ function validatePassword(value: string) {
 
 export function LoginForm() {
   const [error, setError] = useState<string | null>(null);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isGooglePending, startGoogleTransition] = useTransition();
 
   const form = useForm({
     defaultValues: {
@@ -45,43 +46,47 @@ export function LoginForm() {
 
       await authClient.signIn.email(
         {
-          callbackURL: "/subscribe",
+          callbackURL: POST_AUTH_PATH,
           email: value.email,
           password: value.password,
         },
         {
           onError: (ctx) => {
+            if (ctx.error.code === "EMAIL_NOT_VERIFIED") {
+              window.location.href = getVerifyEmailPath(value.email);
+              return;
+            }
+
             setError(ctx.error.message || "Invalid email or password");
           },
           onSuccess: () => {
             // A hard navigation ensures the new session cookie is available
-            // before the authenticated checkout handoff renders.
-            window.location.href = "/subscribe";
+            // before the server checks the account's Lab access.
+            window.location.href = POST_AUTH_PATH;
           },
         },
       );
     },
   });
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignIn = () => {
     setError(null);
-    setIsGoogleLoading(true);
 
-    await authClient.signIn
-      .social({
-        callbackURL: "/subscribe",
-        errorCallbackURL: `${window.location.origin}/login`,
-        provider: "google",
-      })
-      .catch((error) => {
+    startGoogleTransition(async () => {
+      try {
+        await authClient.signIn.social({
+          callbackURL: POST_AUTH_PATH,
+          errorCallbackURL: `${window.location.origin}/login`,
+          provider: "google",
+        });
+      } catch (error) {
         setError(
           error instanceof Error
             ? error.message
             : "Failed to connect with Google",
         );
-      });
-
-    setIsGoogleLoading(false);
+      }
+    });
   };
 
   const handleLoginSubmit = async () => {
@@ -210,7 +215,7 @@ export function LoginForm() {
           {(isSubmitting) => (
             <Button
               className="w-full font-semibold tracking-wide"
-              disabled={isSubmitting || isGoogleLoading}
+              disabled={isSubmitting || isGooglePending}
               size="lg"
               type="submit"
             >
@@ -242,12 +247,13 @@ export function LoginForm() {
         {(isSubmitting) => (
           <Button
             className="w-full"
-            disabled={isGoogleLoading || isSubmitting}
+            disabled={isGooglePending || isSubmitting}
             onClick={handleGoogleSignIn}
             size="lg"
+            type="button"
             variant="outline"
           >
-            {isGoogleLoading ? (
+            {isGooglePending ? (
               <>
                 <IconLoader2 className="animate-spin" />
                 <span>Connecting…</span>

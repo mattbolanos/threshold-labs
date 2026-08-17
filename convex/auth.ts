@@ -14,7 +14,9 @@ import {
 import authConfig from "./auth.config";
 import authSchema from "./betterAuth/schema";
 import { getAuthEnvironment } from "./lib/authEnvironment";
+import { hasActiveLabSubscription } from "./lib/labAccess";
 import { createStripeAuthPlugin } from "./lib/stripeAuth";
+import { EMAIL_VERIFICATION_EXPIRES_IN_SECONDS } from "./lib/verificationEmail";
 import {
   createPreviewUser,
   isPreviewAuthEnabled,
@@ -54,6 +56,25 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) =>
     },
     emailAndPassword: {
       enabled: true,
+      requireEmailVerification: true,
+    },
+    emailVerification: {
+      autoSignInAfterVerification: true,
+      expiresIn: EMAIL_VERIFICATION_EXPIRES_IN_SECONDS,
+      sendOnSignIn: true,
+      sendOnSignUp: true,
+      sendVerificationEmail: async ({ url, user }) => {
+        if (!("scheduler" in ctx)) {
+          throw new Error(
+            "Email verification must run in a Convex mutation or action.",
+          );
+        }
+
+        await ctx.scheduler.runAfter(0, internal.emails.sendVerificationEmail, {
+          recipient: user.email,
+          verificationUrl: url,
+        });
+      },
     },
     plugins: [convex({ authConfig }), createStripeAuthPlugin(ctx)],
     secret: getAuthEnvironment(ctx, "BETTER_AUTH_SECRET"),
@@ -113,11 +134,7 @@ export const getLabAccess = async (ctx: QueryCtx | MutationCtx) => {
     model: "subscription",
     where: [{ field: "referenceId", value: user._id.toString() }],
   });
-  const hasActiveSubscription = subscriptions.some(
-    ({ status, stripeSubscriptionId }) =>
-      Boolean(stripeSubscriptionId) &&
-      (status === "active" || status === "trialing"),
-  );
+  const hasActiveSubscription = hasActiveLabSubscription(subscriptions);
 
   return hasActiveSubscription
     ? { hasAccess: true, source: "subscription" as const }

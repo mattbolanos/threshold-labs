@@ -7,12 +7,14 @@ import type { PreviewRole } from "@/lib/auth/preview-role";
 
 const PUBLIC_ROUTES = new Set([
   "/",
+  "/auth/continue",
   "/login",
   "/my-partnerships",
   "/partnerships",
   "/signup",
   "/subscribe",
   "/unauthorized",
+  "/verify-email",
 ]);
 
 export function SiteShell({

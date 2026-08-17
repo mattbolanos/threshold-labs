@@ -3,10 +3,11 @@
 import { IconBrandGoogleFilled, IconLoader2 } from "@tabler/icons-react";
 import { useForm } from "@tanstack/react-form";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getVerifyEmailPath, POST_AUTH_PATH } from "@/lib/auth/routes";
 import { authClient } from "@/lib/auth-client";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -45,7 +46,7 @@ function validatePassword(value: string) {
 
 export function SignUpForm() {
   const [error, setError] = useState<string | null>(null);
-  const [googlePending, setGooglePending] = useState(false);
+  const [isGooglePending, startGoogleTransition] = useTransition();
 
   const form = useForm({
     defaultValues: {
@@ -58,7 +59,7 @@ export function SignUpForm() {
 
       await authClient.signUp.email(
         {
-          callbackURL: "/subscribe",
+          callbackURL: POST_AUTH_PATH,
           email: value.email,
           name: value.name,
           password: value.password,
@@ -68,35 +69,32 @@ export function SignUpForm() {
             setError(ctx.error.message || "Failed to create account");
           },
           onSuccess: () => {
-            // Hard navigation to ensure fresh cookie read by server
-            window.location.href = "/subscribe";
+            window.location.href = getVerifyEmailPath(value.email);
           },
         },
       );
     },
   });
 
-  const handleGoogleSignUp = async () => {
+  const handleGoogleSignUp = () => {
     setError(null);
 
-    setGooglePending(true);
-
-    await authClient.signIn
-      .social({
-        callbackURL: "/subscribe",
-        errorCallbackURL: `${window.location.origin}/signup`,
-        newUserCallbackURL: "/subscribe",
-        provider: "google",
-      })
-      .catch((error) => {
+    startGoogleTransition(async () => {
+      try {
+        await authClient.signIn.social({
+          callbackURL: POST_AUTH_PATH,
+          errorCallbackURL: `${window.location.origin}/signup`,
+          newUserCallbackURL: POST_AUTH_PATH,
+          provider: "google",
+        });
+      } catch (error) {
         setError(
           error instanceof Error
             ? error.message
             : "Failed to connect with Google",
         );
-      });
-
-    setGooglePending(false);
+      }
+    });
   };
 
   const handleSignupSubmit = async () => {
@@ -245,7 +243,7 @@ export function SignUpForm() {
           {(isSubmitting) => (
             <Button
               className="w-full font-semibold tracking-wide"
-              disabled={isSubmitting || googlePending}
+              disabled={isSubmitting || isGooglePending}
               size="lg"
               type="submit"
             >
@@ -277,12 +275,13 @@ export function SignUpForm() {
         {(isSubmitting) => (
           <Button
             className="w-full"
-            disabled={googlePending || isSubmitting}
+            disabled={isGooglePending || isSubmitting}
             onClick={handleGoogleSignUp}
             size="lg"
+            type="button"
             variant="outline"
           >
-            {googlePending ? (
+            {isGooglePending ? (
               <>
                 <IconLoader2 className="animate-spin" />
                 <span>Connecting…</span>

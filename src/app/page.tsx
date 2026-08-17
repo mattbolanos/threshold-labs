@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { FounderSection } from "@/components/marketing/founder-section";
 import { HeroSection } from "@/components/marketing/hero-section";
+import { LabPreviewSection } from "@/components/marketing/lab-preview-section";
 import { MarketingFooter } from "@/components/marketing/marketing-footer";
 import { MarketingHeader } from "@/components/marketing/marketing-header";
 import { MarketingHeaderFallback } from "@/components/marketing/marketing-header-fallback";
@@ -24,6 +25,7 @@ export default function MarketingHomePage() {
       <main>
         <HeroSection />
         <OffersSection />
+        <LabPreviewSection />
         <FounderSection />
         <TestimonialsSection />
         <PartnershipsStrip />

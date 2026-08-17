@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { cache } from "react";
 import { PostDetail } from "@/components/posts/post-detail";
-import { checkAuth } from "@/lib/auth";
+import { checkLabAccess } from "@/lib/auth";
 import { fetchAuthQuery } from "@/lib/auth-server";
 import { summarizeMarkdown } from "@/lib/posts";
 import { api } from "../../../../../convex/_generated/api";
@@ -17,7 +17,7 @@ const getPublishedPost = cache((slug: string) =>
 export async function generateMetadata({
   params,
 }: LabNotePageProps): Promise<Metadata> {
-  await checkAuth();
+  await checkLabAccess();
   const { slug } = await params;
   const post = await getPublishedPost(slug);
 
@@ -35,7 +35,7 @@ export async function generateMetadata({
 }
 
 export default async function LabNotePage({ params }: LabNotePageProps) {
-  await checkAuth();
+  await checkLabAccess();
 
   const { slug } = await params;
   const post = await getPublishedPost(slug);

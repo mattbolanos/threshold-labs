@@ -112,10 +112,14 @@ export function Block({ workout, className }: BlockProps) {
               <span className="text-left">{workout.title}</span>
             </DialogTitle>
           </DialogHeader>
-          <BlockContent className="max-h-[70svh]" workout={workout} />
+
+          <BlockContent
+            className="no-scrollbar -mx-4 max-h-[66vh] overflow-y-auto px-4"
+            workout={workout}
+          />
         </DialogContent>
       </Dialog>
-      <Drawer>
+      <Drawer showSwipeHandle>
         <DrawerTrigger
           nativeButton={false}
           render={
@@ -139,7 +143,10 @@ export function Block({ workout, className }: BlockProps) {
               <span className="text-left">{workout.title}</span>
             </DrawerTitle>
           </DrawerHeader>
-          <BlockContent workout={workout} />
+          <BlockContent
+            className="no-scrollbar max-h-[80vh] overflow-y-auto p-2.5"
+            workout={workout}
+          />
           <DrawerFooter>
             <DrawerClose render={<Button size="lg" />}>Close</DrawerClose>
           </DrawerFooter>

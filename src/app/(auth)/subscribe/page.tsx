@@ -3,26 +3,16 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { AuthHeader } from "@/components/auth/auth-header";
 import { MembershipCheckout } from "@/components/auth/membership-checkout";
-import { checkAuthenticated } from "@/lib/auth";
-import { getPreviewAuthState } from "@/lib/auth/preview.server";
-import { fetchAuthQuery } from "@/lib/auth-server";
-import { api } from "../../../../convex/_generated/api";
+import { getPostAuthDestination } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Complete Your Membership | Threshold Lab",
 };
 
 async function MembershipAccessGate() {
-  await checkAuthenticated();
-
-  const preview = await getPreviewAuthState();
-  if (preview.enabled) {
-    redirect("/lab/lab-notes");
-  }
-
-  const access = await fetchAuthQuery(api.auth.getCurrentLabAccess, {});
-  if (access.hasAccess) {
-    redirect("/lab/lab-notes");
+  const destination = await getPostAuthDestination();
+  if (destination === "/lab/lab-notes") {
+    redirect(destination);
   }
 
   return <MembershipCheckout />;

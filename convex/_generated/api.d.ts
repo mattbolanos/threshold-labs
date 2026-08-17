@@ -9,9 +9,12 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as emails from "../emails.js";
 import type * as http from "../http.js";
 import type * as lib_authEnvironment from "../lib/authEnvironment.js";
+import type * as lib_labAccess from "../lib/labAccess.js";
 import type * as lib_stripeAuth from "../lib/stripeAuth.js";
+import type * as lib_verificationEmail from "../lib/verificationEmail.js";
 import type * as postSorting from "../postSorting.js";
 import type * as posts from "../posts.js";
 import type * as previewAuth from "../previewAuth.js";
@@ -29,9 +32,12 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  emails: typeof emails;
   http: typeof http;
   "lib/authEnvironment": typeof lib_authEnvironment;
+  "lib/labAccess": typeof lib_labAccess;
   "lib/stripeAuth": typeof lib_stripeAuth;
+  "lib/verificationEmail": typeof lib_verificationEmail;
   postSorting: typeof postSorting;
   posts: typeof posts;
   previewAuth: typeof previewAuth;

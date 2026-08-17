@@ -17,7 +17,21 @@ export const checkAuthenticated = cache(async () => {
   return true;
 });
 
-export const checkAuth = cache(async () => {
+export const getPostAuthDestination = cache(async () => {
+  await checkAuthenticated();
+
+  if (isVercelPreview) {
+    return "/lab/lab-notes" as const;
+  }
+
+  const access = await fetchAuthQuery(api.auth.getCurrentLabAccess, {});
+
+  return access.hasAccess
+    ? ("/lab/lab-notes" as const)
+    : ("/subscribe" as const);
+});
+
+export const checkLabAccess = cache(async () => {
   await checkAuthenticated();
 
   if (isVercelPreview) {
@@ -27,14 +41,14 @@ export const checkAuth = cache(async () => {
   const access = await fetchAuthQuery(api.auth.getCurrentLabAccess, {});
 
   if (!access.hasAccess) {
-    redirect("/subscribe");
+    redirect("/unauthorized");
   }
 
   return true;
 });
 
 export const checkAdmin = async () => {
-  await checkAuth();
+  await checkLabAccess();
 
   const preview = await getPreviewAuthState();
 

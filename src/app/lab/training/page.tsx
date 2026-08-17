@@ -17,7 +17,7 @@ import { RunMixChart } from "@/components/chart/run-mix";
 import { SessionIntensityChart } from "@/components/chart/session-intensity";
 import { Separator } from "@/components/ui/separator";
 import { ChartStateProvider } from "@/hooks/use-chart-state";
-import { checkAuth } from "@/lib/auth";
+import { checkLabAccess } from "@/lib/auth";
 
 export const metadata: Metadata = {
   description:
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 };
 
 export default async function TrainingPage() {
-  await checkAuth();
+  await checkLabAccess();
 
   return (
     <div className="flex flex-col gap-4 bg-background">

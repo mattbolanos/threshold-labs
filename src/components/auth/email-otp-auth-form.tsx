@@ -6,14 +6,7 @@ import Link from "next/link";
 import { type FormEvent, useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import {
   Field,
   FieldDescription,
@@ -30,13 +23,17 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { Spinner } from "@/components/ui/spinner";
+import {
+  type EmailOtpMode,
+  getEmailOtpRequestError,
+  requestEmailOtp,
+} from "@/lib/auth/request-email-otp";
 import { EMAIL_OTP_SUCCESS_PATH, POST_AUTH_PATH } from "@/lib/auth/routes";
 import { authClient } from "@/lib/auth-client";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const otpIndexes = [0, 1, 2, 3, 4, 5] as const;
 
-type AuthMode = "login" | "signup";
 type AuthStep = "email" | "otp";
 type PendingAction =
   | "google"
@@ -47,7 +44,7 @@ type PendingAction =
   | null;
 
 interface EmailOtpAuthFormProps {
-  mode: AuthMode;
+  mode: EmailOtpMode;
 }
 
 interface FieldErrors {
@@ -106,13 +103,11 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
     setPendingAction("send-code");
 
     try {
-      const { error } = await authClient.emailOtp.sendVerificationOtp({
-        email: normalizedEmail,
-        type: "sign-in",
-      });
+      const result = await requestEmailOtp(normalizedEmail, mode);
+      const resultError = getEmailOtpRequestError(result, mode);
 
-      if (error) {
-        setRequestError(error.message || "We couldn't send a code. Try again.");
+      if (resultError) {
+        setRequestError(resultError);
         return;
       }
 
@@ -180,13 +175,11 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
     setPendingAction("resend-code");
 
     try {
-      const { error } = await authClient.emailOtp.sendVerificationOtp({
-        email,
-        type: "sign-in",
-      });
+      const result = await requestEmailOtp(email, mode);
+      const resultError = getEmailOtpRequestError(result, mode);
 
-      if (error) {
-        setRequestError(error.message || "We couldn't resend the code.");
+      if (resultError) {
+        setRequestError(resultError);
         return;
       }
 
@@ -240,28 +233,14 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
 
   return (
     <Card className="w-full">
-      <CardHeader aria-live="polite">
-        <CardTitle>
-          {step === "otp"
-            ? "Check your email"
-            : isSignup
-              ? "Create your account"
-              : "Continue with email"}
-        </CardTitle>
-        <CardDescription>
-          {step === "otp" ? (
-            <>
-              We sent a six-digit code to{" "}
-              <span className="font-medium text-foreground">{email}</span>. It
-              expires in five minutes.
-            </>
-          ) : (
-            "We'll email you a one-time code. No password needed."
-          )}
-        </CardDescription>
-      </CardHeader>
-
       <CardContent>
+        {step === "otp" ? (
+          <>
+            We sent a six-digit code to{" "}
+            <span className="font-medium text-foreground">{email}</span>. It
+            expires in five minutes.
+          </>
+        ) : null}
         {step === "email" ? (
           <form noValidate onSubmit={sendCode}>
             <FieldGroup>

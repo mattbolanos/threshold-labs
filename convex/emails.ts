@@ -33,8 +33,9 @@ export const sendEmailOtp = internalAction({
     });
 
     if (!response.ok) {
+      const responseBody = (await response.text()).slice(0, 1000);
       throw new Error(
-        `Resend rejected an OTP email with status ${response.status}.`,
+        `Resend rejected an OTP email with status ${response.status}: ${responseBody}`,
       );
     }
   },

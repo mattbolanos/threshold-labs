@@ -6,6 +6,30 @@ export type EmailOtpType =
   | "forget-password"
   | "sign-in";
 
+export type EmailOtpMode = "login" | "signup";
+export type EmailOtpRequestStatus =
+  | "login_required"
+  | "sent"
+  | "signup_required";
+
+export const getEmailOtpRequestStatus = ({
+  mode,
+  userExists,
+}: {
+  mode: EmailOtpMode;
+  userExists: boolean;
+}): EmailOtpRequestStatus => {
+  if (mode === "login" && !userExists) {
+    return "signup_required";
+  }
+
+  if (mode === "signup" && userExists) {
+    return "login_required";
+  }
+
+  return "sent";
+};
+
 const escapeHtml = (value: string) =>
   value.replace(
     /[&<>"]/g,

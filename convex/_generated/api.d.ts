@@ -9,6 +9,8 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as emailOtp from "../emailOtp.js";
+import type * as emailOtpRateLimit from "../emailOtpRateLimit.js";
 import type * as emails from "../emails.js";
 import type * as http from "../http.js";
 import type * as lib_authEnvironment from "../lib/authEnvironment.js";
@@ -32,6 +34,8 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  emailOtp: typeof emailOtp;
+  emailOtpRateLimit: typeof emailOtpRateLimit;
   emails: typeof emails;
   http: typeof http;
   "lib/authEnvironment": typeof lib_authEnvironment;

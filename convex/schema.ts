@@ -9,6 +9,11 @@ export default defineSchema({
     role: v.union(v.literal("admin"), v.literal("client"), v.literal("coach")),
   }).index("by_email", ["email"]),
 
+  emailOtpRequests: defineTable({
+    email: v.string(),
+    requestedAt: v.number(),
+  }).index("by_email", ["email"]),
+
   hyroxRaces: defineTable({
     country: v.string(),
     endDate: v.string(),

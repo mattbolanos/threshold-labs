@@ -138,7 +138,7 @@ export function WeekBlocks() {
               return (
                 <div
                   className={cn(
-                    "flex w-full flex-col overflow-hidden rounded-lg border bg-card p-2 transition-shadow lg:min-h-70",
+                    "flex w-full flex-col overflow-hidden rounded-lg border bg-card p-2 transition-shadow lg:min-h-76",
                     isToday && "border-primary/70 shadow-sm",
                     dayStatus === "planned" && "border-chart-3/30 bg-chart-3/5",
                   )}

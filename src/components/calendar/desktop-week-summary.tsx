@@ -24,7 +24,7 @@ function DesktopStat({
   value: number;
 }) {
   return (
-    <div className="flex min-w-20 shrink-0 flex-col items-end">
+    <div className="flex min-w-20 shrink-0 flex-col items-start">
       <div className="flex h-6 items-center gap-0.5 text-xs whitespace-nowrap text-muted-foreground">
         <span>{label}</span>
         {tooltip}
@@ -52,18 +52,6 @@ export function DesktopWeekSummary() {
   return (
     <div className="ml-auto hidden shrink-0 items-start lg:flex">
       <DesktopStat
-        label="Subjective Load"
-        loading={workouts === undefined}
-        tooltip={
-          <InfoPopover
-            definitions={SUBJECTIVE_LOAD_DEFINITIONS}
-            size="xs"
-            title="Subjective Load"
-          />
-        }
-        value={summary.subjectiveLoad}
-      />
-      <DesktopStat
         label="Training"
         loading={workouts === undefined}
         unit="hrs"
@@ -80,6 +68,18 @@ export function DesktopWeekSummary() {
         loading={workouts === undefined}
         unit="hrs"
         value={summary.cardioHours}
+      />
+      <DesktopStat
+        label="Subjective Load"
+        loading={workouts === undefined}
+        tooltip={
+          <InfoPopover
+            definitions={SUBJECTIVE_LOAD_DEFINITIONS}
+            size="xs"
+            title="Subjective Load"
+          />
+        }
+        value={summary.subjectiveLoad}
       />
     </div>
   );

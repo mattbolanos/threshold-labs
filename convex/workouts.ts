@@ -628,6 +628,83 @@ export const getWorkouts = query({
   },
 });
 
+export const getWorkoutLibrary = query({
+  handler: async (ctx) => {
+    await assertLabAccess(ctx);
+    const visibleWorkouts = (
+      await ctx.db
+        .query("workouts")
+        .withIndex("by_workout_date")
+        .order("desc")
+        .collect()
+    ).filter(isVisibleWorkout);
+
+    if (visibleWorkouts.length === 0) {
+      return [];
+    }
+
+    const newestWorkout = visibleWorkouts[0];
+    const oldestWorkout = visibleWorkouts[visibleWorkouts.length - 1];
+    const trainingBlocks = await getTrainingBlocksOverlappingRange(
+      ctx,
+      oldestWorkout.workoutDate,
+      newestWorkout.workoutDate,
+    );
+
+    return visibleWorkouts.map((workout) => {
+      const trainingBlock = findTrainingBlockForDate(
+        trainingBlocks,
+        workout.workoutDate,
+      );
+
+      return {
+        _id: workout._id,
+        rpe: workout.rpe,
+        tags: workout.tags,
+        title: workout.title,
+        trainingBlock: trainingBlock
+          ? {
+              _id: trainingBlock._id,
+              startDate: trainingBlock.startDate,
+              title: trainingBlock.title,
+            }
+          : null,
+        trainingMinutes: workout.trainingMinutes,
+        week: workout.week,
+        workoutDate: workout.workoutDate,
+      };
+    });
+  },
+});
+
+export const getWorkoutDetails = query({
+  args: {
+    workoutId: v.id("workouts"),
+  },
+  handler: async (ctx, { workoutId }) => {
+    await assertLabAccess(ctx);
+    const workout = await ctx.db.get(workoutId);
+
+    if (!workout || !isVisibleWorkout(workout)) {
+      return null;
+    }
+
+    const trainingBlocks = await getTrainingBlocksOverlappingRange(
+      ctx,
+      workout.workoutDate,
+      workout.workoutDate,
+    );
+
+    return {
+      ...workout,
+      trainingBlock: findTrainingBlockForDate(
+        trainingBlocks,
+        workout.workoutDate,
+      ),
+    };
+  },
+});
+
 export const getWorkoutsDateRange = query({
   handler: async (ctx) => {
     await assertLabAccess(ctx);

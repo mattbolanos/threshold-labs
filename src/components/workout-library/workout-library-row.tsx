@@ -1,16 +1,8 @@
-import {
-  IconCalendar,
-  IconCalendarWeek,
-  IconChevronRight,
-} from "@tabler/icons-react";
-import Link from "next/link";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { IconCalendar, IconChevronRight } from "@tabler/icons-react";
+import { Button } from "@/components/ui/button";
 import { TagBadge } from "@/components/workouts/tag-badge";
-import { cn, formatWorkoutDate, parseQueryDate } from "@/lib/utils";
-import {
-  getWorkoutWeekStart,
-  type WorkoutLibraryItem,
-} from "@/lib/workout-library";
+import { formatWorkoutDate, parseQueryDate } from "@/lib/utils";
+import type { WorkoutLibraryItem } from "@/lib/workout-library";
 
 interface WorkoutLibraryRowProps {
   onSelect: (workoutId: WorkoutLibraryItem["_id"]) => void;
@@ -22,24 +14,25 @@ export function WorkoutLibraryRow({
   workout,
 }: WorkoutLibraryRowProps) {
   const date = parseQueryDate(workout.workoutDate);
-  const weekStart = getWorkoutWeekStart(workout.workoutDate);
 
   return (
-    <article className="rounded-xl border bg-card p-4 text-card-foreground shadow-sm transition hover:border-foreground/20 hover:shadow-md">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+    <article className="h-full rounded-xl border bg-card p-4 text-card-foreground shadow-sm transition-shadow hover:border-foreground/20 hover:shadow-md">
+      <div className="flex h-full min-w-0 flex-col">
+        <div className="min-w-0 flex-1">
+          <div className="flex min-w-0 items-center gap-3 text-xs text-muted-foreground">
             <time
-              className="inline-flex items-center gap-1.5 tabular-nums"
+              className="inline-flex shrink-0 items-center gap-1.5 tabular-nums"
               dateTime={workout.workoutDate}
             >
               <IconCalendar aria-hidden className="size-3.5" />
               {date ? formatWorkoutDate(date) : workout.workoutDate}
             </time>
             {workout.trainingBlock ? (
-              <span className="truncate">{workout.trainingBlock.title}</span>
+              <span className="min-w-0 truncate">
+                {workout.trainingBlock.title}
+              </span>
             ) : (
-              <span>No training block</span>
+              <span className="min-w-0 truncate">No training block</span>
             )}
           </div>
 
@@ -56,7 +49,7 @@ export function WorkoutLibraryRow({
           ) : null}
         </div>
 
-        <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-t pt-3 md:justify-end md:border-t-0 md:pt-0">
+        <div className="mt-4 flex flex-wrap items-end justify-between gap-3 border-t pt-3">
           <dl className="flex items-center gap-4 text-sm tabular-nums">
             <div>
               <dt className="text-xs text-muted-foreground">Duration</dt>
@@ -68,25 +61,15 @@ export function WorkoutLibraryRow({
             </div>
           </dl>
 
-          <div className="flex items-center gap-1">
-            <Link
-              className={cn(buttonVariants({ size: "sm", variant: "ghost" }))}
-              href={`/lab/training?weekStart=${weekStart}`}
-              target="_blank"
-            >
-              <IconCalendarWeek aria-hidden data-icon="inline-start" />
-              View week
-            </Link>
-            <Button
-              onClick={() => onSelect(workout._id)}
-              size="sm"
-              type="button"
-              variant="outline"
-            >
-              Details
-              <IconChevronRight aria-hidden data-icon="inline-end" />
-            </Button>
-          </div>
+          <Button
+            onClick={() => onSelect(workout._id)}
+            size="sm"
+            type="button"
+            variant="outline"
+          >
+            Details
+            <IconChevronRight aria-hidden data-icon="inline-end" />
+          </Button>
         </div>
       </div>
     </article>

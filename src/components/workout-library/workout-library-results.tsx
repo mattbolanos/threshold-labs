@@ -17,7 +17,7 @@ import type { Id } from "../../../convex/_generated/dataModel";
 import { WorkoutLibraryRow } from "./workout-library-row";
 
 const PAGE_SIZE = 24;
-const SKELETON_IDS = ["first", "second", "third", "fourth"];
+const SKELETON_IDS = ["first", "second", "third", "fourth", "fifth", "sixth"];
 
 interface WorkoutLibraryResultsProps {
   hasActiveFilters: boolean;
@@ -63,7 +63,7 @@ export function WorkoutLibraryResults({
         <output
           aria-busy="true"
           aria-label="Loading workouts"
-          className="flex flex-col gap-3"
+          className="grid gap-3 md:grid-cols-2 xl:grid-cols-3"
         >
           {SKELETON_IDS.map((id) => (
             <div className="rounded-xl border bg-card p-4 shadow-sm" key={id}>
@@ -99,7 +99,7 @@ export function WorkoutLibraryResults({
           ) : null}
         </Empty>
       ) : (
-        <div className="flex flex-col gap-3">
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {visibleWorkouts.map((workout) => (
             <WorkoutLibraryRow
               key={workout._id}

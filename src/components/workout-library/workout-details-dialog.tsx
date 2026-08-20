@@ -3,6 +3,7 @@
 import { IconCalendarWeek } from "@tabler/icons-react";
 import { useQuery } from "convex/react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { BlockContent } from "@/components/block/block-content";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -28,11 +29,16 @@ export function WorkoutDetailsDialog({
   onOpenChange,
   workoutId,
 }: WorkoutDetailsDialogProps) {
+  const searchParams = useSearchParams();
   const workout = useQuery(
     api.workouts.getWorkoutDetails,
     workoutId ? { workoutId } : "skip",
   );
   const date = workout ? parseQueryDate(workout.workoutDate) : null;
+  const libraryQuery = searchParams.toString();
+  const returnTo = `/lab/training/workouts${
+    libraryQuery ? `?${libraryQuery}` : ""
+  }`;
 
   return (
     <Dialog onOpenChange={onOpenChange} open={workoutId !== null}>
@@ -70,13 +76,18 @@ export function WorkoutDetailsDialog({
           <DialogFooter>
             <Link
               className={cn(buttonVariants({ variant: "outline" }))}
-              href={`/lab/training?weekStart=${getWorkoutWeekStart(
-                workout.workoutDate,
-              )}`}
-              target="_blank"
+              href={{
+                pathname: "/lab/training",
+                query: {
+                  from: "workout-library",
+                  returnTo,
+                  weekStart: getWorkoutWeekStart(workout.workoutDate),
+                  workoutId: workout._id,
+                },
+              }}
             >
               <IconCalendarWeek aria-hidden data-icon="inline-start" />
-              View this week
+              See in weekly schedule
             </Link>
           </DialogFooter>
         ) : null}

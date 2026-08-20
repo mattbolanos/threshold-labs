@@ -98,18 +98,6 @@ export function WorkoutLibraryFiltersView({
         </div>
 
         <div className="flex min-w-0 flex-col gap-2">
-          <Label htmlFor="workout-library-date">Date</Label>
-          <WorkoutDateFilter
-            dateMode={filters.dateMode}
-            from={filters.from}
-            id="workout-library-date"
-            onChange={onChange}
-            to={filters.to}
-            week={filters.week}
-          />
-        </div>
-
-        <div className="flex min-w-0 flex-col gap-2">
           <Label htmlFor="workout-library-block">Training block</Label>
           <Select
             items={trainingBlockOptions}
@@ -133,6 +121,18 @@ export function WorkoutLibraryFiltersView({
               </SelectGroup>
             </SelectContent>
           </Select>
+        </div>
+
+        <div className="flex min-w-0 flex-col gap-2">
+          <Label htmlFor="workout-library-date">Date</Label>
+          <WorkoutDateFilter
+            dateMode={filters.dateMode}
+            from={filters.from}
+            id="workout-library-date"
+            onChange={onChange}
+            to={filters.to}
+            week={filters.week}
+          />
         </div>
 
         <div className="flex min-w-0 flex-col gap-2">

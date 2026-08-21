@@ -8,9 +8,11 @@ import {
 } from "./preview-role";
 
 export const isVercelPreview = process.env.VERCEL_ENV === "preview";
+export const isPreviewAuthBypassEnabled =
+  isVercelPreview && process.env.PREVIEW_AUTH_BYPASS !== "false";
 
 export async function getPreviewAuthState() {
-  if (!isVercelPreview) {
+  if (!isPreviewAuthBypassEnabled) {
     return {
       enabled: false,
       role: DEFAULT_PREVIEW_ROLE,

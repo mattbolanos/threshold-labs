@@ -2,10 +2,13 @@ import { redirect } from "next/navigation";
 import { cache } from "react";
 import { fetchAuthQuery, isAuthenticated } from "@/lib/auth-server";
 import { api } from "../../../convex/_generated/api";
-import { getPreviewAuthState, isVercelPreview } from "./preview.server";
+import {
+  getPreviewAuthState,
+  isPreviewAuthBypassEnabled,
+} from "./preview.server";
 
 export const isAppAuthenticated = async () =>
-  isVercelPreview || (await isAuthenticated());
+  isPreviewAuthBypassEnabled || (await isAuthenticated());
 
 export const checkAuthenticated = cache(async () => {
   const hasToken = await isAppAuthenticated();
@@ -20,7 +23,7 @@ export const checkAuthenticated = cache(async () => {
 export const getPostAuthDestination = cache(async () => {
   await checkAuthenticated();
 
-  if (isVercelPreview) {
+  if (isPreviewAuthBypassEnabled) {
     return "/lab/lab-notes" as const;
   }
 
@@ -34,7 +37,7 @@ export const getPostAuthDestination = cache(async () => {
 export const checkLabAccess = cache(async () => {
   await checkAuthenticated();
 
-  if (isVercelPreview) {
+  if (isPreviewAuthBypassEnabled) {
     return true;
   }
 

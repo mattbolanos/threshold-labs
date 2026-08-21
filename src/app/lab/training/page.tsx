@@ -1,4 +1,6 @@
+import { IconSearch } from "@tabler/icons-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
 import {
   BASE_FITNESS_DEFINITIONS,
@@ -17,9 +19,11 @@ import { RollingLoadChart } from "@/components/chart/rolling-load";
 import { RunMixChart } from "@/components/chart/run-mix";
 import { SessionIntensityChart } from "@/components/chart/session-intensity";
 import { LabRouteFallback } from "@/components/lab-route-fallback";
+import { buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ChartStateProvider } from "@/hooks/use-chart-state";
 import { checkLabAccess } from "@/lib/auth";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   description:
@@ -35,19 +39,26 @@ async function TrainingPageContent() {
       <TrainingPageHeader />
 
       <section>
-        <div className="rounded-xl border bg-card px-4 pt-4 pb-5 text-card-foreground shadow-lg lg:min-h-90 lg:px-5 lg:pt-4 lg:pb-5">
-          <div className="mb-3.5 flex items-start gap-6">
-            <h2 className="text-lg font-bold">Schedule</h2>
-            <DesktopWeekSummary />
+        <div className="rounded-xl border bg-card px-4 pt-4 pb-5 text-card-foreground shadow-lg lg:min-h-101 lg:px-5 lg:pt-4 lg:pb-5">
+          <div className="mb-3.5 flex items-start justify-between gap-4">
+            <div className="flex min-w-0 items-start gap-6">
+              <h2 className="text-lg font-bold">Schedule</h2>
+              <DesktopWeekSummary />
+            </div>
+            <Link
+              className={cn(buttonVariants({ size: "lg", variant: "outline" }))}
+              href={{ pathname: "/lab/training/workouts" }}
+            >
+              <IconSearch aria-hidden data-icon="inline-start" />
+              Browse workouts
+            </Link>
           </div>
           <MobileWeekSummary />
           <WeekBlocks />
         </div>
       </section>
 
-      <div>
-        <Separator className="lg:hidden" />
-      </div>
+      <Separator className="my-2 bg-foreground/60 lg:my-4" />
 
       <ChartStateProvider>
         <div className="flex items-center justify-between">

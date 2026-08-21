@@ -2,7 +2,8 @@
 
 import { useQuery } from "convex/react";
 import { addDays } from "date-fns";
-import { useState, useSyncExternalStore } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { Block } from "@/components/block/block";
 import { EmptyWeekState } from "@/components/block/empty-week-state";
 import { DailyLoadBar } from "@/components/calendar/daily-load-bar";
@@ -39,6 +40,7 @@ function WeekBlocksLoading() {
 }
 
 export function WeekBlocks() {
+  const searchParams = useSearchParams();
   const { weekStartDate } = useCalendarNav();
   const localToday = useSyncExternalStore(
     subscribeToLocalDate,
@@ -71,6 +73,24 @@ export function WeekBlocks() {
   const displayedWeekStart = parseQueryDate(displayedWeekKey) ?? weekStartDate;
   const weekDays = getWeekDays(displayedWeekStart);
   const workouts = data ?? lastResolvedWeek?.workouts ?? [];
+  const selectedWorkoutId = searchParams.get("workoutId");
+
+  useEffect(() => {
+    if (data === undefined || !selectedWorkoutId) {
+      return;
+    }
+
+    const selectedWorkout = document.getElementById(
+      `selected-workout-${selectedWorkoutId}`,
+    );
+
+    if (!selectedWorkout) {
+      return;
+    }
+
+    selectedWorkout.focus({ preventScroll: true });
+    selectedWorkout.scrollIntoView({ block: "center" });
+  }, [data, selectedWorkoutId]);
 
   const workoutsByDay = workouts.reduce<Record<string, typeof workouts>>(
     (acc, workout) => {
@@ -120,6 +140,19 @@ export function WeekBlocks() {
             {weekDays.map((day) => {
               const dayString = formatQueryDate(day);
               const dayWorkouts = workoutsByDay[dayString] ?? [];
+              const selectedWorkoutIndex = selectedWorkoutId
+                ? dayWorkouts.findIndex(
+                    (workout) => workout._id.toString() === selectedWorkoutId,
+                  )
+                : -1;
+              const displayedDayWorkouts =
+                selectedWorkoutIndex > 0
+                  ? [
+                      dayWorkouts[selectedWorkoutIndex],
+                      ...dayWorkouts.slice(0, selectedWorkoutIndex),
+                      ...dayWorkouts.slice(selectedWorkoutIndex + 1),
+                    ]
+                  : dayWorkouts;
               const dailyLoad = dailyLoads[dayString] ?? 0;
               const isToday = localToday === dayString;
               const isFutureDay = isFutureCalendarDay(dayString, localToday);
@@ -138,7 +171,7 @@ export function WeekBlocks() {
               return (
                 <div
                   className={cn(
-                    "flex w-full flex-col overflow-hidden rounded-lg border bg-card p-2 transition-shadow lg:min-h-70",
+                    "flex w-full flex-col overflow-hidden rounded-lg border bg-card p-2 transition-shadow lg:min-h-76",
                     isToday && "border-primary/70 shadow-sm",
                     dayStatus === "planned" && "border-chart-3/30 bg-chart-3/5",
                   )}
@@ -187,24 +220,47 @@ export function WeekBlocks() {
                       ) : null
                     ) : (
                       <div className="flex w-full flex-1 flex-col gap-1.5">
-                        {dayWorkouts.map((workout, workoutIndex) => (
-                          <div
-                            className={cn(
-                              "w-full",
-                              workoutIndex >= MAX_DESKTOP_WORKOUTS_PER_DAY &&
-                                "lg:hidden",
-                            )}
-                            key={workout._id.toString()}
-                          >
-                            <Block className="w-full" workout={workout} />
-                          </div>
-                        ))}
+                        {displayedDayWorkouts.map((workout, workoutIndex) => {
+                          const workoutId = workout._id.toString();
+                          const isSelected = workoutId === selectedWorkoutId;
+
+                          return (
+                            <article
+                              aria-label={
+                                isSelected
+                                  ? `Selected workout: ${workout.title}`
+                                  : undefined
+                              }
+                              className={cn(
+                                "w-full scroll-mt-6",
+                                workoutIndex >= MAX_DESKTOP_WORKOUTS_PER_DAY &&
+                                  "lg:hidden",
+                                isSelected &&
+                                  "rounded-xl bg-primary/5 p-1 ring-2 ring-primary ring-offset-2 ring-offset-card",
+                              )}
+                              id={
+                                isSelected
+                                  ? `selected-workout-${workoutId}`
+                                  : undefined
+                              }
+                              key={workoutId}
+                              tabIndex={isSelected ? -1 : undefined}
+                            >
+                              {isSelected ? (
+                                <p className="px-1 pb-1 text-xs font-semibold text-primary">
+                                  Selected workout
+                                </p>
+                              ) : null}
+                              <Block className="w-full" workout={workout} />
+                            </article>
+                          );
+                        })}
                         {hiddenWorkoutCount > 0 && (
                           <HiddenWorkoutsDialog
                             day={day}
                             hiddenWorkoutCount={hiddenWorkoutCount}
                             visibleWorkoutCount={MAX_DESKTOP_WORKOUTS_PER_DAY}
-                            workouts={dayWorkouts}
+                            workouts={displayedDayWorkouts}
                           />
                         )}
                       </div>

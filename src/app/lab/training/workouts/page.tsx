@@ -30,6 +30,7 @@ async function WorkoutLibraryPageContent() {
             Back to week view
           </Link>
         }
+        description="Search workouts by name, training block, type, week, or date range."
         eyebrow="Training"
         title="Workout library"
       />

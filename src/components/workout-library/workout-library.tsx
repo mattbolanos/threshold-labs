@@ -98,6 +98,7 @@ export function WorkoutLibrary() {
     <div className="flex flex-col gap-6">
       <WorkoutLibraryFiltersView
         filters={filters}
+        hasActiveFilters={hasActiveWorkoutFilters(filters)}
         hasNoBlockWorkouts={Boolean(
           workouts?.some((workout) => workout.trainingBlock === null),
         )}

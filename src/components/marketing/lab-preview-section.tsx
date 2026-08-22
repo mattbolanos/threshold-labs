@@ -20,7 +20,7 @@ export function LabPreviewSection() {
               Inside the Lab
             </p>
             <h2 className="mt-4 text-3xl font-black tracking-tight text-white sm:text-5xl">
-              See how the work gets built.
+              Preview Inside the Lab
             </h2>
             <p className="mt-5 text-lg leading-8 text-neutral-400">
               Open the highlighted sessions to see the exact plan, fueling,

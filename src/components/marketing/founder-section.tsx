@@ -4,9 +4,9 @@ import { coachingApplicationUrl } from "@/lib/marketing-content";
 import { MarketingContainer } from "./marketing-container";
 
 const highlights = [
-  "2026 Elite 15 Doubles World Championship — 6th place",
-  "2026 American Elite 15 Doubles — 1st place",
-  "2026 American Elite 15 — 6th place",
+  "2026 Elite 15 Doubles World Championship – 6th place",
+  "2026 American Elite 15 Doubles – 1st place",
+  "2026 American Elite 15 – 6th place",
   "56:28 Men’s Pro PR",
   "49:00 Men’s Pro Doubles PR",
   "6× HYROX World Championships Qualifier (1× Elite Doubles, 3× Pro, 2× Pro Doubles)",

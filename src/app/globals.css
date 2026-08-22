@@ -130,6 +130,9 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     @apply bg-background text-foreground;
     position: relative;
@@ -182,7 +185,7 @@
   @apply outline-none focus-within:outline-none focus:outline-none focus-visible:outline-none;
 }
 
-/* Noise texture overlay — adds subtle grain for depth */
+/* Noise texture overlay – adds subtle grain for depth */
 .noise-texture::before {
   content: "";
   position: absolute;

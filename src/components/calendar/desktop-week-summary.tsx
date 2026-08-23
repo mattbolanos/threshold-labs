@@ -30,7 +30,7 @@ function DesktopStat({
         {tooltip}
       </div>
       <span className="min-h-6 font-semibold whitespace-nowrap tabular-nums">
-        {loading ? "—" : formatOneDecimal(value)}
+        {loading ? "–" : formatOneDecimal(value)}
         {unit ? (
           <span className="ml-1 text-xs font-medium text-muted-foreground uppercase">
             {unit}

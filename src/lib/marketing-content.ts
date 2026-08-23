@@ -10,21 +10,6 @@ export const marketingNav = [
 
 export const offers = [
   {
-    cta: {
-      href: "/lab",
-      label: "Access Inside the Lab",
-    },
-    description:
-      "Follow the complete training process behind my pursuit of the highest level of HYROX. Get every workout, performance trend, race recap, and lesson—from September 2025 onward.",
-    details: [
-      "Complete training log and performance trends",
-      "Race schedule, strategy, and recaps",
-      "Lab Notes on decisions and lessons",
-    ],
-    eyebrow: "The process",
-    title: "Inside the Lab",
-  },
-  {
     cta: { href: coachingApplicationUrl, label: "Apply for coaching" },
     description:
       "This is our premium model that includes personalized programming, direct access to me, and a plan specific to your current fitness and race goals.",
@@ -32,12 +17,13 @@ export const offers = [
       "Personalized programming",
       "Direct access to me",
       "Fitness and race-specific plan",
+      "$300/month",
     ],
     eyebrow: "Built for you",
     title: "1:1 Coaching",
   },
   {
-    cta: { href: appMembershipUrl, label: "Join the Lab" },
+    cta: { href: appMembershipUrl, label: "Buy membership" },
     description:
       "Structured HYROX, running, and off-season programs. We are building a year-round training system to meet the needs of any race schedule.",
     details: [
@@ -46,8 +32,24 @@ export const offers = [
       "Monthly office hours with Q&A",
       "$40/month",
     ],
-    eyebrow: "The plan",
+    eyebrow: "The Community",
     title: "Threshold Lab Membership",
+  },
+  {
+    cta: {
+      href: "/lab",
+      label: "Access Inside the Lab",
+    },
+    description:
+      "Follow the complete training process behind my pursuit of the highest level of HYROX. Get every workout, performance trend, race recap, and lesson–from September 2025 onward.",
+    details: [
+      "Complete training log and performance trends",
+      "Race schedule, strategy, and recaps",
+      "Lab Notes on decisions and lessons",
+      "$70/month",
+    ],
+    eyebrow: "The process",
+    title: "Inside the Lab",
   },
 ] as const;
 

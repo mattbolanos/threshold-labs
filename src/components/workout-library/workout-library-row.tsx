@@ -1,5 +1,4 @@
-import { IconCalendar, IconChevronRight } from "@tabler/icons-react";
-import { Button } from "@/components/ui/button";
+import { IconChevronRight } from "@tabler/icons-react";
 import { TagBadge } from "@/components/workouts/tag-badge";
 import { formatWorkoutDate, parseQueryDate } from "@/lib/utils";
 import type { WorkoutLibraryItem } from "@/lib/workout-library";
@@ -16,62 +15,72 @@ export function WorkoutLibraryRow({
   const date = parseQueryDate(workout.workoutDate);
 
   return (
-    <article className="h-full rounded-xl border bg-card p-4 text-card-foreground shadow-sm transition-shadow hover:border-foreground/20 hover:shadow-md">
-      <div className="flex h-full min-w-0 flex-col">
-        <div className="min-w-0 flex-1">
-          <div className="flex min-w-0 items-center gap-3 text-xs text-muted-foreground">
-            <time
-              className="inline-flex shrink-0 items-center gap-1.5 tabular-nums"
-              dateTime={workout.workoutDate}
-            >
-              <IconCalendar aria-hidden className="size-3.5" />
-              {date ? formatWorkoutDate(date) : workout.workoutDate}
-            </time>
-            {workout.trainingBlock ? (
-              <span className="min-w-0 truncate">
-                {workout.trainingBlock.title}
-              </span>
-            ) : (
-              <span className="min-w-0 truncate">No training block</span>
-            )}
-          </div>
+    <li className="border-b text-card-foreground last:border-b-0">
+      <button
+        aria-label={`View details for ${workout.title} on ${
+          date ? formatWorkoutDate(date) : workout.workoutDate
+        }`}
+        className="group grid w-full min-w-0 grid-cols-12 items-center gap-x-2 gap-y-1 p-3 text-left transition-colors hover:bg-muted/40 focus-visible:bg-muted/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:gap-3 sm:p-4"
+        onClick={() => onSelect(workout._id)}
+        type="button"
+      >
+        <span className="col-span-3 row-span-2 min-w-0 self-start sm:col-span-2 sm:row-span-1 sm:self-center">
+          <time
+            className="block text-sm font-medium tabular-nums"
+            dateTime={workout.workoutDate}
+          >
+            {date
+              ? date.toLocaleDateString("en-US", {
+                  day: "numeric",
+                  month: "short",
+                  timeZone: "UTC",
+                })
+              : workout.workoutDate}
+          </time>
+          <span className="block truncate text-xs text-muted-foreground">
+            {workout.trainingBlock?.title ?? "No training block"}
+          </span>
+        </span>
 
-          <h3 className="mt-2 text-base leading-snug font-semibold tracking-tight text-pretty">
+        <span className="col-span-7 min-w-0 sm:col-span-6">
+          <span className="block truncate text-sm font-semibold tracking-tight sm:text-base">
             {workout.title}
-          </h3>
-
+          </span>
           {workout.tags.length > 0 ? (
-            <div className="mt-2 flex flex-wrap gap-1.5">
+            <span className="mt-1 flex flex-wrap gap-1.5">
               {workout.tags.map((tag) => (
                 <TagBadge key={tag} tag={tag} />
               ))}
-            </div>
+            </span>
           ) : null}
-        </div>
+        </span>
 
-        <div className="mt-4 flex flex-wrap items-end justify-between gap-3 border-t pt-3">
-          <dl className="flex items-center gap-4 text-sm tabular-nums">
-            <div>
-              <dt className="text-xs text-muted-foreground">Duration</dt>
-              <dd className="font-medium">{workout.trainingMinutes} min</dd>
-            </div>
-            <div>
-              <dt className="text-xs text-muted-foreground">RPE</dt>
-              <dd className="font-medium">{workout.rpe}</dd>
-            </div>
-          </dl>
+        <span className="col-span-7 col-start-4 flex items-center gap-2 text-xs tabular-nums sm:col-span-3 sm:col-start-auto sm:gap-4 sm:justify-end sm:text-sm">
+          <span>
+            <span className="hidden text-xs text-muted-foreground sm:block">
+              Duration
+            </span>
+            <span className="block font-medium">
+              {workout.trainingMinutes} min
+            </span>
+          </span>
+          <span className="text-muted-foreground sm:hidden">•</span>
+          <span>
+            <span className="hidden text-xs text-muted-foreground sm:block">
+              RPE
+            </span>
+            <span className="block font-medium">
+              <span className="sm:hidden">RPE </span>
+              {workout.rpe}
+            </span>
+          </span>
+        </span>
 
-          <Button
-            onClick={() => onSelect(workout._id)}
-            size="sm"
-            type="button"
-            variant="outline"
-          >
-            Details
-            <IconChevronRight aria-hidden data-icon="inline-end" />
-          </Button>
-        </div>
-      </div>
-    </article>
+        <IconChevronRight
+          aria-hidden
+          className="col-span-2 col-start-11 row-span-2 row-start-1 size-4 self-center justify-self-end text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground sm:col-span-1 sm:col-start-auto sm:row-span-1 sm:row-start-auto"
+        />
+      </button>
+    </li>
   );
 }

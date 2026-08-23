@@ -33,6 +33,7 @@ interface TrainingBlockOption {
 
 interface WorkoutLibraryFiltersProps {
   filters: WorkoutLibraryFilters;
+  hasActiveFilters: boolean;
   hasNoBlockWorkouts: boolean;
   onChange: (value: Partial<WorkoutLibraryFilters>) => void;
   onReset: () => void;
@@ -46,6 +47,7 @@ const sortOptions = [
 
 export function WorkoutLibraryFiltersView({
   filters,
+  hasActiveFilters,
   hasNoBlockWorkouts,
   onChange,
   onReset,
@@ -74,11 +76,13 @@ export function WorkoutLibraryFiltersView({
   return (
     <section
       aria-label="Workout filters"
-      className="rounded-xl border bg-card p-4 shadow-sm"
+      className="sticky top-2 z-20 rounded-xl border bg-card/95 p-3 shadow-sm backdrop-blur-sm"
     >
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
-        <div className="flex min-w-0 flex-col gap-2 xl:col-span-2">
-          <Label htmlFor="workout-library-search">Search workouts</Label>
+      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-6">
+        <div className="min-w-0 xl:col-span-2">
+          <Label className="sr-only" htmlFor="workout-library-search">
+            Search workouts
+          </Label>
           <div className="relative">
             <IconSearch
               aria-hidden
@@ -97,8 +101,10 @@ export function WorkoutLibraryFiltersView({
           </div>
         </div>
 
-        <div className="flex min-w-0 flex-col gap-2">
-          <Label htmlFor="workout-library-block">Training block</Label>
+        <div className="min-w-0">
+          <Label className="sr-only" htmlFor="workout-library-block">
+            Training block
+          </Label>
           <Select
             items={trainingBlockOptions}
             onValueChange={(value) => onChange({ block: value ?? "all" })}
@@ -123,8 +129,10 @@ export function WorkoutLibraryFiltersView({
           </Select>
         </div>
 
-        <div className="flex min-w-0 flex-col gap-2">
-          <Label htmlFor="workout-library-date">Date</Label>
+        <div className="min-w-0">
+          <Label className="sr-only" htmlFor="workout-library-date">
+            Date
+          </Label>
           <WorkoutDateFilter
             dateMode={filters.dateMode}
             from={filters.from}
@@ -135,8 +143,10 @@ export function WorkoutLibraryFiltersView({
           />
         </div>
 
-        <div className="flex min-w-0 flex-col gap-2">
-          <Label htmlFor="workout-library-types">Workout type</Label>
+        <div className="min-w-0">
+          <Label className="sr-only" htmlFor="workout-library-types">
+            Workout type
+          </Label>
           <Popover>
             <PopoverTrigger
               render={
@@ -203,8 +213,10 @@ export function WorkoutLibraryFiltersView({
           </Popover>
         </div>
 
-        <div className="flex min-w-0 flex-col gap-2">
-          <Label htmlFor="workout-library-sort">Sort</Label>
+        <div className="min-w-0">
+          <Label className="sr-only" htmlFor="workout-library-sort">
+            Sort
+          </Label>
           <Select
             items={sortOptions}
             onValueChange={(value) =>
@@ -225,11 +237,16 @@ export function WorkoutLibraryFiltersView({
         </div>
       </div>
 
-      <div className="mt-4 flex items-center justify-end">
-        <Button onClick={onReset} type="button" variant="destructive">
-          Reset filters
-        </Button>
-      </div>
+      {hasActiveFilters ? (
+        <div className="mt-2 flex items-center justify-between gap-3 border-t pt-2">
+          <p className="text-xs text-muted-foreground">
+            Filters are narrowing your history
+          </p>
+          <Button onClick={onReset} size="sm" type="button" variant="ghost">
+            Clear all
+          </Button>
+        </div>
+      ) : null}
     </section>
   );
 }

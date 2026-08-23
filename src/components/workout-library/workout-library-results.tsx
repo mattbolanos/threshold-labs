@@ -137,18 +137,11 @@ export function WorkoutLibraryResults({
         <div className="flex flex-col gap-8">
           {visibleMonthGroups.map((group) => (
             <section aria-labelledby={`month-${group.key}`} key={group.key}>
-              <div className="mb-2 flex items-center gap-2 border-b pb-2">
-                <IconCalendarStats
-                  aria-hidden
-                  className="size-4 text-primary"
-                />
-                <h3
-                  className="font-semibold tracking-tight"
-                  id={`month-${group.key}`}
-                >
+              <div className="mb-2 flex items-center gap-2 pb-2">
+                <h3 className="font-semibold" id={`month-${group.key}`}>
                   {group.label}
                 </h3>
-                <span className="text-xs text-muted-foreground tabular-nums">
+                <span className="text-xs font-medium text-primary tabular-nums">
                   {group.workouts.length} workouts
                 </span>
               </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { IconCalendarStats, IconSearch } from "@tabler/icons-react";
+import { IconSearch } from "@tabler/icons-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {

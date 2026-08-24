@@ -39,6 +39,10 @@ Use live-mode Stripe values together: `sk_live_...`, the live recurring
 endpoint to `checkout.session.completed`, `customer.subscription.created`,
 `customer.subscription.updated`, and `customer.subscription.deleted`.
 
+Configure the Stripe Customer Portal in live mode and enable payment-method
+updates, invoice history, and subscription cancellation. Members open that
+portal from **Membership & billing** in their account menu.
+
 Set `CONVEX_DEPLOY_KEY` in the Vercel production environment. The custom build
 command injects `NEXT_PUBLIC_CONVEX_URL`; set `NEXT_PUBLIC_CONVEX_SITE_URL` only
 when the HTTP Actions URL cannot be derived from the standard `.convex.cloud`

@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Dialog,
   DialogPopup,
@@ -14,11 +13,13 @@ import {
 import { Separator } from "@/components/ui/separator";
 import type { PreviewRole } from "@/lib/auth/preview-role";
 import { SITE_ROUTES } from "@/lib/routes";
-import { getInitials, LogOutButton, type NavUserData } from "./nav-user";
-import { PreviewRoleSwitch } from "./preview-role-switch";
+import { cn } from "@/lib/utils";
+import { type NavUserData, UserAccountMenu } from "./user-account-menu";
 
-const ITEM_CLASS =
-  "hover:bg-accent text-muted-foreground hover:text-foreground flex h-13 w-full items-center rounded-md px-2.5 text-base transition-colors duration-100";
+const ITEM_CLASS = cn(
+  buttonVariants({ size: "lg", variant: "ghost" }),
+  "w-full justify-start",
+);
 
 interface MobileMenuProps {
   isPreview: boolean;
@@ -28,8 +29,6 @@ interface MobileMenuProps {
 
 export function MobileMenu({ isPreview, previewRole, user }: MobileMenuProps) {
   const [open, setOpen] = useState(false);
-  const email = user?.email.trim();
-  const username = user ? user.name.trim() || email : undefined;
 
   return (
     <Dialog modal={false} onOpenChange={setOpen} open={open}>
@@ -37,7 +36,7 @@ export function MobileMenu({ isPreview, previewRole, user }: MobileMenuProps) {
         render={
           <Button
             aria-label={open ? "Close menu" : "Open menu"}
-            className="group flex cursor-pointer flex-col items-center justify-center gap-1 rounded-full md:hidden"
+            className="group flex cursor-pointer flex-col gap-1 rounded-full md:hidden"
             size="icon-sm"
             variant="outline"
           />
@@ -49,60 +48,46 @@ export function MobileMenu({ isPreview, previewRole, user }: MobileMenuProps) {
       <DialogPortal>
         <DialogPopup className="fixed inset-x-0 top-12 bottom-0 z-50 overflow-y-auto overscroll-contain bg-background transition-opacity duration-200 ease-out-quint outline-none data-ending-style:opacity-0 data-ending-style:duration-150 data-starting-style:opacity-0 motion-reduce:transition-none md:hidden">
           <DialogTitle className="sr-only">Navigation</DialogTitle>
-          <ul className="p-2.5 pt-4">
-            {SITE_ROUTES.map((route) => {
-              if (
-                route.isAdmin &&
-                (isPreview ? previewRole : user?.role) !== "admin"
-              ) {
-                return null;
-              }
-              return (
-                <li key={route.href}>
-                  <Link
-                    className={ITEM_CLASS}
-                    href={route.href}
-                    onClick={() => setOpen(false)}
-                  >
-                    {route.label}
-                  </Link>
-                </li>
-              );
-            })}
+          <nav
+            aria-label="Primary navigation"
+            className="mx-auto flex min-h-full w-full max-w-7xl flex-col p-4"
+          >
+            <ul className="flex flex-col gap-1">
+              {SITE_ROUTES.map((route) => {
+                if (
+                  route.isAdmin &&
+                  (isPreview ? previewRole : user?.role) !== "admin"
+                ) {
+                  return null;
+                }
 
-            {user && email && username ? (
-              <>
-                <li aria-hidden="true" className="py-2">
-                  <Separator />
-                </li>
-                <li className="flex min-w-0 items-center gap-3 px-2.5 py-1.75">
-                  <Avatar>
-                    <AvatarFallback className="text-xs font-semibold uppercase">
-                      {getInitials(username, email)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex min-w-0 flex-col gap-0.5">
-                    <span className="truncate text-sm font-medium">
-                      {username}
-                    </span>
-                    <span className="truncate text-xs text-muted-foreground">
-                      {email}
-                    </span>
-                  </div>
-                </li>
-                <li className="px-2.5 py-1.5">
-                  {isPreview ? (
-                    <PreviewRoleSwitch role={previewRole} />
-                  ) : (
-                    <LogOutButton
-                      className="h-10 text-base"
-                      onLoggedOut={() => setOpen(false)}
-                    />
-                  )}
-                </li>
-              </>
+                return (
+                  <li key={route.href}>
+                    <Link
+                      className={ITEM_CLASS}
+                      href={route.href}
+                      onClick={() => setOpen(false)}
+                    >
+                      {route.label}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+
+            {user ? (
+              <div className="mt-auto flex flex-col gap-4 pt-8">
+                <Separator />
+                <UserAccountMenu
+                  actionSize="lg"
+                  isPreview={isPreview}
+                  onNavigate={() => setOpen(false)}
+                  previewRole={previewRole}
+                  user={user}
+                />
+              </div>
             ) : null}
-          </ul>
+          </nav>
         </DialogPopup>
       </DialogPortal>
     </Dialog>

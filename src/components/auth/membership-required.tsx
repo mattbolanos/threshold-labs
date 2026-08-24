@@ -2,7 +2,11 @@ import { IconLock } from "@tabler/icons-react";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 
-export function MembershipRequired() {
+export function MembershipRequired({
+  hasBillingAccount,
+}: {
+  hasBillingAccount: boolean;
+}) {
   return (
     <div className="w-full rounded-xl border bg-card/85 p-7 shadow-xl shadow-foreground/5 backdrop-blur-sm">
       <div className="flex flex-col items-center text-center">
@@ -19,7 +23,7 @@ export function MembershipRequired() {
 
         <div className="mt-5 w-full rounded-lg bg-muted/50 p-4 text-left text-sm">
           <p className="font-medium">Access is available when:</p>
-          <ul className="mt-2 list-inside list-disc space-y-1 text-muted-foreground">
+          <ul className="mt-2 flex list-inside list-disc flex-col gap-1 text-muted-foreground">
             <li>Your Inside the Lab membership is active</li>
             <li>Your account has administrator access</li>
           </ul>
@@ -27,12 +31,14 @@ export function MembershipRequired() {
 
         <Link
           className={buttonVariants({
-            className: "mt-6 w-full",
+            className: "mt-6 min-h-11 w-full",
             size: "lg",
           })}
-          href="/subscribe"
+          href={hasBillingAccount ? "/account/billing" : "/subscribe"}
         >
-          Start or renew membership
+          {hasBillingAccount
+            ? "Manage membership & billing"
+            : "Start membership"}
         </Link>
 
         <p className="mt-4 text-sm text-muted-foreground">

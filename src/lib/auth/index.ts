@@ -1,6 +1,10 @@
 import { redirect } from "next/navigation";
 import { cache } from "react";
-import { fetchAuthQuery, isAuthenticated } from "@/lib/auth-server";
+import {
+  fetchAuthAction,
+  fetchAuthQuery,
+  isAuthenticated,
+} from "@/lib/auth-server";
 import { api } from "../../../convex/_generated/api";
 import {
   getPreviewAuthState,
@@ -34,20 +38,39 @@ export const getPostAuthDestination = cache(async () => {
     : ("/subscribe" as const);
 });
 
-export const checkLabAccess = cache(async () => {
+export const getCurrentLabAccess = cache(async () => {
   await checkAuthenticated();
 
   if (isPreviewAuthBypassEnabled) {
-    return true;
+    return {
+      hasAccess: true,
+      hasBillingAccount: false,
+      source: "preview" as const,
+      subscription: null,
+    };
   }
 
-  const access = await fetchAuthQuery(api.auth.getCurrentLabAccess, {});
+  return fetchAuthQuery(api.auth.getCurrentLabAccess, {});
+});
+
+export const getCurrentStripeMembership = cache(async () => {
+  await checkAuthenticated();
+
+  if (isPreviewAuthBypassEnabled) {
+    return null;
+  }
+
+  return fetchAuthAction(api.billing.getCurrentStripeMembership, {});
+});
+
+export const checkLabAccess = cache(async () => {
+  const access = await getCurrentLabAccess();
 
   if (!access.hasAccess) {
     redirect("/unauthorized");
   }
 
-  return true;
+  return access;
 });
 
 export const checkAdmin = cache(async () => {

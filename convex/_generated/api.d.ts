@@ -9,6 +9,7 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as billing from "../billing.js";
 import type * as emailOtp from "../emailOtp.js";
 import type * as emailOtpRateLimit from "../emailOtpRateLimit.js";
 import type * as emails from "../emails.js";
@@ -34,6 +35,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  billing: typeof billing;
   emailOtp: typeof emailOtp;
   emailOtpRateLimit: typeof emailOtpRateLimit;
   emails: typeof emails;

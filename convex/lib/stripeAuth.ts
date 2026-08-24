@@ -7,7 +7,7 @@ import { INSIDE_LAB_PLAN_NAME } from "./labAccess";
 
 const STRIPE_API_VERSION = "2026-07-29.dahlia";
 
-function createStripeClient(ctx: GenericCtx<DataModel>) {
+export function createStripeClient(ctx: GenericCtx<DataModel>) {
   return new Stripe(getAuthEnvironment(ctx, "STRIPE_SECRET_KEY"), {
     apiVersion: STRIPE_API_VERSION,
     httpClient: Stripe.createFetchHttpClient(),

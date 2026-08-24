@@ -18,7 +18,7 @@ async function MembershipAccessGate() {
     redirect("/lab/lab-notes");
   }
 
-  return <MembershipRequired />;
+  return <MembershipRequired hasBillingAccount={access.hasBillingAccount} />;
 }
 
 function MembershipAccessFallback() {

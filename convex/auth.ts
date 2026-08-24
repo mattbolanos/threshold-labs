@@ -16,7 +16,10 @@ import authConfig from "./auth.config";
 import authSchema from "./betterAuth/schema";
 import { getAuthEnvironment } from "./lib/authEnvironment";
 import { EMAIL_OTP_EXPIRES_IN_SECONDS } from "./lib/emailOtp";
-import { hasActiveLabSubscription } from "./lib/labAccess";
+import {
+  hasActiveLabSubscription,
+  INSIDE_LAB_PLAN_NAME,
+} from "./lib/labAccess";
 import { createStripeAuthPlugin } from "./lib/stripeAuth";
 import {
   createPreviewUser,
@@ -44,11 +47,13 @@ type AuthUserRecord = {
 };
 
 type AuthSubscriptionRecord = {
+  cancelAt?: Date | number | null;
   cancelAtPeriodEnd?: boolean | null;
   periodEnd?: Date | number | null;
   plan: string;
   referenceId: string;
   status?: string | null;
+  stripeCustomerId?: string | null;
   stripeSubscriptionId?: string | null;
 };
 
@@ -170,33 +175,68 @@ export const assertAdmin = async (ctx: QueryCtx | MutationCtx) => {
 
 export const getLabAccess = async (ctx: QueryCtx | MutationCtx) => {
   if (isPreviewAuthEnabled()) {
-    return { hasAccess: true, source: "preview" as const };
+    return {
+      hasAccess: true,
+      hasBillingAccount: false,
+      source: "preview" as const,
+      subscription: null,
+    };
   }
 
   const user = await authComponent.safeGetAuthUser(ctx);
 
   if (!user) {
-    return { hasAccess: false, source: "none" as const };
+    return {
+      hasAccess: false,
+      hasBillingAccount: false,
+      source: "none" as const,
+      subscription: null,
+    };
   }
 
   if (user.role === "admin") {
-    return { hasAccess: true, source: "admin" as const };
+    return {
+      hasAccess: true,
+      hasBillingAccount: Boolean(user.stripeCustomerId),
+      source: "admin" as const,
+      subscription: null,
+    };
   }
 
   const adapter = authComponent.adapter(ctx)(createAuthOptions(ctx));
-  const subscriptions = await adapter.findMany<{
-    plan?: string | null;
-    status?: string | null;
-    stripeSubscriptionId?: string | null;
-  }>({
+  const subscriptions = await adapter.findMany<AuthSubscriptionRecord>({
     model: "subscription",
     where: [{ field: "referenceId", value: user._id.toString() }],
   });
-  const hasActiveSubscription = hasActiveLabSubscription(subscriptions);
+  const membershipSubscriptions = subscriptions.filter(
+    (subscription) => subscription.plan === INSIDE_LAB_PLAN_NAME,
+  );
+  const activeSubscription = membershipSubscriptions.find((subscription) =>
+    hasActiveLabSubscription([subscription]),
+  );
+  const latestSubscription = membershipSubscriptions.toSorted(
+    (left, right) =>
+      (toTimestamp(right.periodEnd) ?? 0) - (toTimestamp(left.periodEnd) ?? 0),
+  )[0];
+  const subscription = activeSubscription ?? latestSubscription;
+  const hasBillingAccount = Boolean(
+    user.stripeCustomerId ||
+      subscriptions.some((subscription) => subscription.stripeCustomerId),
+  );
 
-  return hasActiveSubscription
-    ? { hasAccess: true, source: "subscription" as const }
-    : { hasAccess: false, source: "none" as const };
+  return {
+    hasAccess: Boolean(activeSubscription),
+    hasBillingAccount: activeSubscription ? true : hasBillingAccount,
+    source: activeSubscription ? ("subscription" as const) : ("none" as const),
+    subscription: subscription
+      ? {
+          cancelAt: toTimestamp(subscription.cancelAt),
+          cancelAtPeriodEnd: Boolean(subscription.cancelAtPeriodEnd),
+          periodEnd: toTimestamp(subscription.periodEnd),
+          status: subscription.status ?? "unknown",
+        }
+      : null,
+  };
 };
 
 export const assertLabAccess = async (ctx: QueryCtx | MutationCtx) => {
@@ -244,6 +284,43 @@ export const getCurrentUser = query({
 export const getCurrentLabAccess = query({
   args: {},
   handler: getLabAccess,
+});
+
+export const getCurrentStripeSubscriptionReference = internalQuery({
+  args: {},
+  handler: async (ctx) => {
+    if (isPreviewAuthEnabled()) {
+      return null;
+    }
+
+    const user = await authComponent.safeGetAuthUser(ctx);
+    if (!user) {
+      return null;
+    }
+
+    const adapter = authComponent.adapter(ctx)(createAuthOptions(ctx));
+    const subscriptions = await adapter.findMany<AuthSubscriptionRecord>({
+      model: "subscription",
+      where: [{ field: "referenceId", value: user._id.toString() }],
+    });
+    const membershipSubscriptions = subscriptions.filter(
+      (subscription) => subscription.plan === INSIDE_LAB_PLAN_NAME,
+    );
+    const activeSubscription = membershipSubscriptions.find((subscription) =>
+      hasActiveLabSubscription([subscription]),
+    );
+    const latestSubscription = membershipSubscriptions.toSorted(
+      (left, right) =>
+        (toTimestamp(right.periodEnd) ?? 0) -
+        (toTimestamp(left.periodEnd) ?? 0),
+    )[0];
+
+    return (
+      activeSubscription?.stripeSubscriptionId ??
+      latestSubscription?.stripeSubscriptionId ??
+      null
+    );
+  },
 });
 
 export const listAdminUsers = query({

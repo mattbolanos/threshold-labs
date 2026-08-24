@@ -102,7 +102,7 @@ export function AdminRaceManager() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {race.location ?? "—"}
+                      {race.location ?? "–"}
                     </TableCell>
                     <TableCell className="pr-4">
                       <div className="flex justify-end gap-1">

@@ -1,6 +1,7 @@
 import { IconUserPlus } from "@tabler/icons-react";
 import Link from "next/link";
 import { AdminBackLink } from "@/components/admin/admin-back-link";
+import { AdminDiscountCodeManager } from "@/components/admin/admin-discount-code-manager";
 import { AdminUserManager } from "@/components/admin/admin-user-manager";
 import { PageHeader } from "@/components/page-header";
 import { buttonVariants } from "@/components/ui/button";
@@ -28,6 +29,7 @@ export function AdminUsersPage() {
       />
 
       <AdminUserManager />
+      <AdminDiscountCodeManager />
     </div>
   );
 }

@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  getMembershipPriceLabel,
   getMembershipStatusDetails,
   insideLabMembership,
   type MembershipSubscription,
@@ -74,7 +75,7 @@ export function MembershipCard({
                 Billing
               </dt>
               <dd className="text-base font-medium tabular-nums">
-                {insideLabMembership.priceLabel}
+                {getMembershipPriceLabel(subscription)}
               </dd>
             </div>
             {statusDetails.periodLabel && statusDetails.periodValue ? (

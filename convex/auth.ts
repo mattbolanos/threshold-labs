@@ -6,6 +6,7 @@ import { ConvexError, v } from "convex/values";
 import { components, internal } from "./_generated/api";
 import type { DataModel } from "./_generated/dataModel";
 import {
+  type ActionCtx,
   internalQuery,
   type MutationCtx,
   mutation,
@@ -159,7 +160,7 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) =>
 export const createAuth = (ctx: GenericCtx<DataModel>) =>
   betterAuth(createAuthOptions(ctx));
 
-export const assertAdmin = async (ctx: QueryCtx | MutationCtx) => {
+export const assertAdmin = async (ctx: QueryCtx | MutationCtx | ActionCtx) => {
   if (isPreviewAuthEnabled()) {
     return null;
   }

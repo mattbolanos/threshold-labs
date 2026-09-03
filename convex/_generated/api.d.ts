@@ -10,11 +10,14 @@
 
 import type * as auth from "../auth.js";
 import type * as billing from "../billing.js";
+import type * as discountCodes from "../discountCodes.js";
 import type * as emailOtp from "../emailOtp.js";
 import type * as emailOtpRateLimit from "../emailOtpRateLimit.js";
 import type * as emails from "../emails.js";
 import type * as http from "../http.js";
 import type * as lib_authEnvironment from "../lib/authEnvironment.js";
+import type * as lib_discountCodeEmail from "../lib/discountCodeEmail.js";
+import type * as lib_discountCodes from "../lib/discountCodes.js";
 import type * as lib_emailOtp from "../lib/emailOtp.js";
 import type * as lib_labAccess from "../lib/labAccess.js";
 import type * as lib_stripeAuth from "../lib/stripeAuth.js";
@@ -36,11 +39,14 @@ import type {
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   billing: typeof billing;
+  discountCodes: typeof discountCodes;
   emailOtp: typeof emailOtp;
   emailOtpRateLimit: typeof emailOtpRateLimit;
   emails: typeof emails;
   http: typeof http;
   "lib/authEnvironment": typeof lib_authEnvironment;
+  "lib/discountCodeEmail": typeof lib_discountCodeEmail;
+  "lib/discountCodes": typeof lib_discountCodes;
   "lib/emailOtp": typeof lib_emailOtp;
   "lib/labAccess": typeof lib_labAccess;
   "lib/stripeAuth": typeof lib_stripeAuth;

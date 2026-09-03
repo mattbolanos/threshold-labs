@@ -9,6 +9,45 @@ export default defineSchema({
     role: v.union(v.literal("admin"), v.literal("client"), v.literal("coach")),
   }).index("by_email", ["email"]),
 
+  discountCodes: defineTable({
+    code: v.string(),
+    createdAt: v.number(),
+    createdByUserId: v.string(),
+    deliveredAt: v.optional(v.number()),
+    deliveryError: v.optional(v.string()),
+    deliveryStatus: v.optional(
+      v.union(
+        v.literal("not_requested"),
+        v.literal("pending"),
+        v.literal("sent"),
+        v.literal("failed"),
+      ),
+    ),
+    discountType: v.union(
+      v.literal("fifty_monthly"),
+      v.literal("free_forever"),
+    ),
+    failureReason: v.optional(v.string()),
+    recipientEmail: v.optional(v.string()),
+    redeemedAt: v.optional(v.number()),
+    redeemedByEmail: v.optional(v.string()),
+    revokedAt: v.optional(v.number()),
+    status: v.union(
+      v.literal("provisioning"),
+      v.literal("active"),
+      v.literal("redeemed"),
+      v.literal("revoked"),
+      v.literal("failed"),
+    ),
+    stripeCouponId: v.optional(v.string()),
+    stripeCustomerId: v.optional(v.string()),
+    stripePromotionCodeId: v.optional(v.string()),
+    stripeSubscriptionId: v.optional(v.string()),
+    updatedAt: v.number(),
+  })
+    .index("by_code", ["code"])
+    .index("by_stripe_promotion_code", ["stripePromotionCodeId"]),
+
   emailOtpRequests: defineTable({
     email: v.string(),
     requestedAt: v.number(),

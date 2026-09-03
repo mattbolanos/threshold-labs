@@ -9,6 +9,12 @@ describe("MembershipCard", () => {
         accessSource="subscription"
         hasBillingAccount={true}
         subscription={{
+          billing: {
+            amount: 5_000,
+            currency: "usd",
+            interval: "month",
+            intervalCount: 1,
+          },
           cancelAt: null,
           cancelAtPeriodEnd: false,
           periodEnd: Date.UTC(2026, 8, 24),
@@ -21,7 +27,8 @@ describe("MembershipCard", () => {
     expect(markup).toContain("Active");
     expect(markup).toContain("Renews");
     expect(markup).toContain("Sep 24, 2026");
-    expect(markup).toContain("$70/month");
+    expect(markup).toContain("$50/month");
+    expect(markup).not.toContain("$70/month");
     expect(markup).toContain("Manage billing in Stripe");
     expect(markup).toContain("payment methods, invoices, and cancellation");
   });

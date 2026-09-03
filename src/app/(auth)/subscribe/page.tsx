@@ -29,7 +29,7 @@ export default function SubscribePage() {
   return (
     <div className="relative z-10 w-full max-w-md px-4 sm:px-0">
       <AuthHeader
-        description="Review your membership, then continue to Stripe to pay securely."
+        description="Review your membership, then continue to Stripe to pay securely or enter a discount code."
         title="Complete your membership"
       />
       <Suspense fallback={<MembershipCheckoutFallback />}>

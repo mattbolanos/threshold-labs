@@ -5,11 +5,7 @@ import { internal } from "../_generated/api";
 import type { DataModel } from "../_generated/dataModel";
 import { getAuthEnvironment } from "./authEnvironment";
 import { INSIDE_LAB_PLAN_NAME } from "./labAccess";
-import {
-  INSIDE_LAB_HISTORY_PLAN_NAME,
-  TRAINING_ARCHIVE_PRODUCT_KEY,
-} from "./trainingArchive";
-import { getVerifiedTrainingArchivePurchase } from "./trainingArchiveStripe";
+import { getVerifiedTrainingBlockPurchase } from "./trainingBlockStripe";
 
 const STRIPE_API_VERSION = "2026-07-29.dahlia";
 
@@ -104,31 +100,26 @@ export function createStripeAuthPlugin(ctx: GenericCtx<DataModel>) {
       }
 
       const checkoutSession = event.data.object;
-      const purchase = await getVerifiedTrainingArchivePurchase({
+      const purchase = await getVerifiedTrainingBlockPurchase({
         checkoutSessionId: checkoutSession.id,
         ctx,
         stripeClient,
       });
 
       if (purchase) {
-        await ctx.runMutation(internal.trainingArchive.grantPurchase, purchase);
+        await ctx.runMutation(internal.trainingBlockPurchases.grantPurchase, {
+          purchase,
+        });
       }
     },
     stripeClient,
     stripeWebhookSecret: getAuthEnvironment(ctx, "STRIPE_WEBHOOK_SECRET"),
     subscription: {
       enabled: true,
-      getCheckoutSessionParams: ({ plan }) => ({
+      getCheckoutSessionParams: () => ({
         params: {
           allow_promotion_codes: true,
           branding_settings: getStripeCheckoutBrandingSettings(siteUrl),
-          ...(plan.name === INSIDE_LAB_HISTORY_PLAN_NAME
-            ? {
-                metadata: {
-                  purchaseType: TRAINING_ARCHIVE_PRODUCT_KEY,
-                },
-              }
-            : {}),
           payment_method_collection: "if_required",
           submit_type: "subscribe",
         },
@@ -226,19 +217,6 @@ export function createStripeAuthPlugin(ctx: GenericCtx<DataModel>) {
       plans: [
         {
           name: INSIDE_LAB_PLAN_NAME,
-          priceId: getAuthEnvironment(ctx, "STRIPE_INSIDE_LAB_PRICE_ID"),
-        },
-        {
-          lineItems: [
-            {
-              price: getAuthEnvironment(
-                ctx,
-                "STRIPE_TRAINING_ARCHIVE_PRICE_ID",
-              ),
-              quantity: 1,
-            },
-          ],
-          name: INSIDE_LAB_HISTORY_PLAN_NAME,
           priceId: getAuthEnvironment(ctx, "STRIPE_INSIDE_LAB_PRICE_ID"),
         },
       ],

@@ -13,7 +13,10 @@ import {
   mergeWorkoutAccessWindows,
 } from "./workoutAccess";
 
-const trainingArchive = { from: "2025-09-01", to: "2026-09-03" };
+const purchasedBlockWindows = [
+  { from: "2025-09-01", to: "2025-10-12" },
+  { from: "2025-10-13", to: "2025-11-23" },
+];
 
 describe("getWorkoutAccessWindow", () => {
   test("includes today and the prior 30 calendar days in Eastern time", () => {
@@ -142,17 +145,33 @@ describe("hasUnrestrictedWorkoutAccess", () => {
 describe("getWorkoutListingAccessWindows", () => {
   const now = new Date("2027-01-15T17:00:00.000Z");
 
-  test("combines monthly and history entitlements for dual owners", () => {
+  test("combines purchased blocks and the membership window for dual owners", () => {
     expect(
       getWorkoutListingAccessWindows(
         {
           accessSource: "subscription",
           membershipAccessStart: "2026-07-05",
-          trainingArchive,
+          purchasedBlockWindows,
         },
         now,
       ),
-    ).toEqual([{ from: "2026-07-05", to: "2027-01-15" }, trainingArchive]);
+    ).toEqual([
+      ...purchasedBlockWindows,
+      { from: "2026-07-05", to: "2027-01-15" },
+    ]);
+  });
+
+  test("merges a purchased block that overlaps the membership window", () => {
+    expect(
+      getWorkoutListingAccessWindows(
+        {
+          accessSource: "subscription",
+          membershipAccessStart: "2026-07-05",
+          purchasedBlockWindows: [{ from: "2026-06-08", to: "2026-07-19" }],
+        },
+        now,
+      ),
+    ).toEqual([{ from: "2026-06-08", to: "2027-01-15" }]);
   });
 
   test("excludes the lapsed period between an ended and a renewed membership", () => {
@@ -183,14 +202,14 @@ describe("getWorkoutListingAccessWindows", () => {
     ).toEqual([{ from: "2026-07-05", to: "2027-01-15" }]);
     expect(
       getWorkoutListingAccessWindows({
-        accessSource: "training_archive",
-        trainingArchive,
+        accessSource: "training_blocks",
+        purchasedBlockWindows,
       }),
-    ).toEqual([trainingArchive]);
+    ).toEqual(purchasedBlockWindows);
     expect(
       getWorkoutListingAccessWindows({
         accessSource: "admin",
-        trainingArchive,
+        purchasedBlockWindows,
       }),
     ).toBeNull();
   });
@@ -200,10 +219,13 @@ describe("getAccessibleWorkoutDateRanges", () => {
   test("returns every purchased portion of a requested range", () => {
     expect(
       getAccessibleWorkoutDateRanges("2025-01-01", "2027-02-01", [
+        ...purchasedBlockWindows,
         { from: "2026-07-05", to: "2027-01-15" },
-        trainingArchive,
       ]),
-    ).toEqual([{ from: "2026-07-05", to: "2027-01-15" }, trainingArchive]);
+    ).toEqual([
+      ...purchasedBlockWindows,
+      { from: "2026-07-05", to: "2027-01-15" },
+    ]);
   });
 });
 
@@ -225,27 +247,30 @@ describe("getChartWorkoutDateRanges", () => {
     ).toEqual([{ from: "2026-07-05", to: "2026-09-03" }]);
   });
 
-  test("defaults history charts to the purchased dataset", () => {
+  test("defaults block-only charts to the span of purchased blocks", () => {
     expect(
       getChartWorkoutDateRanges(
-        { accessSource: "training_archive", trainingArchive },
+        { accessSource: "training_blocks", purchasedBlockWindows },
         undefined,
         undefined,
-        { from: trainingArchive.from },
+        defaults,
         new Date("2026-09-03T16:00:00.000Z"),
       ),
-    ).toEqual([trainingArchive]);
+    ).toEqual(purchasedBlockWindows);
   });
 
-  test("clamps custom history chart ranges", () => {
+  test("clamps custom block-only chart ranges", () => {
     expect(
       getChartWorkoutDateRanges(
-        { accessSource: "training_archive", trainingArchive },
+        { accessSource: "training_blocks", purchasedBlockWindows },
         "2025-01-01",
-        "2027-01-01",
+        "2025-10-20",
         defaults,
       ),
-    ).toEqual([trainingArchive]);
+    ).toEqual([
+      { from: "2025-09-01", to: "2025-10-12" },
+      { from: "2025-10-13", to: "2025-10-20" },
+    ]);
   });
 });
 
@@ -262,7 +287,10 @@ describe("isWorkoutDateInAccessWindow", () => {
 
 describe("isWorkoutDateInAccessWindows", () => {
   test("accepts a workout covered by either purchased product", () => {
-    const windows = [{ from: "2026-12-16", to: "2027-01-15" }, trainingArchive];
+    const windows = [
+      { from: "2026-12-16", to: "2027-01-15" },
+      ...purchasedBlockWindows,
+    ];
 
     expect(isWorkoutDateInAccessWindows("2025-10-01", windows)).toBe(true);
     expect(isWorkoutDateInAccessWindows("2027-01-01", windows)).toBe(true);

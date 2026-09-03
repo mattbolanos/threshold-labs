@@ -16,7 +16,8 @@ const validEnvironment = {
   RESEND_API_KEY: "re_preview",
   STRIPE_INSIDE_LAB_PRICE_ID: "price_membership",
   STRIPE_SECRET_KEY: "sk_test_preview",
-  STRIPE_TRAINING_ARCHIVE_PRICE_ID: "price_archive",
+  STRIPE_TRAINING_BLOCK_BUNDLE_PRICE_ID: "price_block_bundle",
+  STRIPE_TRAINING_BLOCK_PRICE_ID: "price_block",
   STRIPE_WEBHOOK_SECRET: "whsec_preview",
   VERCEL_BRANCH_URL: "threshold-labs-git-stripe.vercel.app",
   VERCEL_ENV: "preview",
@@ -64,8 +65,10 @@ describe("stripe Convex preview environment", () => {
       SITE_URL: "https://threshold-labs-git-stripe.vercel.app",
       STRIPE_INSIDE_LAB_PRICE_ID: validEnvironment.STRIPE_INSIDE_LAB_PRICE_ID,
       STRIPE_SECRET_KEY: validEnvironment.STRIPE_SECRET_KEY,
-      STRIPE_TRAINING_ARCHIVE_PRICE_ID:
-        validEnvironment.STRIPE_TRAINING_ARCHIVE_PRICE_ID,
+      STRIPE_TRAINING_BLOCK_BUNDLE_PRICE_ID:
+        validEnvironment.STRIPE_TRAINING_BLOCK_BUNDLE_PRICE_ID,
+      STRIPE_TRAINING_BLOCK_PRICE_ID:
+        validEnvironment.STRIPE_TRAINING_BLOCK_PRICE_ID,
       STRIPE_WEBHOOK_SECRET: validEnvironment.STRIPE_WEBHOOK_SECRET,
     });
   });

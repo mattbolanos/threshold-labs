@@ -23,7 +23,6 @@ const ITEM_CLASS = cn(
 
 interface MobileMenuProps {
   hasAccess: boolean;
-  hasFullAccess: boolean;
   isPreview: boolean;
   previewRole: PreviewRole;
   user?: NavUserData | null;
@@ -31,7 +30,6 @@ interface MobileMenuProps {
 
 export function MobileMenu({
   hasAccess,
-  hasFullAccess,
   isPreview,
   previewRole,
   user,
@@ -69,9 +67,6 @@ export function MobileMenu({
                   return null;
                 }
                 if (route.requiresAccess && !hasAccess) {
-                  return null;
-                }
-                if (route.requiresFullAccess && !hasFullAccess) {
                   return null;
                 }
 

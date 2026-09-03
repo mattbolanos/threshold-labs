@@ -4,13 +4,13 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AuthHeader } from "@/components/auth/auth-header";
 import { buttonVariants } from "@/components/ui/button";
-import { confirmTrainingArchiveCheckout } from "@/lib/auth/training-archive-actions";
+import { confirmTrainingBlockCheckout } from "@/lib/auth/training-block-actions";
 
 export const metadata: Metadata = {
-  title: "Confirming History Access | Threshold Lab",
+  title: "Confirming Block Access | Threshold Lab",
 };
 
-export default async function TrainingArchiveSuccessPage({
+export default async function TrainingBlockSuccessPage({
   searchParams,
 }: {
   searchParams: Promise<{ session_id?: string | string[] }>;
@@ -20,7 +20,7 @@ export default async function TrainingArchiveSuccessPage({
     ? rawSessionId[0]
     : rawSessionId;
   const confirmed = sessionId
-    ? await confirmTrainingArchiveCheckout(sessionId).catch(() => false)
+    ? await confirmTrainingBlockCheckout(sessionId).catch(() => false)
     : false;
 
   if (confirmed) {

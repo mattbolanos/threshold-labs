@@ -22,6 +22,7 @@ import {
   INSIDE_LAB_PLAN_NAME,
 } from "./lib/labAccess";
 import { resolveMembershipAccess } from "./lib/membershipAccess";
+import { getPurchasedBlockWindows } from "./lib/trainingBlockPurchases";
 import { createStripeAuthPlugin } from "./lib/stripeAuth";
 import {
   createPreviewUser,
@@ -199,10 +200,9 @@ export const getLabAccess = async (ctx: QueryCtx | MutationCtx) => {
     return {
       hasAccess: true,
       hasBillingAccount: false,
-      hasFullAccess: true,
       source: "preview" as const,
       subscription: null,
-      trainingArchive: null,
+      trainingBlocks: null,
     };
   }
 
@@ -212,10 +212,9 @@ export const getLabAccess = async (ctx: QueryCtx | MutationCtx) => {
     return {
       hasAccess: false,
       hasBillingAccount: false,
-      hasFullAccess: false,
       source: "none" as const,
       subscription: null,
-      trainingArchive: null,
+      trainingBlocks: null,
     };
   }
 
@@ -223,20 +222,19 @@ export const getLabAccess = async (ctx: QueryCtx | MutationCtx) => {
     return {
       hasAccess: true,
       hasBillingAccount: Boolean(user.stripeCustomerId),
-      hasFullAccess: true,
       source: "admin" as const,
       subscription: null,
-      trainingArchive: null,
+      trainingBlocks: null,
     };
   }
 
   const referenceId = user._id.toString();
-  const [subscriptions, trainingArchive, accessWindows] = await Promise.all([
+  const [subscriptions, blockPurchases, accessWindows] = await Promise.all([
     getSubscriptionsForReference(ctx, referenceId),
     ctx.db
-      .query("trainingArchivePurchases")
+      .query("trainingBlockPurchases")
       .withIndex("by_reference_id", (q) => q.eq("referenceId", referenceId))
-      .first(),
+      .collect(),
     ctx.db
       .query("membershipAccessWindows")
       .withIndex("by_reference_id", (q) => q.eq("referenceId", referenceId))
@@ -268,16 +266,15 @@ export const getLabAccess = async (ctx: QueryCtx | MutationCtx) => {
     user.stripeCustomerId ||
       subscriptions.some((subscription) => subscription.stripeCustomerId),
   );
-  const hasTrainingArchive = trainingArchive?.status === "active";
+  const hasTrainingBlocks = blockPurchases.length > 0;
 
   return {
-    hasAccess: Boolean(activeSubscription || hasTrainingArchive),
+    hasAccess: Boolean(activeSubscription || hasTrainingBlocks),
     hasBillingAccount: activeSubscription ? true : hasBillingAccount,
-    hasFullAccess: Boolean(activeSubscription),
     source: activeSubscription
       ? ("subscription" as const)
-      : hasTrainingArchive
-        ? ("training_archive" as const)
+      : hasTrainingBlocks
+        ? ("training_blocks" as const)
         : ("none" as const),
     subscription: subscription
       ? {
@@ -289,35 +286,43 @@ export const getLabAccess = async (ctx: QueryCtx | MutationCtx) => {
           status: subscription.status ?? "unknown",
         }
       : null,
-    trainingArchive: hasTrainingArchive
+    trainingBlocks: hasTrainingBlocks
       ? {
-          accessEnd: trainingArchive.accessEnd,
-          accessStart: trainingArchive.accessStart,
-          purchasedAt: trainingArchive.purchasedAt,
+          purchases: blockPurchases
+            .toSorted((left, right) =>
+              right.accessStart.localeCompare(left.accessStart),
+            )
+            .map((purchase) => ({
+              accessEnd: purchase.accessEnd,
+              accessStart: purchase.accessStart,
+              purchasedAt: purchase.purchasedAt,
+              title: purchase.trainingBlockTitle,
+              trainingBlockId: purchase.trainingBlockId,
+            })),
+          windows: getPurchasedBlockWindows(blockPurchases),
         }
       : null,
   };
 };
 
+/**
+ * Lab Notes, races, training blocks, and purchased workouts are available to
+ * anyone who has paid: an active membership or any past training block
+ * purchase. The membership only controls which workouts are visible.
+ */
 export const assertLabAccess = async (ctx: QueryCtx | MutationCtx) => {
   const access = await getLabAccess(ctx);
 
-  if (!access.hasFullAccess) {
-    throw new ConvexError("An active membership is required.");
-  }
-
-  return access;
-};
-
-export const assertTrainingAccess = async (ctx: QueryCtx | MutationCtx) => {
-  const access = await getLabAccess(ctx);
-
   if (!access.hasAccess) {
-    throw new ConvexError("Training access is required.");
+    throw new ConvexError(
+      "An active membership or training block purchase is required.",
+    );
   }
 
   return access;
 };
+
+export const assertTrainingAccess = assertLabAccess;
 
 export const getSignupRole = internalQuery({
   args: {
@@ -365,14 +370,8 @@ export const getCurrentStripeCheckoutUser = internalQuery({
       return null;
     }
 
-    const subscriptions = await getSubscriptionsForReference(
-      ctx,
-      user._id.toString(),
-    );
-
     return {
       email: user.email,
-      hasActiveMembership: hasActiveLabSubscription(subscriptions),
       referenceId: user._id.toString(),
       stripeCustomerId: user.stripeCustomerId ?? undefined,
     };
@@ -431,7 +430,7 @@ export const listAdminUsers = query({
     }
 
     const adapter = authComponent.adapter(ctx)(createAuthOptions(ctx));
-    const [users, subscriptions, trainingArchives] = await Promise.all([
+    const [users, subscriptions, blockPurchases] = await Promise.all([
       adapter.findMany<AuthUserRecord>({
         limit: 250,
         model: "user",
@@ -441,7 +440,7 @@ export const listAdminUsers = query({
         limit: 500,
         model: "subscription",
       }),
-      ctx.db.query("trainingArchivePurchases").collect(),
+      ctx.db.query("trainingBlockPurchases").collect(),
     ]);
 
     const subscriptionsByUser = new Map<string, AuthSubscriptionRecord[]>();
@@ -450,9 +449,13 @@ export const listAdminUsers = query({
       existing.push(subscription);
       subscriptionsByUser.set(subscription.referenceId, existing);
     }
-    const trainingArchivesByUser = new Map(
-      trainingArchives.map((purchase) => [purchase.referenceId, purchase]),
-    );
+    const purchasedBlockCounts = new Map<string, number>();
+    for (const purchase of blockPurchases) {
+      purchasedBlockCounts.set(
+        purchase.referenceId,
+        (purchasedBlockCounts.get(purchase.referenceId) ?? 0) + 1,
+      );
+    }
 
     return users.map((user) => {
       const userSubscriptions = subscriptionsByUser.get(user.id) ?? [];
@@ -466,7 +469,7 @@ export const listAdminUsers = query({
       )[0];
       const subscription = activeSubscription ?? latestSubscription;
       const role = normalizeRole(user.role);
-      const trainingArchive = trainingArchivesByUser.get(user.id);
+      const purchasedBlockCount = purchasedBlockCounts.get(user.id) ?? 0;
 
       return {
         accessSource:
@@ -474,8 +477,8 @@ export const listAdminUsers = query({
             ? ("admin" as const)
             : activeSubscription
               ? ("subscription" as const)
-              : trainingArchive?.status === "active"
-                ? ("training_archive" as const)
+              : purchasedBlockCount > 0
+                ? ("training_blocks" as const)
                 : ("none" as const),
         createdAt: toTimestamp(user.createdAt) ?? 0,
         email: user.email,
@@ -486,6 +489,7 @@ export const listAdminUsers = query({
           ? currentUser._id.toString() === user.id
           : false,
         name: user.name,
+        purchasedBlockCount,
         role,
         subscription: subscription
           ? {
@@ -495,14 +499,6 @@ export const listAdminUsers = query({
               status: subscription.status ?? "unknown",
             }
           : null,
-        trainingArchive:
-          trainingArchive?.status === "active"
-            ? {
-                accessEnd: trainingArchive.accessEnd,
-                accessStart: trainingArchive.accessStart,
-                purchasedAt: trainingArchive.purchasedAt,
-              }
-            : null,
       };
     });
   },

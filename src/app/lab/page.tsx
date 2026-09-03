@@ -4,10 +4,8 @@ import { LabRouteFallback } from "@/components/lab-route-fallback";
 import { checkAnyLabAccess } from "@/lib/auth";
 
 async function LabRedirect() {
-  const access = await checkAnyLabAccess();
-  return redirect(
-    access.hasFullAccess ? "/lab/lab-notes" : "/lab/training/workouts",
-  );
+  await checkAnyLabAccess();
+  return redirect("/lab/lab-notes");
 }
 
 export default function LabPage() {

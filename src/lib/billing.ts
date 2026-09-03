@@ -1,5 +1,4 @@
 export const INSIDE_LAB_PLAN_NAME = "inside-the-lab";
-export const INSIDE_LAB_HISTORY_PLAN_NAME = "inside-the-lab-with-history";
 
 export const insideLabMembership = {
   billingInterval: "month",
@@ -8,28 +7,45 @@ export const insideLabMembership = {
   title: "Inside the Lab membership",
 } as const;
 
-export const trainingArchivePass = {
-  accessLabel: "Sep 1, 2025 – purchase date",
-  accessStart: "2025-09-01",
+export const trainingBlockPass = {
+  price: 100,
+  priceLabel: "$100 per block",
+  title: "Training block",
+} as const;
+
+export const trainingBlockBundle = {
   price: 400,
   priceLabel: "$400 once",
-  title: "Complete training history",
+  title: "All current training blocks",
 } as const;
-
-export const historyMembershipBundle = {
-  priceLabel: "$400 today + $70/month",
-  title: "Complete history + membership",
-} as const;
-
-export interface TrainingArchiveAccess {
-  accessEnd: string;
-  accessStart: string;
-  purchasedAt: number;
-}
 
 export interface TrainingAccessWindow {
   from: string;
   to: string;
+}
+
+export interface TrainingBlockPurchase {
+  accessEnd: string;
+  accessStart: string;
+  purchasedAt: number;
+  title: string;
+  trainingBlockId: string;
+}
+
+export interface TrainingBlockAccess {
+  purchases: TrainingBlockPurchase[];
+  windows: TrainingAccessWindow[];
+}
+
+export interface TrainingBlockCatalogEntry {
+  _id: string;
+  description: string;
+  endDate: string;
+  isCompleted: boolean;
+  isOwned: boolean;
+  startDate: string;
+  title: string;
+  workoutCount: number;
 }
 
 export interface MembershipSubscription {
@@ -71,11 +87,30 @@ export const formatTrainingAccessDate = (date: string) =>
 export const formatTrainingAccessRange = (from: string, to: string) =>
   `${formatTrainingAccessDate(from)} – ${formatTrainingAccessDate(to)}`;
 
-export function getTrainingAccessLabel({
-  accessEnd,
-  accessStart,
-}: Pick<TrainingArchiveAccess, "accessEnd" | "accessStart">) {
-  return formatTrainingAccessRange(accessStart, accessEnd);
+const DAY_IN_MS = 24 * 60 * 60 * 1_000;
+
+export function getTrainingBlockWeeks(startDate: string, endDate: string) {
+  const days =
+    (Date.parse(`${endDate}T00:00:00.000Z`) -
+      Date.parse(`${startDate}T00:00:00.000Z`)) /
+      DAY_IN_MS +
+    1;
+
+  return Math.max(1, Math.round(days / 7));
+}
+
+export function formatTrainingBlockSpan(startDate: string, endDate: string) {
+  const weeks = getTrainingBlockWeeks(startDate, endDate);
+
+  return `${weeks} ${weeks === 1 ? "week" : "weeks"}`;
+}
+
+export function formatWorkoutCount(count: number) {
+  return `${count} ${count === 1 ? "workout" : "workouts"}`;
+}
+
+export function formatTrainingBlockCount(count: number) {
+  return `${count} ${count === 1 ? "block" : "blocks"}`;
 }
 
 export function getMembershipPriceLabel(subscription: MembershipSubscription) {

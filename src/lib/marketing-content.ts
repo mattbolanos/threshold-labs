@@ -1,4 +1,4 @@
-import { trainingArchivePass } from "@/lib/billing";
+import { trainingBlockBundle, trainingBlockPass } from "@/lib/billing";
 
 export const coachingApplicationUrl = "https://forms.gle/F6qMZQee6CayBHrMA";
 
@@ -56,18 +56,19 @@ export const offers = [
   {
     cta: {
       href: "/subscribe",
-      label: "Get history + membership",
+      label: "Browse training blocks",
     },
     description:
-      "Unlock every Inside the Lab workout published so far, then keep following the data with full access to every Lab Note.",
+      "Study the completed training blocks behind the results, one block at a time or all at once. One payment, yours to keep.",
     details: [
-      `All training data from ${trainingArchivePass.accessLabel}`,
-      "Ongoing workout library and performance charts",
+      `$${trainingBlockPass.price} per completed block`,
+      `$${trainingBlockBundle.price} for every completed block`,
+      "Workout library and performance charts for those dates",
       "Every Lab Note, past and future",
-      "$400 one-time + $70/month",
+      "Add the $70 membership for new workouts",
     ],
     eyebrow: "Historical access",
-    title: "Complete history + membership",
+    title: "Training blocks",
   },
 ] as const;
 

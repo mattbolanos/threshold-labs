@@ -21,7 +21,7 @@ describe("MembershipCard", () => {
           periodEnd: Date.UTC(2026, 8, 24),
           status: "active",
         }}
-        trainingArchive={null}
+        trainingBlocks={null}
       />,
     );
 
@@ -50,7 +50,7 @@ describe("MembershipCard", () => {
           periodEnd: Date.UTC(2026, 8, 24),
           status: "active",
         }}
-        trainingArchive={null}
+        trainingBlocks={null}
       />,
     );
 
@@ -72,7 +72,7 @@ describe("MembershipCard", () => {
           periodEnd: Date.UTC(2026, 7, 24),
           status: "canceled",
         }}
-        trainingArchive={null}
+        trainingBlocks={null}
       />,
     );
 
@@ -89,7 +89,7 @@ describe("MembershipCard", () => {
         accessSource="none"
         hasBillingAccount={false}
         subscription={null}
-        trainingArchive={null}
+        trainingBlocks={null}
       />,
     );
 
@@ -105,7 +105,7 @@ describe("MembershipCard", () => {
         accessSource="preview"
         hasBillingAccount={false}
         subscription={null}
-        trainingArchive={null}
+        trainingBlocks={null}
       />,
     );
 
@@ -136,7 +136,7 @@ describe("MembershipCard", () => {
           periodEnd: Date.UTC(2026, 9, 3),
           status: "active",
         }}
-        trainingArchive={null}
+        trainingBlocks={null}
       />,
     );
 
@@ -160,7 +160,7 @@ describe("MembershipCard", () => {
           periodEnd: Date.UTC(2027, 1, 16),
           status: "active",
         }}
-        trainingArchive={null}
+        trainingBlocks={null}
       />,
     );
 
@@ -170,29 +170,49 @@ describe("MembershipCard", () => {
     expect(markup).toContain("May 3, 2026 – Aug 3, 2026");
   });
 
-  test("shows the retained complete-history entitlement", () => {
+  const purchasedBlocks = {
+    purchases: [
+      {
+        accessEnd: "2025-11-23",
+        accessStart: "2025-10-13",
+        purchasedAt: Date.UTC(2026, 8, 3),
+        title: "Strength Capacity",
+        trainingBlockId: "block_2",
+      },
+      {
+        accessEnd: "2025-10-12",
+        accessStart: "2025-09-01",
+        purchasedAt: Date.UTC(2026, 8, 3),
+        title: "Aerobic Foundation",
+        trainingBlockId: "block_1",
+      },
+    ],
+    windows: [{ from: "2025-09-01", to: "2025-11-23" }],
+  };
+
+  test("lists purchased training blocks without a membership", () => {
     const markup = renderToStaticMarkup(
       <MembershipCard
-        accessSource="training_archive"
+        accessSource="training_blocks"
         hasBillingAccount={false}
         subscription={null}
-        trainingArchive={{
-          accessEnd: "2026-09-03",
-          accessStart: "2025-09-01",
-          purchasedAt: Date.UTC(2026, 8, 3),
-        }}
+        trainingBlocks={purchasedBlocks}
       />,
     );
 
-    expect(markup).toContain("Complete training history");
-    expect(markup).toContain("$400 once");
-    expect(markup).toContain("Sep 1, 2025 – Sep 3, 2026");
+    expect(markup).toContain("Training blocks");
+    expect(markup).toContain("2 blocks purchased");
+    expect(markup).toContain("Aerobic Foundation");
+    expect(markup).toContain("Sep 1, 2025 – Oct 12, 2025");
+    expect(markup).toContain("Strength Capacity");
+    expect(markup).toContain("Oct 13, 2025 – Nov 23, 2025");
     expect(markup).toContain(
-      "monthly membership adds future training data and every Lab Note",
+      "monthly membership adds new workouts as they are published",
     );
+    expect(markup).not.toContain("Cancel membership");
   });
 
-  test("shows both entitlements when a member also owns the archive", () => {
+  test("shows both entitlements when a member also owns blocks", () => {
     const markup = renderToStaticMarkup(
       <MembershipCard
         accessSource="subscription"
@@ -203,18 +223,14 @@ describe("MembershipCard", () => {
           periodEnd: Date.UTC(2026, 9, 3),
           status: "active",
         }}
-        trainingArchive={{
-          accessEnd: "2026-09-03",
-          accessStart: "2025-09-01",
-          purchasedAt: Date.UTC(2026, 8, 3),
-        }}
+        trainingBlocks={purchasedBlocks}
       />,
     );
 
     expect(markup).toContain("Inside the Lab membership");
-    expect(markup).toContain("Complete training history");
-    expect(markup).toContain("Purchased");
-    expect(markup).toContain("Sep 1, 2025 – Sep 3, 2026");
+    expect(markup).toContain("Training blocks");
+    expect(markup).toContain("2 blocks purchased");
+    expect(markup).toContain("Aerobic Foundation");
     expect(markup).toContain("Payment &amp; invoices");
     expect(markup).toContain("Cancel membership");
   });

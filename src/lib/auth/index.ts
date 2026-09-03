@@ -33,12 +33,8 @@ export const getPostAuthDestination = cache(async () => {
 
   const access = await fetchAuthQuery(api.auth.getCurrentLabAccess, {});
 
-  if (access.hasFullAccess) {
-    return "/lab/lab-notes" as const;
-  }
-
   return access.hasAccess
-    ? ("/lab/training/workouts" as const)
+    ? ("/lab/lab-notes" as const)
     : ("/subscribe" as const);
 });
 
@@ -49,14 +45,19 @@ export const getCurrentLabAccess = cache(async () => {
     return {
       hasAccess: true,
       hasBillingAccount: false,
-      hasFullAccess: true,
       source: "preview" as const,
       subscription: null,
-      trainingArchive: null,
+      trainingBlocks: null,
     };
   }
 
   return fetchAuthQuery(api.auth.getCurrentLabAccess, {});
+});
+
+export const getTrainingBlockCatalog = cache(async () => {
+  await checkAuthenticated();
+
+  return fetchAuthQuery(api.trainingBlockPurchases.getTrainingBlockCatalog, {});
 });
 
 export const getCurrentStripeMembership = cache(async () => {
@@ -72,16 +73,6 @@ export const getCurrentStripeMembership = cache(async () => {
 export const checkLabAccess = cache(async () => {
   const access = await getCurrentLabAccess();
 
-  if (!access.hasFullAccess) {
-    redirect("/unauthorized");
-  }
-
-  return access;
-});
-
-export const checkAnyLabAccess = cache(async () => {
-  const access = await getCurrentLabAccess();
-
   if (!access.hasAccess) {
     redirect("/unauthorized");
   }
@@ -89,7 +80,8 @@ export const checkAnyLabAccess = cache(async () => {
   return access;
 });
 
-export const checkTrainingAccess = checkAnyLabAccess;
+export const checkAnyLabAccess = checkLabAccess;
+export const checkTrainingAccess = checkLabAccess;
 
 export const checkAdmin = cache(async () => {
   await checkLabAccess();

@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { AuthHeader } from "@/components/auth/auth-header";
 import { MembershipCheckout } from "@/components/auth/membership-checkout";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getPostAuthDestination } from "@/lib/auth";
+import { getPostAuthDestination, getTrainingBlockCatalog } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Choose Your Access | Threshold Lab",
@@ -16,7 +16,9 @@ async function MembershipAccessGate() {
     redirect(destination);
   }
 
-  return <MembershipCheckout />;
+  const blocks = await getTrainingBlockCatalog();
+
+  return <MembershipCheckout blocks={blocks} />;
 }
 
 function MembershipCheckoutFallback() {
@@ -32,7 +34,7 @@ export default function SubscribePage() {
   return (
     <div className="relative z-10 w-full max-w-4xl px-4 sm:px-6">
       <AuthHeader
-        description="Choose monthly access, or unlock the complete training history and start your membership together. Both options include every Lab Note, past and future."
+        description="Follow training as it happens with the monthly membership, or buy completed training blocks outright and keep them for good."
         title="Choose your access"
       />
       <Suspense fallback={<MembershipCheckoutFallback />}>

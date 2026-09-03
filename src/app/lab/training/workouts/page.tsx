@@ -9,7 +9,7 @@ import { WorkoutLibrary } from "@/components/workout-library/workout-library";
 import { checkTrainingAccess } from "@/lib/auth";
 import {
   formatTrainingAccessDate,
-  getTrainingAccessLabel,
+  formatTrainingBlockCount,
 } from "@/lib/billing";
 import { cn } from "@/lib/utils";
 
@@ -24,8 +24,8 @@ async function WorkoutLibraryPageContent() {
   const description =
     access.source === "admin" || access.source === "preview"
       ? "Search every published workout by name, training block, type, week, or date range."
-      : access.trainingArchive
-        ? `Search your purchased training history from ${getTrainingAccessLabel(access.trainingArchive)}${access.source === "subscription" ? ", plus every workout published during your active membership" : ""}.`
+      : access.trainingBlocks
+        ? `Search the ${formatTrainingBlockCount(access.trainingBlocks.purchases.length)} you purchased${access.source === "subscription" ? ", plus every workout published during your active membership" : ""}.`
         : access.subscription?.accessStart
           ? `Search workouts from ${formatTrainingAccessDate(access.subscription.accessStart)} through today${access.subscription.pastAccessWindows?.length ? ", plus the workouts from your earlier membership periods" : ""}.`
           : "Search today and the previous 30 days by name, training block, type, week, or date range.";

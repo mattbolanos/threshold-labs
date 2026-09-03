@@ -1,10 +1,10 @@
 import type { UrlObject } from "node:url";
 import {
-  IconArchive,
   IconEye,
   IconLock,
   IconLockOpen,
   IconShieldCheck,
+  IconStack2,
 } from "@tabler/icons-react";
 import type { Route } from "next";
 import Link from "next/link";
@@ -24,13 +24,12 @@ import {
 import {
   formatTrainingAccessDate,
   formatTrainingAccessRange,
+  formatTrainingBlockCount,
   getMembershipPriceLabel,
   getMembershipStatusDetails,
-  getTrainingAccessLabel,
   insideLabMembership,
   type MembershipSubscription,
-  type TrainingArchiveAccess,
-  trainingArchivePass,
+  type TrainingBlockAccess,
 } from "@/lib/billing";
 
 interface MembershipCardProps {
@@ -39,12 +38,12 @@ interface MembershipCardProps {
     | "none"
     | "preview"
     | "subscription"
-    | "training_archive";
+    | "training_blocks";
   hasBillingAccount: boolean;
   isBillingPreview?: boolean;
   plansHref?: Route | UrlObject;
   subscription: MembershipSubscription | null;
-  trainingArchive: TrainingArchiveAccess | null;
+  trainingBlocks: TrainingBlockAccess | null;
 }
 
 interface AccessRowProps {
@@ -72,7 +71,7 @@ function AccessRow({
           <h3 className="text-base font-semibold">{title}</h3>
           {badge}
         </div>
-        <p className="mt-1 max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground">
+        <p className="mt-1 max-w-2xl text-sm leading-relaxed text-pretty text-muted-foreground">
           {description}
         </p>
         {children}
@@ -89,7 +88,10 @@ function AccessDetails({
   return (
     <dl className="mt-4 grid gap-4 sm:grid-cols-2">
       {items.map((item) => (
-        <div className="flex flex-col gap-1" key={item.label}>
+        <div
+          className="flex flex-col gap-1"
+          key={`${item.label}-${item.value}`}
+        >
           <dt className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
             {item.label}
           </dt>
@@ -106,7 +108,7 @@ export function MembershipCard({
   isBillingPreview = false,
   plansHref = "/subscribe",
   subscription,
-  trainingArchive,
+  trainingBlocks,
 }: MembershipCardProps) {
   const statusDetails = subscription
     ? getMembershipStatusDetails(subscription)
@@ -118,7 +120,7 @@ export function MembershipCard({
   );
   const hasAccessRows =
     subscription !== null ||
-    trainingArchive !== null ||
+    trainingBlocks !== null ||
     accessSource === "admin" ||
     accessSource === "preview";
 
@@ -130,7 +132,7 @@ export function MembershipCard({
             Current billing
           </h2>
         </CardTitle>
-        <CardDescription className="text-pretty leading-relaxed">
+        <CardDescription className="leading-relaxed text-pretty">
           What you pay for and when your plan renews.
         </CardDescription>
       </CardHeader>
@@ -203,21 +205,25 @@ export function MembershipCard({
           />
         ) : null}
 
-        {trainingArchive ? (
+        {trainingBlocks ? (
           <AccessRow
-            badge={<Badge variant="secondary">Purchased</Badge>}
-            description="Your one-time purchase keeps the complete training history available through your purchase date. An active monthly membership adds future training data and every Lab Note."
-            icon={<IconArchive aria-hidden className="size-5" stroke={2} />}
-            title={trainingArchivePass.title}
+            badge={
+              <Badge variant="secondary">
+                {`${formatTrainingBlockCount(trainingBlocks.purchases.length)} purchased`}
+              </Badge>
+            }
+            description="Your one-time purchases keep these training blocks in the Workout Library and charts for good, along with every Lab Note. An active monthly membership adds new workouts as they are published."
+            icon={<IconStack2 aria-hidden className="size-5" stroke={2} />}
+            title="Training blocks"
           >
             <AccessDetails
-              items={[
-                { label: "Payment", value: trainingArchivePass.priceLabel },
-                {
-                  label: "Training data",
-                  value: getTrainingAccessLabel(trainingArchive),
-                },
-              ]}
+              items={trainingBlocks.purchases.map((purchase) => ({
+                label: purchase.title,
+                value: formatTrainingAccessRange(
+                  purchase.accessStart,
+                  purchase.accessEnd,
+                ),
+              }))}
             />
           </AccessRow>
         ) : null}
@@ -225,7 +231,7 @@ export function MembershipCard({
         {!hasAccessRows ? (
           <AccessRow
             badge={<Badge variant="outline">Inactive</Badge>}
-            description="This account does not have an active membership or history purchase."
+            description="This account does not have an active membership or training block purchase."
             icon={<IconLockOpen aria-hidden className="size-5" stroke={2} />}
             title="No active access"
           >
@@ -245,7 +251,7 @@ export function MembershipCard({
 
       {hasBillingAccount ? (
         <CardFooter className="flex flex-col items-stretch gap-4 bg-secondary/35 sm:flex-row sm:items-start sm:justify-between">
-          <p className="max-w-md text-pretty text-xs leading-relaxed text-muted-foreground">
+          <p className="max-w-md text-xs leading-relaxed text-pretty text-muted-foreground">
             {isBillingPreview
               ? "This preview shows the active-member state. Billing actions connect to Stripe in a live account."
               : "Stripe securely handles your payment method and invoices. It will ask you to confirm cancellation, and your access stays active through the end of your paid period."}

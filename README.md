@@ -31,12 +31,14 @@ bunx convex env set --prod AUTH_EMAIL_FROM "Threshold Lab <accounts@your-verifie
 bunx convex env set --prod STRIPE_SECRET_KEY
 bunx convex env set --prod STRIPE_WEBHOOK_SECRET
 bunx convex env set --prod STRIPE_INSIDE_LAB_PRICE_ID
-bunx convex env set --prod STRIPE_TRAINING_ARCHIVE_PRICE_ID
+bunx convex env set --prod STRIPE_TRAINING_BLOCK_PRICE_ID
+bunx convex env set --prod STRIPE_TRAINING_BLOCK_BUNDLE_PRICE_ID
 ```
 
 Use live-mode Stripe values together: `sk_live_...`, the live recurring
-membership `price_...`, the live $400 one-time complete-history `price_...`,
-and the signing secret for the live webhook endpoint at
+membership `price_...`, the live $100 one-time training-block `price_...`, the
+live $400 one-time all-blocks `price_...`, and the signing secret for the live
+webhook endpoint at
 `https://your-production-domain.com/api/auth/stripe/webhook`. Subscribe that
 endpoint to `checkout.session.completed`, `customer.subscription.created`,
 `customer.subscription.updated`, and `customer.subscription.deleted`.
@@ -50,17 +52,28 @@ and the paid-through date). Renewals never move a window. A member who cancels
 and later subscribes again receives a new window for the new subscription plus
 their earlier closed windows, but never the lapsed period in between. The
 webhook handlers keep the windows in sync; subscriptions that predate the table
-fall back to the Better Auth record's creation and end dates. A new
-complete-history purchase is checked out with the recurring membership in the
-same Stripe session: $400 once plus $70/month. An existing active member can add
-history for the one-time $400 payment without starting a second subscription.
+fall back to the Better Auth record's creation and end dates.
 
-The history purchase grants Training and Workout Library access from September
-1, 2025 through the purchase date and remains available if the monthly
-membership later ends. The active membership adds ongoing training data and Lab
-Notes. The checkout verifier requires the configured history price, the
-configured recurring membership price for new bundle purchases, a paid USD
-session, and the purchasing user reference before it records history access.
+### Training block purchases
+
+Training blocks are sold as one-time Stripe payments, with or without a
+membership: $100 for a single block once it has started (start date on or
+before today in Eastern time, so the in-progress block is included and shows
+the workouts published so far), or $400 for every completed block (end date
+before today) that exists at purchase time. Each purchase
+is a `checkout.session.completed` payment-mode session created by
+`trainingBlockPurchases.createCheckout`; the block id and purchase type travel
+in the session metadata. The webhook handler and the success page both verify
+the session (configured price, exact USD amount, paid status, purchasing user)
+and then write one `trainingBlockPurchases` row per granted block, snapshotting
+the block's dates and title. Blocks already owned are skipped, and the checkout
+session id keeps the grant idempotent.
+
+Purchased blocks grant Training and Workout Library access for their date
+ranges indefinitely. Lab Notes, races, and training block context are available
+to anyone who has paid, whether through an active membership or any past block
+purchase. The active membership only adds ongoing workouts on top. Because Stripe Checkout shows the price's product name, a single
+block checkout reads "Training Block" rather than the block title.
 
 Configure the Stripe Customer Portal in live mode and enable payment-method
 updates, invoice history, and subscription cancellation. Members open that
@@ -113,7 +126,8 @@ GOOGLE_CLIENT_SECRET
 RESEND_API_KEY
 STRIPE_INSIDE_LAB_PRICE_ID
 STRIPE_SECRET_KEY
-STRIPE_TRAINING_ARCHIVE_PRICE_ID
+STRIPE_TRAINING_BLOCK_BUNDLE_PRICE_ID
+STRIPE_TRAINING_BLOCK_PRICE_ID
 STRIPE_WEBHOOK_SECRET
 ```
 

@@ -1,31 +1,37 @@
 "use client";
 
-import { IconAlertCircle, IconArchive, IconLock } from "@tabler/icons-react";
+import { IconAlertCircle, IconLock, IconStack2 } from "@tabler/icons-react";
 import { useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
 import { CheckoutOptionCard } from "@/components/auth/checkout-option-card";
-import { createTrainingArchiveCheckout } from "@/lib/auth/training-archive-actions";
+import { TrainingBlockCatalog } from "@/components/auth/training-block-catalog";
+import {
+  createTrainingBlockCheckout,
+  type TrainingBlockPurchaseRequest,
+} from "@/lib/auth/training-block-actions";
 import { authClient } from "@/lib/auth-client";
 import {
-  historyMembershipBundle,
-  INSIDE_LAB_HISTORY_PLAN_NAME,
+  formatTrainingAccessDate,
+  formatTrainingBlockCount,
+  formatWorkoutCount,
   INSIDE_LAB_PLAN_NAME,
   insideLabMembership,
-  trainingArchivePass,
+  type TrainingBlockCatalogEntry,
+  trainingBlockBundle,
 } from "@/lib/billing";
 import { cn } from "@/lib/utils";
 
-type CheckoutOption = "history" | "membership";
+type CheckoutOption = "bundle" | "membership" | `block:${string}`;
 
 interface MembershipCheckoutProps {
+  blocks: TrainingBlockCatalogEntry[];
   hasMembership?: boolean;
-  hasTrainingArchive?: boolean;
   surface?: "pricing" | "subscribe";
 }
 
 export function MembershipCheckout({
+  blocks,
   hasMembership = false,
-  hasTrainingArchive = false,
   surface = "subscribe",
 }: MembershipCheckoutProps) {
   const searchParams = useSearchParams();
@@ -58,52 +64,56 @@ export function MembershipCheckout({
     }
   }
 
-  async function upgradeMembership(plan: string) {
-    const { error: checkoutError } = await authClient.subscription.upgrade({
-      cancelUrl:
-        surface === "pricing"
-          ? "/lab/pricing?checkout=cancelled"
-          : "/subscribe?checkout=cancelled",
-      plan,
-      successUrl: surface === "pricing" ? "/lab/pricing" : "/lab/lab-notes",
-    });
-
-    if (checkoutError) {
-      throw new Error(
-        checkoutError.message || "Secure checkout could not be opened.",
-      );
-    }
-  }
-
   function openMembershipCheckout() {
-    return runCheckout("membership", () =>
-      upgradeMembership(INSIDE_LAB_PLAN_NAME),
-    );
+    return runCheckout("membership", async () => {
+      const { error: checkoutError } = await authClient.subscription.upgrade({
+        cancelUrl:
+          surface === "pricing"
+            ? "/lab/pricing?checkout=cancelled"
+            : "/subscribe?checkout=cancelled",
+        plan: INSIDE_LAB_PLAN_NAME,
+        successUrl: surface === "pricing" ? "/lab/pricing" : "/lab/lab-notes",
+      });
+
+      if (checkoutError) {
+        throw new Error(
+          checkoutError.message || "Secure checkout could not be opened.",
+        );
+      }
+    });
   }
 
-  function openHistoryCheckout() {
-    return runCheckout("history", async () => {
-      if (hasMembership && !hasTrainingArchive) {
-        const { url } = await createTrainingArchiveCheckout(surface);
-        window.location.assign(url);
-        return;
-      }
-
-      await upgradeMembership(
-        hasTrainingArchive
-          ? INSIDE_LAB_PLAN_NAME
-          : INSIDE_LAB_HISTORY_PLAN_NAME,
-      );
+  function openBlockCheckout(
+    option: CheckoutOption,
+    purchase: TrainingBlockPurchaseRequest,
+  ) {
+    return runCheckout(option, async () => {
+      const { url } = await createTrainingBlockCheckout(purchase, surface);
+      window.location.assign(url);
     });
   }
 
   const cancelledOption = searchParams.get("checkout");
   const checkoutCancelled =
-    cancelledOption === "cancelled" || cancelledOption === "archive-cancelled";
-  const ownsHistoryMembership = hasMembership && hasTrainingArchive;
+    cancelledOption === "cancelled" || cancelledOption === "blocks-cancelled";
+  // The bundle only covers finished blocks; the in-progress block is sold on
+  // its own in the catalog below.
+  const completedBlocks = blocks.filter((block) => block.isCompleted);
+  const ownedBlocks = completedBlocks.filter((block) => block.isOwned);
+  const ownsEveryBlock =
+    completedBlocks.length > 0 && ownedBlocks.length === completedBlocks.length;
+  const totalWorkouts = completedBlocks.reduce(
+    (total, block) => total + block.workoutCount,
+    0,
+  );
+  const oldestBlock = completedBlocks.at(-1);
+  const newestBlock = completedBlocks[0];
+  const openingBlockId = opening?.startsWith("block:")
+    ? opening.slice("block:".length)
+    : null;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-10">
       {checkoutCancelled || error ? (
         <p
           aria-live="polite"
@@ -120,18 +130,23 @@ export function MembershipCheckout({
         </p>
       ) : null}
 
-      <div className="grid gap-5 md:grid-cols-2">
+      <div
+        className={cn(
+          "grid gap-5",
+          completedBlocks.length > 0 && "md:grid-cols-2",
+        )}
+      >
         <CheckoutOptionCard
           badge={hasMembership ? "Current plan" : "Monthly access"}
           buttonLabel={
             hasMembership ? "Membership active" : "Choose monthly membership"
           }
-          description="Join for ongoing training data and full access to every Lab Note, billed monthly."
+          description="Join for new workouts as they are published, plus every Lab Note, billed monthly."
           disabled={opening !== null}
           features={[
-            "Every Lab Note, past and future",
-            "Training overview and performance charts",
             "Workouts from 30 days before you join through the end of your membership",
+            "Training overview and performance charts",
+            "Every Lab Note, past and future",
           ]}
           icon={<IconLock aria-hidden className="size-5" />}
           isOpening={opening === "membership"}
@@ -141,55 +156,53 @@ export function MembershipCheckout({
           ownedLabel="Manage membership"
           priceLabel={insideLabMembership.priceLabel}
           title={insideLabMembership.title}
+          variant={completedBlocks.length > 0 ? "outline" : "default"}
         />
 
-        <CheckoutOptionCard
-          badge={
-            ownsHistoryMembership
-              ? "Current access"
-              : hasTrainingArchive
-                ? "History purchased"
-                : "Everything"
-          }
-          buttonLabel={
-            ownsHistoryMembership
-              ? "History and membership active"
-              : hasTrainingArchive
-                ? "Start monthly membership"
-                : hasMembership
-                  ? "Add complete history"
-                  : "Get history + membership"
-          }
-          description={
-            hasTrainingArchive
-              ? "Your $400 one-time purchase unlocked every workout published through your purchase date. The $70 monthly membership includes ongoing data and every Lab Note."
-              : "Pay $400 once to unlock every workout published so far. The $70 monthly membership includes ongoing data and every Lab Note."
-          }
-          disabled={opening !== null}
-          features={[
-            `All training data from ${trainingArchivePass.accessLabel}`,
-            "Ongoing workouts and performance charts",
-            "Every Lab Note, past and future",
-          ]}
-          icon={<IconArchive aria-hidden className="size-5" />}
-          isOpening={opening === "history"}
-          isOwned={ownsHistoryMembership}
-          onCheckout={() => void openHistoryCheckout()}
-          ownedHref="/account/billing"
-          ownedLabel="Manage access"
-          priceLabel={
-            ownsHistoryMembership
-              ? historyMembershipBundle.priceLabel
-              : hasTrainingArchive
-                ? insideLabMembership.priceLabel
-                : hasMembership
-                  ? trainingArchivePass.priceLabel
-                  : historyMembershipBundle.priceLabel
-          }
-          title={historyMembershipBundle.title}
-          variant="default"
-        />
+        {oldestBlock && newestBlock ? (
+          <CheckoutOptionCard
+            badge={ownsEveryBlock ? "Purchased" : "Best value"}
+            buttonLabel={
+              ownsEveryBlock ? "All blocks purchased" : "Get all blocks"
+            }
+            description={
+              ownedBlocks.length > 0 && !ownsEveryBlock
+                ? `Pay $${trainingBlockBundle.price} once for every completed training block, including the ${formatTrainingBlockCount(ownedBlocks.length)} you already own.`
+                : `Pay $${trainingBlockBundle.price} once for every completed training block published so far. Access that never expires.`
+            }
+            disabled={opening !== null}
+            features={[
+              `${formatTrainingBlockCount(completedBlocks.length)} and ${formatWorkoutCount(totalWorkouts)}, ${formatTrainingAccessDate(oldestBlock.startDate)} – ${formatTrainingAccessDate(newestBlock.endDate)}`,
+              "Workout library and performance charts for those dates",
+              "Every Lab Note, past and future",
+              "Yours to keep",
+            ]}
+            icon={<IconStack2 aria-hidden className="size-5" />}
+            isOpening={opening === "bundle"}
+            isOwned={ownsEveryBlock}
+            limitations={["New workouts come with the monthly membership"]}
+            onCheckout={() =>
+              void openBlockCheckout("bundle", { kind: "bundle" })
+            }
+            ownedHref="/lab/training/workouts"
+            ownedLabel="View workouts"
+            priceLabel={trainingBlockBundle.priceLabel}
+            title={trainingBlockBundle.title}
+          />
+        ) : null}
       </div>
+
+      <TrainingBlockCatalog
+        blocks={blocks}
+        disabled={opening !== null}
+        onCheckout={(trainingBlockId) =>
+          void openBlockCheckout(`block:${trainingBlockId}`, {
+            kind: "block",
+            trainingBlockId,
+          })
+        }
+        openingBlockId={openingBlockId}
+      />
     </div>
   );
 }

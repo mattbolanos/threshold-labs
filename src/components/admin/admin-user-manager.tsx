@@ -36,6 +36,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatTrainingBlockCount } from "@/lib/billing";
 import { api } from "../../../convex/_generated/api";
 
 const roleOptions = [
@@ -82,11 +83,11 @@ function formatMembershipStatus(
 }
 
 function AccessBadge({
-  hasTrainingArchive,
+  purchasedBlockCount,
   source,
 }: {
-  hasTrainingArchive: boolean;
-  source: "admin" | "none" | "subscription" | "training_archive";
+  purchasedBlockCount: number;
+  source: "admin" | "none" | "subscription" | "training_blocks";
 }) {
   if (source === "admin") {
     return (
@@ -101,16 +102,18 @@ function AccessBadge({
     return (
       <Badge variant="secondary">
         <IconCreditCard aria-hidden data-icon="inline-start" />
-        {hasTrainingArchive ? "Member + history" : "Member access"}
+        {purchasedBlockCount > 0
+          ? `Member + ${formatTrainingBlockCount(purchasedBlockCount)}`
+          : "Member access"}
       </Badge>
     );
   }
 
-  if (source === "training_archive") {
+  if (source === "training_blocks") {
     return (
       <Badge variant="secondary">
         <IconCreditCard aria-hidden data-icon="inline-start" />
-        Training history
+        {formatTrainingBlockCount(purchasedBlockCount)} purchased
       </Badge>
     );
   }
@@ -260,7 +263,7 @@ export function AdminUserManager() {
                         Lab access
                       </p>
                       <AccessBadge
-                        hasTrainingArchive={user.trainingArchive !== null}
+                        purchasedBlockCount={user.purchasedBlockCount}
                         source={user.accessSource}
                       />
                     </div>

@@ -157,9 +157,8 @@ interface TrainingAccess {
     accessStart?: string | null;
     pastAccessWindows?: WorkoutAccessWindow[] | null;
   } | null;
-  trainingArchive: {
-    accessEnd: string;
-    accessStart: string;
+  trainingBlocks: {
+    windows: WorkoutAccessWindow[];
   } | null;
 }
 
@@ -169,12 +168,7 @@ const getWorkoutEntitlements = (
   accessSource: access.source,
   membershipAccessStart: access.subscription?.accessStart,
   pastMembershipWindows: access.subscription?.pastAccessWindows,
-  trainingArchive: access.trainingArchive
-    ? {
-        from: access.trainingArchive.accessStart,
-        to: access.trainingArchive.accessEnd,
-      }
-    : null,
+  purchasedBlockWindows: access.trainingBlocks?.windows ?? null,
 });
 
 const getTrainingAccessWindows = (access: TrainingAccess) =>

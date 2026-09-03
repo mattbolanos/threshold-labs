@@ -71,7 +71,7 @@ async function MembershipPageContent() {
         isBillingPreview={isBillingPreview}
         plansHref={plansHref}
         subscription={subscription}
-        trainingArchive={access.trainingArchive}
+        trainingBlocks={access.trainingBlocks}
       />
     </div>
   );

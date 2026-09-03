@@ -25,7 +25,7 @@ export interface WorkoutEntitlements {
   accessSource: string;
   membershipAccessStart?: string | null;
   pastMembershipWindows?: WorkoutAccessWindow[] | null;
-  trainingArchive?: WorkoutAccessWindow | null;
+  purchasedBlockWindows?: WorkoutAccessWindow[] | null;
 }
 
 export function formatLabDate(date: Date) {
@@ -121,7 +121,7 @@ export function getWorkoutListingAccessWindows(
     accessSource,
     membershipAccessStart,
     pastMembershipWindows,
-    trainingArchive,
+    purchasedBlockWindows,
   }: WorkoutEntitlements,
   now: Date = new Date(),
 ): WorkoutAccessWindow[] | null {
@@ -129,26 +129,19 @@ export function getWorkoutListingAccessWindows(
     return null;
   }
 
-  const accessWindows: WorkoutAccessWindow[] = [];
+  const accessWindows: WorkoutAccessWindow[] = [
+    ...(purchasedBlockWindows ?? []),
+  ];
 
   if (accessSource === "subscription") {
     const currentWindow = getWorkoutAccessWindow(now);
-    accessWindows.push(
-      ...mergeWorkoutAccessWindows([
-        ...(pastMembershipWindows ?? []),
-        {
-          from: membershipAccessStart ?? currentWindow.from,
-          to: currentWindow.to,
-        },
-      ]),
-    );
+    accessWindows.push(...(pastMembershipWindows ?? []), {
+      from: membershipAccessStart ?? currentWindow.from,
+      to: currentWindow.to,
+    });
   }
 
-  if (trainingArchive) {
-    accessWindows.push(trainingArchive);
-  }
-
-  return accessWindows;
+  return mergeWorkoutAccessWindows(accessWindows);
 }
 
 export function getChartWorkoutDateRanges(
@@ -158,14 +151,14 @@ export function getChartWorkoutDateRanges(
   defaults: ChartDateRangeDefaults,
   now: Date = new Date(),
 ) {
-  const archiveOnly =
-    entitlements.accessSource === "training_archive"
-      ? entitlements.trainingArchive
-      : null;
+  const blocksOnly =
+    entitlements.accessSource === "training_blocks"
+      ? mergeWorkoutAccessWindows(entitlements.purchasedBlockWindows ?? [])
+      : [];
 
   return getAccessibleWorkoutDateRanges(
-    from ?? archiveOnly?.from ?? defaults.from,
-    to ?? archiveOnly?.to ?? defaults.to ?? formatLabDate(now),
+    from ?? blocksOnly[0]?.from ?? defaults.from,
+    to ?? blocksOnly.at(-1)?.to ?? defaults.to ?? formatLabDate(now),
     getWorkoutListingAccessWindows(entitlements, now),
   );
 }

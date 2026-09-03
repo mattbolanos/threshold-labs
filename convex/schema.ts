@@ -114,15 +114,17 @@ export default defineSchema({
     updatedAt: v.number(),
   }).index("by_start_date", ["startDate"]),
 
-  trainingArchivePurchases: defineTable({
+  trainingBlockPurchases: defineTable({
     accessEnd: v.string(),
     accessStart: v.string(),
+    purchaseType: v.union(v.literal("block"), v.literal("bundle")),
     purchasedAt: v.number(),
     referenceId: v.string(),
-    status: v.literal("active"),
     stripeCheckoutSessionId: v.string(),
     stripeCustomerId: v.optional(v.string()),
     stripePaymentIntentId: v.optional(v.string()),
+    trainingBlockId: v.id("trainingBlocks"),
+    trainingBlockTitle: v.string(),
   })
     .index("by_reference_id", ["referenceId"])
     .index("by_stripe_checkout_session", ["stripeCheckoutSessionId"]),

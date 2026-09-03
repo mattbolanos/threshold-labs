@@ -15,7 +15,9 @@ async function MembershipAccessGate() {
 
   const access = await fetchAuthQuery(api.auth.getCurrentLabAccess, {});
   if (access.hasAccess) {
-    redirect("/lab/lab-notes");
+    redirect(
+      access.hasFullAccess ? "/lab/lab-notes" : "/lab/training/workouts",
+    );
   }
 
   return <MembershipRequired hasBillingAccount={access.hasBillingAccount} />;

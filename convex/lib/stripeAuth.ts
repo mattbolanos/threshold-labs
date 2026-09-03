@@ -1,11 +1,27 @@
 import { stripe } from "@better-auth/stripe";
 import type { GenericCtx } from "@convex-dev/better-auth";
 import Stripe from "stripe";
+import { internal } from "../_generated/api";
 import type { DataModel } from "../_generated/dataModel";
 import { getAuthEnvironment } from "./authEnvironment";
 import { INSIDE_LAB_PLAN_NAME } from "./labAccess";
+import { getVerifiedTrainingArchivePurchase } from "./trainingArchiveStripe";
 
 const STRIPE_API_VERSION = "2026-07-29.dahlia";
+
+export function getStripeCheckoutBrandingSettings(siteUrl: string) {
+  return {
+    background_color: "#030504" as const,
+    border_style: "rounded" as const,
+    button_color: "#7AF440",
+    display_name: "Threshold Lab",
+    font_family: "inter" as const,
+    icon: {
+      type: "url" as const,
+      url: new URL("/web-app-manifest-512x512.png", siteUrl).toString(),
+    },
+  };
+}
 
 export function createStripeClient(ctx: GenericCtx<DataModel>) {
   return new Stripe(getAuthEnvironment(ctx, "STRIPE_SECRET_KEY"), {
@@ -14,31 +30,119 @@ export function createStripeClient(ctx: GenericCtx<DataModel>) {
   });
 }
 
+async function getRedemptionIdentity({
+  checkoutSession,
+  stripeClient,
+  stripeSubscription,
+}: {
+  checkoutSession: Stripe.Checkout.Session;
+  stripeClient: Stripe;
+  stripeSubscription: Stripe.Subscription;
+}) {
+  const stripeCustomerId =
+    typeof stripeSubscription.customer === "string"
+      ? stripeSubscription.customer
+      : stripeSubscription.customer.id;
+  let redeemedByEmail =
+    checkoutSession.customer_details?.email?.trim().toLowerCase() ?? undefined;
+
+  if (!redeemedByEmail) {
+    try {
+      const customer = await stripeClient.customers.retrieve(stripeCustomerId);
+      if (!customer.deleted) {
+        redeemedByEmail = customer.email?.trim().toLowerCase() ?? undefined;
+      }
+    } catch {
+      // Redemption is still recorded if Stripe customer lookup is unavailable.
+    }
+  }
+
+  return { redeemedByEmail, stripeCustomerId };
+}
+
 export function createStripeAuthPlugin(ctx: GenericCtx<DataModel>) {
   const siteUrl = getAuthEnvironment(ctx, "SITE_URL");
+  const stripeClient = createStripeClient(ctx);
 
   return stripe({
     createCustomerOnSignUp: false,
-    stripeClient: createStripeClient(ctx),
+    onEvent: async (event) => {
+      if (
+        event.type !== "checkout.session.completed" ||
+        !("runMutation" in ctx)
+      ) {
+        return;
+      }
+
+      const checkoutSession = event.data.object;
+      if (checkoutSession.mode !== "payment") {
+        return;
+      }
+
+      const purchase = await getVerifiedTrainingArchivePurchase({
+        checkoutSessionId: checkoutSession.id,
+        ctx,
+        stripeClient,
+      });
+
+      if (purchase) {
+        await ctx.runMutation(internal.trainingArchive.grantPurchase, purchase);
+      }
+    },
+    stripeClient,
     stripeWebhookSecret: getAuthEnvironment(ctx, "STRIPE_WEBHOOK_SECRET"),
     subscription: {
       enabled: true,
       getCheckoutSessionParams: () => ({
         params: {
-          branding_settings: {
-            background_color: "#030504",
-            border_style: "rounded",
-            button_color: "#7AF440",
-            display_name: "Threshold Lab",
-            font_family: "inter",
-            icon: {
-              type: "url",
-              url: new URL("/web-app-manifest-512x512.png", siteUrl).toString(),
-            },
-          },
+          allow_promotion_codes: true,
+          branding_settings: getStripeCheckoutBrandingSettings(siteUrl),
+          payment_method_collection: "if_required",
           submit_type: "subscribe",
         },
       }),
+      onSubscriptionComplete: async ({ event, stripeSubscription }) => {
+        if (!("runMutation" in ctx)) {
+          return;
+        }
+
+        const expandedSubscription = await stripeClient.subscriptions.retrieve(
+          stripeSubscription.id,
+          { expand: ["discounts"] },
+        );
+        const stripePromotionCodeIds = expandedSubscription.discounts.flatMap(
+          (discount) => {
+            if (typeof discount === "string" || !discount.promotion_code) {
+              return [];
+            }
+
+            return [
+              typeof discount.promotion_code === "string"
+                ? discount.promotion_code
+                : discount.promotion_code.id,
+            ];
+          },
+        );
+
+        if (stripePromotionCodeIds.length > 0) {
+          const { redeemedByEmail, stripeCustomerId } =
+            await getRedemptionIdentity({
+              checkoutSession: event.data.object as Stripe.Checkout.Session,
+              stripeClient,
+              stripeSubscription: expandedSubscription,
+            });
+          await ctx.runMutation(
+            internal.discountCodes.markDiscountCodesRedeemed,
+            {
+              redeemedAt: event.created * 1_000,
+              redeemedByEmail,
+              stripeCustomerId,
+              stripePromotionCodeIds,
+              stripeSubscriptionId: expandedSubscription.id,
+            },
+          );
+        }
+      },
       plans: [
         {
           name: INSIDE_LAB_PLAN_NAME,

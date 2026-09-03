@@ -1,39 +1,70 @@
 "use client";
 
-import {
-  IconAlertCircle,
-  IconArrowRight,
-  IconLoader2,
-  IconLock,
-} from "@tabler/icons-react";
+import { IconAlertCircle, IconArchive, IconLock } from "@tabler/icons-react";
 import { useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { CheckoutOptionCard } from "@/components/auth/checkout-option-card";
+import { createTrainingArchiveCheckout } from "@/lib/auth/training-archive-actions";
 import { authClient } from "@/lib/auth-client";
-import { INSIDE_LAB_PLAN_NAME, insideLabMembership } from "@/lib/billing";
+import {
+  INSIDE_LAB_PLAN_NAME,
+  insideLabMembership,
+  trainingArchivePass,
+} from "@/lib/billing";
 import { cn } from "@/lib/utils";
 
-type CheckoutStatus = "error" | "opening" | "ready";
+type CheckoutOption = "archive" | "membership";
 
-export function MembershipCheckout() {
+interface MembershipCheckoutProps {
+  hasMembership?: boolean;
+  hasTrainingArchive?: boolean;
+  surface?: "pricing" | "subscribe";
+}
+
+export function MembershipCheckout({
+  hasMembership = false,
+  hasTrainingArchive = false,
+  surface = "subscribe",
+}: MembershipCheckoutProps) {
   const searchParams = useSearchParams();
   const checkoutRequestPending = useRef(false);
   const [error, setError] = useState<string | null>(null);
-  const [status, setStatus] = useState<CheckoutStatus>("ready");
+  const [opening, setOpening] = useState<CheckoutOption | null>(null);
 
-  async function openCheckout() {
+  async function runCheckout(
+    option: CheckoutOption,
+    checkout: () => Promise<void>,
+  ) {
     if (checkoutRequestPending.current) return;
 
     checkoutRequestPending.current = true;
-    window.history.replaceState({}, "", "/subscribe");
+    const returnPath = surface === "pricing" ? "/lab/pricing" : "/subscribe";
+    window.history.replaceState({}, "", returnPath);
     setError(null);
-    setStatus("opening");
+    setOpening(option);
 
     try {
+      await checkout();
+    } catch (checkoutError) {
+      checkoutRequestPending.current = false;
+      setOpening(null);
+      setError(
+        checkoutError instanceof Error
+          ? checkoutError.message
+          : "Secure checkout could not be opened.",
+      );
+    }
+  }
+
+  function openMembershipCheckout() {
+    return runCheckout("membership", async () => {
       const { error: checkoutError } = await authClient.subscription.upgrade({
-        cancelUrl: "/subscribe?checkout=cancelled",
+        cancelUrl:
+          surface === "pricing"
+            ? "/lab/pricing?checkout=cancelled"
+            : "/subscribe?checkout=cancelled",
         plan: INSIDE_LAB_PLAN_NAME,
-        successUrl: "/lab/lab-notes",
+        successUrl: surface === "pricing" ? "/lab/pricing" : "/lab/lab-notes",
       });
 
       if (checkoutError) {
@@ -41,88 +72,84 @@ export function MembershipCheckout() {
           checkoutError.message || "Secure checkout could not be opened.",
         );
       }
-    } catch (checkoutError) {
-      checkoutRequestPending.current = false;
-      setError(
-        checkoutError instanceof Error
-          ? checkoutError.message
-          : "Secure checkout could not be opened.",
-      );
-      setStatus("error");
-    }
+    });
   }
 
+  function openArchiveCheckout() {
+    return runCheckout("archive", async () => {
+      const { url } = await createTrainingArchiveCheckout(surface);
+      window.location.assign(url);
+    });
+  }
+
+  const cancelledOption = searchParams.get("checkout");
   const checkoutCancelled =
-    status === "ready" && searchParams.get("checkout") === "cancelled";
-  const checkoutFailed = status === "error";
-  const checkoutOpening = status === "opening";
+    cancelledOption === "cancelled" || cancelledOption === "archive-cancelled";
 
   return (
-    <div className="w-full rounded-xl border bg-card/85 p-7 shadow-xl shadow-foreground/5 backdrop-blur-sm">
-      <span
-        className={cn(
-          "mx-auto flex size-10 items-center justify-center rounded-full",
-          checkoutFailed
-            ? "bg-destructive/10 text-destructive"
-            : checkoutCancelled
-              ? "bg-muted text-muted-foreground"
-              : "bg-primary/15 text-primary",
-        )}
-      >
-        {checkoutFailed ? (
-          <IconAlertCircle aria-hidden className="size-5" stroke={2} />
-        ) : checkoutOpening ? (
-          <IconLoader2 aria-hidden className="size-5 animate-spin" stroke={2} />
-        ) : (
-          <IconLock aria-hidden className="size-5" stroke={2} />
-        )}
-      </span>
-
-      <div className="mt-5 text-center">
-        <h2 className="text-xl font-semibold tracking-tight">
-          {insideLabMembership.title}
-        </h2>
-        <p className="mt-1 text-2xl font-semibold">
-          {insideLabMembership.priceLabel}
-        </p>
-      </div>
-
-      {checkoutCancelled || checkoutFailed ? (
+    <div className="space-y-5">
+      {checkoutCancelled || error ? (
         <p
           aria-live="polite"
           className={cn(
-            "mt-5 rounded-lg px-4 py-3 text-sm",
-            checkoutFailed
+            "flex items-start gap-2 rounded-lg px-4 py-3 text-sm",
+            error
               ? "bg-destructive/10 text-destructive"
               : "bg-muted text-muted-foreground",
           )}
-          role={checkoutFailed ? "alert" : "status"}
+          role={error ? "alert" : "status"}
         >
-          {checkoutCancelled
-            ? "Checkout was cancelled. No payment was made."
-            : error || "Unable to open checkout. Try again."}
+          <IconAlertCircle aria-hidden className="mt-0.5 size-4 shrink-0" />
+          <span>{error || "Checkout was cancelled. No payment was made."}</span>
         </p>
       ) : null}
 
-      <Button
-        className="mt-6 w-full transition-transform active:scale-96"
-        disabled={checkoutOpening}
-        onClick={() => void openCheckout()}
-        size="lg"
-        type="button"
-      >
-        {checkoutOpening ? (
-          <>
-            <IconLoader2 aria-hidden className="animate-spin" />
-            <span>Opening Stripe…</span>
-          </>
-        ) : (
-          <>
-            <span>Open Stripe checkout</span>
-            <IconArrowRight aria-hidden />
-          </>
-        )}
-      </Button>
+      <div className="grid gap-5 md:grid-cols-2">
+        <CheckoutOptionCard
+          badge={hasMembership ? "Current plan" : "Full access"}
+          buttonLabel={
+            hasMembership ? "Membership active" : "Choose monthly membership"
+          }
+          description="Ongoing access to the complete Threshold Lab experience, billed monthly."
+          disabled={opening !== null}
+          features={[
+            "Lab Notes and future member updates",
+            "Training overview and performance charts",
+            "Today plus the previous 30 days of workouts",
+          ]}
+          icon={<IconLock aria-hidden className="size-5" />}
+          isOpening={opening === "membership"}
+          isOwned={hasMembership}
+          onCheckout={() => void openMembershipCheckout()}
+          ownedHref="/account/billing"
+          ownedLabel="Manage membership"
+          priceLabel={insideLabMembership.priceLabel}
+          title={insideLabMembership.title}
+        />
+
+        <CheckoutOptionCard
+          badge={hasTrainingArchive ? "Purchased" : "Training only"}
+          buttonLabel={
+            hasTrainingArchive ? "Archive purchased" : "Buy archive access"
+          }
+          description="A one-time pass to the fixed 2025–2026 training archive. It does not renew."
+          disabled={opening !== null}
+          features={[
+            `All training data from ${trainingArchivePass.accessLabel}`,
+            "Workout library and training charts for that archive",
+          ]}
+          icon={<IconArchive aria-hidden className="size-5" />}
+          isOpening={opening === "archive"}
+          isOwned={hasTrainingArchive}
+          limitations={["Does not include Lab Notes or future training data"]}
+          onCheckout={() => void openArchiveCheckout()}
+          ownedHref="/lab/training/workouts"
+          ownedLabel="Open archive"
+          priceLabel={trainingArchivePass.priceLabel}
+          title={trainingArchivePass.title}
+          variant="default"
+        />
+      </div>
     </div>
   );
 }

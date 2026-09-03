@@ -22,12 +22,20 @@ const ITEM_CLASS = cn(
 );
 
 interface MobileMenuProps {
+  hasAccess: boolean;
+  hasFullAccess: boolean;
   isPreview: boolean;
   previewRole: PreviewRole;
   user?: NavUserData | null;
 }
 
-export function MobileMenu({ isPreview, previewRole, user }: MobileMenuProps) {
+export function MobileMenu({
+  hasAccess,
+  hasFullAccess,
+  isPreview,
+  previewRole,
+  user,
+}: MobileMenuProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -58,6 +66,12 @@ export function MobileMenu({ isPreview, previewRole, user }: MobileMenuProps) {
                   route.isAdmin &&
                   (isPreview ? previewRole : user?.role) !== "admin"
                 ) {
+                  return null;
+                }
+                if (route.requiresAccess && !hasAccess) {
+                  return null;
+                }
+                if (route.requiresFullAccess && !hasFullAccess) {
                   return null;
                 }
 

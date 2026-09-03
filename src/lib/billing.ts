@@ -7,7 +7,28 @@ export const insideLabMembership = {
   title: "Inside the Lab membership",
 } as const;
 
+export const trainingArchivePass = {
+  accessEnd: "2026-09-01",
+  accessLabel: "Sep 1, 2025 – Sep 1, 2026",
+  accessStart: "2025-09-01",
+  price: 400,
+  priceLabel: "$400 once",
+  title: "Training Archive 2025–2026",
+} as const;
+
+export interface TrainingArchiveAccess {
+  accessEnd: string;
+  accessStart: string;
+  purchasedAt: number;
+}
+
 export interface MembershipSubscription {
+  billing?: {
+    amount: number | null;
+    currency: string;
+    interval: string | null;
+    intervalCount: number | null;
+  } | null;
   cancelAt: number | null;
   cancelAtPeriodEnd: boolean;
   periodEnd: number | null;
@@ -31,6 +52,28 @@ const membershipDateFormatter = new Intl.DateTimeFormat("en-US", {
 
 const formatMembershipDate = (timestamp: number | null) =>
   timestamp ? membershipDateFormatter.format(new Date(timestamp)) : null;
+
+export function getMembershipPriceLabel(subscription: MembershipSubscription) {
+  const billing = subscription.billing;
+
+  if (billing?.amount === null || billing?.amount === undefined) {
+    return insideLabMembership.priceLabel;
+  }
+
+  const hasFractionalAmount = billing.amount % 100 !== 0;
+  const price = new Intl.NumberFormat("en-US", {
+    currency: billing.currency.toUpperCase(),
+    maximumFractionDigits: 2,
+    minimumFractionDigits: hasFractionalAmount ? 2 : 0,
+    style: "currency",
+  }).format(billing.amount / 100);
+  const interval = billing.interval ?? insideLabMembership.billingInterval;
+  const intervalCount = billing.intervalCount ?? 1;
+  const intervalLabel =
+    intervalCount === 1 ? interval : `${intervalCount} ${interval}s`;
+
+  return `${price}/${intervalLabel}`;
+}
 
 export function getMembershipStatusDetails(
   subscription: MembershipSubscription,

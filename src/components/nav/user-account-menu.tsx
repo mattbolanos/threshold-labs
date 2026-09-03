@@ -69,7 +69,7 @@ export function UserAccountMenu({
           onClick={onNavigate}
         >
           <IconCreditCard aria-hidden data-icon="inline-start" />
-          Membership &amp; billing
+          Billing
         </Link>
         {isPreview ? (
           <PreviewRoleSwitch className="px-2" role={previewRole} />

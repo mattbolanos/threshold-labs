@@ -1,3 +1,5 @@
+import { trainingArchivePass } from "@/lib/billing";
+
 export const coachingApplicationUrl = "https://forms.gle/F6qMZQee6CayBHrMA";
 
 export const appMembershipUrl = "https://coach.everfit.io/package/IT400203";
@@ -41,7 +43,7 @@ export const offers = [
       label: "Access Inside the Lab",
     },
     description:
-      "Follow the complete training process behind my pursuit of the highest level of HYROX. Get every workout, performance trend, race recap, and lesson–from September 2025 onward.",
+      "Follow the complete training process behind my pursuit of the highest level of HYROX. Get every workout, performance trend, race recap, and lesson—from September 2025 onward.",
     details: [
       "Complete training log and performance trends",
       "Race schedule, strategy, and recaps",
@@ -50,6 +52,22 @@ export const offers = [
     ],
     eyebrow: "The process",
     title: "Inside the Lab",
+  },
+  {
+    cta: {
+      href: "/subscribe",
+      label: "Buy archive access",
+    },
+    description:
+      "Get one-time access to the fixed 2025–2026 archive of Inside the Lab training data. It does not renew.",
+    details: [
+      `All training data from ${trainingArchivePass.accessLabel}`,
+      "Workout library and performance charts",
+      "No Lab Notes or future training data",
+      trainingArchivePass.priceLabel,
+    ],
+    eyebrow: "Historical access",
+    title: trainingArchivePass.title,
   },
 ] as const;
 

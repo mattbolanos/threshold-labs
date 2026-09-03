@@ -31,17 +31,53 @@ bunx convex env set --prod AUTH_EMAIL_FROM "Threshold Lab <accounts@your-verifie
 bunx convex env set --prod STRIPE_SECRET_KEY
 bunx convex env set --prod STRIPE_WEBHOOK_SECRET
 bunx convex env set --prod STRIPE_INSIDE_LAB_PRICE_ID
+bunx convex env set --prod STRIPE_TRAINING_ARCHIVE_PRICE_ID
 ```
 
 Use live-mode Stripe values together: `sk_live_...`, the live recurring
-`price_...`, and the signing secret for the live webhook endpoint at
+membership `price_...`, the live $400 one-time training archive `price_...`,
+and the signing secret for the live webhook endpoint at
 `https://your-production-domain.com/api/auth/stripe/webhook`. Subscribe that
 endpoint to `checkout.session.completed`, `customer.subscription.created`,
 `customer.subscription.updated`, and `customer.subscription.deleted`.
 
+The one-time archive pass grants only Training and Workout Library access for
+the inclusive September 1, 2025–September 1, 2026 dataset. It does not grant Lab
+Notes or administrator access. The checkout verifier requires the configured
+price, a paid $400 USD session, and the purchasing user reference before it
+records access. A user can own both products; workout-detail access then combines
+the membership's moving 30-day window with the fixed archive window.
+
 Configure the Stripe Customer Portal in live mode and enable payment-method
 updates, invoice history, and subscription cancellation. Members open that
-portal from **Membership & billing** in their account menu.
+portal from **Access & billing** in their account menu.
+
+### Member discount codes
+
+Administrators can generate promotion codes from **Users & access** to copy
+manually, or generate and deliver a code to an email address through Resend.
+Recipients do not need an account before the code is sent. Each code is a bearer
+token with a one-redemption limit, so the first eligible Stripe customer to
+redeem it receives the offer. Members enter the code in Stripe Checkout; Better
+Auth remains the source of truth for the resulting subscription and access
+state.
+
+Two forever-duration offers are supported:
+
+- **$50/month** reads `STRIPE_INSIDE_LAB_PRICE_ID` and creates an amount-off
+  coupon for the difference between that monthly USD price and $50.
+- **Free forever** creates a 100% off coupon for the configured membership
+  product. Checkout only asks for a payment method when an amount is due, so a
+  fully discounted subscription does not require a card.
+
+The shared coupons do not have global redemption caps. The one-use limit belongs
+to each unique promotion code, so issuing a code does not consume availability
+for other members. A forever discount remains on the subscription it was
+redeemed against; if that subscription ends, the spent code does not transfer to
+a later subscription automatically. The admin ledger keeps the optional
+delivery address separate from the Stripe customer email that actually redeemed
+the code. An administrator can revoke an active, unused code; redeemed codes are
+retained as immutable history.
 
 Set `CONVEX_DEPLOY_KEY` in the Vercel production environment. The custom build
 command injects `NEXT_PUBLIC_CONVEX_URL`; set `NEXT_PUBLIC_CONVEX_SITE_URL` only

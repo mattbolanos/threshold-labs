@@ -16,7 +16,7 @@ export function OffersSection() {
           </h2>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2">
           {offers.map((offer) => {
             const isExternal = offer.cta.href.startsWith("http");
             const ctaClass =

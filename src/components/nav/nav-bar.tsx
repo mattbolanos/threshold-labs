@@ -22,7 +22,10 @@ export function NavBar({ isPreview, previewRole }: NavBarProps) {
   const user = useQuery(api.auth.getCurrentUser, {
     previewRole: isPreview ? previewRole : undefined,
   });
+  const access = useQuery(api.auth.getCurrentLabAccess);
   const role = isPreview ? previewRole : user?.role;
+  const hasAccess = isPreview || access?.hasAccess === true;
+  const hasFullAccess = isPreview || access?.hasFullAccess === true;
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/80 bg-background/95 backdrop-blur-sm">
@@ -47,6 +50,12 @@ export function NavBar({ isPreview, previewRole }: NavBarProps) {
                 if (link.isAdmin && role !== "admin") {
                   return null;
                 }
+                if (link.requiresAccess && !hasAccess) {
+                  return null;
+                }
+                if (link.requiresFullAccess && !hasFullAccess) {
+                  return null;
+                }
                 return (
                   <NavigationMenuItem key={link.href}>
                     <NavigationMenuLink
@@ -64,6 +73,8 @@ export function NavBar({ isPreview, previewRole }: NavBarProps) {
         <NavUser isPreview={isPreview} previewRole={previewRole} user={user} />
         {/* mobile */}
         <MobileMenu
+          hasAccess={hasAccess}
+          hasFullAccess={hasFullAccess}
           isPreview={isPreview}
           previewRole={previewRole}
           user={user}

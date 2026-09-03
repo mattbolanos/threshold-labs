@@ -21,6 +21,7 @@ import {
   hasActiveLabSubscription,
   INSIDE_LAB_PLAN_NAME,
 } from "./lib/labAccess";
+import { resolveMembershipAccess } from "./lib/membershipAccess";
 import { createStripeAuthPlugin } from "./lib/stripeAuth";
 import {
   createPreviewUser,
@@ -50,12 +51,18 @@ type AuthUserRecord = {
 type AuthSubscriptionRecord = {
   cancelAt?: Date | number | null;
   cancelAtPeriodEnd?: boolean | null;
+  endedAt?: Date | number | null;
   periodEnd?: Date | number | null;
   plan: string;
   referenceId: string;
   status?: string | null;
   stripeCustomerId?: string | null;
   stripeSubscriptionId?: string | null;
+};
+
+type RawAuthSubscriptionRecord = AuthSubscriptionRecord & {
+  _creationTime: number;
+  _id: string;
 };
 
 const normalizeRole = (role?: string | null): UserRole => {
@@ -72,6 +79,19 @@ const toTimestamp = (value?: Date | number | null) => {
   }
 
   return typeof value === "number" ? value : null;
+};
+
+const getSubscriptionsForReference = async (
+  ctx: QueryCtx | MutationCtx,
+  referenceId: string,
+) => {
+  const result = await ctx.runQuery(components.betterAuth.adapter.findMany, {
+    model: "subscription",
+    paginationOpts: { cursor: null, numItems: 100 },
+    where: [{ field: "referenceId", value: referenceId }],
+  });
+
+  return result.page as RawAuthSubscriptionRecord[];
 };
 
 const getBootstrapAdminEmail = () =>
@@ -210,17 +230,17 @@ export const getLabAccess = async (ctx: QueryCtx | MutationCtx) => {
     };
   }
 
-  const adapter = authComponent.adapter(ctx)(createAuthOptions(ctx));
   const referenceId = user._id.toString();
-  const [subscriptions, trainingArchive] = await Promise.all([
-    adapter.findMany<AuthSubscriptionRecord>({
-      model: "subscription",
-      where: [{ field: "referenceId", value: referenceId }],
-    }),
+  const [subscriptions, trainingArchive, accessWindows] = await Promise.all([
+    getSubscriptionsForReference(ctx, referenceId),
     ctx.db
       .query("trainingArchivePurchases")
       .withIndex("by_reference_id", (q) => q.eq("referenceId", referenceId))
       .first(),
+    ctx.db
+      .query("membershipAccessWindows")
+      .withIndex("by_reference_id", (q) => q.eq("referenceId", referenceId))
+      .collect(),
   ]);
   const membershipSubscriptions = subscriptions.filter(
     (subscription) => subscription.plan === INSIDE_LAB_PLAN_NAME,
@@ -228,6 +248,17 @@ export const getLabAccess = async (ctx: QueryCtx | MutationCtx) => {
   const activeSubscription = membershipSubscriptions.find((subscription) =>
     hasActiveLabSubscription([subscription]),
   );
+  const membershipAccess = resolveMembershipAccess({
+    activeSubscriptionId: activeSubscription?._id,
+    subscriptions: membershipSubscriptions.map((subscription) => ({
+      _creationTime: subscription._creationTime,
+      _id: subscription._id,
+      endedAt: toTimestamp(subscription.endedAt),
+      periodEnd: toTimestamp(subscription.periodEnd),
+      stripeSubscriptionId: subscription.stripeSubscriptionId,
+    })),
+    windows: accessWindows,
+  });
   const latestSubscription = membershipSubscriptions.toSorted(
     (left, right) =>
       (toTimestamp(right.periodEnd) ?? 0) - (toTimestamp(left.periodEnd) ?? 0),
@@ -250,8 +281,10 @@ export const getLabAccess = async (ctx: QueryCtx | MutationCtx) => {
         : ("none" as const),
     subscription: subscription
       ? {
+          accessStart: membershipAccess.accessStart,
           cancelAt: toTimestamp(subscription.cancelAt),
           cancelAtPeriodEnd: Boolean(subscription.cancelAtPeriodEnd),
+          pastAccessWindows: membershipAccess.pastAccessWindows,
           periodEnd: toTimestamp(subscription.periodEnd),
           status: subscription.status ?? "unknown",
         }
@@ -332,8 +365,14 @@ export const getCurrentStripeCheckoutUser = internalQuery({
       return null;
     }
 
+    const subscriptions = await getSubscriptionsForReference(
+      ctx,
+      user._id.toString(),
+    );
+
     return {
       email: user.email,
+      hasActiveMembership: hasActiveLabSubscription(subscriptions),
       referenceId: user._id.toString(),
       stripeCustomerId: user.stripeCustomerId ?? undefined,
     };

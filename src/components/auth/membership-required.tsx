@@ -25,7 +25,7 @@ export function MembershipRequired({
           <p className="font-medium">Access is available when:</p>
           <ul className="mt-2 flex list-inside list-disc flex-col gap-1 text-muted-foreground">
             <li>Your Inside the Lab membership is active</li>
-            <li>You purchased the 2025–2026 training archive</li>
+            <li>You purchased complete training history</li>
             <li>Your account has administrator access</li>
           </ul>
         </div>

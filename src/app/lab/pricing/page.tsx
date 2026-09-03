@@ -7,7 +7,7 @@ import { getCurrentLabAccess } from "@/lib/auth";
 
 export const metadata: Metadata = {
   description:
-    "Compare Inside the Lab membership and one-time training archive access.",
+    "Compare monthly Inside the Lab access with complete history plus membership.",
   title: "Pricing | Threshold Lab",
 };
 
@@ -17,7 +17,7 @@ async function PricingPageContent() {
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
       <PageHeader
-        description="Choose full monthly membership or a one-time pass to the 2025–2026 training archive. The products are separate, so you can own either one or both."
+        description="Choose $70 monthly access starting 30 days before signup, or pay $400 one time for complete history. Both options include every Lab Note, past and future, with the $70 monthly membership."
         eyebrow="Plans"
         title="Choose your access"
       />

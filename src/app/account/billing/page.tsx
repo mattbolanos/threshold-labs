@@ -24,6 +24,7 @@ async function MembershipPageContent() {
   const plansHref: UrlObject = { pathname: "/lab/pricing" };
   const isBillingPreview = access.source === "preview";
   const previewSubscription: MembershipSubscription = {
+    accessStart: "2026-07-05",
     billing: {
       amount: 5_000,
       currency: "usd",
@@ -35,10 +36,13 @@ async function MembershipPageContent() {
     periodEnd: Date.UTC(2026, 9, 3),
     status: "active",
   };
-  const subscription =
-    liveSubscription ??
-    access.subscription ??
-    (isBillingPreview ? previewSubscription : null);
+  const subscription = liveSubscription
+    ? {
+        ...liveSubscription,
+        accessStart: access.subscription?.accessStart ?? null,
+        pastAccessWindows: access.subscription?.pastAccessWindows ?? null,
+      }
+    : (access.subscription ?? (isBillingPreview ? previewSubscription : null));
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">

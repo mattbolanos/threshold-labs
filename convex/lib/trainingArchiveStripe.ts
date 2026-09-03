@@ -29,9 +29,12 @@ type TrainingArchiveCheckoutSession = Pick<
   | "payment_intent"
   | "payment_status"
   | "status"
+  | "subscription"
 > & {
   line_items?: {
-    data: Array<Pick<Stripe.LineItem, "price" | "quantity">>;
+    data: Array<
+      Pick<Stripe.LineItem, "amount_subtotal" | "price" | "quantity">
+    >;
   };
 };
 
@@ -40,30 +43,44 @@ const getStripeId = (value: string | { id: string } | null | undefined) =>
 
 export function verifyTrainingArchiveCheckoutSession({
   checkoutSession,
+  expectedMembershipPriceId,
   expectedPriceId,
   expectedReferenceId,
 }: {
   checkoutSession: TrainingArchiveCheckoutSession;
+  expectedMembershipPriceId?: string;
   expectedPriceId: string;
   expectedReferenceId?: string;
 }): VerifiedTrainingArchivePurchase | null {
   const referenceId =
     checkoutSession.client_reference_id ??
     checkoutSession.metadata?.referenceId;
-  const includesArchivePrice = checkoutSession.line_items?.data.some(
+  const archiveLineItem = checkoutSession.line_items?.data.find(
     (lineItem) =>
       lineItem.price?.id === expectedPriceId && lineItem.quantity === 1,
   );
+  const includesMembershipPrice = checkoutSession.line_items?.data.some(
+    (lineItem) =>
+      lineItem.price?.id === expectedMembershipPriceId &&
+      lineItem.quantity === 1,
+  );
+  const isStandaloneAddOn =
+    checkoutSession.mode === "payment" &&
+    checkoutSession.amount_total === TRAINING_ARCHIVE_PRICE_CENTS;
+  const isMembershipBundle =
+    checkoutSession.mode === "subscription" &&
+    Boolean(checkoutSession.subscription) &&
+    includesMembershipPrice;
 
   if (
-    checkoutSession.mode !== "payment" ||
+    (!isStandaloneAddOn && !isMembershipBundle) ||
     checkoutSession.status !== "complete" ||
     checkoutSession.payment_status !== "paid" ||
     checkoutSession.metadata?.purchaseType !== TRAINING_ARCHIVE_PRODUCT_KEY ||
     !referenceId ||
     (expectedReferenceId && referenceId !== expectedReferenceId) ||
-    !includesArchivePrice ||
-    checkoutSession.amount_total !== TRAINING_ARCHIVE_PRICE_CENTS ||
+    !archiveLineItem ||
+    archiveLineItem.amount_subtotal !== TRAINING_ARCHIVE_PRICE_CENTS ||
     checkoutSession.currency !== TRAINING_ARCHIVE_CURRENCY
   ) {
     return null;
@@ -101,9 +118,14 @@ export async function getVerifiedTrainingArchivePurchase({
     ctx,
     "STRIPE_TRAINING_ARCHIVE_PRICE_ID",
   );
+  const expectedMembershipPriceId = getAuthEnvironment(
+    ctx,
+    "STRIPE_INSIDE_LAB_PRICE_ID",
+  );
 
   return verifyTrainingArchiveCheckoutSession({
     checkoutSession,
+    expectedMembershipPriceId,
     expectedPriceId,
     expectedReferenceId,
   });

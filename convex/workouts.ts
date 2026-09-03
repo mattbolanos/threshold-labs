@@ -4,11 +4,11 @@ import { mutation, type QueryCtx, query } from "./_generated/server";
 import { assertAdmin, assertTrainingAccess } from "./auth";
 import {
   getAccessibleWorkoutDateRanges,
-  getChartWorkoutDateRange,
+  getChartWorkoutDateRanges,
   getWorkoutListingAccessWindows,
   isWorkoutDateInAccessWindows,
-  TRAINING_ARCHIVE_ACCESS_WINDOW,
   type WorkoutAccessWindow,
+  type WorkoutEntitlements,
 } from "./lib/workoutAccess";
 import {
   findTrainingBlockForDate,
@@ -151,6 +151,35 @@ const normalizeWorkout = (workout: {
 const isVisibleWorkout = (workout: { isHidden?: boolean }) =>
   workout.isHidden !== true;
 
+interface TrainingAccess {
+  source: string;
+  subscription: {
+    accessStart?: string | null;
+    pastAccessWindows?: WorkoutAccessWindow[] | null;
+  } | null;
+  trainingArchive: {
+    accessEnd: string;
+    accessStart: string;
+  } | null;
+}
+
+const getWorkoutEntitlements = (
+  access: TrainingAccess,
+): WorkoutEntitlements => ({
+  accessSource: access.source,
+  membershipAccessStart: access.subscription?.accessStart,
+  pastMembershipWindows: access.subscription?.pastAccessWindows,
+  trainingArchive: access.trainingArchive
+    ? {
+        from: access.trainingArchive.accessStart,
+        to: access.trainingArchive.accessEnd,
+      }
+    : null,
+});
+
+const getTrainingAccessWindows = (access: TrainingAccess) =>
+  getWorkoutListingAccessWindows(getWorkoutEntitlements(access));
+
 async function collectWorkoutsForRanges(
   ctx: QueryCtx,
   ranges: WorkoutAccessWindow[] | null,
@@ -177,6 +206,27 @@ async function collectWorkoutsForRanges(
   );
 
   return Array.from(workoutsById.values());
+}
+
+async function collectChartWorkouts(
+  ctx: QueryCtx,
+  access: TrainingAccess,
+  from: string | undefined,
+  to: string | undefined,
+  defaults: { from: string; to?: string },
+) {
+  const ranges = getChartWorkoutDateRanges(
+    getWorkoutEntitlements(access),
+    from,
+    to,
+    defaults,
+  );
+
+  if (ranges.length === 0) {
+    return [];
+  }
+
+  return (await collectWorkoutsForRanges(ctx, ranges)).filter(isVisibleWorkout);
 }
 
 const TRAINING_LOAD_SCALE_FACTOR = 3;
@@ -297,30 +347,9 @@ export const getRollingLoad = query({
   },
   handler: async (ctx, { from, to }) => {
     const access = await assertTrainingAccess(ctx);
-    const dateRange = getChartWorkoutDateRange(access.source, from, to, {
+    const workouts = await collectChartWorkouts(ctx, access, from, to, {
       from: getDefaultFromDate(),
     });
-
-    if (!dateRange) {
-      return [];
-    }
-
-    const fromDate = dateRange.from;
-
-    let workoutsQuery = ctx.db
-      .query("workouts")
-      .withIndex("by_workout_date", (q) => q.gte("workoutDate", fromDate));
-
-    const toDate = dateRange.to;
-    if (toDate) {
-      workoutsQuery = ctx.db
-        .query("workouts")
-        .withIndex("by_workout_date", (q) =>
-          q.gte("workoutDate", fromDate).lte("workoutDate", toDate),
-        );
-    }
-
-    const workouts = (await workoutsQuery.collect()).filter(isVisibleWorkout);
 
     const weeklyData = new Map<
       string,
@@ -359,30 +388,9 @@ export const getRunVolumeMix = query({
   },
   handler: async (ctx, { from, to }) => {
     const access = await assertTrainingAccess(ctx);
-    const dateRange = getChartWorkoutDateRange(access.source, from, to, {
+    const workouts = await collectChartWorkouts(ctx, access, from, to, {
       from: getDefaultFromDate(),
     });
-
-    if (!dateRange) {
-      return [];
-    }
-
-    const fromDate = dateRange.from;
-
-    let workoutsQuery = ctx.db
-      .query("workouts")
-      .withIndex("by_workout_date", (q) => q.gte("workoutDate", fromDate));
-
-    const toDate = dateRange.to;
-    if (toDate) {
-      workoutsQuery = ctx.db
-        .query("workouts")
-        .withIndex("by_workout_date", (q) =>
-          q.gte("workoutDate", fromDate).lte("workoutDate", toDate),
-        );
-    }
-
-    const workouts = (await workoutsQuery.collect()).filter(isVisibleWorkout);
 
     const weeklyData = new Map<
       string,
@@ -439,30 +447,9 @@ export const getSessionIntensity = query({
   },
   handler: async (ctx, { from, to }) => {
     const access = await assertTrainingAccess(ctx);
-    const dateRange = getChartWorkoutDateRange(access.source, from, to, {
+    const workouts = await collectChartWorkouts(ctx, access, from, to, {
       from: getDefaultFromDate(),
     });
-
-    if (!dateRange) {
-      return [];
-    }
-
-    const fromDate = dateRange.from;
-
-    let workoutsQuery = ctx.db
-      .query("workouts")
-      .withIndex("by_workout_date", (q) => q.gte("workoutDate", fromDate));
-
-    const toDate = dateRange.to;
-    if (toDate) {
-      workoutsQuery = ctx.db
-        .query("workouts")
-        .withIndex("by_workout_date", (q) =>
-          q.gte("workoutDate", fromDate).lte("workoutDate", toDate),
-        );
-    }
-
-    const workouts = (await workoutsQuery.collect()).filter(isVisibleWorkout);
     const weeklyData = new Map<
       string,
       {
@@ -504,36 +491,36 @@ export const getBaseFitness = query({
   },
   handler: async (ctx, { from, to }) => {
     const access = await assertTrainingAccess(ctx);
-    const dateRange = getChartWorkoutDateRange(access.source, from, to, {
+    const entitlements = getWorkoutEntitlements(access);
+    const requestedRanges = getChartWorkoutDateRanges(entitlements, from, to, {
       from: getDefaultFromDate(),
       to: format(new Date(), "yyyy-MM-dd"),
     });
 
-    if (!dateRange?.to) {
+    if (requestedRanges.length === 0) {
       return { data: [], trainingBlocks: [] };
     }
 
-    const fromDate = dateRange.from;
-    const toDate = dateRange.to;
+    const fromDate = requestedRanges.reduce(
+      (earliest, range) => (range.from < earliest ? range.from : earliest),
+      requestedRanges[0].from,
+    );
+    const toDate = requestedRanges.reduce(
+      (latest, range) => (range.to > latest ? range.to : latest),
+      requestedRanges[0].to,
+    );
 
     if (!isValidDateRange(fromDate, toDate)) {
       return { data: [], trainingBlocks: [] };
     }
 
-    const workoutQuery =
-      access.source === "training_archive"
-        ? ctx.db
-            .query("workouts")
-            .withIndex("by_workout_date", (q) =>
-              q
-                .gte("workoutDate", TRAINING_ARCHIVE_ACCESS_WINDOW.from)
-                .lte("workoutDate", toDate),
-            )
-        : ctx.db
-            .query("workouts")
-            .withIndex("by_workout_date", (q) => q.lte("workoutDate", toDate));
+    const smoothingRanges = getAccessibleWorkoutDateRanges(
+      "1900-01-01",
+      toDate,
+      getWorkoutListingAccessWindows(entitlements),
+    );
     const [workoutResults, trainingBlocks] = await Promise.all([
-      workoutQuery.collect(),
+      collectWorkoutsForRanges(ctx, smoothingRanges),
       getTrainingBlocksOverlappingRange(ctx, fromDate, toDate),
     ]);
     const workouts = workoutResults
@@ -592,30 +579,9 @@ export const getWeeklyTotals = query({
   },
   handler: async (ctx, { from, to }) => {
     const access = await assertTrainingAccess(ctx);
-    const dateRange = getChartWorkoutDateRange(access.source, from, to, {
+    const workouts = await collectChartWorkouts(ctx, access, from, to, {
       from: getDefaultFromDate(),
     });
-
-    if (!dateRange) {
-      return [];
-    }
-
-    const fromDate = dateRange.from;
-
-    let workoutsQuery = ctx.db
-      .query("workouts")
-      .withIndex("by_workout_date", (q) => q.gte("workoutDate", fromDate));
-
-    const toDate = dateRange.to;
-    if (toDate) {
-      workoutsQuery = ctx.db
-        .query("workouts")
-        .withIndex("by_workout_date", (q) =>
-          q.gte("workoutDate", fromDate).lte("workoutDate", toDate),
-        );
-    }
-
-    const workouts = (await workoutsQuery.collect()).filter(isVisibleWorkout);
 
     const weeklyData = new Map<
       string,
@@ -701,10 +667,7 @@ export const getWorkouts = query({
     const accessibleRanges = getAccessibleWorkoutDateRanges(
       from,
       to,
-      getWorkoutListingAccessWindows(
-        access.source,
-        access.trainingArchive !== null,
-      ),
+      getTrainingAccessWindows(access),
     );
 
     if (accessibleRanges.length === 0) {
@@ -738,10 +701,7 @@ export const getWorkouts = query({
 export const getWorkoutLibrary = query({
   handler: async (ctx) => {
     const access = await assertTrainingAccess(ctx);
-    const accessWindows = getWorkoutListingAccessWindows(
-      access.source,
-      access.trainingArchive !== null,
-    );
+    const accessWindows = getTrainingAccessWindows(access);
     const visibleWorkouts = (await collectWorkoutsForRanges(ctx, accessWindows))
       .filter(isVisibleWorkout)
       .toSorted((a, b) => b.workoutDate.localeCompare(a.workoutDate));
@@ -791,10 +751,7 @@ export const getWorkoutDetails = query({
   handler: async (ctx, { workoutId }) => {
     const access = await assertTrainingAccess(ctx);
     const workout = await ctx.db.get(workoutId);
-    const accessWindows = getWorkoutListingAccessWindows(
-      access.source,
-      access.trainingArchive !== null,
-    );
+    const accessWindows = getTrainingAccessWindows(access);
 
     if (
       !workout ||
@@ -823,10 +780,7 @@ export const getWorkoutDetails = query({
 export const getWorkoutsDateRange = query({
   handler: async (ctx) => {
     const access = await assertTrainingAccess(ctx);
-    const accessWindows = getWorkoutListingAccessWindows(
-      access.source,
-      access.trainingArchive !== null,
-    );
+    const accessWindows = getTrainingAccessWindows(access);
     const visibleWorkouts = (
       await collectWorkoutsForRanges(ctx, accessWindows)
     ).filter(isVisibleWorkout);

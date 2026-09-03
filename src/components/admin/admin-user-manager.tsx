@@ -101,7 +101,7 @@ function AccessBadge({
     return (
       <Badge variant="secondary">
         <IconCreditCard aria-hidden data-icon="inline-start" />
-        {hasTrainingArchive ? "Member + archive" : "Member access"}
+        {hasTrainingArchive ? "Member + history" : "Member access"}
       </Badge>
     );
   }
@@ -110,7 +110,7 @@ function AccessBadge({
     return (
       <Badge variant="secondary">
         <IconCreditCard aria-hidden data-icon="inline-start" />
-        Training archive
+        Training history
       </Badge>
     );
   }
@@ -207,7 +207,7 @@ export function AdminUserManager() {
           </CardTitle>
           <CardDescription>
             Admins bypass billing. Clients and coaches can have full membership
-            or training-only archive access.
+            or retained history access from a prior purchase.
           </CardDescription>
         </CardHeader>
 

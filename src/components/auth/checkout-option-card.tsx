@@ -57,7 +57,7 @@ export function CheckoutOptionCard({
     <Card
       className={cn(
         "h-full bg-card/80 shadow-sm shadow-black/20",
-        variant === "default" && "ring-primary/35 shadow-primary/10",
+        variant === "default" && "shadow-primary/10 ring-primary/35",
       )}
     >
       <CardHeader className="gap-0">
@@ -68,16 +68,16 @@ export function CheckoutOptionCard({
           {badge ? <Badge variant="secondary">{badge}</Badge> : null}
         </div>
         <CardTitle>
-          <h2 className="text-balance text-2xl leading-tight font-semibold tracking-tight">
+          <h2 className="text-2xl leading-tight font-semibold tracking-tight text-balance">
             {title}
           </h2>
         </CardTitle>
-        <p className="mt-3 text-3xl leading-none font-bold tracking-tight tabular-nums">
+        <p className="mt-3 text-xl leading-none font-light tracking-tight tabular-nums">
           {priceLabel}
         </p>
       </CardHeader>
       <CardContent className="flex-1 space-y-6">
-        <p className="text-pretty text-sm leading-relaxed text-muted-foreground">
+        <p className="text-sm leading-relaxed text-pretty text-muted-foreground">
           {description}
         </p>
         <ul className="space-y-3 text-sm">

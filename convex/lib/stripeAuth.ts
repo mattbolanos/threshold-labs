@@ -5,9 +5,38 @@ import { internal } from "../_generated/api";
 import type { DataModel } from "../_generated/dataModel";
 import { getAuthEnvironment } from "./authEnvironment";
 import { INSIDE_LAB_PLAN_NAME } from "./labAccess";
+import {
+  INSIDE_LAB_HISTORY_PLAN_NAME,
+  TRAINING_ARCHIVE_PRODUCT_KEY,
+} from "./trainingArchive";
 import { getVerifiedTrainingArchivePurchase } from "./trainingArchiveStripe";
 
 const STRIPE_API_VERSION = "2026-07-29.dahlia";
+
+async function syncMembershipAccessWindow(
+  ctx: GenericCtx<DataModel>,
+  event: Stripe.Event,
+  stripeSubscription: Stripe.Subscription,
+  referenceId: string,
+) {
+  if (!("runMutation" in ctx)) {
+    return;
+  }
+
+  const periodEnd = stripeSubscription.items.data[0]?.current_period_end;
+
+  await ctx.runMutation(
+    internal.subscriptionAccess.syncMembershipAccessWindow,
+    {
+      observedAt: event.created * 1_000,
+      periodEnd: periodEnd ? periodEnd * 1_000 : undefined,
+      referenceId,
+      startedAt: stripeSubscription.created * 1_000,
+      status: stripeSubscription.status,
+      stripeSubscriptionId: stripeSubscription.id,
+    },
+  );
+}
 
 export function getStripeCheckoutBrandingSettings(siteUrl: string) {
   return {
@@ -75,10 +104,6 @@ export function createStripeAuthPlugin(ctx: GenericCtx<DataModel>) {
       }
 
       const checkoutSession = event.data.object;
-      if (checkoutSession.mode !== "payment") {
-        return;
-      }
-
       const purchase = await getVerifiedTrainingArchivePurchase({
         checkoutSessionId: checkoutSession.id,
         ctx,
@@ -93,19 +118,38 @@ export function createStripeAuthPlugin(ctx: GenericCtx<DataModel>) {
     stripeWebhookSecret: getAuthEnvironment(ctx, "STRIPE_WEBHOOK_SECRET"),
     subscription: {
       enabled: true,
-      getCheckoutSessionParams: () => ({
+      getCheckoutSessionParams: ({ plan }) => ({
         params: {
           allow_promotion_codes: true,
           branding_settings: getStripeCheckoutBrandingSettings(siteUrl),
+          ...(plan.name === INSIDE_LAB_HISTORY_PLAN_NAME
+            ? {
+                metadata: {
+                  purchaseType: TRAINING_ARCHIVE_PRODUCT_KEY,
+                },
+              }
+            : {}),
           payment_method_collection: "if_required",
           submit_type: "subscribe",
         },
       }),
-      onSubscriptionComplete: async ({ event, stripeSubscription }) => {
+      onSubscriptionComplete: async ({
+        event,
+        stripeSubscription,
+        subscription,
+      }) => {
         if (!("runMutation" in ctx)) {
           return;
         }
 
+        await syncMembershipAccessWindow(
+          ctx,
+          event,
+          stripeSubscription,
+          subscription.referenceId,
+        );
+
+        const checkoutSession = event.data.object as Stripe.Checkout.Session;
         const expandedSubscription = await stripeClient.subscriptions.retrieve(
           stripeSubscription.id,
           { expand: ["discounts"] },
@@ -127,7 +171,7 @@ export function createStripeAuthPlugin(ctx: GenericCtx<DataModel>) {
         if (stripePromotionCodeIds.length > 0) {
           const { redeemedByEmail, stripeCustomerId } =
             await getRedemptionIdentity({
-              checkoutSession: event.data.object as Stripe.Checkout.Session,
+              checkoutSession,
               stripeClient,
               stripeSubscription: expandedSubscription,
             });
@@ -143,9 +187,58 @@ export function createStripeAuthPlugin(ctx: GenericCtx<DataModel>) {
           );
         }
       },
+      onSubscriptionCreated: async ({
+        event,
+        stripeSubscription,
+        subscription,
+      }) => {
+        await syncMembershipAccessWindow(
+          ctx,
+          event,
+          stripeSubscription,
+          subscription.referenceId,
+        );
+      },
+      onSubscriptionDeleted: async ({
+        event,
+        stripeSubscription,
+        subscription,
+      }) => {
+        await syncMembershipAccessWindow(
+          ctx,
+          event,
+          stripeSubscription,
+          subscription.referenceId,
+        );
+      },
+      onSubscriptionUpdate: async ({
+        event,
+        stripeSubscription,
+        subscription,
+      }) => {
+        await syncMembershipAccessWindow(
+          ctx,
+          event,
+          stripeSubscription,
+          subscription.referenceId,
+        );
+      },
       plans: [
         {
           name: INSIDE_LAB_PLAN_NAME,
+          priceId: getAuthEnvironment(ctx, "STRIPE_INSIDE_LAB_PRICE_ID"),
+        },
+        {
+          lineItems: [
+            {
+              price: getAuthEnvironment(
+                ctx,
+                "STRIPE_TRAINING_ARCHIVE_PRICE_ID",
+              ),
+              quantity: 1,
+            },
+          ],
+          name: INSIDE_LAB_HISTORY_PLAN_NAME,
           priceId: getAuthEnvironment(ctx, "STRIPE_INSIDE_LAB_PRICE_ID"),
         },
       ],

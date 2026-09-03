@@ -7,6 +7,10 @@ import { PageHeader } from "@/components/page-header";
 import { buttonVariants } from "@/components/ui/button";
 import { WorkoutLibrary } from "@/components/workout-library/workout-library";
 import { checkTrainingAccess } from "@/lib/auth";
+import {
+  formatTrainingAccessDate,
+  getTrainingAccessLabel,
+} from "@/lib/billing";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -20,9 +24,11 @@ async function WorkoutLibraryPageContent() {
   const description =
     access.source === "admin" || access.source === "preview"
       ? "Search every published workout by name, training block, type, week, or date range."
-      : access.source === "training_archive"
-        ? "Search archived workouts from September 1, 2025 through September 1, 2026."
-        : "Search today and the previous 30 days by name, training block, type, week, or date range.";
+      : access.trainingArchive
+        ? `Search your purchased training history from ${getTrainingAccessLabel(access.trainingArchive)}${access.source === "subscription" ? ", plus every workout published during your active membership" : ""}.`
+        : access.subscription?.accessStart
+          ? `Search workouts from ${formatTrainingAccessDate(access.subscription.accessStart)} through today${access.subscription.pastAccessWindows?.length ? ", plus the workouts from your earlier membership periods" : ""}.`
+          : "Search today and the previous 30 days by name, training block, type, week, or date range.";
 
   return (
     <div className="flex flex-col gap-6">

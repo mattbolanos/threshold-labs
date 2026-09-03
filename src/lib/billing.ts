@@ -1,4 +1,5 @@
 export const INSIDE_LAB_PLAN_NAME = "inside-the-lab";
+export const INSIDE_LAB_HISTORY_PLAN_NAME = "inside-the-lab-with-history";
 
 export const insideLabMembership = {
   billingInterval: "month",
@@ -8,12 +9,16 @@ export const insideLabMembership = {
 } as const;
 
 export const trainingArchivePass = {
-  accessEnd: "2026-09-01",
-  accessLabel: "Sep 1, 2025 – Sep 1, 2026",
+  accessLabel: "Sep 1, 2025 – purchase date",
   accessStart: "2025-09-01",
   price: 400,
   priceLabel: "$400 once",
-  title: "Training Archive 2025–2026",
+  title: "Complete training history",
+} as const;
+
+export const historyMembershipBundle = {
+  priceLabel: "$400 today + $70/month",
+  title: "Complete history + membership",
 } as const;
 
 export interface TrainingArchiveAccess {
@@ -22,7 +27,13 @@ export interface TrainingArchiveAccess {
   purchasedAt: number;
 }
 
+export interface TrainingAccessWindow {
+  from: string;
+  to: string;
+}
+
 export interface MembershipSubscription {
+  accessStart?: string | null;
   billing?: {
     amount: number | null;
     currency: string;
@@ -31,6 +42,7 @@ export interface MembershipSubscription {
   } | null;
   cancelAt: number | null;
   cancelAtPeriodEnd: boolean;
+  pastAccessWindows?: TrainingAccessWindow[] | null;
   periodEnd: number | null;
   status: string;
 }
@@ -52,6 +64,19 @@ const membershipDateFormatter = new Intl.DateTimeFormat("en-US", {
 
 const formatMembershipDate = (timestamp: number | null) =>
   timestamp ? membershipDateFormatter.format(new Date(timestamp)) : null;
+
+export const formatTrainingAccessDate = (date: string) =>
+  membershipDateFormatter.format(new Date(`${date}T00:00:00.000Z`));
+
+export const formatTrainingAccessRange = (from: string, to: string) =>
+  `${formatTrainingAccessDate(from)} – ${formatTrainingAccessDate(to)}`;
+
+export function getTrainingAccessLabel({
+  accessEnd,
+  accessStart,
+}: Pick<TrainingArchiveAccess, "accessEnd" | "accessStart">) {
+  return formatTrainingAccessRange(accessStart, accessEnd);
+}
 
 export function getMembershipPriceLabel(subscription: MembershipSubscription) {
   const billing = subscription.billing;

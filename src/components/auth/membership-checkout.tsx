@@ -7,13 +7,15 @@ import { CheckoutOptionCard } from "@/components/auth/checkout-option-card";
 import { createTrainingArchiveCheckout } from "@/lib/auth/training-archive-actions";
 import { authClient } from "@/lib/auth-client";
 import {
+  historyMembershipBundle,
+  INSIDE_LAB_HISTORY_PLAN_NAME,
   INSIDE_LAB_PLAN_NAME,
   insideLabMembership,
   trainingArchivePass,
 } from "@/lib/billing";
 import { cn } from "@/lib/utils";
 
-type CheckoutOption = "archive" | "membership";
+type CheckoutOption = "history" | "membership";
 
 interface MembershipCheckoutProps {
   hasMembership?: boolean;
@@ -56,35 +58,49 @@ export function MembershipCheckout({
     }
   }
 
-  function openMembershipCheckout() {
-    return runCheckout("membership", async () => {
-      const { error: checkoutError } = await authClient.subscription.upgrade({
-        cancelUrl:
-          surface === "pricing"
-            ? "/lab/pricing?checkout=cancelled"
-            : "/subscribe?checkout=cancelled",
-        plan: INSIDE_LAB_PLAN_NAME,
-        successUrl: surface === "pricing" ? "/lab/pricing" : "/lab/lab-notes",
-      });
-
-      if (checkoutError) {
-        throw new Error(
-          checkoutError.message || "Secure checkout could not be opened.",
-        );
-      }
+  async function upgradeMembership(plan: string) {
+    const { error: checkoutError } = await authClient.subscription.upgrade({
+      cancelUrl:
+        surface === "pricing"
+          ? "/lab/pricing?checkout=cancelled"
+          : "/subscribe?checkout=cancelled",
+      plan,
+      successUrl: surface === "pricing" ? "/lab/pricing" : "/lab/lab-notes",
     });
+
+    if (checkoutError) {
+      throw new Error(
+        checkoutError.message || "Secure checkout could not be opened.",
+      );
+    }
   }
 
-  function openArchiveCheckout() {
-    return runCheckout("archive", async () => {
-      const { url } = await createTrainingArchiveCheckout(surface);
-      window.location.assign(url);
+  function openMembershipCheckout() {
+    return runCheckout("membership", () =>
+      upgradeMembership(INSIDE_LAB_PLAN_NAME),
+    );
+  }
+
+  function openHistoryCheckout() {
+    return runCheckout("history", async () => {
+      if (hasMembership && !hasTrainingArchive) {
+        const { url } = await createTrainingArchiveCheckout(surface);
+        window.location.assign(url);
+        return;
+      }
+
+      await upgradeMembership(
+        hasTrainingArchive
+          ? INSIDE_LAB_PLAN_NAME
+          : INSIDE_LAB_HISTORY_PLAN_NAME,
+      );
     });
   }
 
   const cancelledOption = searchParams.get("checkout");
   const checkoutCancelled =
     cancelledOption === "cancelled" || cancelledOption === "archive-cancelled";
+  const ownsHistoryMembership = hasMembership && hasTrainingArchive;
 
   return (
     <div className="space-y-5">
@@ -106,16 +122,16 @@ export function MembershipCheckout({
 
       <div className="grid gap-5 md:grid-cols-2">
         <CheckoutOptionCard
-          badge={hasMembership ? "Current plan" : "Full access"}
+          badge={hasMembership ? "Current plan" : "Monthly access"}
           buttonLabel={
             hasMembership ? "Membership active" : "Choose monthly membership"
           }
-          description="Ongoing access to the complete Threshold Lab experience, billed monthly."
+          description="Join for ongoing training data and full access to every Lab Note, billed monthly."
           disabled={opening !== null}
           features={[
-            "Lab Notes and future member updates",
+            "Every Lab Note, past and future",
             "Training overview and performance charts",
-            "Today plus the previous 30 days of workouts",
+            "Workouts from 30 days before you join through the end of your membership",
           ]}
           icon={<IconLock aria-hidden className="size-5" />}
           isOpening={opening === "membership"}
@@ -128,25 +144,49 @@ export function MembershipCheckout({
         />
 
         <CheckoutOptionCard
-          badge={hasTrainingArchive ? "Purchased" : "Training only"}
-          buttonLabel={
-            hasTrainingArchive ? "Archive purchased" : "Buy archive access"
+          badge={
+            ownsHistoryMembership
+              ? "Current access"
+              : hasTrainingArchive
+                ? "History purchased"
+                : "Everything"
           }
-          description="A one-time pass to the fixed 2025–2026 training archive. It does not renew."
+          buttonLabel={
+            ownsHistoryMembership
+              ? "History and membership active"
+              : hasTrainingArchive
+                ? "Start monthly membership"
+                : hasMembership
+                  ? "Add complete history"
+                  : "Get history + membership"
+          }
+          description={
+            hasTrainingArchive
+              ? "Your $400 one-time purchase unlocked every workout published through your purchase date. The $70 monthly membership includes ongoing data and every Lab Note."
+              : "Pay $400 once to unlock every workout published so far. The $70 monthly membership includes ongoing data and every Lab Note."
+          }
           disabled={opening !== null}
           features={[
             `All training data from ${trainingArchivePass.accessLabel}`,
-            "Workout library and training charts for that archive",
+            "Ongoing workouts and performance charts",
+            "Every Lab Note, past and future",
           ]}
           icon={<IconArchive aria-hidden className="size-5" />}
-          isOpening={opening === "archive"}
-          isOwned={hasTrainingArchive}
-          limitations={["Does not include Lab Notes or future training data"]}
-          onCheckout={() => void openArchiveCheckout()}
-          ownedHref="/lab/training/workouts"
-          ownedLabel="Open archive"
-          priceLabel={trainingArchivePass.priceLabel}
-          title={trainingArchivePass.title}
+          isOpening={opening === "history"}
+          isOwned={ownsHistoryMembership}
+          onCheckout={() => void openHistoryCheckout()}
+          ownedHref="/account/billing"
+          ownedLabel="Manage access"
+          priceLabel={
+            ownsHistoryMembership
+              ? historyMembershipBundle.priceLabel
+              : hasTrainingArchive
+                ? insideLabMembership.priceLabel
+                : hasMembership
+                  ? trainingArchivePass.priceLabel
+                  : historyMembershipBundle.priceLabel
+          }
+          title={historyMembershipBundle.title}
           variant="default"
         />
       </div>

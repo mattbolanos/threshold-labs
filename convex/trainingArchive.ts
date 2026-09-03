@@ -7,11 +7,12 @@ import {
   getStripeCheckoutBrandingSettings,
 } from "./lib/stripeAuth";
 import {
+  getTrainingArchivePurchaseEnd,
   TRAINING_ARCHIVE_CURRENCY,
   TRAINING_ARCHIVE_PRICE_CENTS,
   TRAINING_ARCHIVE_PRODUCT_KEY,
+  TRAINING_ARCHIVE_START_DATE,
   TRAINING_ARCHIVE_TITLE,
-  TRAINING_ARCHIVE_WINDOW,
 } from "./lib/trainingArchive";
 import { getVerifiedTrainingArchivePurchase } from "./lib/trainingArchiveStripe";
 
@@ -57,8 +58,8 @@ export const grantPurchase = internalMutation({
 
     return await ctx.db.insert("trainingArchivePurchases", {
       ...purchase,
-      accessEnd: TRAINING_ARCHIVE_WINDOW.to,
-      accessStart: TRAINING_ARCHIVE_WINDOW.from,
+      accessEnd: getTrainingArchivePurchaseEnd(purchase.purchasedAt),
+      accessStart: TRAINING_ARCHIVE_START_DATE,
       status: "active",
     });
   },
@@ -88,6 +89,12 @@ export const createCheckout = action({
       return {
         url: new URL("/lab/training/workouts", siteUrl).toString(),
       };
+    }
+
+    if (!user.hasActiveMembership) {
+      throw new ConvexError(
+        "Complete history must be purchased with an active monthly membership.",
+      );
     }
 
     const stripeClient = createStripeClient(ctx);
@@ -158,8 +165,7 @@ export const confirmCheckout = action({
 });
 
 export const trainingArchiveProduct = {
-  accessEnd: TRAINING_ARCHIVE_WINDOW.to,
-  accessStart: TRAINING_ARCHIVE_WINDOW.from,
+  accessStart: TRAINING_ARCHIVE_START_DATE,
   currency: TRAINING_ARCHIVE_CURRENCY,
   price: TRAINING_ARCHIVE_PRICE_CENTS,
   title: TRAINING_ARCHIVE_TITLE,

@@ -7,7 +7,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { confirmTrainingArchiveCheckout } from "@/lib/auth/training-archive-actions";
 
 export const metadata: Metadata = {
-  title: "Confirming Training Access | Threshold Lab",
+  title: "Confirming History Access | Threshold Lab",
 };
 
 export default async function TrainingArchiveSuccessPage({

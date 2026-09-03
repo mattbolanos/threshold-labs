@@ -8,10 +8,13 @@ export const INSIDE_LAB_PLAN_NAME = "inside-the-lab";
 
 const LAB_ACCESS_SUBSCRIPTION_STATUSES = new Set(["active", "trialing"]);
 
+export const isLabAccessSubscriptionStatus = (status?: string | null) =>
+  Boolean(status && LAB_ACCESS_SUBSCRIPTION_STATUSES.has(status));
+
 export const hasActiveLabSubscription = (subscriptions: LabSubscription[]) =>
   subscriptions.some(
     ({ plan, status, stripeSubscriptionId }) =>
       plan === INSIDE_LAB_PLAN_NAME &&
       Boolean(stripeSubscriptionId) &&
-      Boolean(status && LAB_ACCESS_SUBSCRIPTION_STATUSES.has(status)),
+      isLabAccessSubscriptionStatus(status),
   );

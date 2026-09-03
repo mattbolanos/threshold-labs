@@ -35,18 +35,32 @@ bunx convex env set --prod STRIPE_TRAINING_ARCHIVE_PRICE_ID
 ```
 
 Use live-mode Stripe values together: `sk_live_...`, the live recurring
-membership `price_...`, the live $400 one-time training archive `price_...`,
+membership `price_...`, the live $400 one-time complete-history `price_...`,
 and the signing secret for the live webhook endpoint at
 `https://your-production-domain.com/api/auth/stripe/webhook`. Subscribe that
 endpoint to `checkout.session.completed`, `customer.subscription.created`,
 `customer.subscription.updated`, and `customer.subscription.deleted`.
 
-The one-time archive pass grants only Training and Workout Library access for
-the inclusive September 1, 2025–September 1, 2026 dataset. It does not grant Lab
-Notes or administrator access. The checkout verifier requires the configured
-price, a paid $400 USD session, and the purchasing user reference before it
-records access. A user can own both products; workout-detail access then combines
-the membership's moving 30-day window with the fixed archive window.
+Each Stripe subscription owns one training-data window in the
+`membershipAccessWindows` table. The window opens on the matching calendar date
+one month before that subscription's checkout (for example, September 3 opens
+August 3), extends forward while the subscription stays active, and closes on
+the day the subscription stops being active (the earlier of the cancellation
+and the paid-through date). Renewals never move a window. A member who cancels
+and later subscribes again receives a new window for the new subscription plus
+their earlier closed windows, but never the lapsed period in between. The
+webhook handlers keep the windows in sync; subscriptions that predate the table
+fall back to the Better Auth record's creation and end dates. A new
+complete-history purchase is checked out with the recurring membership in the
+same Stripe session: $400 once plus $70/month. An existing active member can add
+history for the one-time $400 payment without starting a second subscription.
+
+The history purchase grants Training and Workout Library access from September
+1, 2025 through the purchase date and remains available if the monthly
+membership later ends. The active membership adds ongoing training data and Lab
+Notes. The checkout verifier requires the configured history price, the
+configured recurring membership price for new bundle purchases, a paid USD
+session, and the purchasing user reference before it records history access.
 
 Configure the Stripe Customer Portal in live mode and enable payment-method
 updates, invoice history, and subscription cancellation. Members open that
@@ -108,7 +122,9 @@ automatically from Vercel's stable branch URL, and `PREVIEW_AUTH_BYPASS` default
 to `true` unless the Vercel Preview environment explicitly sets it to `false`.
 The sync is atomic and fails the deployment if a required variable is missing.
 It also rejects live-mode Stripe secret keys; use one coherent set of Stripe
-test-mode credentials and prices for the preview.
+test-mode credentials and prices for the preview. Keep Vercel's **Automatically
+expose System Environment Variables** project setting enabled so the branch name
+and branch URL are available during the build.
 
 For a new deployment, temporarily set the first verified administrator email
 before that account signs up:

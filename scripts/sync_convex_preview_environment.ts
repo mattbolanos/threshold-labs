@@ -101,7 +101,7 @@ export const buildConvexPreviewEnvironment = (
   };
 };
 
-export const serializeEnvironment = (environment: Environment) =>
+export const serializeEnvironment = (environment: Record<string, string>) =>
   `${Object.entries(environment)
     .map(([name, value]) => `${name}=${JSON.stringify(value)}`)
     .join("\n")}\n`;

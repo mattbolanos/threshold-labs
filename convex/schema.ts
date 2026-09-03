@@ -69,6 +69,15 @@ export default defineSchema({
     .index("by_external_key", ["externalKey"])
     .index("by_start_date", ["startDate"]),
 
+  membershipAccessWindows: defineTable({
+    accessEnd: v.optional(v.string()),
+    accessStart: v.string(),
+    referenceId: v.string(),
+    stripeSubscriptionId: v.string(),
+  })
+    .index("by_reference_id", ["referenceId"])
+    .index("by_stripe_subscription", ["stripeSubscriptionId"]),
+
   plannedHyroxRaces: defineTable({
     plannedAt: v.number(),
     raceId: v.id("hyroxRaces"),

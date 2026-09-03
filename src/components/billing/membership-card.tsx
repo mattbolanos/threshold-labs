@@ -22,8 +22,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  formatTrainingAccessDate,
+  formatTrainingAccessRange,
   getMembershipPriceLabel,
   getMembershipStatusDetails,
+  getTrainingAccessLabel,
   insideLabMembership,
   type MembershipSubscription,
   type TrainingArchiveAccess,
@@ -161,6 +164,22 @@ export function MembershipCard({
                       },
                     ]
                   : []),
+                ...(isActiveSubscription && subscription.accessStart
+                  ? [
+                      {
+                        label: "Training data from",
+                        value: formatTrainingAccessDate(
+                          subscription.accessStart,
+                        ),
+                      },
+                    ]
+                  : []),
+                ...(isActiveSubscription
+                  ? (subscription.pastAccessWindows ?? []).map((window) => ({
+                      label: "Earlier membership data",
+                      value: formatTrainingAccessRange(window.from, window.to),
+                    }))
+                  : []),
               ]}
             />
           </AccessRow>
@@ -187,7 +206,7 @@ export function MembershipCard({
         {trainingArchive ? (
           <AccessRow
             badge={<Badge variant="secondary">Purchased</Badge>}
-            description="One-time access to the fixed training archive. It does not renew and does not include Lab Notes or future training data."
+            description="Your one-time purchase keeps the complete training history available through your purchase date. An active monthly membership adds future training data and every Lab Note."
             icon={<IconArchive aria-hidden className="size-5" stroke={2} />}
             title={trainingArchivePass.title}
           >
@@ -196,7 +215,7 @@ export function MembershipCard({
                 { label: "Payment", value: trainingArchivePass.priceLabel },
                 {
                   label: "Training data",
-                  value: trainingArchivePass.accessLabel,
+                  value: getTrainingAccessLabel(trainingArchive),
                 },
               ]}
             />
@@ -206,7 +225,7 @@ export function MembershipCard({
         {!hasAccessRows ? (
           <AccessRow
             badge={<Badge variant="outline">Inactive</Badge>}
-            description="This account does not have an active membership or archive purchase."
+            description="This account does not have an active membership or history purchase."
             icon={<IconLockOpen aria-hidden className="size-5" stroke={2} />}
             title="No active access"
           >

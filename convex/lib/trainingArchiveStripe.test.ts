@@ -4,6 +4,7 @@ import { TRAINING_ARCHIVE_PRODUCT_KEY } from "./trainingArchive";
 import { verifyTrainingArchiveCheckoutSession } from "./trainingArchiveStripe";
 
 const PRICE_ID = "price_training_archive";
+const MEMBERSHIP_PRICE_ID = "price_membership";
 
 function createCheckoutSession(
   overrides: Partial<Stripe.Checkout.Session> = {},
@@ -16,7 +17,13 @@ function createCheckoutSession(
     customer: "cus_123",
     id: "cs_test_123",
     line_items: {
-      data: [{ price: { id: PRICE_ID }, quantity: 1 }],
+      data: [
+        {
+          amount_subtotal: 40_000,
+          price: { id: PRICE_ID },
+          quantity: 1,
+        },
+      ],
     },
     metadata: { purchaseType: TRAINING_ARCHIVE_PRODUCT_KEY },
     mode: "payment",
@@ -32,6 +39,7 @@ describe("verifyTrainingArchiveCheckoutSession", () => {
     expect(
       verifyTrainingArchiveCheckoutSession({
         checkoutSession: createCheckoutSession(),
+        expectedMembershipPriceId: MEMBERSHIP_PRICE_ID,
         expectedPriceId: PRICE_ID,
         expectedReferenceId: "user_123",
       }),
@@ -44,17 +52,68 @@ describe("verifyTrainingArchiveCheckoutSession", () => {
     });
   });
 
+  test("accepts history and monthly membership in one subscription checkout", () => {
+    expect(
+      verifyTrainingArchiveCheckoutSession({
+        checkoutSession: createCheckoutSession({
+          amount_total: 47_000,
+          line_items: {
+            data: [
+              {
+                amount_subtotal: 40_000,
+                price: { id: PRICE_ID },
+                quantity: 1,
+              },
+              {
+                amount_subtotal: 7_000,
+                price: { id: MEMBERSHIP_PRICE_ID },
+                quantity: 1,
+              },
+            ],
+          } as Stripe.ApiList<Stripe.LineItem>,
+          mode: "subscription",
+          payment_intent: null,
+          subscription: "sub_123",
+        }),
+        expectedMembershipPriceId: MEMBERSHIP_PRICE_ID,
+        expectedPriceId: PRICE_ID,
+        expectedReferenceId: "user_123",
+      }),
+    ).toEqual({
+      purchasedAt: 1_788_400_800_000,
+      referenceId: "user_123",
+      stripeCheckoutSessionId: "cs_test_123",
+      stripeCustomerId: "cus_123",
+      stripePaymentIntentId: undefined,
+    });
+  });
+
   test("rejects an underpaid or different-price checkout", () => {
     expect(
       verifyTrainingArchiveCheckoutSession({
         checkoutSession: createCheckoutSession({ amount_total: 39_999 }),
+        expectedMembershipPriceId: MEMBERSHIP_PRICE_ID,
         expectedPriceId: PRICE_ID,
       }),
     ).toBeNull();
     expect(
       verifyTrainingArchiveCheckoutSession({
         checkoutSession: createCheckoutSession(),
+        expectedMembershipPriceId: MEMBERSHIP_PRICE_ID,
         expectedPriceId: "price_other",
+      }),
+    ).toBeNull();
+  });
+
+  test("rejects a subscription checkout without the recurring membership", () => {
+    expect(
+      verifyTrainingArchiveCheckoutSession({
+        checkoutSession: createCheckoutSession({
+          mode: "subscription",
+          subscription: "sub_123",
+        }),
+        expectedMembershipPriceId: MEMBERSHIP_PRICE_ID,
+        expectedPriceId: PRICE_ID,
       }),
     ).toBeNull();
   });
@@ -65,12 +124,14 @@ describe("verifyTrainingArchiveCheckoutSession", () => {
         checkoutSession: createCheckoutSession({
           payment_status: "unpaid",
         }),
+        expectedMembershipPriceId: MEMBERSHIP_PRICE_ID,
         expectedPriceId: PRICE_ID,
       }),
     ).toBeNull();
     expect(
       verifyTrainingArchiveCheckoutSession({
         checkoutSession: createCheckoutSession(),
+        expectedMembershipPriceId: MEMBERSHIP_PRICE_ID,
         expectedPriceId: PRICE_ID,
         expectedReferenceId: "user_other",
       }),

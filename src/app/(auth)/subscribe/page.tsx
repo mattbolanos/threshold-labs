@@ -32,7 +32,7 @@ export default function SubscribePage() {
   return (
     <div className="relative z-10 w-full max-w-4xl px-4 sm:px-6">
       <AuthHeader
-        description="Choose full monthly membership or one-time access to the 2025–2026 training archive."
+        description="Choose monthly access, or unlock the complete training history and start your membership together. Both options include every Lab Note, past and future."
         title="Choose your access"
       />
       <Suspense fallback={<MembershipCheckoutFallback />}>

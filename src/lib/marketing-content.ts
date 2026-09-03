@@ -43,11 +43,11 @@ export const offers = [
       label: "Access Inside the Lab",
     },
     description:
-      "Follow the complete training process behind my pursuit of the highest level of HYROX. Get every workout, performance trend, race recap, and lesson—from September 2025 onward.",
+      "Follow the ongoing training process behind my pursuit of the highest level of HYROX, with a 30-day lookback when you join.",
     details: [
-      "Complete training log and performance trends",
+      "Training data from 30 days before signup onward",
       "Race schedule, strategy, and recaps",
-      "Lab Notes on decisions and lessons",
+      "Every Lab Note, past and future",
       "$70/month",
     ],
     eyebrow: "The process",
@@ -56,18 +56,18 @@ export const offers = [
   {
     cta: {
       href: "/subscribe",
-      label: "Buy archive access",
+      label: "Get history + membership",
     },
     description:
-      "Get one-time access to the fixed 2025–2026 archive of Inside the Lab training data. It does not renew.",
+      "Unlock every Inside the Lab workout published so far, then keep following the data with full access to every Lab Note.",
     details: [
       `All training data from ${trainingArchivePass.accessLabel}`,
-      "Workout library and performance charts",
-      "No Lab Notes or future training data",
-      trainingArchivePass.priceLabel,
+      "Ongoing workout library and performance charts",
+      "Every Lab Note, past and future",
+      "$400 one-time + $70/month",
     ],
     eyebrow: "Historical access",
-    title: trainingArchivePass.title,
+    title: "Complete history + membership",
   },
 ] as const;
 

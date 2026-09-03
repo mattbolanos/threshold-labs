@@ -29,6 +29,7 @@ describe("createDiscountCodeEmailMessage", () => {
     expect(message.subject).toContain("free");
     expect(message.text).toContain("TLFREE-ABC123");
     expect(message.text).toContain("only be used once");
+    expect(message.text).toContain("every workout, past and present");
     expect(message.html).toContain("https://example.com/signup");
   });
 
@@ -41,5 +42,6 @@ describe("createDiscountCodeEmailMessage", () => {
 
     expect(message.subject).toContain("$50/month");
     expect(message.text).toContain("$50 per month");
+    expect(message.text).toContain("every workout, past and present");
   });
 });

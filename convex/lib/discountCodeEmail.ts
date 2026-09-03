@@ -32,7 +32,7 @@ function getOfferCopy(discountType: DiscountCodeType) {
   if (discountType === "free_forever") {
     return {
       description:
-        "This code makes an Inside the Lab subscription free for the life of that subscription.",
+        "This code makes an Inside the Lab subscription free for the life of that subscription and includes every workout, past and present.",
       heading: "Your free-forever code",
       subject: "Your free Inside the Lab membership code",
     };
@@ -40,7 +40,7 @@ function getOfferCopy(discountType: DiscountCodeType) {
 
   return {
     description:
-      "This code sets an Inside the Lab subscription to $50 per month for the life of that subscription.",
+      "This code sets an Inside the Lab subscription to $50 per month for the life of that subscription and includes every workout, past and present.",
     heading: "Your $50/month code",
     subject: "Your $50/month Inside the Lab membership code",
   };

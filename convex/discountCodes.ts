@@ -6,6 +6,7 @@ import {
   action,
   internalMutation,
   internalQuery,
+  type MutationCtx,
   query,
 } from "./_generated/server";
 import { assertAdmin } from "./auth";
@@ -18,6 +19,7 @@ import {
   isDiscountCouponCompatible,
 } from "./lib/discountCodes";
 import { createStripeClient } from "./lib/stripeAuth";
+import { TRAINING_HISTORY_START_DATE } from "./lib/workoutAccess";
 
 const discountTypeValidator = v.union(
   v.literal("fifty_monthly"),
@@ -432,7 +434,34 @@ export const markDiscountCodesRedeemed = internalMutation({
           stripeSubscriptionId,
           updatedAt: redeemedAt,
         });
+
+        if (stripeSubscriptionId) {
+          await grantFullTrainingHistory(ctx, stripeSubscriptionId);
+        }
       }
     }
   },
 });
+
+/**
+ * Both discount offers include every workout, past and present. The webhook
+ * handler syncs the subscription's access window before recording the
+ * redemption, so the window is widened here rather than at creation time.
+ */
+async function grantFullTrainingHistory(
+  ctx: MutationCtx,
+  stripeSubscriptionId: string,
+) {
+  const accessWindow = await ctx.db
+    .query("membershipAccessWindows")
+    .withIndex("by_stripe_subscription", (q) =>
+      q.eq("stripeSubscriptionId", stripeSubscriptionId),
+    )
+    .first();
+
+  if (accessWindow && accessWindow.accessStart > TRAINING_HISTORY_START_DATE) {
+    await ctx.db.patch(accessWindow._id, {
+      accessStart: TRAINING_HISTORY_START_DATE,
+    });
+  }
+}

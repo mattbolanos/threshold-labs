@@ -33,12 +33,14 @@ import type { Id } from "../../../convex/_generated/dataModel";
 
 const discountOptions = [
   {
-    description: "The subscription renews at exactly $50 each month.",
+    description:
+      "The subscription renews at $50 each month for life and includes every workout, past and present.",
     label: "$50/month",
     value: "fifty_monthly",
   },
   {
-    description: "The subscription receives a permanent 100% discount.",
+    description:
+      "The subscription is free for life and includes every workout, past and present.",
     label: "Free forever",
     value: "free_forever",
   },

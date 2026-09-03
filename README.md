@@ -97,6 +97,12 @@ Two forever-duration offers are supported:
   product. Checkout only asks for a payment method when an amount is due, so a
   fully discounted subscription does not require a card.
 
+Both offers include every workout, past and present. When the
+`checkout.session.completed` webhook records a redemption against a
+subscription, it moves that subscription's `membershipAccessWindows` start back
+to the beginning of the training history instead of the usual one month before
+checkout. The window still closes normally if the subscription ends.
+
 The shared coupons do not have global redemption caps. The one-use limit belongs
 to each unique promotion code, so issuing a code does not consume availability
 for other members. A forever discount remains on the subscription it was

@@ -7,7 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getPostAuthDestination } from "@/lib/auth";
 
 export const metadata: Metadata = {
-  title: "Complete Your Membership | Threshold Lab",
+  title: "Choose Your Access | Threshold Lab",
 };
 
 async function MembershipAccessGate() {
@@ -21,16 +21,19 @@ async function MembershipAccessGate() {
 
 function MembershipCheckoutFallback() {
   return (
-    <Skeleton className="h-60.5 w-full rounded-xl border bg-card/85 p-7 shadow-xl shadow-foreground/5 backdrop-blur-sm" />
+    <div className="grid gap-5 md:grid-cols-2">
+      <Skeleton className="min-h-96 w-full rounded-xl" />
+      <Skeleton className="min-h-96 w-full rounded-xl" />
+    </div>
   );
 }
 
 export default function SubscribePage() {
   return (
-    <div className="relative z-10 w-full max-w-md px-4 sm:px-0">
+    <div className="relative z-10 w-full max-w-4xl px-4 sm:px-6">
       <AuthHeader
-        description="Review your membership, then continue to Stripe to pay securely or enter a discount code."
-        title="Complete your membership"
+        description="Choose full monthly membership or one-time access to the 2025–2026 training archive."
+        title="Choose your access"
       />
       <Suspense fallback={<MembershipCheckoutFallback />}>
         <MembershipAccessGate />

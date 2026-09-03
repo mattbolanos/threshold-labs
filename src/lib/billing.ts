@@ -7,6 +7,21 @@ export const insideLabMembership = {
   title: "Inside the Lab membership",
 } as const;
 
+export const trainingArchivePass = {
+  accessEnd: "2026-09-01",
+  accessLabel: "Sep 1, 2025 – Sep 1, 2026",
+  accessStart: "2025-09-01",
+  price: 400,
+  priceLabel: "$400 once",
+  title: "Training Archive 2025–2026",
+} as const;
+
+export interface TrainingArchiveAccess {
+  accessEnd: string;
+  accessStart: string;
+  purchasedAt: number;
+}
+
 export interface MembershipSubscription {
   billing?: {
     amount: number | null;

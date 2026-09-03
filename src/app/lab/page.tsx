@@ -1,11 +1,13 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { LabRouteFallback } from "@/components/lab-route-fallback";
-import { checkLabAccess } from "@/lib/auth";
+import { checkAnyLabAccess } from "@/lib/auth";
 
 async function LabRedirect() {
-  await checkLabAccess();
-  return redirect("/lab/lab-notes");
+  const access = await checkAnyLabAccess();
+  return redirect(
+    access.hasFullAccess ? "/lab/lab-notes" : "/lab/training/workouts",
+  );
 }
 
 export default function LabPage() {

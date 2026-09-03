@@ -82,9 +82,11 @@ function formatMembershipStatus(
 }
 
 function AccessBadge({
+  hasTrainingArchive,
   source,
 }: {
-  source: "admin" | "none" | "subscription";
+  hasTrainingArchive: boolean;
+  source: "admin" | "none" | "subscription" | "training_archive";
 }) {
   if (source === "admin") {
     return (
@@ -99,7 +101,16 @@ function AccessBadge({
     return (
       <Badge variant="secondary">
         <IconCreditCard aria-hidden data-icon="inline-start" />
-        Member access
+        {hasTrainingArchive ? "Member + archive" : "Member access"}
+      </Badge>
+    );
+  }
+
+  if (source === "training_archive") {
+    return (
+      <Badge variant="secondary">
+        <IconCreditCard aria-hidden data-icon="inline-start" />
+        Training archive
       </Badge>
     );
   }
@@ -170,7 +181,7 @@ export function AdminUserManager() {
 
       {errorMessage ? (
         <div
-          className="border-destructive/30 bg-destructive/10 text-destructive flex items-start gap-2 rounded-lg border px-3 py-2 text-sm"
+          className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
           role="alert"
         >
           <IconAlertCircle aria-hidden className="mt-0.5 size-4 shrink-0" />
@@ -179,7 +190,7 @@ export function AdminUserManager() {
       ) : null}
 
       {statusMessage ? (
-        <output className="text-primary flex items-center gap-2 text-sm">
+        <output className="flex items-center gap-2 text-sm text-primary">
           <IconCheck aria-hidden className="size-4" />
           <span>{statusMessage}</span>
         </output>
@@ -195,8 +206,8 @@ export function AdminUserManager() {
             Registered users
           </CardTitle>
           <CardDescription>
-            Admins bypass billing. Clients and coaches need an active Inside the
-            Lab subscription.
+            Admins bypass billing. Clients and coaches can have full membership
+            or training-only archive access.
           </CardDescription>
         </CardHeader>
 
@@ -234,10 +245,10 @@ export function AdminUserManager() {
                           <Badge variant="outline">You</Badge>
                         ) : null}
                       </div>
-                      <p className="text-muted-foreground truncate text-sm">
+                      <p className="truncate text-sm text-muted-foreground">
                         {user.email}
                       </p>
-                      <p className="text-muted-foreground text-xs">
+                      <p className="text-xs text-muted-foreground">
                         {user.emailVerified
                           ? "Verified email"
                           : "Email not verified"}
@@ -245,14 +256,17 @@ export function AdminUserManager() {
                     </div>
 
                     <div className="space-y-1.5">
-                      <p className="text-muted-foreground text-xs font-medium uppercase">
+                      <p className="text-xs font-medium text-muted-foreground uppercase">
                         Lab access
                       </p>
-                      <AccessBadge source={user.accessSource} />
+                      <AccessBadge
+                        hasTrainingArchive={user.trainingArchive !== null}
+                        source={user.accessSource}
+                      />
                     </div>
 
                     <div className="min-w-0 space-y-1.5">
-                      <p className="text-muted-foreground text-xs font-medium uppercase">
+                      <p className="text-xs font-medium text-muted-foreground uppercase">
                         Stripe membership
                       </p>
                       <p className="text-sm leading-snug capitalize">
@@ -265,7 +279,7 @@ export function AdminUserManager() {
 
                     <div className="space-y-1.5">
                       <label
-                        className="text-muted-foreground text-xs font-medium uppercase"
+                        className="text-xs font-medium text-muted-foreground uppercase"
                         htmlFor={`role-${user.id}`}
                       >
                         Account role
@@ -304,12 +318,12 @@ export function AdminUserManager() {
                         {isPending ? (
                           <IconLoader2
                             aria-label="Saving role"
-                            className="text-muted-foreground size-4 shrink-0 animate-spin"
+                            className="size-4 shrink-0 animate-spin text-muted-foreground"
                           />
                         ) : null}
                       </div>
                       {user.isCurrentUser ? (
-                        <p className="text-muted-foreground text-xs">
+                        <p className="text-xs text-muted-foreground">
                           Your own admin role is protected.
                         </p>
                       ) : null}

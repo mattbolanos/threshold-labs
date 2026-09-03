@@ -14,17 +14,18 @@ export function MembershipRequired({
           <IconLock aria-hidden className="size-7 text-primary" />
         </div>
         <h1 className="text-xl font-semibold tracking-tight">
-          Active membership required
+          Lab access required
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          You&apos;re signed in, but this account does not have an active Inside
-          the Lab membership.
+          You&apos;re signed in, but this account does not have an active access
+          option.
         </p>
 
         <div className="mt-5 w-full rounded-lg bg-muted/50 p-4 text-left text-sm">
           <p className="font-medium">Access is available when:</p>
           <ul className="mt-2 flex list-inside list-disc flex-col gap-1 text-muted-foreground">
             <li>Your Inside the Lab membership is active</li>
+            <li>You purchased the 2025–2026 training archive</li>
             <li>Your account has administrator access</li>
           </ul>
         </div>
@@ -38,7 +39,7 @@ export function MembershipRequired({
         >
           {hasBillingAccount
             ? "Manage membership & billing"
-            : "Start membership"}
+            : "Choose an access option"}
         </Link>
 
         <p className="mt-4 text-sm text-muted-foreground">

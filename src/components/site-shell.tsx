@@ -8,6 +8,7 @@ import type { PreviewRole } from "@/lib/auth/preview-role";
 const PUBLIC_ROUTES = new Set([
   "/",
   "/auth/continue",
+  "/auth/training-archive/success",
   "/login",
   "/my-partnerships",
   "/partnerships",

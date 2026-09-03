@@ -1,9 +1,13 @@
 import { Suspense } from "react";
 import { LabRouteFallback } from "@/components/lab-route-fallback";
-import { checkLabAccess } from "@/lib/auth";
+import { checkAuthenticated } from "@/lib/auth";
 
-async function LabAccessGate({ children }: { children: React.ReactNode }) {
-  await checkLabAccess();
+async function LabAuthenticationGate({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  await checkAuthenticated();
 
   return children;
 }
@@ -15,7 +19,7 @@ export default function LabLayout({
 }>) {
   return (
     <Suspense fallback={<LabRouteFallback />}>
-      <LabAccessGate>{children}</LabAccessGate>
+      <LabAuthenticationGate>{children}</LabAuthenticationGate>
     </Suspense>
   );
 }

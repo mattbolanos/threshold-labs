@@ -105,6 +105,19 @@ export default defineSchema({
     updatedAt: v.number(),
   }).index("by_start_date", ["startDate"]),
 
+  trainingArchivePurchases: defineTable({
+    accessEnd: v.string(),
+    accessStart: v.string(),
+    purchasedAt: v.number(),
+    referenceId: v.string(),
+    status: v.literal("active"),
+    stripeCheckoutSessionId: v.string(),
+    stripeCustomerId: v.optional(v.string()),
+    stripePaymentIntentId: v.optional(v.string()),
+  })
+    .index("by_reference_id", ["referenceId"])
+    .index("by_stripe_checkout_session", ["stripeCheckoutSessionId"]),
+
   trainingBlocks: defineTable({
     createdAt: v.number(),
     description: v.string(),

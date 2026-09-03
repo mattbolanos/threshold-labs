@@ -5,8 +5,23 @@ import { internal } from "../_generated/api";
 import type { DataModel } from "../_generated/dataModel";
 import { getAuthEnvironment } from "./authEnvironment";
 import { INSIDE_LAB_PLAN_NAME } from "./labAccess";
+import { getVerifiedTrainingArchivePurchase } from "./trainingArchiveStripe";
 
 const STRIPE_API_VERSION = "2026-07-29.dahlia";
+
+export function getStripeCheckoutBrandingSettings(siteUrl: string) {
+  return {
+    background_color: "#030504" as const,
+    border_style: "rounded" as const,
+    button_color: "#7AF440",
+    display_name: "Threshold Lab",
+    font_family: "inter" as const,
+    icon: {
+      type: "url" as const,
+      url: new URL("/web-app-manifest-512x512.png", siteUrl).toString(),
+    },
+  };
+}
 
 export function createStripeClient(ctx: GenericCtx<DataModel>) {
   return new Stripe(getAuthEnvironment(ctx, "STRIPE_SECRET_KEY"), {
@@ -51,6 +66,29 @@ export function createStripeAuthPlugin(ctx: GenericCtx<DataModel>) {
 
   return stripe({
     createCustomerOnSignUp: false,
+    onEvent: async (event) => {
+      if (
+        event.type !== "checkout.session.completed" ||
+        !("runMutation" in ctx)
+      ) {
+        return;
+      }
+
+      const checkoutSession = event.data.object;
+      if (checkoutSession.mode !== "payment") {
+        return;
+      }
+
+      const purchase = await getVerifiedTrainingArchivePurchase({
+        checkoutSessionId: checkoutSession.id,
+        ctx,
+        stripeClient,
+      });
+
+      if (purchase) {
+        await ctx.runMutation(internal.trainingArchive.grantPurchase, purchase);
+      }
+    },
     stripeClient,
     stripeWebhookSecret: getAuthEnvironment(ctx, "STRIPE_WEBHOOK_SECRET"),
     subscription: {
@@ -58,17 +96,7 @@ export function createStripeAuthPlugin(ctx: GenericCtx<DataModel>) {
       getCheckoutSessionParams: () => ({
         params: {
           allow_promotion_codes: true,
-          branding_settings: {
-            background_color: "#030504",
-            border_style: "rounded",
-            button_color: "#7AF440",
-            display_name: "Threshold Lab",
-            font_family: "inter",
-            icon: {
-              type: "url",
-              url: new URL("/web-app-manifest-512x512.png", siteUrl).toString(),
-            },
-          },
+          branding_settings: getStripeCheckoutBrandingSettings(siteUrl),
           payment_method_collection: "if_required",
           submit_type: "subscribe",
         },

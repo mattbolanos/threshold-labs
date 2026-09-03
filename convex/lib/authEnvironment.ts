@@ -34,6 +34,10 @@ const AUTH_ENVIRONMENT = {
     runtime: () => process.env.STRIPE_SECRET_KEY,
     schemaGeneration: "stripe-schema-generation-key",
   },
+  STRIPE_TRAINING_ARCHIVE_PRICE_ID: {
+    runtime: () => process.env.STRIPE_TRAINING_ARCHIVE_PRICE_ID,
+    schemaGeneration: "price_schema_generation_training_archive",
+  },
   STRIPE_WEBHOOK_SECRET: {
     runtime: () => process.env.STRIPE_WEBHOOK_SECRET,
     schemaGeneration: "stripe-schema-generation-webhook-secret",

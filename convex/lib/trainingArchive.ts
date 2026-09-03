@@ -1,0 +1,7 @@
+import { TRAINING_ARCHIVE_ACCESS_WINDOW } from "./workoutAccess";
+
+export const TRAINING_ARCHIVE_PRODUCT_KEY = "training-archive-2025-2026";
+export const TRAINING_ARCHIVE_PRICE_CENTS = 40_000;
+export const TRAINING_ARCHIVE_CURRENCY = "usd";
+export const TRAINING_ARCHIVE_TITLE = "Training Archive 2025–2026";
+export const TRAINING_ARCHIVE_WINDOW = TRAINING_ARCHIVE_ACCESS_WINDOW;

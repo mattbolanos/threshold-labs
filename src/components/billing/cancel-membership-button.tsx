@@ -1,13 +1,13 @@
 "use client";
 
-import { IconAlertCircle, IconCreditCard } from "@tabler/icons-react";
+import { IconAlertCircle, IconCircleX } from "@tabler/icons-react";
 import { useRef, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { authClient } from "@/lib/auth-client";
 
-export function BillingPortalButton({
+export function CancelMembershipButton({
   disabled = false,
 }: {
   disabled?: boolean;
@@ -16,7 +16,7 @@ export function BillingPortalButton({
   const [error, setError] = useState(false);
   const [isPending, setIsPending] = useState(false);
 
-  async function openBillingPortal() {
+  async function openCancellationFlow() {
     if (requestPending.current) return;
 
     requestPending.current = true;
@@ -24,13 +24,14 @@ export function BillingPortalButton({
     setIsPending(true);
 
     try {
-      const { error: portalError } =
-        await authClient.subscription.billingPortal({
+      const { error: cancellationError } = await authClient.subscription.cancel(
+        {
           returnUrl: "/account/billing",
-        });
+        },
+      );
 
-      if (portalError) {
-        throw new Error("Unable to create a Stripe billing portal session.");
+      if (cancellationError) {
+        throw new Error("Unable to open the Stripe cancellation flow.");
       }
     } catch {
       requestPending.current = false;
@@ -44,26 +45,28 @@ export function BillingPortalButton({
       <Button
         className="min-h-11 w-full motion-safe:transition-transform motion-safe:active:scale-96 sm:w-auto"
         disabled={disabled || isPending}
-        onClick={() => void openBillingPortal()}
+        onClick={() => void openCancellationFlow()}
         size="lg"
         type="button"
+        variant="destructive"
       >
         {isPending ? (
           <Spinner data-icon="inline-start" />
         ) : (
-          <IconCreditCard aria-hidden data-icon="inline-start" stroke={2} />
+          <IconCircleX aria-hidden data-icon="inline-start" stroke={2} />
         )}
         <span aria-live="polite">
-          {isPending ? "Opening Stripe…" : "Payment & invoices"}
+          {isPending ? "Opening Stripe…" : "Cancel membership"}
         </span>
       </Button>
 
       {error ? (
         <Alert className="sm:max-w-sm" variant="destructive">
           <IconAlertCircle aria-hidden stroke={2} />
-          <AlertTitle>Unable to open Stripe</AlertTitle>
+          <AlertTitle>Unable to open cancellation</AlertTitle>
           <AlertDescription>
-            Check your connection and try again.
+            Check your connection and try again. Your membership is still
+            active.
           </AlertDescription>
         </Alert>
       ) : null}

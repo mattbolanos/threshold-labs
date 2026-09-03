@@ -179,8 +179,10 @@ export const getLabAccess = async (ctx: QueryCtx | MutationCtx) => {
     return {
       hasAccess: true,
       hasBillingAccount: false,
+      hasFullAccess: true,
       source: "preview" as const,
       subscription: null,
+      trainingArchive: null,
     };
   }
 
@@ -190,8 +192,10 @@ export const getLabAccess = async (ctx: QueryCtx | MutationCtx) => {
     return {
       hasAccess: false,
       hasBillingAccount: false,
+      hasFullAccess: false,
       source: "none" as const,
       subscription: null,
+      trainingArchive: null,
     };
   }
 
@@ -199,16 +203,25 @@ export const getLabAccess = async (ctx: QueryCtx | MutationCtx) => {
     return {
       hasAccess: true,
       hasBillingAccount: Boolean(user.stripeCustomerId),
+      hasFullAccess: true,
       source: "admin" as const,
       subscription: null,
+      trainingArchive: null,
     };
   }
 
   const adapter = authComponent.adapter(ctx)(createAuthOptions(ctx));
-  const subscriptions = await adapter.findMany<AuthSubscriptionRecord>({
-    model: "subscription",
-    where: [{ field: "referenceId", value: user._id.toString() }],
-  });
+  const referenceId = user._id.toString();
+  const [subscriptions, trainingArchive] = await Promise.all([
+    adapter.findMany<AuthSubscriptionRecord>({
+      model: "subscription",
+      where: [{ field: "referenceId", value: referenceId }],
+    }),
+    ctx.db
+      .query("trainingArchivePurchases")
+      .withIndex("by_reference_id", (q) => q.eq("referenceId", referenceId))
+      .first(),
+  ]);
   const membershipSubscriptions = subscriptions.filter(
     (subscription) => subscription.plan === INSIDE_LAB_PLAN_NAME,
   );
@@ -224,11 +237,17 @@ export const getLabAccess = async (ctx: QueryCtx | MutationCtx) => {
     user.stripeCustomerId ||
       subscriptions.some((subscription) => subscription.stripeCustomerId),
   );
+  const hasTrainingArchive = trainingArchive?.status === "active";
 
   return {
-    hasAccess: Boolean(activeSubscription),
+    hasAccess: Boolean(activeSubscription || hasTrainingArchive),
     hasBillingAccount: activeSubscription ? true : hasBillingAccount,
-    source: activeSubscription ? ("subscription" as const) : ("none" as const),
+    hasFullAccess: Boolean(activeSubscription),
+    source: activeSubscription
+      ? ("subscription" as const)
+      : hasTrainingArchive
+        ? ("training_archive" as const)
+        : ("none" as const),
     subscription: subscription
       ? {
           cancelAt: toTimestamp(subscription.cancelAt),
@@ -237,15 +256,34 @@ export const getLabAccess = async (ctx: QueryCtx | MutationCtx) => {
           status: subscription.status ?? "unknown",
         }
       : null,
+    trainingArchive: hasTrainingArchive
+      ? {
+          accessEnd: trainingArchive.accessEnd,
+          accessStart: trainingArchive.accessStart,
+          purchasedAt: trainingArchive.purchasedAt,
+        }
+      : null,
   };
 };
 
 export const assertLabAccess = async (ctx: QueryCtx | MutationCtx) => {
   const access = await getLabAccess(ctx);
 
-  if (!access.hasAccess) {
+  if (!access.hasFullAccess) {
     throw new ConvexError("An active membership is required.");
   }
+
+  return access;
+};
+
+export const assertTrainingAccess = async (ctx: QueryCtx | MutationCtx) => {
+  const access = await getLabAccess(ctx);
+
+  if (!access.hasAccess) {
+    throw new ConvexError("Training access is required.");
+  }
+
+  return access;
 };
 
 export const getSignupRole = internalQuery({
@@ -279,6 +317,26 @@ export const getCurrentUser = query({
     }
 
     return (await authComponent.safeGetAuthUser(ctx)) ?? null;
+  },
+});
+
+export const getCurrentStripeCheckoutUser = internalQuery({
+  args: {},
+  handler: async (ctx) => {
+    if (isPreviewAuthEnabled()) {
+      return null;
+    }
+
+    const user = await authComponent.safeGetAuthUser(ctx);
+    if (!user) {
+      return null;
+    }
+
+    return {
+      email: user.email,
+      referenceId: user._id.toString(),
+      stripeCustomerId: user.stripeCustomerId ?? undefined,
+    };
   },
 });
 
@@ -334,7 +392,7 @@ export const listAdminUsers = query({
     }
 
     const adapter = authComponent.adapter(ctx)(createAuthOptions(ctx));
-    const [users, subscriptions] = await Promise.all([
+    const [users, subscriptions, trainingArchives] = await Promise.all([
       adapter.findMany<AuthUserRecord>({
         limit: 250,
         model: "user",
@@ -344,6 +402,7 @@ export const listAdminUsers = query({
         limit: 500,
         model: "subscription",
       }),
+      ctx.db.query("trainingArchivePurchases").collect(),
     ]);
 
     const subscriptionsByUser = new Map<string, AuthSubscriptionRecord[]>();
@@ -352,6 +411,9 @@ export const listAdminUsers = query({
       existing.push(subscription);
       subscriptionsByUser.set(subscription.referenceId, existing);
     }
+    const trainingArchivesByUser = new Map(
+      trainingArchives.map((purchase) => [purchase.referenceId, purchase]),
+    );
 
     return users.map((user) => {
       const userSubscriptions = subscriptionsByUser.get(user.id) ?? [];
@@ -365,6 +427,7 @@ export const listAdminUsers = query({
       )[0];
       const subscription = activeSubscription ?? latestSubscription;
       const role = normalizeRole(user.role);
+      const trainingArchive = trainingArchivesByUser.get(user.id);
 
       return {
         accessSource:
@@ -372,7 +435,9 @@ export const listAdminUsers = query({
             ? ("admin" as const)
             : activeSubscription
               ? ("subscription" as const)
-              : ("none" as const),
+              : trainingArchive?.status === "active"
+                ? ("training_archive" as const)
+                : ("none" as const),
         createdAt: toTimestamp(user.createdAt) ?? 0,
         email: user.email,
         emailVerified: user.emailVerified,
@@ -391,6 +456,14 @@ export const listAdminUsers = query({
               status: subscription.status ?? "unknown",
             }
           : null,
+        trainingArchive:
+          trainingArchive?.status === "active"
+            ? {
+                accessEnd: trainingArchive.accessEnd,
+                accessStart: trainingArchive.accessStart,
+                purchasedAt: trainingArchive.purchasedAt,
+              }
+            : null,
       };
     });
   },

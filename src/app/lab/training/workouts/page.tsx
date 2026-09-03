@@ -6,17 +6,23 @@ import { LabRouteFallback } from "@/components/lab-route-fallback";
 import { PageHeader } from "@/components/page-header";
 import { buttonVariants } from "@/components/ui/button";
 import { WorkoutLibrary } from "@/components/workout-library/workout-library";
-import { checkLabAccess } from "@/lib/auth";
+import { checkTrainingAccess } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   description:
-    "Search every published workout by name, type, training block, week, or date range.",
+    "Search available workouts by name, type, training block, week, or date range.",
   title: "Workout Library | Threshold Lab",
 };
 
 async function WorkoutLibraryPageContent() {
-  await checkLabAccess();
+  const access = await checkTrainingAccess();
+  const description =
+    access.source === "admin" || access.source === "preview"
+      ? "Search every published workout by name, training block, type, week, or date range."
+      : access.source === "training_archive"
+        ? "Search archived workouts from September 1, 2025 through September 1, 2026."
+        : "Search today and the previous 30 days by name, training block, type, week, or date range.";
 
   return (
     <div className="flex flex-col gap-6">
@@ -30,7 +36,7 @@ async function WorkoutLibraryPageContent() {
             Back to week view
           </Link>
         }
-        description="Search workouts by name, training block, type, week, or date range."
+        description={description}
         eyebrow="Training"
         title="Workout library"
       />

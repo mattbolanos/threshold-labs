@@ -1,6 +1,4 @@
-import { type ClassValue, clsx } from "clsx";
 import { addDays, format, isValid, parse } from "date-fns";
-import { twMerge } from "tailwind-merge";
 
 const TRAINING_LOAD_SCALE_FACTOR = 3;
 const QUERY_DATE_FORMAT = "yyyy-MM-dd";
@@ -18,9 +16,7 @@ const ONE_DECIMAL_FORMATTER = new Intl.NumberFormat("en-US", {
   minimumFractionDigits: 1,
 });
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+export { cn } from "cn";
 
 export function formatOneDecimal(value: number): string {
   return ONE_DECIMAL_FORMATTER.format(value);

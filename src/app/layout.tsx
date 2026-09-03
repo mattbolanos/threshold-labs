@@ -50,6 +50,7 @@ export default function RootLayout({
   return (
     <html
       className={`${outfit.variable} ${jetbrainsMono.variable} dark`}
+      data-scroll-behavior="smooth"
       lang="en"
       suppressHydrationWarning
     >

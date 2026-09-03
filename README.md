@@ -31,17 +31,26 @@ bunx convex env set --prod AUTH_EMAIL_FROM "Threshold Lab <accounts@your-verifie
 bunx convex env set --prod STRIPE_SECRET_KEY
 bunx convex env set --prod STRIPE_WEBHOOK_SECRET
 bunx convex env set --prod STRIPE_INSIDE_LAB_PRICE_ID
+bunx convex env set --prod STRIPE_TRAINING_ARCHIVE_PRICE_ID
 ```
 
 Use live-mode Stripe values together: `sk_live_...`, the live recurring
-`price_...`, and the signing secret for the live webhook endpoint at
+membership `price_...`, the live $400 one-time training archive `price_...`,
+and the signing secret for the live webhook endpoint at
 `https://your-production-domain.com/api/auth/stripe/webhook`. Subscribe that
 endpoint to `checkout.session.completed`, `customer.subscription.created`,
 `customer.subscription.updated`, and `customer.subscription.deleted`.
 
+The one-time archive pass grants only Training and Workout Library access for
+the inclusive September 1, 2025–September 1, 2026 dataset. It does not grant Lab
+Notes or administrator access. The checkout verifier requires the configured
+price, a paid $400 USD session, and the purchasing user reference before it
+records access. A user can own both products; workout-detail access then combines
+the membership's moving 30-day window with the fixed archive window.
+
 Configure the Stripe Customer Portal in live mode and enable payment-method
 updates, invoice history, and subscription cancellation. Members open that
-portal from **Membership & billing** in their account menu.
+portal from **Access & billing** in their account menu.
 
 ### Member discount codes
 

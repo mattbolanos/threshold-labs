@@ -84,6 +84,32 @@ command injects `NEXT_PUBLIC_CONVEX_URL`; set `NEXT_PUBLIC_CONVEX_SITE_URL` only
 when the HTTP Actions URL cannot be derived from the standard `.convex.cloud`
 deployment URL.
 
+## Stripe preview environment
+
+Every Vercel build of the `stripe` branch syncs the branch's Vercel Preview
+environment into the `stripe` Convex preview before building the site. Configure
+these variables in Vercel's Preview environment and scope them to the `stripe`
+branch:
+
+```text
+AUTH_EMAIL_FROM
+BETTER_AUTH_SECRET
+GOOGLE_CLIENT_ID
+GOOGLE_CLIENT_SECRET
+RESEND_API_KEY
+STRIPE_INSIDE_LAB_PRICE_ID
+STRIPE_SECRET_KEY
+STRIPE_TRAINING_ARCHIVE_PRICE_ID
+STRIPE_WEBHOOK_SECRET
+```
+
+`CONVEX_DEPLOY_KEY` must also be a Convex preview deploy key. `SITE_URL` is set
+automatically from Vercel's stable branch URL, and `PREVIEW_AUTH_BYPASS` defaults
+to `true` unless the Vercel Preview environment explicitly sets it to `false`.
+The sync is atomic and fails the deployment if a required variable is missing.
+It also rejects live-mode Stripe secret keys; use one coherent set of Stripe
+test-mode credentials and prices for the preview.
+
 For a new deployment, temporarily set the first verified administrator email
 before that account signs up:
 

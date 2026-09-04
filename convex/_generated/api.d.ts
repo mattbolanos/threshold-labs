@@ -23,6 +23,7 @@ import type * as lib_emailOtp from "../lib/emailOtp.js";
 import type * as lib_labAccess from "../lib/labAccess.js";
 import type * as lib_membershipAccess from "../lib/membershipAccess.js";
 import type * as lib_stripeAuth from "../lib/stripeAuth.js";
+import type * as lib_stripeCustomer from "../lib/stripeCustomer.js";
 import type * as lib_trainingBlockPurchases from "../lib/trainingBlockPurchases.js";
 import type * as lib_trainingBlockStripe from "../lib/trainingBlockStripe.js";
 import type * as lib_workoutAccess from "../lib/workoutAccess.js";
@@ -59,6 +60,7 @@ declare const fullApi: ApiFromModules<{
   "lib/labAccess": typeof lib_labAccess;
   "lib/membershipAccess": typeof lib_membershipAccess;
   "lib/stripeAuth": typeof lib_stripeAuth;
+  "lib/stripeCustomer": typeof lib_stripeCustomer;
   "lib/trainingBlockPurchases": typeof lib_trainingBlockPurchases;
   "lib/trainingBlockStripe": typeof lib_trainingBlockStripe;
   "lib/workoutAccess": typeof lib_workoutAccess;

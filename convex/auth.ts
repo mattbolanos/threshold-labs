@@ -22,8 +22,11 @@ import {
   INSIDE_LAB_PLAN_NAME,
 } from "./lib/labAccess";
 import { resolveMembershipAccess } from "./lib/membershipAccess";
+import {
+  createStripeAuthPlugin,
+  createStripeCheckoutHook,
+} from "./lib/stripeAuth";
 import { getPurchasedBlockWindows } from "./lib/trainingBlockPurchases";
-import { createStripeAuthPlugin } from "./lib/stripeAuth";
 import {
   createPreviewUser,
   isPreviewAuthEnabled,
@@ -137,6 +140,7 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) =>
     emailAndPassword: {
       enabled: false,
     },
+    hooks: { before: createStripeCheckoutHook(ctx) },
     plugins: [
       convex({ authConfig }),
       emailOTP({
@@ -372,6 +376,7 @@ export const getCurrentStripeCheckoutUser = internalQuery({
 
     return {
       email: user.email,
+      name: user.name,
       referenceId: user._id.toString(),
       stripeCustomerId: user.stripeCustomerId ?? undefined,
     };

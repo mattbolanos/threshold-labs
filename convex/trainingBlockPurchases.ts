@@ -8,12 +8,13 @@ import {
   type QueryCtx,
   query,
 } from "./_generated/server";
-import { authComponent } from "./auth";
+import { authComponent, createAuth } from "./auth";
 import { getAuthEnvironment } from "./lib/authEnvironment";
 import {
   createStripeClient,
   getStripeCheckoutBrandingSettings,
 } from "./lib/stripeAuth";
+import { ensureStripeCustomer } from "./lib/stripeCustomer";
 import {
   getPurchaseTypeKey,
   getTrainingBlockPurchaseDate,
@@ -280,16 +281,16 @@ export const createCheckout = action({
         ? "/lab/pricing?checkout=blocks-cancelled"
         : "/subscribe?checkout=blocks-cancelled";
     const stripeClient = createStripeClient(ctx);
+    const { adapter } = await createAuth(ctx).$context;
+    const stripeCustomerId = await ensureStripeCustomer(stripeClient, adapter, {
+      ...user,
+      id: user.referenceId,
+    });
     const checkoutSession = await stripeClient.checkout.sessions.create({
       branding_settings: getStripeCheckoutBrandingSettings(siteUrl),
       cancel_url: new URL(cancelPath, siteUrl).toString(),
       client_reference_id: user.referenceId,
-      ...(user.stripeCustomerId
-        ? { customer: user.stripeCustomerId }
-        : {
-            customer_creation: "always" as const,
-            customer_email: user.email,
-          }),
+      customer: stripeCustomerId,
       line_items: [{ price: priceId, quantity: 1 }],
       metadata,
       mode: "payment",

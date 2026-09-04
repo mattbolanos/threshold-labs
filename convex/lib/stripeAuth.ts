@@ -1,11 +1,13 @@
 import { stripe } from "@better-auth/stripe";
 import type { GenericCtx } from "@convex-dev/better-auth";
+import { createAuthMiddleware, getSessionFromCtx } from "better-auth/api";
 import Stripe from "stripe";
 import { internal } from "../_generated/api";
 import type { DataModel } from "../_generated/dataModel";
 import { getAuthEnvironment } from "./authEnvironment";
 import { ensureRecipientPromotionCode } from "./discountCheckout";
 import { INSIDE_LAB_PLAN_NAME } from "./labAccess";
+import { ensureStripeCustomer } from "./stripeCustomer";
 import { getVerifiedTrainingBlockPurchase } from "./trainingBlockStripe";
 
 const STRIPE_API_VERSION = "2026-07-29.dahlia";
@@ -53,6 +55,24 @@ export function createStripeClient(ctx: GenericCtx<DataModel>) {
   return new Stripe(getAuthEnvironment(ctx, "STRIPE_SECRET_KEY"), {
     apiVersion: STRIPE_API_VERSION,
     httpClient: Stripe.createFetchHttpClient(),
+  });
+}
+
+export function createStripeCheckoutHook(ctx: GenericCtx<DataModel>) {
+  return createAuthMiddleware(async (request) => {
+    if (request.path !== "/subscription/upgrade") return;
+
+    const session = await getSessionFromCtx<{
+      stripeCustomerId?: string | null;
+    }>(request, { disableCookieCache: true });
+    if (!session) return;
+
+    session.user.stripeCustomerId = await ensureStripeCustomer(
+      createStripeClient(ctx),
+      request.context.adapter,
+      session.user,
+    );
+    return { context: { session } };
   });
 }
 

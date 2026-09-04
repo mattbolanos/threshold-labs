@@ -26,7 +26,7 @@ import {
 import { TAG_CONFIG } from "@/components/workouts/tag-config";
 import type { WorkoutWithTrainingBlock } from "@/lib/training-blocks";
 import { cn } from "@/lib/utils";
-import { BlockContent } from "./block-content";
+import { BlockContent } from "./lazy-block-content";
 
 interface BlockProps {
   workout: WorkoutWithTrainingBlock;

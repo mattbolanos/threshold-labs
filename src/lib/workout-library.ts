@@ -30,6 +30,39 @@ export interface WorkoutLibraryFilters {
   week: string;
 }
 
+const MONTH_FORMATTER = new Intl.DateTimeFormat("en-US", {
+  month: "long",
+  timeZone: "UTC",
+  year: "numeric",
+});
+
+export function groupWorkoutsByMonth(workouts: WorkoutLibraryItem[]) {
+  const groups = new Map<
+    string,
+    {
+      key: string;
+      label: string;
+      workouts: WorkoutLibraryItem[];
+    }
+  >();
+
+  for (const workout of workouts) {
+    const key = workout.workoutDate.slice(0, 7);
+    const group = groups.get(key);
+    if (group) {
+      group.workouts.push(workout);
+    } else {
+      groups.set(key, {
+        key,
+        label: MONTH_FORMATTER.format(new Date(`${key}-01T00:00:00Z`)),
+        workouts: [workout],
+      });
+    }
+  }
+
+  return Array.from(groups.values());
+}
+
 function getWeekBounds(value: string) {
   const selectedDate = parseQueryDate(value);
   if (!selectedDate) return null;

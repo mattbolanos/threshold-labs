@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import type { Doc, Id } from "../../convex/_generated/dataModel";
 import {
   filterAndSortWorkouts,
+  groupWorkoutsByMonth,
   type WorkoutLibraryFilters,
   type WorkoutLibraryItem,
 } from "./workout-library";
@@ -99,5 +100,30 @@ describe("filterAndSortWorkouts", () => {
         sort: "oldest",
       }).map((workout) => workout._id),
     ).toEqual([workouts[1]._id, workouts[0]._id]);
+  });
+});
+
+describe("groupWorkoutsByMonth", () => {
+  test("preserves both sort orders and workout order within each month", () => {
+    const sameMonth = { ...workouts[0], _id: "workout-3" as Id<"workouts"> };
+    const input = [workouts[0], sameMonth, workouts[1]];
+    const groups = groupWorkoutsByMonth(input);
+    expect(groups.map(({ key, label }) => ({ key, label }))).toEqual([
+      { key: "2026-03", label: "March 2026" },
+      { key: "2026-02", label: "February 2026" },
+    ]);
+    expect(groups[0].workouts).toEqual([workouts[0], sameMonth]);
+    expect(
+      groupWorkoutsByMonth(input.toReversed()).map(({ key }) => key),
+    ).toEqual(["2026-02", "2026-03"]);
+    expect(input).toEqual([workouts[0], sameMonth, workouts[1]]);
+  });
+
+  test("keeps the same month in different years separate and handles empty results", () => {
+    const lastYear = { ...workouts[0], workoutDate: "2025-03-04" };
+    expect(
+      groupWorkoutsByMonth([workouts[0], lastYear]).map(({ label }) => label),
+    ).toEqual(["March 2026", "March 2025"]);
+    expect(groupWorkoutsByMonth([])).toEqual([]);
   });
 });

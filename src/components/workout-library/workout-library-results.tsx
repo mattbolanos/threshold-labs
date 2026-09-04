@@ -1,7 +1,7 @@
 "use client";
 
 import { IconSearch } from "@tabler/icons-react";
-import { useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Empty,
@@ -12,41 +12,15 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { WorkoutLibraryItem } from "@/lib/workout-library";
+import {
+  groupWorkoutsByMonth,
+  type WorkoutLibraryItem,
+} from "@/lib/workout-library";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { WorkoutLibraryRow } from "./workout-library-row";
 
 const MONTH_BATCH_SIZE = 6;
 const SKELETON_IDS = ["first", "second", "third", "fourth", "fifth", "sixth"];
-
-interface WorkoutMonthGroup {
-  key: string;
-  label: string;
-  workouts: WorkoutLibraryItem[];
-}
-
-function groupWorkoutsByMonth(workouts: WorkoutLibraryItem[]) {
-  const groups = new Map<string, WorkoutMonthGroup>();
-
-  for (const workout of workouts) {
-    const key = workout.workoutDate.slice(0, 7);
-    const date = new Date(`${key}-01T00:00:00Z`);
-    const label = date.toLocaleDateString("en-US", {
-      month: "long",
-      timeZone: "UTC",
-      year: "numeric",
-    });
-    const group = groups.get(key);
-
-    if (group) {
-      group.workouts.push(workout);
-    } else {
-      groups.set(key, { key, label, workouts: [workout] });
-    }
-  }
-
-  return Array.from(groups.values());
-}
 
 interface WorkoutLibraryResultsProps {
   hasActiveFilters: boolean;
@@ -57,7 +31,7 @@ interface WorkoutLibraryResultsProps {
   workouts: WorkoutLibraryItem[];
 }
 
-export function WorkoutLibraryResults({
+export const WorkoutLibraryResults = memo(function WorkoutLibraryResults({
   hasActiveFilters,
   isLoading,
   onReset,
@@ -66,7 +40,7 @@ export function WorkoutLibraryResults({
   workouts,
 }: WorkoutLibraryResultsProps) {
   const [visibleMonthCount, setVisibleMonthCount] = useState(MONTH_BATCH_SIZE);
-  const monthGroups = groupWorkoutsByMonth(workouts);
+  const monthGroups = useMemo(() => groupWorkoutsByMonth(workouts), [workouts]);
   const visibleMonthGroups = monthGroups.slice(0, visibleMonthCount);
   const remainingMonthCount = monthGroups.length - visibleMonthGroups.length;
 
@@ -174,4 +148,4 @@ export function WorkoutLibraryResults({
       ) : null}
     </section>
   );
-}
+});

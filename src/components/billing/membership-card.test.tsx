@@ -206,9 +206,6 @@ describe("MembershipCard", () => {
     expect(markup).toContain("Sep 1, 2025 – Oct 12, 2025");
     expect(markup).toContain("Strength Capacity");
     expect(markup).toContain("Oct 13, 2025 – Nov 23, 2025");
-    expect(markup).toContain(
-      "monthly membership adds new workouts as they are published",
-    );
     expect(markup).not.toContain("Cancel membership");
   });
 

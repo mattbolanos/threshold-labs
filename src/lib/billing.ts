@@ -81,6 +81,9 @@ const membershipDateFormatter = new Intl.DateTimeFormat("en-US", {
 const formatMembershipDate = (timestamp: number | null) =>
   timestamp ? membershipDateFormatter.format(new Date(timestamp)) : null;
 
+export const formatPurchaseDate = (timestamp: number) =>
+  membershipDateFormatter.format(new Date(timestamp));
+
 export const formatTrainingAccessDate = (date: string) =>
   membershipDateFormatter.format(new Date(`${date}T00:00:00.000Z`));
 

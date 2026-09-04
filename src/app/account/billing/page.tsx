@@ -61,7 +61,7 @@ async function MembershipPageContent() {
             <IconArrowRight aria-hidden data-icon="inline-end" stroke={2} />
           </Link>
         }
-        description="Review your current plan, upcoming renewal, and cancellation options."
+        description="See what you have purchased, when it renews, and manage payment details in Stripe."
         eyebrow="Account"
         title="Billing"
       />

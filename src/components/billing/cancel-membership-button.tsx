@@ -43,12 +43,12 @@ export function CancelMembershipButton({
   return (
     <div className="flex w-full flex-col gap-3 sm:w-auto sm:items-end">
       <Button
-        className="min-h-11 w-full motion-safe:transition-transform motion-safe:active:scale-96 sm:w-auto"
+        className="min-h-11 w-full text-muted-foreground hover:bg-destructive/10 hover:text-destructive focus-visible:ring-destructive/30 motion-safe:transition-[transform,color,background-color] motion-safe:active:scale-96 sm:w-auto"
         disabled={disabled || isPending}
         onClick={() => void openCancellationFlow()}
         size="lg"
         type="button"
-        variant="destructive"
+        variant="ghost"
       >
         {isPending ? (
           <Spinner data-icon="inline-start" />

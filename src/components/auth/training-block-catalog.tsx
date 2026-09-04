@@ -1,7 +1,6 @@
-import { IconArrowRight, IconLoader2, IconStack2 } from "@tabler/icons-react";
-import Link from "next/link";
+import { IconArrowRight, IconCheck, IconLoader2 } from "@tabler/icons-react";
 import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -85,26 +84,26 @@ function TrainingBlockCard({
 
   return (
     <Card
+      aria-disabled={block.isOwned}
       className={cn(
         "h-full w-full bg-card/80 shadow-sm shadow-black/20",
-        block.isOwned && "ring-primary/35",
+        block.isOwned && "bg-card/40 shadow-none ring-foreground/6",
       )}
+      data-owned={block.isOwned ? "" : undefined}
     >
-      <CardHeader className="gap-0">
-        <div className="flex items-start justify-between gap-3">
-          <span className="flex size-9 items-center justify-center rounded-lg bg-primary/12 text-primary">
-            <IconStack2 aria-hidden className="size-4" />
-          </span>
-          {block.isOwned ? (
-            <Badge variant="secondary">Purchased</Badge>
-          ) : block.isCompleted ? null : (
-            <Badge variant="outline">In progress</Badge>
-          )}
-        </div>
-        <CardTitle>
-          <h3 className="mt-4 text-lg leading-tight font-semibold tracking-tight text-balance">
+      <CardHeader className="gap-0 group-data-[owned]/card:opacity-60">
+        <CardTitle className="flex items-center justify-between">
+          <h3 className="text-lg leading-tight font-semibold tracking-tight text-balance">
             {block.title}
           </h3>
+          {block.isOwned ? (
+            <Badge variant="outline">
+              <IconCheck aria-hidden data-icon="inline-start" stroke={2.5} />
+              Purchased
+            </Badge>
+          ) : block.isCompleted ? null : (
+            <Badge variant="accent">In progress</Badge>
+          )}
         </CardTitle>
         <dl className="mt-2 space-y-1 text-sm">
           <div className="flex flex-wrap gap-x-2">
@@ -125,23 +124,17 @@ function TrainingBlockCard({
           </div>
         </dl>
       </CardHeader>
-      <CardContent className="flex-1">
+      <CardContent className="flex-1 group-data-[owned]/card:opacity-60">
         <p className="text-sm leading-relaxed text-pretty text-muted-foreground">
           {block.description}
         </p>
       </CardContent>
       <CardFooter className="mt-auto border-t-0 bg-transparent pt-0">
         {block.isOwned ? (
-          <Link
-            className={cn(
-              buttonVariants({ size: "lg", variant: "outline" }),
-              "min-h-11 w-full motion-safe:transition-transform motion-safe:active:scale-96",
-            )}
-            href="/lab/training/workouts"
-          >
-            <span>View workouts</span>
-            <IconArrowRight aria-hidden data-icon="inline-end" stroke={2} />
-          </Link>
+          <p className="flex min-h-11 w-full items-center justify-center gap-1.5 rounded-lg bg-muted/40 text-sm font-medium text-muted-foreground">
+            <IconCheck aria-hidden className="size-4" stroke={2} />
+            <span>Already purchased</span>
+          </p>
         ) : (
           <Button
             className="min-h-11 w-full motion-safe:transition-transform motion-safe:active:scale-96"

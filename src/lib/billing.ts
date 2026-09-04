@@ -65,7 +65,7 @@ export interface MembershipSubscription {
 
 interface MembershipStatusDetails {
   badgeLabel: string;
-  badgeVariant: "default" | "destructive" | "outline" | "secondary";
+  badgeVariant: "default" | "destructive" | "outline" | "accent";
   description: string;
   periodLabel: string | null;
   periodValue: string | null;

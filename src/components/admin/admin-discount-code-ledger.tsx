@@ -29,7 +29,7 @@ function offerLabel(discountType: Doc<"discountCodes">["discountType"]) {
 
 function statusBadge(status: Doc<"discountCodes">["status"]) {
   if (status === "active") {
-    return <Badge variant="secondary">Ready to redeem</Badge>;
+    return <Badge variant="accent">Ready to redeem</Badge>;
   }
   if (status === "redeemed") {
     return <Badge>Redeemed</Badge>;

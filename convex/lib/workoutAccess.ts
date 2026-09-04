@@ -144,22 +144,54 @@ export function getWorkoutListingAccessWindows(
   return mergeWorkoutAccessWindows(accessWindows);
 }
 
-export function getChartWorkoutDateRanges(
-  entitlements: WorkoutEntitlements,
+/**
+ * The calendar can only navigate to weeks the viewer is entitled to see.
+ * Unrestricted viewers can reach every published workout plus the current
+ * week; everyone else is bounded by their merged access windows, so a viewer
+ * whose only purchase is a past training block stays inside that block.
+ */
+export function getTrainingCalendarRange(
+  accessWindows: WorkoutAccessWindow[] | null,
+  publishedWorkoutRange: { from: string; to: string } | null,
+  now: Date = new Date(),
+): { from: string | null; to: string } {
+  if (accessWindows === null) {
+    const today = formatLabDate(now);
+
+    return {
+      from: publishedWorkoutRange?.from ?? null,
+      to:
+        publishedWorkoutRange && publishedWorkoutRange.to > today
+          ? publishedWorkoutRange.to
+          : today,
+    };
+  }
+
+  const firstWindow = accessWindows[0];
+  const lastWindow = accessWindows.at(-1);
+
+  if (!firstWindow || !lastWindow) {
+    return { from: null, to: formatLabDate(now) };
+  }
+
+  return { from: firstWindow.from, to: lastWindow.to };
+}
+
+/**
+ * Charts are a high-level overview and always cover every published workout,
+ * regardless of which blocks or membership windows the viewer owns. Only the
+ * workout library itself is restricted to the viewer's entitlements.
+ */
+export function getChartWorkoutDateRange(
   from: string | undefined,
   to: string | undefined,
   defaults: ChartDateRangeDefaults,
   now: Date = new Date(),
 ) {
-  const blocksOnly =
-    entitlements.accessSource === "training_blocks"
-      ? mergeWorkoutAccessWindows(entitlements.purchasedBlockWindows ?? [])
-      : [];
-
-  return getAccessibleWorkoutDateRanges(
-    from ?? blocksOnly[0]?.from ?? defaults.from,
-    to ?? blocksOnly.at(-1)?.to ?? defaults.to ?? formatLabDate(now),
-    getWorkoutListingAccessWindows(entitlements, now),
+  return getAccessibleWorkoutDateRange(
+    from ?? defaults.from,
+    to ?? defaults.to ?? formatLabDate(now),
+    null,
   );
 }
 

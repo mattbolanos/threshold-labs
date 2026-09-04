@@ -41,7 +41,7 @@ function WeekBlocksLoading() {
 
 export function WeekBlocks() {
   const searchParams = useSearchParams();
-  const { weekStartDate } = useCalendarNav();
+  const { isRangeLoading, weekStartDate } = useCalendarNav();
   const localToday = useSyncExternalStore(
     subscribeToLocalDate,
     getLocalDate,
@@ -49,10 +49,15 @@ export function WeekBlocks() {
   );
 
   const weekKey = formatQueryDate(weekStartDate);
-  const data = useQuery(api.workouts.getWorkouts, {
-    from: weekKey,
-    to: formatQueryDate(addDays(weekStartDate, 6)),
-  });
+  const data = useQuery(
+    api.workouts.getWorkouts,
+    isRangeLoading
+      ? "skip"
+      : {
+          from: weekKey,
+          to: formatQueryDate(addDays(weekStartDate, 6)),
+        },
+  );
   const [lastResolvedWeek, setLastResolvedWeek] = useState<{
     key: string;
     workouts: NonNullable<typeof data>;

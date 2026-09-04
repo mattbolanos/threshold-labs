@@ -48,7 +48,7 @@ export function UpcomingRaces({ races }: UpcomingRacesProps) {
                   </div>
                   <Badge
                     className="shrink-0 font-mono text-xs tabular-nums"
-                    variant="secondary"
+                    variant="accent"
                   >
                     {formatDateRange(race.startDate, race.endDate)}
                   </Badge>

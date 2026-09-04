@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { WeekNavigation } from "@/components/calendar/week-navigation";
 import { PageHeader } from "@/components/page-header";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useCalendarNav } from "@/hooks/use-calendar-nav";
 import { formatWeekRangeLabel } from "@/lib/utils";
 
@@ -24,7 +25,7 @@ function getWorkoutLibraryReturnHref(returnTo: string | null): Route {
 
 export function TrainingPageHeader() {
   const searchParams = useSearchParams();
-  const { weekStartDate } = useCalendarNav();
+  const { isRangeLoading, weekStartDate } = useCalendarNav();
   const weekLabel = formatWeekRangeLabel(weekStartDate, true);
   const isFromWorkoutLibrary = searchParams.get("from") === "workout-library";
   const workoutLibraryHref = getWorkoutLibraryReturnHref(
@@ -45,7 +46,19 @@ export function TrainingPageHeader() {
       <PageHeader
         actions={<WeekNavigation />}
         eyebrow="Training"
-        title={`Week of ${weekLabel}`}
+        title={
+          isRangeLoading ? (
+            <>
+              <Skeleton
+                aria-hidden="true"
+                className="h-[1.25em] w-72 max-w-full rounded-md motion-reduce:animate-none"
+              />
+              <span className="sr-only">Loading week</span>
+            </>
+          ) : (
+            `Week of ${weekLabel}`
+          )
+        }
       />
     </div>
   );

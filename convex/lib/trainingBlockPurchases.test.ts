@@ -18,7 +18,7 @@ describe("isTrainingBlockForSale", () => {
 });
 
 describe("isCompletedTrainingBlock", () => {
-  test("only bundles blocks that ended before today", () => {
+  test("marks blocks that ended before today as completed", () => {
     const block = { endDate: "2026-09-02", startDate: "2026-07-20" };
 
     expect(isCompletedTrainingBlock(block, "2026-09-03")).toBe(true);

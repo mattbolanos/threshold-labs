@@ -100,7 +100,7 @@ function AccessBadge({
 
   if (source === "subscription") {
     return (
-      <Badge variant="secondary">
+      <Badge variant="accent">
         <IconCreditCard aria-hidden data-icon="inline-start" />
         {purchasedBlockCount > 0
           ? `Member + ${formatTrainingBlockCount(purchasedBlockCount)}`
@@ -111,7 +111,7 @@ function AccessBadge({
 
   if (source === "training_blocks") {
     return (
-      <Badge variant="secondary">
+      <Badge variant="accent">
         <IconCreditCard aria-hidden data-icon="inline-start" />
         {formatTrainingBlockCount(purchasedBlockCount)} purchased
       </Badge>

@@ -143,7 +143,7 @@ export function AdminClientInviteForm() {
   };
 
   return (
-    <Card className="border-primary/20 from-card via-card to-muted/30 bg-gradient-to-br py-0 shadow-sm">
+    <Card className="border-primary/20 bg-gradient-to-br from-card via-card to-muted/30 py-0 shadow-sm">
       <CardHeader className="px-4 pt-4 md:px-5 md:pt-5">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div className="space-y-1">
@@ -155,7 +155,7 @@ export function AdminClientInviteForm() {
               not block account creation or change an existing user.
             </CardDescription>
           </div>
-          <Badge variant={form.isActive ? "default" : "secondary"}>
+          <Badge variant={form.isActive ? "default" : "accent"}>
             {form.isActive ? "Default active" : "Default paused"}
           </Badge>
         </div>
@@ -168,7 +168,7 @@ export function AdminClientInviteForm() {
 
         {errorMessage ? (
           <p
-            className="bg-destructive/10 text-destructive border-destructive/30 rounded-lg border px-3 py-2 text-sm"
+            className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
             role="alert"
           >
             {errorMessage}
@@ -176,7 +176,7 @@ export function AdminClientInviteForm() {
         ) : null}
 
         {statusMessage ? (
-          <p className="text-primary mt-3 inline-flex items-center gap-2 text-sm">
+          <p className="mt-3 inline-flex items-center gap-2 text-sm text-primary">
             <IconCheck aria-hidden className="size-4" />
             <span>{statusMessage}</span>
           </p>
@@ -213,11 +213,11 @@ export function AdminClientInviteForm() {
               value={form.email}
             />
             {emailError ? (
-              <p className="text-destructive text-sm" id={`${emailId}-error`}>
+              <p className="text-sm text-destructive" id={`${emailId}-error`}>
                 {emailError}
               </p>
             ) : (
-              <p className="text-muted-foreground text-xs">
+              <p className="text-xs text-muted-foreground">
                 Use the email the member will register with.
               </p>
             )}
@@ -266,14 +266,14 @@ export function AdminClientInviteForm() {
                 </SelectGroup>
               </SelectContent>
             </Select>
-            <p className="text-muted-foreground text-xs">
+            <p className="text-xs text-muted-foreground">
               {selectedRole?.description}
             </p>
           </div>
 
           <div className="space-y-2">
             <span className="text-sm font-medium">Role Default Status</span>
-            <div className="has-focus-within bg-background rounded-lg border">
+            <div className="has-focus-within rounded-lg border bg-background">
               <Label
                 className="cursor-pointer items-start justify-between gap-4 p-3"
                 htmlFor={statusId}
@@ -282,7 +282,7 @@ export function AdminClientInviteForm() {
                   <span className="block text-sm font-medium">
                     Apply Preassigned Role
                   </span>
-                  <span className="text-muted-foreground block text-xs">
+                  <span className="block text-xs text-muted-foreground">
                     {form.isActive
                       ? "This role will be applied when the member first signs up."
                       : "This role is ignored; signup defaults to client."}
@@ -290,7 +290,7 @@ export function AdminClientInviteForm() {
                 </span>
                 <input
                   checked={form.isActive}
-                  className="accent-primary mt-0.5 size-5 shrink-0"
+                  className="mt-0.5 size-5 shrink-0 accent-primary"
                   id={statusId}
                   name="invite_active"
                   onChange={(event) =>

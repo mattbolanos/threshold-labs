@@ -145,7 +145,7 @@ export function WorkoutDateFilter({
             }}
             size="sm"
             type="button"
-            variant={showWeekPicker ? "secondary" : "ghost"}
+            variant={showWeekPicker ? "accent" : "ghost"}
           >
             Week
           </Button>
@@ -154,7 +154,7 @@ export function WorkoutDateFilter({
             onClick={() => setPickerMode("range")}
             size="sm"
             type="button"
-            variant={!showWeekPicker ? "secondary" : "ghost"}
+            variant={!showWeekPicker ? "accent" : "ghost"}
           >
             Date range
           </Button>

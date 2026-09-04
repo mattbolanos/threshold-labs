@@ -21,7 +21,6 @@ import { cn } from "@/lib/utils";
 interface CheckoutOptionCardProps {
   badge?: string;
   buttonLabel: string;
-  description: string;
   disabled?: boolean;
   features: string[];
   icon: ReactNode;
@@ -39,7 +38,6 @@ interface CheckoutOptionCardProps {
 export function CheckoutOptionCard({
   badge,
   buttonLabel,
-  description,
   disabled = false,
   features,
   icon,
@@ -65,7 +63,7 @@ export function CheckoutOptionCard({
           <span className="flex size-11 items-center justify-center rounded-lg bg-primary/12 text-primary">
             {icon}
           </span>
-          {badge ? <Badge variant="secondary">{badge}</Badge> : null}
+          {badge ? <Badge variant="accent">{badge}</Badge> : null}
         </div>
         <CardTitle>
           <h2 className="text-2xl leading-tight font-semibold tracking-tight text-balance">
@@ -77,9 +75,6 @@ export function CheckoutOptionCard({
         </p>
       </CardHeader>
       <CardContent className="flex-1 space-y-6">
-        <p className="text-sm leading-relaxed text-pretty text-muted-foreground">
-          {description}
-        </p>
         <ul className="space-y-3 text-sm">
           {features.map((feature) => (
             <li className="flex items-start gap-3 text-pretty" key={feature}>

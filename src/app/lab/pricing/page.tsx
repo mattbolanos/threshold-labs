@@ -18,12 +18,8 @@ async function PricingPageContent() {
   ]);
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
-      <PageHeader
-        description="Join for $70 a month to follow training as it happens, or buy completed training blocks outright: $100 each, or $400 for all of them."
-        eyebrow="Plans"
-        title="Choose your access"
-      />
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
+      <PageHeader title="Pricing" />
 
       <MembershipCheckout
         blocks={blocks}

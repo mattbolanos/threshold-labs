@@ -34,7 +34,8 @@ export const isTrainingBlockForSale = (
 ) => block.startDate <= today;
 
 /**
- * The all-blocks bundle only covers finished blocks.
+ * Finished blocks are labelled as completed in the catalog. In-progress blocks
+ * still sell on their own and are part of the all-blocks bundle.
  */
 export const isCompletedTrainingBlock = (
   block: TrainingBlockRange,

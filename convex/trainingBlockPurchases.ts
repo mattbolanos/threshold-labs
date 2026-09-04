@@ -71,12 +71,6 @@ const getTrainingBlocksForSale = async (ctx: QueryCtx, today: string) => {
   return blocks.filter((block) => isTrainingBlockForSale(block, today));
 };
 
-const getCompletedTrainingBlocks = async (ctx: QueryCtx, today: string) => {
-  const blocks = await getTrainingBlocksForSale(ctx, today);
-
-  return blocks.filter((block) => isCompletedTrainingBlock(block, today));
-};
-
 /** Workouts published so far, so an in-progress block shows its current count. */
 const countVisibleWorkouts = async (
   ctx: QueryCtx,
@@ -157,9 +151,10 @@ export const getTrainingBlockCatalog = query({
 });
 
 /**
- * Records one row per granted block. A bundle grants every block that had
- * finished by the purchase date; blocks already owned are skipped, and the
- * checkout session id makes webhook and success-page confirmation idempotent.
+ * Records one row per granted block. A bundle grants every block on sale at
+ * the purchase date, including the in-progress block; blocks already owned are
+ * skipped, and the checkout session id makes webhook and success-page
+ * confirmation idempotent.
  */
 export const grantPurchase = internalMutation({
   args: { purchase: verifiedPurchaseValidator },
@@ -190,7 +185,7 @@ export const grantPurchase = internalMutation({
 
       blocks = [block];
     } else {
-      blocks = await getCompletedTrainingBlocks(ctx, purchaseDate);
+      blocks = await getTrainingBlocksForSale(ctx, purchaseDate);
     }
 
     const existingPurchases = await getPurchasesForReferenceId(
@@ -262,12 +257,10 @@ export const createCheckout = action({
         trainingBlockTitle: block.title,
       };
     } else {
-      const completedBlocks = blocks.filter((block) => block.isCompleted);
-
-      if (completedBlocks.length === 0) {
-        throw new ConvexError("No completed training blocks are for sale yet.");
+      if (blocks.length === 0) {
+        throw new ConvexError("No training blocks are for sale yet.");
       }
-      if (completedBlocks.every((block) => block.isOwned)) {
+      if (blocks.every((block) => block.isOwned)) {
         return { url: workoutsUrl };
       }
 

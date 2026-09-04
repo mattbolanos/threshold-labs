@@ -11,8 +11,6 @@ import {
 } from "@/lib/auth/training-block-actions";
 import { authClient } from "@/lib/auth-client";
 import {
-  formatTrainingAccessDate,
-  formatTrainingBlockCount,
   formatWorkoutCount,
   INSIDE_LAB_PLAN_NAME,
   insideLabMembership,
@@ -96,18 +94,13 @@ export function MembershipCheckout({
   const cancelledOption = searchParams.get("checkout");
   const checkoutCancelled =
     cancelledOption === "cancelled" || cancelledOption === "blocks-cancelled";
-  // The bundle only covers finished blocks; the in-progress block is sold on
-  // its own in the catalog below.
-  const completedBlocks = blocks.filter((block) => block.isCompleted);
-  const ownedBlocks = completedBlocks.filter((block) => block.isOwned);
+  // The bundle covers every block on sale, including the in-progress block.
   const ownsEveryBlock =
-    completedBlocks.length > 0 && ownedBlocks.length === completedBlocks.length;
-  const totalWorkouts = completedBlocks.reduce(
+    blocks.length > 0 && blocks.every((block) => block.isOwned);
+  const totalWorkouts = blocks.reduce(
     (total, block) => total + block.workoutCount,
     0,
   );
-  const oldestBlock = completedBlocks.at(-1);
-  const newestBlock = completedBlocks[0];
   const openingBlockId = opening?.startsWith("block:")
     ? opening.slice("block:".length)
     : null;
@@ -125,30 +118,24 @@ export function MembershipCheckout({
           )}
           role={error ? "alert" : "status"}
         >
-          <IconAlertCircle aria-hidden className="mt-0.5 size-4 shrink-0" />
+          <IconAlertCircle aria-hidden className="mt-0.5 size-6 shrink-0" />
           <span>{error || "Checkout was cancelled. No payment was made."}</span>
         </p>
       ) : null}
 
-      <div
-        className={cn(
-          "grid gap-5",
-          completedBlocks.length > 0 && "md:grid-cols-2",
-        )}
-      >
+      <div className={cn("grid gap-5", blocks.length > 0 && "md:grid-cols-2")}>
         <CheckoutOptionCard
           badge={hasMembership ? "Current plan" : "Monthly access"}
           buttonLabel={
             hasMembership ? "Membership active" : "Choose monthly membership"
           }
-          description="Join for new workouts as they are published, plus every Lab Note, billed monthly."
           disabled={opening !== null}
           features={[
-            "Workouts from 30 days before you join through the end of your membership",
-            "Training overview and performance charts",
+            "Every workout from the month before you join, plus every new one as it lands",
+            "Training overview and full performance charts",
             "Every Lab Note, past and future",
           ]}
-          icon={<IconLock aria-hidden className="size-5" />}
+          icon={<IconLock aria-hidden className="size-6" />}
           isOpening={opening === "membership"}
           isOwned={hasMembership}
           onCheckout={() => void openMembershipCheckout()}
@@ -156,36 +143,30 @@ export function MembershipCheckout({
           ownedLabel="Manage membership"
           priceLabel={insideLabMembership.priceLabel}
           title={insideLabMembership.title}
-          variant={completedBlocks.length > 0 ? "outline" : "default"}
+          variant="default"
         />
 
-        {oldestBlock && newestBlock ? (
+        {blocks.length > 0 ? (
           <CheckoutOptionCard
             badge={ownsEveryBlock ? "Purchased" : "Best value"}
             buttonLabel={
               ownsEveryBlock ? "All blocks purchased" : "Get all blocks"
             }
-            description={
-              ownedBlocks.length > 0 && !ownsEveryBlock
-                ? `Pay $${trainingBlockBundle.price} once for every completed training block, including the ${formatTrainingBlockCount(ownedBlocks.length)} you already own.`
-                : `Pay $${trainingBlockBundle.price} once for every completed training block published so far. Access that never expires.`
-            }
             disabled={opening !== null}
             features={[
-              `${formatTrainingBlockCount(completedBlocks.length)} and ${formatWorkoutCount(totalWorkouts)}, ${formatTrainingAccessDate(oldestBlock.startDate)} – ${formatTrainingAccessDate(newestBlock.endDate)}`,
-              "Workout library and performance charts for those dates",
+              `All ${blocks.length} completed + in progress training blocks (${formatWorkoutCount(totalWorkouts)})`,
+              "Training overview and full performance charts",
               "Every Lab Note, past and future",
-              "Yours to keep",
             ]}
-            icon={<IconStack2 aria-hidden className="size-5" />}
+            icon={<IconStack2 aria-hidden className="size-6" />}
             isOpening={opening === "bundle"}
             isOwned={ownsEveryBlock}
-            limitations={["New workouts come with the monthly membership"]}
+            limitations={["Future blocks require the monthly membership"]}
             onCheckout={() =>
               void openBlockCheckout("bundle", { kind: "bundle" })
             }
             ownedHref="/lab/training/workouts"
-            ownedLabel="View workouts"
+            ownedLabel="Purchased"
             priceLabel={trainingBlockBundle.priceLabel}
             title={trainingBlockBundle.title}
           />

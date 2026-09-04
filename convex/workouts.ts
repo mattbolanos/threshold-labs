@@ -4,9 +4,10 @@ import { mutation, type QueryCtx, query } from "./_generated/server";
 import { assertAdmin, assertTrainingAccess } from "./auth";
 import {
   getAccessibleWorkoutDateRanges,
-  getChartWorkoutDateRanges,
+  getChartWorkoutDateRange,
   getWorkoutListingAccessWindows,
   isWorkoutDateInAccessWindows,
+  getTrainingCalendarRange as resolveTrainingCalendarRange,
   type WorkoutAccessWindow,
   type WorkoutEntitlements,
 } from "./lib/workoutAccess";
@@ -202,25 +203,23 @@ async function collectWorkoutsForRanges(
   return Array.from(workoutsById.values());
 }
 
+// Charts always cover every published workout; entitlements only gate the
+// workout library. Callers still run assertTrainingAccess before reaching here.
 async function collectChartWorkouts(
   ctx: QueryCtx,
-  access: TrainingAccess,
   from: string | undefined,
   to: string | undefined,
   defaults: { from: string; to?: string },
 ) {
-  const ranges = getChartWorkoutDateRanges(
-    getWorkoutEntitlements(access),
-    from,
-    to,
-    defaults,
-  );
+  const range = getChartWorkoutDateRange(from, to, defaults);
 
-  if (ranges.length === 0) {
+  if (!range) {
     return [];
   }
 
-  return (await collectWorkoutsForRanges(ctx, ranges)).filter(isVisibleWorkout);
+  return (await collectWorkoutsForRanges(ctx, [range])).filter(
+    isVisibleWorkout,
+  );
 }
 
 const TRAINING_LOAD_SCALE_FACTOR = 3;
@@ -340,8 +339,8 @@ export const getRollingLoad = query({
     to: v.optional(v.string()),
   },
   handler: async (ctx, { from, to }) => {
-    const access = await assertTrainingAccess(ctx);
-    const workouts = await collectChartWorkouts(ctx, access, from, to, {
+    await assertTrainingAccess(ctx);
+    const workouts = await collectChartWorkouts(ctx, from, to, {
       from: getDefaultFromDate(),
     });
 
@@ -381,8 +380,8 @@ export const getRunVolumeMix = query({
     to: v.optional(v.string()),
   },
   handler: async (ctx, { from, to }) => {
-    const access = await assertTrainingAccess(ctx);
-    const workouts = await collectChartWorkouts(ctx, access, from, to, {
+    await assertTrainingAccess(ctx);
+    const workouts = await collectChartWorkouts(ctx, from, to, {
       from: getDefaultFromDate(),
     });
 
@@ -440,8 +439,8 @@ export const getSessionIntensity = query({
     to: v.optional(v.string()),
   },
   handler: async (ctx, { from, to }) => {
-    const access = await assertTrainingAccess(ctx);
-    const workouts = await collectChartWorkouts(ctx, access, from, to, {
+    await assertTrainingAccess(ctx);
+    const workouts = await collectChartWorkouts(ctx, from, to, {
       from: getDefaultFromDate(),
     });
     const weeklyData = new Map<
@@ -484,37 +483,25 @@ export const getBaseFitness = query({
     to: v.optional(v.string()),
   },
   handler: async (ctx, { from, to }) => {
-    const access = await assertTrainingAccess(ctx);
-    const entitlements = getWorkoutEntitlements(access);
-    const requestedRanges = getChartWorkoutDateRanges(entitlements, from, to, {
+    await assertTrainingAccess(ctx);
+    const requestedRange = getChartWorkoutDateRange(from, to, {
       from: getDefaultFromDate(),
       to: format(new Date(), "yyyy-MM-dd"),
     });
 
-    if (requestedRanges.length === 0) {
+    if (!requestedRange) {
       return { data: [], trainingBlocks: [] };
     }
 
-    const fromDate = requestedRanges.reduce(
-      (earliest, range) => (range.from < earliest ? range.from : earliest),
-      requestedRanges[0].from,
-    );
-    const toDate = requestedRanges.reduce(
-      (latest, range) => (range.to > latest ? range.to : latest),
-      requestedRanges[0].to,
-    );
+    const { from: fromDate, to: toDate } = requestedRange;
 
     if (!isValidDateRange(fromDate, toDate)) {
       return { data: [], trainingBlocks: [] };
     }
 
-    const smoothingRanges = getAccessibleWorkoutDateRanges(
-      "1900-01-01",
-      toDate,
-      getWorkoutListingAccessWindows(entitlements),
-    );
+    // Smooth from the very first workout so the curve is correct on day one.
     const [workoutResults, trainingBlocks] = await Promise.all([
-      collectWorkoutsForRanges(ctx, smoothingRanges),
+      collectWorkoutsForRanges(ctx, [{ from: "1900-01-01", to: toDate }]),
       getTrainingBlocksOverlappingRange(ctx, fromDate, toDate),
     ]);
     const workouts = workoutResults
@@ -572,8 +559,8 @@ export const getWeeklyTotals = query({
     to: v.optional(v.string()),
   },
   handler: async (ctx, { from, to }) => {
-    const access = await assertTrainingAccess(ctx);
-    const workouts = await collectChartWorkouts(ctx, access, from, to, {
+    await assertTrainingAccess(ctx);
+    const workouts = await collectChartWorkouts(ctx, from, to, {
       from: getDefaultFromDate(),
     });
 
@@ -771,28 +758,32 @@ export const getWorkoutDetails = query({
   },
 });
 
-export const getWorkoutsDateRange = query({
+export const getTrainingCalendarRange = query({
   handler: async (ctx) => {
     const access = await assertTrainingAccess(ctx);
     const accessWindows = getTrainingAccessWindows(access);
-    const visibleWorkouts = (
-      await collectWorkoutsForRanges(ctx, accessWindows)
-    ).filter(isVisibleWorkout);
 
-    if (visibleWorkouts.length === 0) {
-      return {
-        maxWorkoutDate: null,
-        minWorkoutDate: null,
-      };
+    if (accessWindows !== null) {
+      return resolveTrainingCalendarRange(accessWindows, null);
     }
 
-    const sortedVisibleWorkouts = visibleWorkouts.toSorted((a, b) =>
-      a.workoutDate.localeCompare(b.workoutDate),
-    );
+    const findVisibleWorkout = (order: "asc" | "desc") =>
+      ctx.db
+        .query("workouts")
+        .withIndex("by_workout_date")
+        .filter((q) => q.neq(q.field("isHidden"), true))
+        .order(order)
+        .first();
+    const [firstWorkout, lastWorkout] = await Promise.all([
+      findVisibleWorkout("asc"),
+      findVisibleWorkout("desc"),
+    ]);
 
-    return {
-      maxWorkoutDate: sortedVisibleWorkouts[sortedVisibleWorkouts.length - 1],
-      minWorkoutDate: sortedVisibleWorkouts[0],
-    };
+    return resolveTrainingCalendarRange(
+      null,
+      firstWorkout && lastWorkout
+        ? { from: firstWorkout.workoutDate, to: lastWorkout.workoutDate }
+        : null,
+    );
   },
 });

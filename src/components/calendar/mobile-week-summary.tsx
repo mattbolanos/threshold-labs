@@ -62,11 +62,16 @@ function MobileWeekSummarySkeleton() {
 }
 
 export function MobileWeekSummary() {
-  const { weekStartDate } = useCalendarNav();
-  const workouts = useQuery(api.workouts.getWorkouts, {
-    from: formatQueryDate(weekStartDate),
-    to: formatQueryDate(addDays(weekStartDate, 6)),
-  });
+  const { isRangeLoading, weekStartDate } = useCalendarNav();
+  const workouts = useQuery(
+    api.workouts.getWorkouts,
+    isRangeLoading
+      ? "skip"
+      : {
+          from: formatQueryDate(weekStartDate),
+          to: formatQueryDate(addDays(weekStartDate, 6)),
+        },
+  );
 
   if (!workouts) return <MobileWeekSummarySkeleton />;
 

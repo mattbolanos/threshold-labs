@@ -2,9 +2,10 @@ import { describe, expect, test } from "bun:test";
 import {
   getAccessibleWorkoutDateRange,
   getAccessibleWorkoutDateRanges,
-  getChartWorkoutDateRanges,
+  getChartWorkoutDateRange,
   getMembershipAccessEnd,
   getMembershipAccessStart,
+  getTrainingCalendarRange,
   getWorkoutAccessWindow,
   getWorkoutListingAccessWindows,
   hasUnrestrictedWorkoutAccess,
@@ -229,48 +230,47 @@ describe("getAccessibleWorkoutDateRanges", () => {
   });
 });
 
-describe("getChartWorkoutDateRanges", () => {
+describe("getChartWorkoutDateRange", () => {
   const defaults = { from: "2026-05-01" };
 
-  test("clamps subscriber charts to the fixed membership boundary", () => {
+  test("uses the requested range as-is without clamping to entitlements", () => {
     expect(
-      getChartWorkoutDateRanges(
-        {
-          accessSource: "subscription",
-          membershipAccessStart: "2026-07-05",
-        },
-        "2025-01-01",
-        undefined,
-        defaults,
-        new Date("2026-09-03T16:00:00.000Z"),
-      ),
-    ).toEqual([{ from: "2026-07-05", to: "2026-09-03" }]);
-  });
-
-  test("defaults block-only charts to the span of purchased blocks", () => {
-    expect(
-      getChartWorkoutDateRanges(
-        { accessSource: "training_blocks", purchasedBlockWindows },
-        undefined,
-        undefined,
-        defaults,
-        new Date("2026-09-03T16:00:00.000Z"),
-      ),
-    ).toEqual(purchasedBlockWindows);
-  });
-
-  test("clamps custom block-only chart ranges", () => {
-    expect(
-      getChartWorkoutDateRanges(
-        { accessSource: "training_blocks", purchasedBlockWindows },
+      getChartWorkoutDateRange(
         "2025-01-01",
         "2025-10-20",
         defaults,
+        new Date("2026-09-03T16:00:00.000Z"),
       ),
-    ).toEqual([
-      { from: "2025-09-01", to: "2025-10-12" },
-      { from: "2025-10-13", to: "2025-10-20" },
-    ]);
+    ).toEqual({ from: "2025-01-01", to: "2025-10-20" });
+  });
+
+  test("falls back to the default start and today in Eastern time", () => {
+    expect(
+      getChartWorkoutDateRange(
+        undefined,
+        undefined,
+        defaults,
+        new Date("2026-09-03T16:00:00.000Z"),
+      ),
+    ).toEqual({ from: "2026-05-01", to: "2026-09-03" });
+  });
+
+  test("prefers an explicit default end date over today", () => {
+    expect(
+      getChartWorkoutDateRange(
+        undefined,
+        undefined,
+        { from: "2026-05-01", to: "2026-06-01" },
+        new Date("2026-09-03T16:00:00.000Z"),
+      ),
+    ).toEqual({ from: "2026-05-01", to: "2026-06-01" });
+  });
+
+  test("rejects an inverted or malformed range", () => {
+    expect(
+      getChartWorkoutDateRange("2026-06-01", "2026-05-01", defaults),
+    ).toBeNull();
+    expect(getChartWorkoutDateRange("nope", undefined, defaults)).toBeNull();
   });
 });
 
@@ -296,5 +296,63 @@ describe("isWorkoutDateInAccessWindows", () => {
     expect(isWorkoutDateInAccessWindows("2027-01-01", windows)).toBe(true);
     expect(isWorkoutDateInAccessWindows("2026-11-01", windows)).toBe(false);
     expect(isWorkoutDateInAccessWindows("1900-01-01", null)).toBe(true);
+  });
+});
+
+describe("getTrainingCalendarRange", () => {
+  const now = new Date("2026-09-04T16:00:00.000Z");
+
+  test("bounds restricted viewers to their merged access windows", () => {
+    expect(
+      getTrainingCalendarRange(
+        [{ from: "2026-07-20", to: "2026-08-16" }],
+        null,
+        now,
+      ),
+    ).toEqual({ from: "2026-07-20", to: "2026-08-16" });
+  });
+
+  test("spans from the earliest to the latest window when there are several", () => {
+    expect(
+      getTrainingCalendarRange(
+        [
+          { from: "2025-09-01", to: "2025-10-12" },
+          { from: "2026-08-05", to: "2026-09-04" },
+        ],
+        null,
+        now,
+      ),
+    ).toEqual({ from: "2025-09-01", to: "2026-09-04" });
+  });
+
+  test("falls back to today when a restricted viewer has no windows", () => {
+    expect(getTrainingCalendarRange([], null, now)).toEqual({
+      from: null,
+      to: "2026-09-04",
+    });
+  });
+
+  test("lets unrestricted viewers reach every published workout and today", () => {
+    expect(
+      getTrainingCalendarRange(
+        null,
+        { from: "2025-09-01", to: "2026-08-30" },
+        now,
+      ),
+    ).toEqual({ from: "2025-09-01", to: "2026-09-04" });
+    expect(
+      getTrainingCalendarRange(
+        null,
+        { from: "2025-09-01", to: "2026-09-20" },
+        now,
+      ),
+    ).toEqual({ from: "2025-09-01", to: "2026-09-20" });
+  });
+
+  test("has no lower bound for unrestricted viewers without workouts", () => {
+    expect(getTrainingCalendarRange(null, null, now)).toEqual({
+      from: null,
+      to: "2026-09-04",
+    });
   });
 });

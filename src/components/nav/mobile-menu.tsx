@@ -25,6 +25,7 @@ interface MobileMenuProps {
   hasAccess: boolean;
   isPreview: boolean;
   previewRole: PreviewRole;
+  currentPathname: string;
   user?: NavUserData | null;
 }
 
@@ -32,6 +33,7 @@ export function MobileMenu({
   hasAccess,
   isPreview,
   previewRole,
+  currentPathname,
   user,
 }: MobileMenuProps) {
   const [open, setOpen] = useState(false);
@@ -73,7 +75,10 @@ export function MobileMenu({
                 return (
                   <li key={route.href}>
                     <Link
-                      className={ITEM_CLASS}
+                      className={cn(ITEM_CLASS, {
+                        "pointer-events-none text-primary":
+                          currentPathname === route.href,
+                      })}
                       href={route.href}
                       onClick={() => setOpen(false)}
                     >

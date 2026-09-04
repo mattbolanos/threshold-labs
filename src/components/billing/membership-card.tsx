@@ -34,11 +34,7 @@ import {
 
 interface MembershipCardProps {
   accessSource:
-    | "admin"
-    | "none"
-    | "preview"
-    | "subscription"
-    | "training_blocks";
+    "admin" | "none" | "preview" | "subscription" | "training_blocks";
   hasBillingAccount: boolean;
   isBillingPreview?: boolean;
   plansHref?: Route | UrlObject;
@@ -189,7 +185,7 @@ export function MembershipCard({
 
         {accessSource === "admin" ? (
           <AccessRow
-            badge={<Badge variant="secondary">Included</Badge>}
+            badge={<Badge variant="accent">Included</Badge>}
             description="Your administrator role includes full Inside the Lab access without a paid membership."
             icon={<IconShieldCheck aria-hidden className="size-5" stroke={2} />}
             title="Administrator access"
@@ -208,11 +204,11 @@ export function MembershipCard({
         {trainingBlocks ? (
           <AccessRow
             badge={
-              <Badge variant="secondary">
+              <Badge variant="accent">
                 {`${formatTrainingBlockCount(trainingBlocks.purchases.length)} purchased`}
               </Badge>
             }
-            description="Your one-time purchases keep these training blocks in the Workout Library and charts for good, along with every Lab Note. An active monthly membership adds new workouts as they are published."
+            description="Your one-time purchases keep these training blocks in the Workout Library for good, along with every Lab Note and the full performance charts. An active monthly membership adds new workouts as they are published."
             icon={<IconStack2 aria-hidden className="size-5" stroke={2} />}
             title="Training blocks"
           >

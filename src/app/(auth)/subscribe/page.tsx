@@ -32,9 +32,9 @@ function MembershipCheckoutFallback() {
 
 export default function SubscribePage() {
   return (
-    <div className="relative z-10 w-full max-w-4xl px-4 sm:px-6">
+    <div className="relative z-10 w-full max-w-6xl">
       <AuthHeader
-        description="Follow training as it happens with the monthly membership, or buy completed training blocks outright and keep them for good."
+        description="Follow training as it happens with the monthly membership, or buy training blocks outright and keep them for good."
         title="Choose your access"
       />
       <Suspense fallback={<MembershipCheckoutFallback />}>

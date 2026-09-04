@@ -1,6 +1,9 @@
 "use client";
+
+import { cn } from "cn";
 import { useQuery } from "convex/react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -19,6 +22,8 @@ interface NavBarProps {
 }
 
 export function NavBar({ isPreview, previewRole }: NavBarProps) {
+  const pathname = usePathname();
+
   const user = useQuery(api.auth.getCurrentUser, {
     previewRole: isPreview ? previewRole : undefined,
   });
@@ -55,7 +60,13 @@ export function NavBar({ isPreview, previewRole }: NavBarProps) {
                 return (
                   <NavigationMenuItem key={link.href}>
                     <NavigationMenuLink
-                      className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors duration-150 ease-in-out hover:text-foreground"
+                      className={cn(
+                        "rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors duration-150 ease-in-out hover:text-foreground",
+                        {
+                          "text-foreground hover:bg-transparent":
+                            pathname === link.href,
+                        },
+                      )}
                       render={<Link href={link.href} />}
                     >
                       {link.label}
@@ -69,6 +80,7 @@ export function NavBar({ isPreview, previewRole }: NavBarProps) {
         <NavUser isPreview={isPreview} previewRole={previewRole} user={user} />
         {/* mobile */}
         <MobileMenu
+          currentPathname={pathname}
           hasAccess={hasAccess}
           isPreview={isPreview}
           previewRole={previewRole}

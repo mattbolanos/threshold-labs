@@ -46,6 +46,7 @@ export default defineSchema({
     updatedAt: v.number(),
   })
     .index("by_code", ["code"])
+    .index("by_recipient_email", ["recipientEmail"])
     .index("by_stripe_promotion_code", ["stripePromotionCodeId"]),
 
   emailOtpRequests: defineTable({
@@ -117,8 +118,8 @@ export default defineSchema({
   trainingBlockPurchases: defineTable({
     accessEnd: v.string(),
     accessStart: v.string(),
-    purchaseType: v.union(v.literal("block"), v.literal("bundle")),
     purchasedAt: v.number(),
+    purchaseType: v.union(v.literal("block"), v.literal("bundle")),
     referenceId: v.string(),
     stripeCheckoutSessionId: v.string(),
     stripeCustomerId: v.optional(v.string()),

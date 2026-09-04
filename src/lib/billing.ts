@@ -7,6 +7,39 @@ export const insideLabMembership = {
   title: "Inside the Lab membership",
 } as const;
 
+export type DiscountOfferType = "fifty_monthly" | "free_forever";
+
+export interface DiscountOffer {
+  discountType: DiscountOfferType;
+}
+
+/**
+ * Offers an admin emails to a specific member. They are applied automatically
+ * at checkout, so the copy describes the outcome rather than a code to enter.
+ */
+export const discountOffers: Record<
+  DiscountOfferType,
+  {
+    checkoutNote: string;
+    priceLabel: string;
+    shortLabel: string;
+    title: string;
+  }
+> = {
+  fifty_monthly: {
+    checkoutNote: "Add a payment method to lock in $50/month for life.",
+    priceLabel: "$50/month for life",
+    shortLabel: "$50/month",
+    title: "Your $50/month membership is ready",
+  },
+  free_forever: {
+    checkoutNote: "Nothing to pay and no card needed. Just confirm.",
+    priceLabel: "Free forever",
+    shortLabel: "free",
+    title: "Your free membership is ready",
+  },
+};
+
 export const trainingBlockPass = {
   price: 100,
   priceLabel: "$100 per block",

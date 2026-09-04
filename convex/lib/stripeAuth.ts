@@ -4,6 +4,7 @@ import Stripe from "stripe";
 import { internal } from "../_generated/api";
 import type { DataModel } from "../_generated/dataModel";
 import { getAuthEnvironment } from "./authEnvironment";
+import { ensureRecipientPromotionCode } from "./discountCheckout";
 import { INSIDE_LAB_PLAN_NAME } from "./labAccess";
 import { getVerifiedTrainingBlockPurchase } from "./trainingBlockStripe";
 
@@ -116,14 +117,32 @@ export function createStripeAuthPlugin(ctx: GenericCtx<DataModel>) {
     stripeWebhookSecret: getAuthEnvironment(ctx, "STRIPE_WEBHOOK_SECRET"),
     subscription: {
       enabled: true,
-      getCheckoutSessionParams: () => ({
-        params: {
-          allow_promotion_codes: true,
-          branding_settings: getStripeCheckoutBrandingSettings(siteUrl),
-          payment_method_collection: "if_required",
-          submit_type: "subscribe",
-        },
-      }),
+      getCheckoutSessionParams: async ({ subscription, user }) => {
+        const recipientPromotionCodeId = await ensureRecipientPromotionCode(
+          ctx,
+          stripeClient,
+          {
+            email: user.email,
+            stripeCustomerId:
+              subscription.stripeCustomerId ?? user.stripeCustomerId ?? null,
+          },
+        );
+
+        return {
+          params: {
+            // Stripe rejects sessions that both pre-apply a discount and show
+            // the promotion code field, so emailed offers skip the field.
+            // Skipping payment details when the total is $0 keeps the free
+            // offer to a single confirmation step.
+            ...(recipientPromotionCodeId
+              ? { discounts: [{ promotion_code: recipientPromotionCodeId }] }
+              : { allow_promotion_codes: true }),
+            branding_settings: getStripeCheckoutBrandingSettings(siteUrl),
+            payment_method_collection: "if_required",
+            submit_type: "subscribe",
+          },
+        };
+      },
       onSubscriptionComplete: async ({
         event,
         stripeSubscription,

@@ -7,9 +7,10 @@ import {
   internalMutation,
   internalQuery,
   type MutationCtx,
+  type QueryCtx,
   query,
 } from "./_generated/server";
-import { assertAdmin } from "./auth";
+import { assertAdmin, authComponent } from "./auth";
 import { getAuthEnvironment } from "./lib/authEnvironment";
 import { normalizeDiscountCodeRecipient } from "./lib/discountCodeEmail";
 import {
@@ -20,6 +21,7 @@ import {
 } from "./lib/discountCodes";
 import { createStripeClient } from "./lib/stripeAuth";
 import { TRAINING_HISTORY_START_DATE } from "./lib/workoutAccess";
+import { isPreviewAuthEnabled } from "./previewAuth";
 
 const discountTypeValidator = v.union(
   v.literal("fifty_monthly"),
@@ -135,7 +137,7 @@ export const completeDiscountCode = internalMutation({
   args: {
     discountCodeId: v.id("discountCodes"),
     stripeCouponId: v.string(),
-    stripePromotionCodeId: v.string(),
+    stripePromotionCodeId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.discountCodeId, {
@@ -171,6 +173,88 @@ export const failDiscountCode = internalMutation({
 export const getDiscountCodeForAction = internalQuery({
   args: { discountCodeId: v.id("discountCodes") },
   handler: async (ctx, { discountCodeId }) => await ctx.db.get(discountCodeId),
+});
+
+/**
+ * Emailed codes are tied to the recipient's address. The newest active one
+ * wins so a re-issued offer supersedes an older one for the same person.
+ */
+async function findActiveDiscountCodeForRecipient(
+  ctx: QueryCtx,
+  email: string,
+) {
+  const recipientEmail = email.trim().toLowerCase();
+  if (!recipientEmail) {
+    return null;
+  }
+
+  const codes = await ctx.db
+    .query("discountCodes")
+    .withIndex("by_recipient_email", (q) =>
+      q.eq("recipientEmail", recipientEmail),
+    )
+    .order("desc")
+    .collect();
+
+  return codes.find((code) => code.status === "active") ?? null;
+}
+
+export const getActiveDiscountCodeForRecipient = internalQuery({
+  args: { email: v.string() },
+  handler: async (ctx, { email }) =>
+    await findActiveDiscountCodeForRecipient(ctx, email),
+});
+
+/**
+ * The offer waiting for the signed-in member, if an admin emailed one to
+ * their address. Drives the straight-to-checkout flow on the subscribe page.
+ */
+export const getPendingDiscountOffer = query({
+  args: {},
+  handler: async (ctx) => {
+    if (isPreviewAuthEnabled()) {
+      return null;
+    }
+
+    const user = await authComponent.safeGetAuthUser(ctx);
+    if (!user) {
+      return null;
+    }
+
+    const discountCode = await findActiveDiscountCodeForRecipient(
+      ctx,
+      user.email,
+    );
+
+    return discountCode ? { discountType: discountCode.discountType } : null;
+  },
+});
+
+/**
+ * Emailed codes only exist in Stripe once the recipient starts checkout, so
+ * the promotion code can be locked to their Stripe customer. Returns the
+ * promotion code id that was already attached if another checkout won the race.
+ */
+export const attachStripePromotionCode = internalMutation({
+  args: {
+    discountCodeId: v.id("discountCodes"),
+    stripePromotionCodeId: v.string(),
+  },
+  handler: async (ctx, { discountCodeId, stripePromotionCodeId }) => {
+    const discountCode = await ctx.db.get(discountCodeId);
+    if (!discountCode || discountCode.status !== "active") {
+      return null;
+    }
+    if (discountCode.stripePromotionCodeId) {
+      return discountCode.stripePromotionCodeId;
+    }
+
+    await ctx.db.patch(discountCodeId, {
+      stripePromotionCodeId,
+      updatedAt: Date.now(),
+    });
+    return stripePromotionCodeId;
+  },
 });
 
 export const markDiscountCodeDeliverySent = internalMutation({
@@ -252,24 +336,29 @@ export const generateDiscountCode = action({
         getAuthEnvironment(ctx, "STRIPE_INSIDE_LAB_PRICE_ID"),
       );
 
-      const promotionCode = await stripeClient.promotionCodes.create(
-        {
-          code,
-          max_redemptions: 1,
-          metadata: {
-            createdByUserId: admin._id.toString(),
-            discountCodeId,
-            discountType,
-          },
-          promotion: { coupon: coupon.id, type: "coupon" },
-        },
-        { idempotencyKey: `threshold-promotion-code-${discountCodeId}` },
-      );
+      // Emailed offers are locked to the recipient's Stripe customer, which
+      // only exists once they start checkout, so their promotion code is
+      // created lazily. See ensureRecipientPromotionCode.
+      const promotionCode = normalizedRecipient
+        ? null
+        : await stripeClient.promotionCodes.create(
+            {
+              code,
+              max_redemptions: 1,
+              metadata: {
+                createdByUserId: admin._id.toString(),
+                discountCodeId,
+                discountType,
+              },
+              promotion: { coupon: coupon.id, type: "coupon" },
+            },
+            { idempotencyKey: `threshold-promotion-code-${discountCodeId}` },
+          );
 
       await ctx.runMutation(internal.discountCodes.completeDiscountCode, {
         discountCodeId,
         stripeCouponId: coupon.id,
-        stripePromotionCodeId: promotionCode.id,
+        stripePromotionCodeId: promotionCode?.id,
       });
     } catch (error) {
       const failureReason =
@@ -347,28 +436,36 @@ export const revokeDiscountCode = action({
       internal.discountCodes.getDiscountCodeForAction,
       { discountCodeId },
     );
-    if (!assignment || !assignment.stripePromotionCodeId) {
+    if (!assignment) {
       throw new ConvexError("Active discount code not found.");
     }
     if (assignment.status !== "active") {
       throw new ConvexError("Only active discount codes can be revoked.");
     }
 
-    const stripeClient = createStripeClient(ctx);
-    const promotionCode = await stripeClient.promotionCodes.retrieve(
-      assignment.stripePromotionCodeId,
-    );
-    if (promotionCode.times_redeemed > 0) {
-      await ctx.runMutation(internal.discountCodes.markDiscountCodesRedeemed, {
-        redeemedAt: Date.now(),
-        stripePromotionCodeIds: [promotionCode.id],
+    // Emailed offers have no Stripe promotion code until the recipient starts
+    // checkout, so revoking them is purely a local status change.
+    if (assignment.stripePromotionCodeId) {
+      const stripeClient = createStripeClient(ctx);
+      const promotionCode = await stripeClient.promotionCodes.retrieve(
+        assignment.stripePromotionCodeId,
+      );
+      if (promotionCode.times_redeemed > 0) {
+        await ctx.runMutation(
+          internal.discountCodes.markDiscountCodesRedeemed,
+          {
+            redeemedAt: Date.now(),
+            stripePromotionCodeIds: [promotionCode.id],
+          },
+        );
+        throw new ConvexError("This discount code has already been redeemed.");
+      }
+
+      await stripeClient.promotionCodes.update(promotionCode.id, {
+        active: false,
       });
-      throw new ConvexError("This discount code has already been redeemed.");
     }
 
-    await stripeClient.promotionCodes.update(promotionCode.id, {
-      active: false,
-    });
     const wasRevoked: boolean = await ctx.runMutation(
       internal.discountCodes.markDiscountCodeRevoked,
       { discountCodeId },

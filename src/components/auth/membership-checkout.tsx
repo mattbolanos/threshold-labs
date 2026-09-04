@@ -11,6 +11,8 @@ import {
 } from "@/lib/auth/training-block-actions";
 import { authClient } from "@/lib/auth-client";
 import {
+  type DiscountOffer,
+  discountOffers,
   formatWorkoutCount,
   INSIDE_LAB_PLAN_NAME,
   insideLabMembership,
@@ -23,12 +25,15 @@ type CheckoutOption = "bundle" | "membership" | `block:${string}`;
 
 interface MembershipCheckoutProps {
   blocks: TrainingBlockCatalogEntry[];
+  /** An admin-issued offer tied to this member's email, applied at checkout. */
+  discountOffer?: DiscountOffer | null;
   hasMembership?: boolean;
   surface?: "pricing" | "subscribe";
 }
 
 export function MembershipCheckout({
   blocks,
+  discountOffer = null,
   hasMembership = false,
   surface = "subscribe",
 }: MembershipCheckoutProps) {
@@ -104,6 +109,10 @@ export function MembershipCheckout({
   const openingBlockId = opening?.startsWith("block:")
     ? opening.slice("block:".length)
     : null;
+  const membershipOffer =
+    discountOffer && !hasMembership
+      ? discountOffers[discountOffer.discountType]
+      : null;
 
   return (
     <div className="space-y-10">
@@ -125,13 +134,25 @@ export function MembershipCheckout({
 
       <div className={cn("grid gap-5", blocks.length > 0 && "md:grid-cols-2")}>
         <CheckoutOptionCard
-          badge={hasMembership ? "Current plan" : "Monthly access"}
+          badge={
+            hasMembership
+              ? "Current plan"
+              : membershipOffer
+                ? "Your offer"
+                : "Monthly access"
+          }
           buttonLabel={
-            hasMembership ? "Membership active" : "Choose monthly membership"
+            hasMembership
+              ? "Membership active"
+              : membershipOffer
+                ? "Claim your offer"
+                : "Choose monthly membership"
           }
           disabled={opening !== null}
           features={[
-            "Every workout from the month before you join, plus every new one as it lands",
+            membershipOffer
+              ? "Every workout, past and present, plus every new one as it lands"
+              : "Every workout from the month before you join, plus every new one as it lands",
             "Training overview and full performance charts",
             "Every Lab Note, past and future",
           ]}
@@ -141,7 +162,9 @@ export function MembershipCheckout({
           onCheckout={() => void openMembershipCheckout()}
           ownedHref="/account/billing"
           ownedLabel="Manage membership"
-          priceLabel={insideLabMembership.priceLabel}
+          priceLabel={
+            membershipOffer?.priceLabel ?? insideLabMembership.priceLabel
+          }
           title={insideLabMembership.title}
           variant="default"
         />

@@ -32,32 +32,39 @@ function getOfferCopy(discountType: DiscountCodeType) {
   if (discountType === "free_forever") {
     return {
       description:
-        "This code makes an Inside the Lab subscription free for the life of that subscription and includes every workout, past and present.",
-      heading: "Your free-forever code",
-      subject: "Your free Inside the Lab membership code",
+        "Inside the Lab is free for you, for life. Every workout, past and present, is included.",
+      heading: "Your free Inside the Lab membership",
+      nextStep: "Nothing to pay and no card needed. Just confirm.",
+      subject: "Your free Inside the Lab membership",
     };
   }
 
   return {
     description:
-      "This code sets an Inside the Lab subscription to $50 per month for the life of that subscription and includes every workout, past and present.",
-    heading: "Your $50/month code",
-    subject: "Your $50/month Inside the Lab membership code",
+      "Inside the Lab is $50/month for you, for life. Every workout, past and present, is included.",
+    heading: "Your $50/month Inside the Lab membership",
+    nextStep: "Add a payment method to lock in $50/month for life.",
+    subject: "Your $50/month Inside the Lab membership",
   };
 }
 
 export function createDiscountCodeEmailMessage({
   code,
   discountType,
+  recipientEmail,
   signupUrl,
 }: {
   code: string;
   discountType: DiscountCodeType;
+  recipientEmail: string;
   signupUrl: string;
 }) {
   const copy = getOfferCopy(discountType);
   const safeCode = escapeHtml(code);
+  const safeRecipient = escapeHtml(recipientEmail);
   const safeSignupUrl = escapeHtml(signupUrl);
+  const instructions = `Sign in or sign up with ${recipientEmail} and checkout opens with the offer already applied. ${copy.nextStep}`;
+  const restriction = `This offer is tied to ${recipientEmail}. No code to enter and nothing to forward.`;
 
   return {
     html: `<!doctype html>
@@ -68,14 +75,14 @@ export function createDiscountCodeEmailMessage({
         <p style="margin:0 0 12px;color:#4f5b53;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">Threshold Lab</p>
         <h1 style="margin:0;font-size:24px;line-height:1.25;">${copy.heading}</h1>
         <p style="margin:16px 0;color:#4f5b53;font-size:16px;line-height:1.6;">${copy.description}</p>
-        <p style="margin:24px 0;border-radius:8px;background:#edf0ec;padding:18px;text-align:center;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:24px;font-weight:700;letter-spacing:0.08em;">${safeCode}</p>
-        <p style="margin:0 0 24px;color:#6b756e;font-size:13px;line-height:1.5;">Sign up or sign in, then enter this code in Stripe Checkout. It can only be used once, so please do not forward it.</p>
+        <p style="margin:0 0 24px;color:#4f5b53;font-size:16px;line-height:1.6;">Sign in or sign up with <strong>${safeRecipient}</strong> and checkout opens with the offer already applied. ${escapeHtml(copy.nextStep)}</p>
         <a href="${safeSignupUrl}" style="display:inline-block;border-radius:8px;background:#171a18;color:#ffffff;padding:12px 18px;text-decoration:none;font-size:14px;font-weight:700;">Claim membership</a>
+        <p style="margin:24px 0 0;color:#6b756e;font-size:13px;line-height:1.5;">${escapeHtml(restriction)} Offer reference: ${safeCode}</p>
       </div>
     </div>
   </body>
 </html>`,
     subject: copy.subject,
-    text: `${copy.description}\n\nYour code: ${code}\n\nSign up or sign in at ${signupUrl}, then enter this code in Stripe Checkout. It can only be used once, so please do not forward it.`,
+    text: `${copy.description}\n\n${instructions}\n\nClaim membership: ${signupUrl}\n\n${restriction} Offer reference: ${code}`,
   };
 }

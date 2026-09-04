@@ -3,7 +3,11 @@ import { Suspense } from "react";
 import { MembershipCheckout } from "@/components/auth/membership-checkout";
 import { LabRouteFallback } from "@/components/lab-route-fallback";
 import { PageHeader } from "@/components/page-header";
-import { getCurrentLabAccess, getTrainingBlockCatalog } from "@/lib/auth";
+import {
+  getCurrentLabAccess,
+  getPendingDiscountOffer,
+  getTrainingBlockCatalog,
+} from "@/lib/auth";
 
 export const metadata: Metadata = {
   description:
@@ -12,9 +16,10 @@ export const metadata: Metadata = {
 };
 
 async function PricingPageContent() {
-  const [access, blocks] = await Promise.all([
+  const [access, blocks, discountOffer] = await Promise.all([
     getCurrentLabAccess(),
     getTrainingBlockCatalog(),
+    getPendingDiscountOffer(),
   ]);
 
   return (
@@ -23,6 +28,7 @@ async function PricingPageContent() {
 
       <MembershipCheckout
         blocks={blocks}
+        discountOffer={discountOffer}
         hasMembership={access.source === "subscription"}
         surface="pricing"
       />

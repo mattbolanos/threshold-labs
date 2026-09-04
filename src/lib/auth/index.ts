@@ -60,6 +60,16 @@ export const getTrainingBlockCatalog = cache(async () => {
   return fetchAuthQuery(api.trainingBlockPurchases.getTrainingBlockCatalog, {});
 });
 
+export const getPendingDiscountOffer = cache(async () => {
+  await checkAuthenticated();
+
+  if (isPreviewAuthBypassEnabled) {
+    return null;
+  }
+
+  return fetchAuthQuery(api.discountCodes.getPendingDiscountOffer, {});
+});
+
 export const getCurrentStripeMembership = cache(async () => {
   await checkAuthenticated();
 

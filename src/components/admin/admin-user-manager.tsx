@@ -245,7 +245,7 @@ export function AdminUserManager() {
                       <div className="flex flex-wrap items-center gap-2">
                         <p className="truncate font-medium">{user.name}</p>
                         {user.isCurrentUser ? (
-                          <Badge variant="outline">You</Badge>
+                          <Badge variant="accent">You</Badge>
                         ) : null}
                       </div>
                       <p className="truncate text-sm text-muted-foreground">

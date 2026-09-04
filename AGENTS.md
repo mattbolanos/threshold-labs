@@ -2,6 +2,10 @@ instead of npm commands, run them with bun. avoid writing tailwind classes with 
 
 always opt for the simple, minimally viable change rather than a complex change of direction.
 
+### responding to user queries
+
+don't run a visual check / attempt to load/access a live page unless a user requests it.
+
 ### UI choices and design language
 
 stay within the current design language. don't go outside of the lines and try to create a drastically different aesthetic then we already have.

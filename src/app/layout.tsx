@@ -4,6 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import { Suspense } from "react";
 import { SiteShell } from "@/components/site-shell";
+import { Toaster } from "@/components/ui/toast";
 import { getPreviewAuthState } from "@/lib/auth/preview.server";
 import { getToken } from "@/lib/auth-server";
 
@@ -68,6 +69,7 @@ export default function RootLayout({
           <Suspense fallback={null}>
             <AppShell>{children}</AppShell>
           </Suspense>
+          <Toaster />
         </main>
       </body>
     </html>

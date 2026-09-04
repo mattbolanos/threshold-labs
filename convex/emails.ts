@@ -55,6 +55,7 @@ export const sendDiscountCodeEmail = internalAction({
     const email = createDiscountCodeEmailMessage({
       code,
       discountType,
+      recipientEmail: recipient,
       signupUrl: new URL(
         "/signup",
         getAuthEnvironment(ctx, "SITE_URL"),

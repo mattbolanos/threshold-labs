@@ -22,7 +22,7 @@ import { LabRouteFallback } from "@/components/lab-route-fallback";
 import { buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ChartStateProvider } from "@/hooks/use-chart-state";
-import { checkTrainingAccess } from "@/lib/auth";
+import { checkLabAccess } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
 };
 
 async function TrainingPageContent() {
-  await checkTrainingAccess();
+  await checkLabAccess();
 
   return (
     <div className="flex flex-col gap-4 bg-background">

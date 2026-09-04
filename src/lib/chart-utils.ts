@@ -79,8 +79,6 @@ export const getColorClassName = (
   return chartColors[color]?.[type] ?? fallbackColor[type];
 };
 
-// Tremor getYAxisDomain [v0.0.0]
-
 export const getYAxisDomain = (
   autoMinValue: boolean,
   minValue: number | undefined,
@@ -91,22 +89,16 @@ export const getYAxisDomain = (
   return [minDomain, maxDomain];
 };
 
-// Tremor hasOnlyOneValueForKey [v0.1.0]
-
 export function hasOnlyOneValueForKey(
-  // biome-ignore lint/suspicious/noExplicitAny: <tremor>
-  array: any[],
+  array: readonly object[],
   keyToCheck: string,
 ): boolean {
-  // biome-ignore lint/suspicious/noExplicitAny: <tremor>
-  const val: any[] = [];
+  let found = false;
 
   for (const obj of array) {
     if (Object.hasOwn(obj, keyToCheck)) {
-      val.push(obj[keyToCheck]);
-      if (val.length > 1) {
-        return false;
-      }
+      if (found) return false;
+      found = true;
     }
   }
 

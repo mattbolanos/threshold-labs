@@ -6,7 +6,7 @@ import { LabRouteFallback } from "@/components/lab-route-fallback";
 import { PageHeader } from "@/components/page-header";
 import { buttonVariants } from "@/components/ui/button";
 import { WorkoutLibrary } from "@/components/workout-library/workout-library";
-import { checkTrainingAccess } from "@/lib/auth";
+import { checkLabAccess } from "@/lib/auth";
 import {
   formatTrainingAccessDate,
   formatTrainingBlockCount,
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 };
 
 async function WorkoutLibraryPageContent() {
-  const access = await checkTrainingAccess();
+  const access = await checkLabAccess();
   const description =
     access.source === "admin" || access.source === "preview"
       ? "Search every published workout by name, training block, type, week, or date range."

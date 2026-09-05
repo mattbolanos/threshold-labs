@@ -1,4 +1,5 @@
 import { IconArrowDown } from "@tabler/icons-react";
+import { MarketingContainer } from "../marketing-container";
 
 export function PartnershipHero() {
   return (
@@ -6,8 +7,8 @@ export function PartnershipHero() {
       <div className="marketing-grid pointer-events-none absolute inset-0 opacity-70" />
       <div className="marketing-glow pointer-events-none absolute inset-0" />
 
-      <div className="relative mx-auto max-w-7xl px-5 sm:px-8">
-        <p className="text-xs font-bold tracking-widest text-lime-300 uppercase">
+      <MarketingContainer className="route-padding-x relative">
+        <p className="text-xs font-bold tracking-widest text-primary uppercase">
           Threshold Lab Partners
         </p>
         <h1 className="mt-5 max-w-4xl text-5xl leading-none font-black tracking-tighter text-white sm:text-6xl lg:text-8xl">
@@ -20,14 +21,14 @@ export function PartnershipHero() {
 
         <div className="mt-9 flex flex-wrap gap-3">
           <a
-            className="inline-flex items-center gap-2 rounded-full bg-lime-300 px-5 py-3 text-sm font-bold text-neutral-950 transition-colors hover:bg-lime-200"
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-bold text-neutral-950 transition-colors hover:bg-primary"
             href="#1st-phorm"
           >
             Explore the partners
             <IconArrowDown aria-hidden className="size-4" />
           </a>
         </div>
-      </div>
+      </MarketingContainer>
     </section>
   );
 }

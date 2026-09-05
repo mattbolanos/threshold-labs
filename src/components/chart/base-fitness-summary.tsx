@@ -1,8 +1,7 @@
 "use client";
 
-import { useQuery } from "convex/react";
-import { subYears } from "date-fns";
-import { useMemo } from "react";
+import { usePreloadedAuthQuery } from "@convex-dev/better-auth/nextjs/client";
+import type { Preloaded } from "convex/react";
 import {
   Card,
   CardContent,
@@ -11,23 +10,21 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatQueryDate } from "@/lib/utils";
-import { api } from "../../../convex/_generated/api";
+import type { api } from "../../../convex/_generated/api";
 import { BaseFitnessChartView } from "./base-fitness";
 
 const formatFitness = (value: number) => Math.round(value).toLocaleString();
 
-export function BaseFitnessSummary() {
-  const range = useMemo(() => {
-    const to = new Date();
-    return {
-      from: formatQueryDate(subYears(to, 1)),
-      to: formatQueryDate(to),
-    };
-  }, []);
-  const data = useQuery(api.workouts.getBaseFitness, range);
+type BaseFitnessSummaryProps = {
+  preloadedQuery: Preloaded<typeof api.workouts.getBaseFitness>;
+};
 
-  if (data === undefined) {
+export function BaseFitnessSummary({
+  preloadedQuery,
+}: BaseFitnessSummaryProps) {
+  const data = usePreloadedAuthQuery(preloadedQuery);
+
+  if (data === null || data === undefined) {
     return <Skeleton className="h-72 w-full rounded-xl" />;
   }
 

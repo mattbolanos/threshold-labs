@@ -1,12 +1,10 @@
+import { trainingBlockBundle, trainingBlockPass } from "@/lib/billing";
+
 export const coachingApplicationUrl = "https://forms.gle/F6qMZQee6CayBHrMA";
 
 export const appMembershipUrl = "https://coach.everfit.io/package/IT400203";
 
-export const insideLabEarlyAccessUrl =
-  "https://docs.google.com/forms/d/e/1FAIpQLSe4jcdevCCWU0SG2C7BRhlksUH7bLzI6IS6TzBb6_y7V8sDgQ/viewform?usp=publish-editor";
-
 export const marketingNav = [
-  { href: "/#work-with-me", label: "Work With Me" },
   { href: "/#results", label: "Athlete Results" },
   { href: "/partnerships", label: "Partnerships" },
   { href: "/#inside-the-lab", label: "Inside the Lab" },
@@ -21,12 +19,13 @@ export const offers = [
       "Personalized programming",
       "Direct access to me",
       "Fitness and race-specific plan",
+      "$300/month",
     ],
     eyebrow: "Built for you",
     title: "1:1 Coaching",
   },
   {
-    cta: { href: appMembershipUrl, label: "Join the Lab" },
+    cta: { href: appMembershipUrl, label: "Buy membership" },
     description:
       "Structured HYROX, running, and off-season programs. We are building a year-round training system to meet the needs of any race schedule.",
     details: [
@@ -35,24 +34,41 @@ export const offers = [
       "Monthly office hours with Q&A",
       "$40/month",
     ],
-    eyebrow: "The plan",
+    eyebrow: "The Community",
     title: "Threshold Lab Membership",
   },
   {
-    badge: "Beta",
     cta: {
-      href: insideLabEarlyAccessUrl,
-      label: "Apply for early access",
+      href: "/lab",
+      label: "Access Inside the Lab",
     },
     description:
-      "I’m documenting the process of becoming one of the best HYROX athletes in the world, and every workout lives inside the Lab. This product is in testing mode, but if you want a 100% unfiltered look into my training log going forward—and back to September 2025—this is it.",
+      "Follow the ongoing training process behind my pursuit of the highest level of HYROX, with a 30-day lookback when you join.",
     details: [
-      "Every session detail + performance trends",
-      "Race schedule and recaps",
-      "Blog posts",
+      "Training data from 30 days before signup onward",
+      "Race schedule, strategy, and recaps",
+      "Every Lab Note, past and future",
+      "$70/month",
     ],
     eyebrow: "The process",
     title: "Inside the Lab",
+  },
+  {
+    cta: {
+      href: "/subscribe",
+      label: "Browse training blocks",
+    },
+    description:
+      "Study the training blocks behind the results, one block at a time or all at once. One payment, yours to keep.",
+    details: [
+      `$${trainingBlockPass.price} per block`,
+      `$${trainingBlockBundle.price} for every block so far`,
+      "Workout library and performance charts for those dates",
+      "Every Lab Note, past and future",
+      "Add the $70 membership for new workouts",
+    ],
+    eyebrow: "Historical access",
+    title: "Training blocks",
   },
 ] as const;
 

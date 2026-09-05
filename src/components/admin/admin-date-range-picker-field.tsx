@@ -4,8 +4,8 @@ import { IconCalendar } from "@tabler/icons-react";
 import { format, isValid, parseISO } from "date-fns";
 import type { DateRange } from "react-day-picker";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Calendar } from "@/components/ui/lazy-calendar";
 import {
   Popover,
   PopoverContent,

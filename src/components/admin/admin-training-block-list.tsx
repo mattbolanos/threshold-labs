@@ -47,13 +47,13 @@ export function AdminTrainingBlockList() {
     <div className="flex flex-col gap-5">
       <header className="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
+          <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
             Training structure
           </p>
           <h2 className="text-xl font-semibold tracking-tight">
             Training blocks
           </h2>
-          <p className="text-muted-foreground mt-1 max-w-2xl text-sm">
+          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
             The active date range automatically becomes the current focus.
           </p>
         </div>
@@ -93,7 +93,7 @@ export function AdminTrainingBlockList() {
                       <TableCell className="max-w-md pl-4">
                         <div className="flex flex-col gap-1 whitespace-normal">
                           <span className="font-medium">{block.title}</span>
-                          <span className="text-muted-foreground line-clamp-2 text-xs">
+                          <span className="line-clamp-2 text-xs text-muted-foreground">
                             {block.description}
                           </span>
                         </div>
@@ -103,9 +103,7 @@ export function AdminTrainingBlockList() {
                       </TableCell>
                       <TableCell>
                         <Badge
-                          variant={
-                            status === "Current" ? "default" : "secondary"
-                          }
+                          variant={status === "Current" ? "default" : "accent"}
                         >
                           {status}
                         </Badge>

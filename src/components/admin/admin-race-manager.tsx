@@ -39,13 +39,13 @@ export function AdminRaceManager() {
     <div className="flex flex-col gap-5">
       <header className="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
+          <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
             Manual calendar
           </p>
           <h2 className="text-xl font-semibold tracking-tight">
             Race calendar
           </h2>
-          <p className="text-muted-foreground mt-1 max-w-2xl text-sm">
+          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
             Add any event here, including Elite 15 and local run races.
           </p>
         </div>
@@ -87,7 +87,7 @@ export function AdminRaceManager() {
                       <div className="flex flex-col gap-1">
                         <span>{race.name}</span>
                         {race.division ? (
-                          <span className="text-muted-foreground text-xs font-normal">
+                          <span className="text-xs font-normal text-muted-foreground">
                             {race.division}
                           </span>
                         ) : null}
@@ -97,12 +97,12 @@ export function AdminRaceManager() {
                       {formatDateRange(race.startDate, race.endDate)}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="secondary">
+                      <Badge variant="accent">
                         {getRaceTypeLabel(race.eventType)}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {race.location ?? "—"}
+                      {race.location ?? "–"}
                     </TableCell>
                     <TableCell className="pr-4">
                       <div className="flex justify-end gap-1">

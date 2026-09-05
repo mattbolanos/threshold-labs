@@ -1,12 +1,20 @@
 import { redirect } from "next/navigation";
-import { fetchAuthQuery, isAuthenticated } from "@/lib/auth-server";
+import { cache } from "react";
+import {
+  fetchAuthAction,
+  fetchAuthQuery,
+  isAuthenticated,
+} from "@/lib/auth-server";
 import { api } from "../../../convex/_generated/api";
-import { getPreviewAuthState, isVercelPreview } from "./preview.server";
+import {
+  getPreviewAuthState,
+  isPreviewAuthBypassEnabled,
+} from "./preview.server";
 
 export const isAppAuthenticated = async () =>
-  isVercelPreview || (await isAuthenticated());
+  isPreviewAuthBypassEnabled || (await isAuthenticated());
 
-export const checkAuth = async () => {
+export const checkAuthenticated = cache(async () => {
   const hasToken = await isAppAuthenticated();
 
   if (!hasToken) {
@@ -14,9 +22,77 @@ export const checkAuth = async () => {
   }
 
   return true;
-};
+});
 
-export const checkAdmin = async () => {
+export const getPostAuthDestination = cache(async () => {
+  await checkAuthenticated();
+
+  if (isPreviewAuthBypassEnabled) {
+    return "/lab/lab-notes" as const;
+  }
+
+  const access = await fetchAuthQuery(api.auth.getCurrentLabAccess, {});
+
+  return access.hasAccess
+    ? ("/lab/lab-notes" as const)
+    : ("/subscribe" as const);
+});
+
+export const getCurrentLabAccess = cache(async () => {
+  await checkAuthenticated();
+
+  if (isPreviewAuthBypassEnabled) {
+    return {
+      hasAccess: true,
+      hasBillingAccount: false,
+      source: "preview" as const,
+      subscription: null,
+      trainingBlocks: null,
+    };
+  }
+
+  return fetchAuthQuery(api.auth.getCurrentLabAccess, {});
+});
+
+export const getTrainingBlockCatalog = cache(async () => {
+  await checkAuthenticated();
+
+  return fetchAuthQuery(api.trainingBlockPurchases.getTrainingBlockCatalog, {});
+});
+
+export const getPendingDiscountOffer = cache(async () => {
+  await checkAuthenticated();
+
+  if (isPreviewAuthBypassEnabled) {
+    return null;
+  }
+
+  return fetchAuthQuery(api.discountCodes.getPendingDiscountOffer, {});
+});
+
+export const getCurrentStripeMembership = cache(async () => {
+  await checkAuthenticated();
+
+  if (isPreviewAuthBypassEnabled) {
+    return null;
+  }
+
+  return fetchAuthAction(api.billing.getCurrentStripeMembership, {});
+});
+
+export const checkLabAccess = cache(async () => {
+  const access = await getCurrentLabAccess();
+
+  if (!access.hasAccess) {
+    redirect("/unauthorized");
+  }
+
+  return access;
+});
+
+export const checkAdmin = cache(async () => {
+  await checkLabAccess();
+
   const preview = await getPreviewAuthState();
 
   if (preview.enabled) {
@@ -42,4 +118,4 @@ export const checkAdmin = async () => {
   }
 
   return user;
-};
+});

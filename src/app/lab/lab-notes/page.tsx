@@ -1,23 +1,11 @@
-import { fetchQuery } from "convex/nextjs";
 import type { Metadata } from "next";
-import { connection } from "next/server";
 import { Suspense } from "react";
-import { BaseFitnessSummary } from "@/components/chart/base-fitness-summary";
+import { LabNotesDashboard } from "@/components/lab-notes/lab-notes-dashboard";
+import { LabNotesDashboardFallback } from "@/components/lab-notes/lab-notes-dashboard-fallback";
 import { PageHeader } from "@/components/page-header";
-import {
-  LabNotesFeed,
-  LabNotesFeedSkeleton,
-} from "@/components/posts/lab-notes-feed";
-import {
-  UpcomingRaces,
-  UpcomingRacesSkeleton,
-} from "@/components/races/upcoming-races";
-import {
-  CurrentTrainingBlock,
-  CurrentTrainingBlockSkeleton,
-} from "@/components/training-blocks/current-training-block";
-import { checkAuth } from "@/lib/auth";
-import { getTodayDate } from "@/lib/race-dates";
+import { checkLabAccess } from "@/lib/auth";
+import { preloadAuthQuery } from "@/lib/auth-server";
+import { getLabNotesDates } from "@/lib/lab-notes-dates";
 import { api } from "../../../../convex/_generated/api";
 
 export const metadata: Metadata = {
@@ -26,64 +14,46 @@ export const metadata: Metadata = {
   title: "Lab Notes | Threshold Lab",
 };
 
-async function UpcomingRacesContent() {
-  await connection();
-  const races = await fetchQuery(api.races.getUpcomingRaces, {
-    fromDate: getTodayDate(),
-  });
+async function LabNotesDashboardContent() {
+  await checkLabAccess();
 
-  return <UpcomingRaces races={races} />;
+  const { oneYearAgo, today } = await getLabNotesDates();
+  const [
+    preloadedPostsQuery,
+    preloadedTrainingBlockQuery,
+    preloadedRacesQuery,
+    preloadedBaseFitnessQuery,
+  ] = await Promise.all([
+    preloadAuthQuery(api.posts.getPublishedPosts),
+    preloadAuthQuery(api.trainingBlocks.getCurrentTrainingBlock, {
+      onDate: today,
+    }),
+    preloadAuthQuery(api.races.getUpcomingRaces, {
+      fromDate: today,
+    }),
+    preloadAuthQuery(api.workouts.getBaseFitness, {
+      from: oneYearAgo,
+      to: today,
+    }),
+  ]);
+
+  return (
+    <LabNotesDashboard
+      preloadedBaseFitnessQuery={preloadedBaseFitnessQuery}
+      preloadedPostsQuery={preloadedPostsQuery}
+      preloadedRacesQuery={preloadedRacesQuery}
+      preloadedTrainingBlockQuery={preloadedTrainingBlockQuery}
+    />
+  );
 }
 
-async function CurrentTrainingBlockContent() {
-  await connection();
-  const block = await fetchQuery(api.trainingBlocks.getCurrentTrainingBlock, {
-    onDate: getTodayDate(),
-  });
-
-  return <CurrentTrainingBlock block={block} />;
-}
-
-async function LabNotesContent() {
-  await connection();
-  const posts = await fetchQuery(api.posts.getPublishedPosts);
-
-  return <LabNotesFeed posts={posts} />;
-}
-
-export default async function LabNotesPage() {
-  await checkAuth();
-
+export default function LabNotesPage() {
   return (
     <div className="flex flex-col gap-8 bg-background">
       <PageHeader eyebrow="Threshold Lab" title="Lab Notes" />
-
-      <div className="grid items-start gap-6 lg:grid-cols-3">
-        <section
-          aria-labelledby="latest-notes"
-          className="flex min-w-0 flex-col gap-4 lg:col-span-2"
-        >
-          <h2 className="sr-only" id="latest-notes">
-            Latest notes
-          </h2>
-          <Suspense fallback={<LabNotesFeedSkeleton />}>
-            <LabNotesContent />
-          </Suspense>
-        </section>
-
-        <aside
-          aria-label="Training context"
-          className="flex min-w-0 flex-col gap-4 lg:sticky lg:top-20"
-        >
-          <Suspense fallback={<CurrentTrainingBlockSkeleton />}>
-            <CurrentTrainingBlockContent />
-          </Suspense>
-          <Suspense fallback={<UpcomingRacesSkeleton />}>
-            <UpcomingRacesContent />
-          </Suspense>
-          <BaseFitnessSummary />
-        </aside>
-      </div>
+      <Suspense fallback={<LabNotesDashboardFallback />}>
+        <LabNotesDashboardContent />
+      </Suspense>
     </div>
   );
 }

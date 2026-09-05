@@ -1,10 +1,8 @@
 import { IconArrowUpRight } from "@tabler/icons-react";
 import Image from "next/image";
+import { MarketingContainer } from "@/components/marketing/marketing-container";
 import { firstPhormProducts, firstPhormUrl } from "@/lib/partnership-content";
 import { PartnerProductCard } from "./partner-product-card";
-
-const affiliateDisclosure =
-  "Affiliate disclosure: I may earn a commission from qualifying purchases.";
 
 export function FirstPhormSection() {
   return (
@@ -12,10 +10,10 @@ export function FirstPhormSection() {
       className="scroll-mt-24 border-t border-white/10 py-20 sm:py-28"
       id="1st-phorm"
     >
-      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+      <MarketingContainer className="route-padding-x">
         <div className="grid gap-10 lg:grid-cols-2 lg:items-end lg:gap-16">
           <div>
-            <p className="text-xs font-bold tracking-widest text-lime-300 uppercase">
+            <p className="text-xs font-bold tracking-widest text-primary uppercase">
               Nutrition + Recovery
             </p>
             <h2 className="mt-5 text-4xl font-black tracking-tighter text-white sm:text-6xl">
@@ -27,9 +25,9 @@ export function FirstPhormSection() {
               training blocks.
             </p>
           </div>
-          <div className="flex flex-col items-start gap-3 lg:items-end lg:text-right">
+          <div className="flex flex-col items-start lg:items-end lg:text-right">
             <a
-              className="inline-flex items-center gap-2 rounded-full border border-lime-300/30 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-lime-300 hover:text-neutral-950"
+              className="inline-flex items-center gap-2 rounded-full border border-primary/30 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-primary hover:text-neutral-950"
               href={firstPhormUrl}
               rel="noreferrer"
               target="_blank"
@@ -37,14 +35,11 @@ export function FirstPhormSection() {
               Shop 1st Phorm with my link
               <IconArrowUpRight aria-hidden className="size-4" />
             </a>
-            <p className="max-w-sm text-xs leading-5 text-neutral-300">
-              {affiliateDisclosure}
-            </p>
           </div>
         </div>
 
         <div className="mt-12 grid gap-5 lg:grid-cols-3">
-          <div className="relative min-h-96 overflow-hidden rounded-3xl border border-lime-300/20 lg:row-span-2">
+          <div className="relative min-h-96 overflow-hidden rounded-3xl border border-primary/20 lg:row-span-2">
             <Image
               alt="Stephen Pelkofer using 1st Phorm Ultra-Formance"
               className="object-cover object-center"
@@ -53,7 +48,7 @@ export function FirstPhormSection() {
               src="/marketing/partners/1st-phorm-ultraformance.jpg"
             />
             <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black via-black/70 to-transparent p-7 pt-24">
-              <p className="text-xs font-bold tracking-widest text-lime-300 uppercase">
+              <p className="text-xs font-bold tracking-widest text-primary uppercase">
                 Primary partner
               </p>
               <p className="mt-2 text-xl font-black text-white">
@@ -63,7 +58,6 @@ export function FirstPhormSection() {
           </div>
           {firstPhormProducts.map((product, index) => (
             <PartnerProductCard
-              affiliateDisclosure={affiliateDisclosure}
               brand="1st Phorm"
               index={index}
               key={product.title}
@@ -71,7 +65,7 @@ export function FirstPhormSection() {
             />
           ))}
         </div>
-      </div>
+      </MarketingContainer>
     </section>
   );
 }

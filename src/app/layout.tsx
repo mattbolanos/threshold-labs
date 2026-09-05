@@ -4,6 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import { Suspense } from "react";
 import { SiteShell } from "@/components/site-shell";
+import { Toaster } from "@/components/ui/toast";
 import { getPreviewAuthState } from "@/lib/auth/preview.server";
 import { getToken } from "@/lib/auth-server";
 
@@ -37,7 +38,7 @@ async function AppShell({ children }: { children: React.ReactNode }) {
       isPreview={preview.enabled}
       previewRole={preview.role}
     >
-      <Suspense>{children}</Suspense>
+      <Suspense fallback={null}>{children}</Suspense>
     </SiteShell>
   );
 }
@@ -50,6 +51,7 @@ export default function RootLayout({
   return (
     <html
       className={`${outfit.variable} ${jetbrainsMono.variable} dark`}
+      data-scroll-behavior="smooth"
       lang="en"
       suppressHydrationWarning
     >
@@ -64,9 +66,10 @@ export default function RootLayout({
       </head>
       <body className="min-h-full overscroll-y-contain bg-background text-foreground antialiased">
         <main>
-          <Suspense>
+          <Suspense fallback={null}>
             <AppShell>{children}</AppShell>
           </Suspense>
+          <Toaster />
         </main>
       </body>
     </html>

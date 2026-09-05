@@ -85,7 +85,7 @@ export function AdminPostList() {
     <div className="flex flex-col gap-6">
       <header className="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
+          <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
             Admin
           </p>
           <h1 className="text-2xl font-semibold tracking-tight">Lab Notes</h1>
@@ -97,7 +97,7 @@ export function AdminPostList() {
       </header>
 
       {errorMessage ? (
-        <p className="text-destructive text-sm" role="alert">
+        <p className="text-sm text-destructive" role="alert">
           {errorMessage}
         </p>
       ) : null}
@@ -140,12 +140,12 @@ export function AdminPostList() {
             </CardDescription>
             <CardAction className="flex flex-wrap justify-end gap-1.5">
               {post.isPinned ? (
-                <Badge variant="secondary">
+                <Badge variant="accent">
                   <IconPinnedFilled aria-hidden data-icon="inline-start" />
                   Pinned
                 </Badge>
               ) : null}
-              <Badge variant={post.isVisible ? "default" : "secondary"}>
+              <Badge variant={post.isVisible ? "default" : "accent"}>
                 {post.isVisible ? "Visible" : "Hidden"}
               </Badge>
             </CardAction>

@@ -24,13 +24,13 @@ function DesktopStat({
   value: number;
 }) {
   return (
-    <div className="flex min-w-20 shrink-0 flex-col items-end">
+    <div className="flex min-w-20 shrink-0 flex-col items-start">
       <div className="flex h-6 items-center gap-0.5 text-xs whitespace-nowrap text-muted-foreground">
         <span>{label}</span>
         {tooltip}
       </div>
       <span className="min-h-6 font-semibold whitespace-nowrap tabular-nums">
-        {loading ? "—" : formatOneDecimal(value)}
+        {loading ? "–" : formatOneDecimal(value)}
         {unit ? (
           <span className="ml-1 text-xs font-medium text-muted-foreground uppercase">
             {unit}
@@ -42,27 +42,20 @@ function DesktopStat({
 }
 
 export function DesktopWeekSummary() {
-  const { weekStartDate } = useCalendarNav();
-  const workouts = useQuery(api.workouts.getWorkouts, {
-    from: formatQueryDate(weekStartDate),
-    to: formatQueryDate(addDays(weekStartDate, 6)),
-  });
+  const { isRangeLoading, weekStartDate } = useCalendarNav();
+  const workouts = useQuery(
+    api.workouts.getWorkouts,
+    isRangeLoading
+      ? "skip"
+      : {
+          from: formatQueryDate(weekStartDate),
+          to: formatQueryDate(addDays(weekStartDate, 6)),
+        },
+  );
   const summary = getWeekSummary(workouts ?? []);
 
   return (
     <div className="ml-auto hidden shrink-0 items-start lg:flex">
-      <DesktopStat
-        label="Subjective Load"
-        loading={workouts === undefined}
-        tooltip={
-          <InfoPopover
-            definitions={SUBJECTIVE_LOAD_DEFINITIONS}
-            size="xs"
-            title="Subjective Load"
-          />
-        }
-        value={summary.subjectiveLoad}
-      />
       <DesktopStat
         label="Training"
         loading={workouts === undefined}
@@ -80,6 +73,18 @@ export function DesktopWeekSummary() {
         loading={workouts === undefined}
         unit="hrs"
         value={summary.cardioHours}
+      />
+      <DesktopStat
+        label="Subjective Load"
+        loading={workouts === undefined}
+        tooltip={
+          <InfoPopover
+            definitions={SUBJECTIVE_LOAD_DEFINITIONS}
+            size="xs"
+            title="Subjective Load"
+          />
+        }
+        value={summary.subjectiveLoad}
       />
     </div>
   );

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { AdminWorkoutForm } from "@/components/admin/admin-workout-form";
+import { LabRouteFallback } from "@/components/lab-route-fallback";
 import { checkAdmin } from "@/lib/auth";
 
 export const metadata: Metadata = {
@@ -7,8 +9,16 @@ export const metadata: Metadata = {
   title: "New Workout",
 };
 
-export default async function NewWorkoutPage() {
+async function NewWorkoutPageContent() {
   await checkAdmin();
 
   return <AdminWorkoutForm mode="create" />;
+}
+
+export default function NewWorkoutPage() {
+  return (
+    <Suspense fallback={<LabRouteFallback />}>
+      <NewWorkoutPageContent />
+    </Suspense>
+  );
 }

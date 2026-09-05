@@ -1,6 +1,9 @@
 "use client";
+
+import { cn } from "cn";
 import { useQuery } from "convex/react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -19,19 +22,23 @@ interface NavBarProps {
 }
 
 export function NavBar({ isPreview, previewRole }: NavBarProps) {
+  const pathname = usePathname();
+
   const user = useQuery(api.auth.getCurrentUser, {
     previewRole: isPreview ? previewRole : undefined,
   });
+  const access = useQuery(api.auth.getCurrentLabAccess);
   const role = isPreview ? previewRole : user?.role;
+  const hasAccess = isPreview || access?.hasAccess === true;
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/80 bg-background/95 backdrop-blur-sm">
       <nav className="route-padding-x mx-auto flex h-12 w-full max-w-7xl items-center justify-between gap-4 md:h-14">
         <div className="flex items-center gap-6">
           <Link
-            aria-label="Threshold Lab: Lab Notes"
+            aria-label="Threshold Lab home"
             className="group/brand flex items-center gap-2"
-            href="/lab/lab-notes"
+            href="/"
           >
             <span className="flex size-7 items-center justify-center rounded-md bg-primary text-xs font-bold text-primary-foreground">
               TL
@@ -47,10 +54,19 @@ export function NavBar({ isPreview, previewRole }: NavBarProps) {
                 if (link.isAdmin && role !== "admin") {
                   return null;
                 }
+                if (link.requiresAccess && !hasAccess) {
+                  return null;
+                }
                 return (
                   <NavigationMenuItem key={link.href}>
                     <NavigationMenuLink
-                      className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors duration-150 ease-in-out hover:text-foreground"
+                      className={cn(
+                        "rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors duration-150 ease-in-out hover:text-foreground",
+                        {
+                          "text-foreground hover:bg-transparent":
+                            pathname === link.href,
+                        },
+                      )}
                       render={<Link href={link.href} />}
                     >
                       {link.label}
@@ -64,6 +80,8 @@ export function NavBar({ isPreview, previewRole }: NavBarProps) {
         <NavUser isPreview={isPreview} previewRole={previewRole} user={user} />
         {/* mobile */}
         <MobileMenu
+          currentPathname={pathname}
+          hasAccess={hasAccess}
           isPreview={isPreview}
           previewRole={previewRole}
           user={user}

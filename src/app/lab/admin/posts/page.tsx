@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { AdminBackLink } from "@/components/admin/admin-back-link";
 import { AdminPostList } from "@/components/admin/admin-post-list";
+import { LabRouteFallback } from "@/components/lab-route-fallback";
 import { checkAdmin } from "@/lib/auth";
 
 export const metadata: Metadata = {
@@ -8,7 +10,7 @@ export const metadata: Metadata = {
   title: "Lab Notes | Admin",
 };
 
-export default async function AdminPostsPage() {
+async function AdminPostsPageContent() {
   await checkAdmin();
 
   return (
@@ -16,5 +18,13 @@ export default async function AdminPostsPage() {
       <AdminBackLink />
       <AdminPostList />
     </div>
+  );
+}
+
+export default function AdminPostsPage() {
+  return (
+    <Suspense fallback={<LabRouteFallback />}>
+      <AdminPostsPageContent />
+    </Suspense>
   );
 }

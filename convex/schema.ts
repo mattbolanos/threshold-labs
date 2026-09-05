@@ -9,6 +9,51 @@ export default defineSchema({
     role: v.union(v.literal("admin"), v.literal("client"), v.literal("coach")),
   }).index("by_email", ["email"]),
 
+  discountCodes: defineTable({
+    code: v.string(),
+    createdAt: v.number(),
+    createdByUserId: v.string(),
+    deliveredAt: v.optional(v.number()),
+    deliveryError: v.optional(v.string()),
+    deliveryStatus: v.optional(
+      v.union(
+        v.literal("not_requested"),
+        v.literal("pending"),
+        v.literal("sent"),
+        v.literal("failed"),
+      ),
+    ),
+    discountType: v.union(
+      v.literal("fifty_monthly"),
+      v.literal("free_forever"),
+    ),
+    failureReason: v.optional(v.string()),
+    recipientEmail: v.optional(v.string()),
+    redeemedAt: v.optional(v.number()),
+    redeemedByEmail: v.optional(v.string()),
+    revokedAt: v.optional(v.number()),
+    status: v.union(
+      v.literal("provisioning"),
+      v.literal("active"),
+      v.literal("redeemed"),
+      v.literal("revoked"),
+      v.literal("failed"),
+    ),
+    stripeCouponId: v.optional(v.string()),
+    stripeCustomerId: v.optional(v.string()),
+    stripePromotionCodeId: v.optional(v.string()),
+    stripeSubscriptionId: v.optional(v.string()),
+    updatedAt: v.number(),
+  })
+    .index("by_code", ["code"])
+    .index("by_recipient_email", ["recipientEmail"])
+    .index("by_stripe_promotion_code", ["stripePromotionCodeId"]),
+
+  emailOtpRequests: defineTable({
+    email: v.string(),
+    requestedAt: v.number(),
+  }).index("by_email", ["email"]),
+
   hyroxRaces: defineTable({
     country: v.string(),
     endDate: v.string(),
@@ -24,6 +69,15 @@ export default defineSchema({
   })
     .index("by_external_key", ["externalKey"])
     .index("by_start_date", ["startDate"]),
+
+  membershipAccessWindows: defineTable({
+    accessEnd: v.optional(v.string()),
+    accessStart: v.string(),
+    referenceId: v.string(),
+    stripeSubscriptionId: v.string(),
+  })
+    .index("by_reference_id", ["referenceId"])
+    .index("by_stripe_subscription", ["stripeSubscriptionId"]),
 
   plannedHyroxRaces: defineTable({
     plannedAt: v.number(),
@@ -60,6 +114,21 @@ export default defineSchema({
     startDate: v.string(),
     updatedAt: v.number(),
   }).index("by_start_date", ["startDate"]),
+
+  trainingBlockPurchases: defineTable({
+    accessEnd: v.string(),
+    accessStart: v.string(),
+    purchasedAt: v.number(),
+    purchaseType: v.union(v.literal("block"), v.literal("bundle")),
+    referenceId: v.string(),
+    stripeCheckoutSessionId: v.string(),
+    stripeCustomerId: v.optional(v.string()),
+    stripePaymentIntentId: v.optional(v.string()),
+    trainingBlockId: v.id("trainingBlocks"),
+    trainingBlockTitle: v.string(),
+  })
+    .index("by_reference_id", ["referenceId"])
+    .index("by_stripe_checkout_session", ["stripeCheckoutSessionId"]),
 
   trainingBlocks: defineTable({
     createdAt: v.number(),

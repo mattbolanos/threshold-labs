@@ -1,6 +1,11 @@
 import { IconChevronRight } from "@tabler/icons-react";
+import { memo } from "react";
 import { TagBadge } from "@/components/workouts/tag-badge";
-import { formatWorkoutDate, parseQueryDate } from "@/lib/utils";
+import {
+  formatShortDate,
+  formatWorkoutDate,
+  parseQueryDate,
+} from "@/lib/utils";
 import type { WorkoutLibraryItem } from "@/lib/workout-library";
 
 interface WorkoutLibraryRowProps {
@@ -8,7 +13,7 @@ interface WorkoutLibraryRowProps {
   workout: WorkoutLibraryItem;
 }
 
-export function WorkoutLibraryRow({
+export const WorkoutLibraryRow = memo(function WorkoutLibraryRow({
   onSelect,
   workout,
 }: WorkoutLibraryRowProps) {
@@ -29,13 +34,7 @@ export function WorkoutLibraryRow({
             className="block text-sm font-medium tabular-nums"
             dateTime={workout.workoutDate}
           >
-            {date
-              ? date.toLocaleDateString("en-US", {
-                  day: "numeric",
-                  month: "short",
-                  timeZone: "UTC",
-                })
-              : workout.workoutDate}
+            {date ? formatShortDate(date) : workout.workoutDate}
           </time>
           <span className="block truncate text-xs text-muted-foreground">
             {workout.trainingBlock?.title ?? "No training block"}
@@ -83,4 +82,4 @@ export function WorkoutLibraryRow({
       </button>
     </li>
   );
-}
+});

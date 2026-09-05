@@ -15,6 +15,17 @@ const ONE_DECIMAL_FORMATTER = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 1,
   minimumFractionDigits: 1,
 });
+const WORKOUT_DATE_FORMATTER = new Intl.DateTimeFormat("en-US", {
+  day: "2-digit",
+  month: "short",
+  timeZone: "UTC",
+  year: "numeric",
+});
+const SHORT_DATE_FORMATTER = new Intl.DateTimeFormat("en-US", {
+  day: "numeric",
+  month: "short",
+  timeZone: "UTC",
+});
 
 export { cn } from "cn";
 
@@ -81,10 +92,9 @@ export function calculateSTL(
 }
 
 export function formatWorkoutDate(date: Date): string {
-  return date.toLocaleDateString("en-US", {
-    day: "2-digit",
-    month: "short",
-    timeZone: "UTC",
-    year: "numeric",
-  });
+  return WORKOUT_DATE_FORMATTER.format(date);
+}
+
+export function formatShortDate(date: Date): string {
+  return SHORT_DATE_FORMATTER.format(date);
 }

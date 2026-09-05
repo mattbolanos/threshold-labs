@@ -90,9 +90,6 @@ export const checkLabAccess = cache(async () => {
   return access;
 });
 
-export const checkAnyLabAccess = checkLabAccess;
-export const checkTrainingAccess = checkLabAccess;
-
 export const checkAdmin = cache(async () => {
   await checkLabAccess();
 

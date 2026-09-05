@@ -4,7 +4,7 @@ import { IconCalendarWeek } from "@tabler/icons-react";
 import { useQuery } from "convex/react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { BlockContent } from "@/components/block/block-content";
+import { BlockContent } from "@/components/block/lazy-block-content";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Dialog,

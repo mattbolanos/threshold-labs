@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
 import {
-  FIFTY_MONTHLY_TARGET_AMOUNT,
   getDiscountCodePrefix,
   getDiscountCouponDefinition,
   isDiscountCouponCompatible,
@@ -17,7 +16,7 @@ const monthlyPrice = {
 describe("getDiscountCouponDefinition", () => {
   test("discounts the configured price to exactly $50/month", () => {
     expect(getDiscountCouponDefinition("fifty_monthly", monthlyPrice)).toEqual({
-      amountOff: monthlyPrice.unitAmount - FIFTY_MONTHLY_TARGET_AMOUNT,
+      amountOff: 2_000,
       couponId: "threshold-50-monthly-price_inside_lab",
       currency: "usd",
       name: "$50/month — Inside the Lab",

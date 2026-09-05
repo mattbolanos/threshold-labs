@@ -7,7 +7,7 @@ import {
   parseAsStringLiteral,
   useQueryStates,
 } from "nuqs";
-import { useMemo, useState } from "react";
+import { useCallback, useDeferredValue, useMemo, useState } from "react";
 import { TAG_CONFIG } from "@/components/workouts/tag-config";
 import {
   filterAndSortWorkouts,
@@ -71,28 +71,29 @@ export function WorkoutLibrary() {
     );
   }, [workouts]);
 
+  const deferredFilters = useDeferredValue(filters);
   const filteredWorkouts = useMemo(
-    () => filterAndSortWorkouts(workouts ?? [], filters),
-    [filters, workouts],
+    () => filterAndSortWorkouts(workouts ?? [], deferredFilters),
+    [deferredFilters, workouts],
   );
   const resultKey = [
-    filters.block,
-    filters.dateMode,
-    filters.from,
-    filters.q,
-    filters.sort,
-    filters.tags.join(","),
-    filters.to,
-    filters.week,
+    deferredFilters.block,
+    deferredFilters.dateMode,
+    deferredFilters.from,
+    deferredFilters.q,
+    deferredFilters.sort,
+    deferredFilters.tags.join(","),
+    deferredFilters.to,
+    deferredFilters.week,
   ].join("|");
 
   const updateFilters = (value: Partial<typeof filters>) => {
     void setQueryFilters(value);
   };
 
-  const resetFilters = () => {
+  const resetFilters = useCallback(() => {
     void setQueryFilters(null);
-  };
+  }, [setQueryFilters]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -107,7 +108,7 @@ export function WorkoutLibrary() {
         trainingBlocks={trainingBlocks}
       />
       <WorkoutLibraryResults
-        hasActiveFilters={hasActiveWorkoutFilters(filters)}
+        hasActiveFilters={hasActiveWorkoutFilters(deferredFilters)}
         isLoading={workouts === undefined}
         key={resultKey}
         onReset={resetFilters}

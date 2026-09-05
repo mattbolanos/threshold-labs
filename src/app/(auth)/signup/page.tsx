@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { AuthHeader } from "@/components/auth/auth-header";
-import { SignUpForm } from "@/components/auth/signup-form";
+import { EmailOtpAuthForm } from "@/components/auth/email-otp-auth-form";
 
 export const metadata: Metadata = {
   title: "Sign Up | Threshold Lab",
@@ -13,7 +13,7 @@ export default function SignUpPage() {
         description="Sign up with Google, or register with your email"
         title="Create an Account"
       />
-      <SignUpForm />
+      <EmailOtpAuthForm mode="signup" />
     </div>
   );
 }

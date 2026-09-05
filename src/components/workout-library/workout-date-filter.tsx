@@ -5,7 +5,7 @@ import { format, startOfWeek } from "date-fns";
 import { useState } from "react";
 import type { DateRange } from "react-day-picker";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
+import { Calendar } from "@/components/ui/lazy-calendar";
 import {
   Popover,
   PopoverContent,

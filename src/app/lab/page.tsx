@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { LabRouteFallback } from "@/components/lab-route-fallback";
-import { checkAnyLabAccess } from "@/lib/auth";
+import { checkLabAccess } from "@/lib/auth";
 
 async function LabRedirect() {
-  await checkAnyLabAccess();
+  await checkLabAccess();
   return redirect("/lab/lab-notes");
 }
 

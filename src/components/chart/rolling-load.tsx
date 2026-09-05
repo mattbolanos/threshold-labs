@@ -4,6 +4,7 @@ import { useQuery } from "convex/react";
 import { ChartSkeleton } from "@/components/skeletons/chart";
 import { ComboChart } from "@/components/ui/chart/combo-chart";
 import { useChartRange } from "@/hooks/use-chart-state";
+import { formatShortDate } from "@/lib/utils";
 import { api } from "../../../convex/_generated/api";
 
 export interface RollingLoadChartProps {
@@ -59,13 +60,7 @@ export function RollingLoadChart({
         return `Week of ${label}`;
       }}
       xAxisPadding={4}
-      xTicksFormatter={(value) =>
-        new Date(value).toLocaleDateString("en-US", {
-          day: "numeric",
-          month: "short",
-          timeZone: "UTC",
-        })
-      }
+      xTicksFormatter={(value) => formatShortDate(new Date(value))}
     />
   );
 }

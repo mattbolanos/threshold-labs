@@ -9,6 +9,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import type { PreviewRole } from "@/lib/auth/preview-role";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
+import { ContactUsDialog } from "./contact-us-dialog";
 import { PreviewRoleSwitch } from "./preview-role-switch";
 
 export interface NavUserData {
@@ -71,6 +72,11 @@ export function UserAccountMenu({
           <IconCreditCard aria-hidden data-icon="inline-start" />
           Billing
         </Link>
+        <ContactUsDialog
+          email={email}
+          isPreview={isPreview}
+          size={actionSize}
+        />
         {isPreview ? (
           <PreviewRoleSwitch className="px-2" role={previewRole} />
         ) : (

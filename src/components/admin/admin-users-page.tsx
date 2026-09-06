@@ -3,12 +3,13 @@ import Link from "next/link";
 import { AdminBackLink } from "@/components/admin/admin-back-link";
 import { AdminDiscountCodeManager } from "@/components/admin/admin-discount-code-manager";
 import { AdminUserManager } from "@/components/admin/admin-user-manager";
+import { AdminUsersErrorBoundary } from "@/components/admin/admin-users-error-boundary";
 import { PageHeader } from "@/components/page-header";
 import { buttonVariants } from "@/components/ui/button";
 
 export function AdminUsersPage() {
   return (
-    <div className="flex w-full flex-col gap-8">
+    <div className="flex w-full min-w-0 flex-col gap-8">
       <AdminBackLink />
 
       <PageHeader
@@ -23,12 +24,14 @@ export function AdminUsersPage() {
             <span>Add role default</span>
           </Link>
         }
-        description="Review registered accounts, Stripe membership status, and role-based access. Administrator changes take effect immediately."
+        description="See who has lab access, what they purchased, and which workouts they can view. Updates appear automatically."
         eyebrow="Admin"
         title="Users & access"
       />
 
-      <AdminUserManager />
+      <AdminUsersErrorBoundary>
+        <AdminUserManager />
+      </AdminUsersErrorBoundary>
       <AdminDiscountCodeManager />
     </div>
   );

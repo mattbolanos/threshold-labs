@@ -15,6 +15,7 @@ import type * as emailOtp from "../emailOtp.js";
 import type * as emailOtpRateLimit from "../emailOtpRateLimit.js";
 import type * as emails from "../emails.js";
 import type * as http from "../http.js";
+import type * as lib_adminUsers from "../lib/adminUsers.js";
 import type * as lib_authEnvironment from "../lib/authEnvironment.js";
 import type * as lib_discountCheckout from "../lib/discountCheckout.js";
 import type * as lib_discountCodeEmail from "../lib/discountCodeEmail.js";
@@ -52,6 +53,7 @@ declare const fullApi: ApiFromModules<{
   emailOtpRateLimit: typeof emailOtpRateLimit;
   emails: typeof emails;
   http: typeof http;
+  "lib/adminUsers": typeof lib_adminUsers;
   "lib/authEnvironment": typeof lib_authEnvironment;
   "lib/discountCheckout": typeof lib_discountCheckout;
   "lib/discountCodeEmail": typeof lib_discountCodeEmail;

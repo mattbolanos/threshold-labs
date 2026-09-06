@@ -3,21 +3,22 @@
 import {
   IconAlertCircle,
   IconCheck,
-  IconCreditCard,
-  IconLoader2,
-  IconShield,
   IconUser,
   IconUsersGroup,
 } from "@tabler/icons-react";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
+import {
+  type AdminUserRole,
+  AdminUsersTable,
+  adminRoleOptions,
+} from "@/components/admin/admin-users-table";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import {
   Empty,
@@ -26,124 +27,42 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
-import { formatTrainingBlockCount } from "@/lib/billing";
 import { api } from "../../../convex/_generated/api";
 
-const roleOptions = [
-  { label: "Client", value: "client" },
-  { label: "Coach", value: "coach" },
-  { label: "Admin", value: "admin" },
-] as const;
-
-type UserRole = (typeof roleOptions)[number]["value"];
-
-const membershipDateFormatter = new Intl.DateTimeFormat("en-US", {
-  day: "numeric",
-  month: "short",
-  year: "numeric",
-});
-
-function formatMembershipStatus(
-  subscription: {
-    cancelAtPeriodEnd: boolean;
-    periodEnd: number | null;
-    status: string;
-  } | null,
-  hasStripeCustomer: boolean,
-) {
-  if (!subscription) {
-    return hasStripeCustomer
-      ? "Stripe customer · no subscription"
-      : "No Stripe subscription";
-  }
-
-  const status = subscription.status.replaceAll("_", " ");
-  if (!subscription.periodEnd) {
-    return status;
-  }
-
-  const date = membershipDateFormatter.format(new Date(subscription.periodEnd));
-  if (subscription.cancelAtPeriodEnd) {
-    return `${status} · ends ${date}`;
-  }
-
-  return subscription.status === "active" || subscription.status === "trialing"
-    ? `${status} · renews ${date}`
-    : `${status} · period ended ${date}`;
-}
-
-function AccessBadge({
-  purchasedBlockCount,
-  source,
-}: {
-  purchasedBlockCount: number;
-  source: "admin" | "none" | "subscription" | "training_blocks";
-}) {
-  if (source === "admin") {
-    return (
-      <Badge>
-        <IconShield aria-hidden data-icon="inline-start" />
-        Admin access
-      </Badge>
-    );
-  }
-
-  if (source === "subscription") {
-    return (
-      <Badge variant="accent">
-        <IconCreditCard aria-hidden data-icon="inline-start" />
-        {purchasedBlockCount > 0
-          ? `Member + ${formatTrainingBlockCount(purchasedBlockCount)}`
-          : "Member access"}
-      </Badge>
-    );
-  }
-
-  if (source === "training_blocks") {
-    return (
-      <Badge variant="accent">
-        <IconCreditCard aria-hidden data-icon="inline-start" />
-        {formatTrainingBlockCount(purchasedBlockCount)} purchased
-      </Badge>
-    );
-  }
-
-  return <Badge variant="outline">No lab access</Badge>;
-}
-
-function UsersLoadingState() {
-  return (
-    <div className="space-y-1 px-4 pb-4 md:px-5 md:pb-5">
-      {["first", "second", "third"].map((key) => (
-        <div
-          className="grid gap-4 py-4 md:grid-cols-3 lg:grid-cols-4"
-          key={key}
-        >
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-32" />
-            <Skeleton className="h-3 w-48" />
-          </div>
-          <Skeleton className="h-5 w-28" />
-          <Skeleton className="h-4 w-36" />
-          <Skeleton className="h-9 w-full" />
-        </div>
-      ))}
-    </div>
-  );
-}
+const accessOptions = [
+  { label: "Active access", value: "active" },
+  { label: "All users", value: "all" },
+  { label: "Members", value: "subscription" },
+  { label: "Block access only", value: "training_blocks" },
+  { label: "No lab access", value: "none" },
+  { label: "Admins", value: "admin" },
+];
 
 export function AdminUserManager() {
   const users = useQuery(api.auth.listAdminUsers);
+  const [search, setSearch] = useState("");
+  const [accessFilter, setAccessFilter] = useState("active");
+  const searchTerm = search.trim().toLowerCase();
+  const filteredUsers = users?.filter(
+    (user) =>
+      (accessFilter === "all" ||
+        (accessFilter === "active"
+          ? user.accessSource !== "none"
+          : user.accessSource === accessFilter)) &&
+      [
+        user.name,
+        user.email,
+        ...user.purchases.map((purchase) => purchase.title),
+      ].some((value) => value.toLowerCase().includes(searchTerm)),
+  );
   const updateRole = useMutation(api.auth.updateAdminUserRole);
   const [pendingUserId, setPendingUserId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -151,7 +70,7 @@ export function AdminUserManager() {
 
   const handleRoleChange = async (
     user: NonNullable<typeof users>[number],
-    role: UserRole,
+    role: AdminUserRole,
   ) => {
     if (role === user.role || pendingUserId) {
       return;
@@ -163,7 +82,7 @@ export function AdminUserManager() {
 
     try {
       await updateRole({ role, userId: user.id });
-      const roleLabel = roleOptions.find(
+      const roleLabel = adminRoleOptions.find(
         (option) => option.value === role,
       )?.label;
       setStatusMessage(`${user.email} is now ${roleLabel ?? role}.`);
@@ -177,7 +96,10 @@ export function AdminUserManager() {
   };
 
   return (
-    <section aria-labelledby="registered-users-heading" className="space-y-4">
+    <section
+      aria-labelledby="registered-users-heading"
+      className="min-w-0 space-y-4"
+    >
       <div aria-atomic aria-live="polite" className="sr-only">
         {statusMessage || errorMessage || ""}
       </div>
@@ -199,23 +121,81 @@ export function AdminUserManager() {
         </output>
       ) : null}
 
-      <Card className="py-0 shadow-sm">
+      <Card className="min-w-0 py-0">
         <CardHeader className="px-4 pt-4 md:px-5 md:pt-5">
-          <CardTitle
-            className="flex items-center gap-2"
+          <h2
+            className="flex items-center gap-2 text-base font-medium"
             id="registered-users-heading"
           >
             <IconUsersGroup aria-hidden className="size-5" stroke={2} />
             Registered users
-          </CardTitle>
+          </h2>
           <CardDescription>
-            Admins bypass billing. Clients and coaches can have full membership
-            or retained history access from a prior purchase.
+            Active access includes members, block owners, and admins. Account,
+            membership, and purchase changes appear automatically.
           </CardDescription>
         </CardHeader>
 
         <CardContent className="px-0 pb-0">
-          {users === undefined ? <UsersLoadingState /> : null}
+          <div className="space-y-3 px-4 pb-4 md:px-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+              <div className="min-w-0 flex-1 space-y-1.5">
+                <label className="text-sm font-medium" htmlFor="user-search">
+                  Search users or purchases
+                </label>
+                <Input
+                  className="min-h-11"
+                  id="user-search"
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder="Name, email, or training block"
+                  type="search"
+                  value={search}
+                />
+              </div>
+              <div className="space-y-1.5 sm:w-52">
+                <label
+                  className="text-sm font-medium"
+                  htmlFor="user-access-filter"
+                >
+                  Access
+                </label>
+                <Select
+                  items={accessOptions}
+                  onValueChange={(value) => value && setAccessFilter(value)}
+                  value={accessFilter}
+                >
+                  <SelectTrigger
+                    className="min-h-11 w-full"
+                    id="user-access-filter"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {accessOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <p
+              aria-live="polite"
+              className="text-sm text-muted-foreground tabular-nums"
+            >
+              {users
+                ? `${filteredUsers?.length ?? 0} of ${users.length} users · ${users.filter((user) => user.accessSource !== "none").length} with active access`
+                : "Loading users…"}
+            </p>
+          </div>
+          {users === undefined ? (
+            <AdminUsersTable
+              onRoleChange={handleRoleChange}
+              pendingUserId={pendingUserId}
+              users={undefined}
+            />
+          ) : null}
 
           {users?.length === 0 ? (
             <Empty className="m-4 w-auto border">
@@ -231,110 +211,33 @@ export function AdminUserManager() {
             </Empty>
           ) : null}
 
-          {users && users.length > 0 ? (
-            <div className="divide-y">
-              {users.map((user) => {
-                const isPending = pendingUserId === user.id;
+          {users && users.length > 0 && filteredUsers?.length === 0 ? (
+            <Empty className="m-4 w-auto border">
+              <EmptyHeader>
+                <EmptyTitle>No matching users</EmptyTitle>
+                <EmptyDescription>
+                  Try another name or show all users to include accounts without
+                  lab access.
+                </EmptyDescription>
+              </EmptyHeader>
+              <Button
+                onClick={() => {
+                  setSearch("");
+                  setAccessFilter("all");
+                }}
+                variant="outline"
+              >
+                Show all users
+              </Button>
+            </Empty>
+          ) : null}
 
-                return (
-                  <div
-                    className="grid min-w-0 gap-4 px-4 py-4 md:grid-cols-3 md:px-5 lg:grid-cols-4 lg:items-center"
-                    key={user.id}
-                  >
-                    <div className="min-w-0 space-y-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="truncate font-medium">{user.name}</p>
-                        {user.isCurrentUser ? (
-                          <Badge variant="accent">You</Badge>
-                        ) : null}
-                      </div>
-                      <p className="truncate text-sm text-muted-foreground">
-                        {user.email}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {user.emailVerified
-                          ? "Verified email"
-                          : "Email not verified"}
-                      </p>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <p className="text-xs font-medium text-muted-foreground uppercase">
-                        Lab access
-                      </p>
-                      <AccessBadge
-                        purchasedBlockCount={user.purchasedBlockCount}
-                        source={user.accessSource}
-                      />
-                    </div>
-
-                    <div className="min-w-0 space-y-1.5">
-                      <p className="text-xs font-medium text-muted-foreground uppercase">
-                        Stripe membership
-                      </p>
-                      <p className="text-sm leading-snug capitalize">
-                        {formatMembershipStatus(
-                          user.subscription,
-                          user.hasStripeCustomer,
-                        )}
-                      </p>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label
-                        className="text-xs font-medium text-muted-foreground uppercase"
-                        htmlFor={`role-${user.id}`}
-                      >
-                        Account role
-                      </label>
-                      <div className="flex items-center gap-2">
-                        <Select
-                          disabled={
-                            user.isCurrentUser || Boolean(pendingUserId)
-                          }
-                          id={`role-${user.id}`}
-                          items={roleOptions}
-                          onValueChange={(role) => {
-                            if (role) {
-                              void handleRoleChange(user, role as UserRole);
-                            }
-                          }}
-                          value={user.role}
-                        >
-                          <SelectTrigger className="min-h-9 w-full">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectLabel>Role</SelectLabel>
-                              {roleOptions.map((option) => (
-                                <SelectItem
-                                  key={option.value}
-                                  value={option.value}
-                                >
-                                  {option.label}
-                                </SelectItem>
-                              ))}
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                        {isPending ? (
-                          <IconLoader2
-                            aria-label="Saving role"
-                            className="size-4 shrink-0 animate-spin text-muted-foreground"
-                          />
-                        ) : null}
-                      </div>
-                      {user.isCurrentUser ? (
-                        <p className="text-xs text-muted-foreground">
-                          Your own admin role is protected.
-                        </p>
-                      ) : null}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+          {filteredUsers && filteredUsers.length > 0 ? (
+            <AdminUsersTable
+              onRoleChange={handleRoleChange}
+              pendingUserId={pendingUserId}
+              users={filteredUsers}
+            />
           ) : null}
         </CardContent>
       </Card>

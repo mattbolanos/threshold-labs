@@ -15,6 +15,7 @@ import {
 } from "./_generated/server";
 import authConfig from "./auth.config";
 import authSchema from "./betterAuth/schema";
+import { getAdminUsers } from "./lib/adminUsers";
 import { getAuthEnvironment } from "./lib/authEnvironment";
 import { EMAIL_OTP_EXPIRES_IN_SECONDS } from "./lib/emailOtp";
 import {
@@ -38,8 +39,6 @@ const userRoleValidator = v.union(
   v.literal("client"),
   v.literal("coach"),
 );
-
-type UserRole = "admin" | "client" | "coach";
 
 type AuthUserRecord = {
   createdAt: Date | number;
@@ -67,14 +66,6 @@ type AuthSubscriptionRecord = {
 type RawAuthSubscriptionRecord = AuthSubscriptionRecord & {
   _creationTime: number;
   _id: string;
-};
-
-const normalizeRole = (role?: string | null): UserRole => {
-  if (role === "admin" || role === "coach") {
-    return role;
-  }
-
-  return "client";
 };
 
 const toTimestamp = (value?: Date | number | null) => {
@@ -434,78 +425,7 @@ export const listAdminUsers = query({
       return [];
     }
 
-    const adapter = authComponent.adapter(ctx)(createAuthOptions(ctx));
-    const [users, subscriptions, blockPurchases] = await Promise.all([
-      adapter.findMany<AuthUserRecord>({
-        limit: 250,
-        model: "user",
-        sortBy: { direction: "desc", field: "createdAt" },
-      }),
-      adapter.findMany<AuthSubscriptionRecord>({
-        limit: 500,
-        model: "subscription",
-      }),
-      ctx.db.query("trainingBlockPurchases").collect(),
-    ]);
-
-    const subscriptionsByUser = new Map<string, AuthSubscriptionRecord[]>();
-    for (const subscription of subscriptions) {
-      const existing = subscriptionsByUser.get(subscription.referenceId) ?? [];
-      existing.push(subscription);
-      subscriptionsByUser.set(subscription.referenceId, existing);
-    }
-    const purchasedBlockCounts = new Map<string, number>();
-    for (const purchase of blockPurchases) {
-      purchasedBlockCounts.set(
-        purchase.referenceId,
-        (purchasedBlockCounts.get(purchase.referenceId) ?? 0) + 1,
-      );
-    }
-
-    return users.map((user) => {
-      const userSubscriptions = subscriptionsByUser.get(user.id) ?? [];
-      const activeSubscription = userSubscriptions.find((subscription) =>
-        hasActiveLabSubscription([subscription]),
-      );
-      const latestSubscription = userSubscriptions.toSorted(
-        (left, right) =>
-          (toTimestamp(right.periodEnd) ?? 0) -
-          (toTimestamp(left.periodEnd) ?? 0),
-      )[0];
-      const subscription = activeSubscription ?? latestSubscription;
-      const role = normalizeRole(user.role);
-      const purchasedBlockCount = purchasedBlockCounts.get(user.id) ?? 0;
-
-      return {
-        accessSource:
-          role === "admin"
-            ? ("admin" as const)
-            : activeSubscription
-              ? ("subscription" as const)
-              : purchasedBlockCount > 0
-                ? ("training_blocks" as const)
-                : ("none" as const),
-        createdAt: toTimestamp(user.createdAt) ?? 0,
-        email: user.email,
-        emailVerified: user.emailVerified,
-        hasStripeCustomer: Boolean(user.stripeCustomerId),
-        id: user.id,
-        isCurrentUser: currentUser
-          ? currentUser._id.toString() === user.id
-          : false,
-        name: user.name,
-        purchasedBlockCount,
-        role,
-        subscription: subscription
-          ? {
-              cancelAtPeriodEnd: Boolean(subscription.cancelAtPeriodEnd),
-              periodEnd: toTimestamp(subscription.periodEnd),
-              plan: subscription.plan,
-              status: subscription.status ?? "unknown",
-            }
-          : null,
-      };
-    });
+    return getAdminUsers(ctx, currentUser?._id.toString());
   },
 });
 

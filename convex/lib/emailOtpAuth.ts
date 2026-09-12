@@ -47,7 +47,7 @@ export async function clearSignInOtps(
   await adapter.deleteMany({
     model: "verification",
     where: latest
-      ? [...where, { field: "id", operator: "ne", value: latest.id }]
+      ? [...where, { field: "id", operator: "not_in", value: [latest.id] }]
       : where,
   });
 }

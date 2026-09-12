@@ -70,6 +70,22 @@ beforeEach(() => {
       options.advanced = { ...options.advanced, disableOriginCheck: false };
       const adapter = localAdapter(options);
       if (adapter.options) adapter.options.isRunMutationCtx = true;
+      const removeMany = adapter.deleteMany.bind(adapter);
+      adapter.deleteMany = async (args) => {
+        // Convex maps id to _id and permits only these operators on it.
+        // Keep this restriction so the memory adapter cannot hide a runtime
+        // rejection of an otherwise valid Better Auth filter.
+        for (const condition of args.where ?? []) {
+          if (
+            condition.field === "id" &&
+            condition.operator &&
+            !["eq", "in", "not_in"].includes(condition.operator)
+          ) {
+            throw new Error("_id can only be used with eq, in, or not_in");
+          }
+        }
+        return removeMany(args);
+      };
       const remove = adapter.delete.bind(adapter);
       // Unlike memoryAdapter's delete-all behavior, the installed Convex
       // adapter calls deleteOne and consumes the oldest matching record.

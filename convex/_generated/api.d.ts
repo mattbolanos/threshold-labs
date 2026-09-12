@@ -10,6 +10,8 @@
 
 import type * as auth from "../auth.js";
 import type * as billing from "../billing.js";
+import type * as bundlePricing from "../bundlePricing.js";
+import type * as bundlePricingActions from "../bundlePricingActions.js";
 import type * as discountCodes from "../discountCodes.js";
 import type * as emailOtp from "../emailOtp.js";
 import type * as emailOtpRateLimit from "../emailOtpRateLimit.js";
@@ -17,6 +19,7 @@ import type * as emails from "../emails.js";
 import type * as http from "../http.js";
 import type * as lib_adminUsers from "../lib/adminUsers.js";
 import type * as lib_authEnvironment from "../lib/authEnvironment.js";
+import type * as lib_bundlePricing from "../lib/bundlePricing.js";
 import type * as lib_discountCheckout from "../lib/discountCheckout.js";
 import type * as lib_discountCodeEmail from "../lib/discountCodeEmail.js";
 import type * as lib_discountCodeIssuing from "../lib/discountCodeIssuing.js";
@@ -57,6 +60,8 @@ import type {
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   billing: typeof billing;
+  bundlePricing: typeof bundlePricing;
+  bundlePricingActions: typeof bundlePricingActions;
   discountCodes: typeof discountCodes;
   emailOtp: typeof emailOtp;
   emailOtpRateLimit: typeof emailOtpRateLimit;
@@ -64,6 +69,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   "lib/adminUsers": typeof lib_adminUsers;
   "lib/authEnvironment": typeof lib_authEnvironment;
+  "lib/bundlePricing": typeof lib_bundlePricing;
   "lib/discountCheckout": typeof lib_discountCheckout;
   "lib/discountCodeEmail": typeof lib_discountCodeEmail;
   "lib/discountCodeIssuing": typeof lib_discountCodeIssuing;

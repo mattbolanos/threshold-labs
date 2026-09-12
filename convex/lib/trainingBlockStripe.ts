@@ -1,9 +1,10 @@
 import type { GenericCtx } from "@convex-dev/better-auth";
 import type Stripe from "stripe";
+import { internal } from "../_generated/api";
 import type { DataModel } from "../_generated/dataModel";
 import { getAuthEnvironment } from "./authEnvironment";
+import type { BundlePrice } from "./bundlePricing";
 import {
-  TRAINING_BLOCK_BUNDLE_PRICE_CENTS,
   TRAINING_BLOCK_BUNDLE_PURCHASE_TYPE,
   TRAINING_BLOCK_CURRENCY,
   TRAINING_BLOCK_PRICE_CENTS,
@@ -57,11 +58,13 @@ export function verifyTrainingBlockCheckoutSession({
   checkoutSession,
   expectedBlockPriceId,
   expectedBundlePriceId,
+  expectedBundleAmountCents,
   expectedReferenceId,
 }: {
   checkoutSession: TrainingBlockCheckoutSession;
   expectedBlockPriceId: string;
   expectedBundlePriceId: string;
+  expectedBundleAmountCents: number;
   expectedReferenceId?: string;
 }): VerifiedTrainingBlockPurchase | null {
   const kind = getPurchaseKind(checkoutSession.metadata?.purchaseType);
@@ -73,9 +76,7 @@ export function verifyTrainingBlockCheckoutSession({
   const expectedPriceId =
     kind === "block" ? expectedBlockPriceId : expectedBundlePriceId;
   const expectedAmount =
-    kind === "block"
-      ? TRAINING_BLOCK_PRICE_CENTS
-      : TRAINING_BLOCK_BUNDLE_PRICE_CENTS;
+    kind === "block" ? TRAINING_BLOCK_PRICE_CENTS : expectedBundleAmountCents;
   const referenceId =
     checkoutSession.client_reference_id ??
     checkoutSession.metadata?.referenceId;
@@ -102,8 +103,8 @@ export function verifyTrainingBlockCheckoutSession({
   }
 
   return {
-    purchaseType: kind,
     purchasedAt: checkoutSession.created * 1_000,
+    purchaseType: kind,
     referenceId,
     stripeCheckoutSessionId: checkoutSession.id,
     stripeCustomerId: getStripeId(checkoutSession.customer),
@@ -132,16 +133,21 @@ export async function getVerifiedTrainingBlockPurchase({
     { expand: ["line_items"] },
   );
 
+  const bundlePrice: BundlePrice | null =
+    getPurchaseKind(checkoutSession.metadata?.purchaseType) === "bundle"
+      ? await ctx.runQuery(internal.bundlePricing.getApprovedPrice, {
+          stripePriceId: checkoutSession.line_items?.data[0]?.price?.id ?? "",
+        })
+      : null;
+
   return verifyTrainingBlockCheckoutSession({
     checkoutSession,
     expectedBlockPriceId: getAuthEnvironment(
       ctx,
       "STRIPE_TRAINING_BLOCK_PRICE_ID",
     ),
-    expectedBundlePriceId: getAuthEnvironment(
-      ctx,
-      "STRIPE_TRAINING_BLOCK_BUNDLE_PRICE_ID",
-    ),
+    expectedBundleAmountCents: bundlePrice?.amountCents ?? 0,
+    expectedBundlePriceId: bundlePrice?.stripePriceId ?? "",
     expectedReferenceId,
   });
 }

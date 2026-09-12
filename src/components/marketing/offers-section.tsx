@@ -1,6 +1,8 @@
 import { IconArrowUpRight, IconCheck } from "@tabler/icons-react";
 import Link from "next/link";
+import { Suspense } from "react";
 import { offers } from "@/lib/marketing-content";
+import { BundlePriceDetail } from "./bundle-price-detail";
 import { MarketingContainer } from "./marketing-container";
 
 export function OffersSection() {
@@ -51,7 +53,13 @@ export function OffersSection() {
                       <span className="flex size-6 items-center justify-center rounded-full bg-primary/10 text-primary">
                         <IconCheck aria-hidden className="size-3.5" />
                       </span>
-                      {detail}
+                      {detail === "Bundle every block so far" ? (
+                        <Suspense fallback={detail}>
+                          <BundlePriceDetail />
+                        </Suspense>
+                      ) : (
+                        detail
+                      )}
                     </li>
                   ))}
                 </ul>

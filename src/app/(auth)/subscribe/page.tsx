@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   getCurrentLabAccess,
   getPendingDiscountOffer,
+  getTrainingBlockBundlePrice,
   getTrainingBlockCatalog,
   isAppAuthenticated,
 } from "@/lib/auth";
@@ -24,11 +25,12 @@ interface SubscribePageProps {
 }
 
 async function MembershipAccessGate({ searchParams }: SubscribePageProps) {
-  const [{ checkout, purchase, view }, isAuthenticated, blocks] =
+  const [{ checkout, purchase, view }, isAuthenticated, blocks, bundlePrice] =
     await Promise.all([
       searchParams,
       isAppAuthenticated(),
       getTrainingBlockCatalog(),
+      getTrainingBlockBundlePrice(),
     ]);
   const [access, discountOffer] = isAuthenticated
     ? await Promise.all([getCurrentLabAccess(), getPendingDiscountOffer()])
@@ -53,6 +55,7 @@ async function MembershipAccessGate({ searchParams }: SubscribePageProps) {
       />
       <MembershipCheckout
         blocks={blocks}
+        bundleAmountCents={bundlePrice.amountCents}
         discountOffer={discountOffer}
         hasMembership={hasMembership}
         isAuthenticated={isAuthenticated}

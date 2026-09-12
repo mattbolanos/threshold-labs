@@ -18,6 +18,7 @@ import { authClient } from "@/lib/auth-client";
 import {
   type DiscountOffer,
   discountOffers,
+  formatBundlePrice,
   formatInvitationDate,
   formatWorkoutCount,
   INSIDE_LAB_PLAN_NAME,
@@ -29,6 +30,7 @@ import { cn } from "@/lib/utils";
 
 interface MembershipCheckoutProps {
   blocks: TrainingBlockCatalogEntry[];
+  bundleAmountCents: number;
   /** An admin-issued offer tied to this member's email, applied at checkout. */
   discountOffer?: DiscountOffer | null;
   hasMembership?: boolean;
@@ -38,6 +40,7 @@ interface MembershipCheckoutProps {
 
 export function MembershipCheckout({
   blocks,
+  bundleAmountCents,
   discountOffer = null,
   hasMembership = false,
   isAuthenticated = true,
@@ -254,7 +257,7 @@ export function MembershipCheckout({
             }
             ownedHref="/lab/training/workouts"
             ownedLabel="Purchased"
-            priceLabel={trainingBlockBundle.priceLabel}
+            priceLabel={`${formatBundlePrice(bundleAmountCents)} once`}
             title={trainingBlockBundle.title}
           />
         ) : null}

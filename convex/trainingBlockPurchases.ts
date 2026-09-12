@@ -20,9 +20,6 @@ import {
   getTrainingBlockPurchaseDate,
   isCompletedTrainingBlock,
   isTrainingBlockForSale,
-  TRAINING_BLOCK_BUNDLE_PRICE_CENTS,
-  TRAINING_BLOCK_CURRENCY,
-  TRAINING_BLOCK_PRICE_CENTS,
 } from "./lib/trainingBlockPurchases";
 import { getVerifiedTrainingBlockPurchase } from "./lib/trainingBlockStripe";
 import { formatLabDate } from "./lib/workoutAccess";
@@ -265,10 +262,11 @@ export const createCheckout = action({
         return { url: workoutsUrl };
       }
 
-      priceId = getAuthEnvironment(
-        ctx,
-        "STRIPE_TRAINING_BLOCK_BUNDLE_PRICE_ID",
+      const price = await ctx.runQuery(
+        internal.bundlePricing.getCheckoutPrice,
+        {},
       );
+      priceId = price.stripePriceId;
     }
 
     const metadata = {
@@ -339,14 +337,3 @@ export const confirmCheckout = action({
     return true;
   },
 });
-
-export const trainingBlockProducts = {
-  block: {
-    currency: TRAINING_BLOCK_CURRENCY,
-    price: TRAINING_BLOCK_PRICE_CENTS,
-  },
-  bundle: {
-    currency: TRAINING_BLOCK_CURRENCY,
-    price: TRAINING_BLOCK_BUNDLE_PRICE_CENTS,
-  },
-};

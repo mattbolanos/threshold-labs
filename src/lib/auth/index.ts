@@ -54,6 +54,10 @@ export const getCurrentLabAccess = cache(async () => {
   return fetchAuthQuery(api.auth.getCurrentLabAccess, {});
 });
 
+export const getTrainingBlockBundlePrice = cache(async () => {
+  return fetchAuthQuery(api.bundlePricing.getCurrent, {});
+});
+
 export const getTrainingBlockCatalog = cache(async () => {
   return fetchAuthQuery(api.trainingBlockPurchases.getTrainingBlockCatalog, {});
 });

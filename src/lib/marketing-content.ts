@@ -1,4 +1,4 @@
-import { trainingBlockBundle, trainingBlockPass } from "@/lib/billing";
+import { trainingBlockPass } from "@/lib/billing";
 
 export const coachingApplicationUrl = "https://forms.gle/F6qMZQee6CayBHrMA";
 
@@ -62,7 +62,7 @@ export const offers = [
       "Study the training blocks behind the results, one block at a time or all at once. One payment, yours to keep.",
     details: [
       `$${trainingBlockPass.price} per block`,
-      `$${trainingBlockBundle.price} for every block so far`,
+      "Bundle every block so far",
       "Workout library and performance charts for those dates",
       "Every Lab Note, past and future",
       "Add the $70 membership for new workouts",

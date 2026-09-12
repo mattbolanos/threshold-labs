@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { AdminBundlePricing } from "@/components/admin/admin-bundle-pricing";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { AdminQuickLinks } from "@/components/admin/admin-quick-links";
 import { AdminWorkoutList } from "@/components/admin/admin-workout-list";
@@ -19,6 +20,7 @@ async function AdminPageContent() {
     <div className="flex flex-col gap-10">
       <AdminPageHeader />
       <AdminQuickLinks />
+      <AdminBundlePricing />
       <AdminWorkoutList />
     </div>
   );

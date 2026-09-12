@@ -44,6 +44,7 @@ const verify = (
   verifyTrainingBlockCheckoutSession({
     checkoutSession,
     expectedBlockPriceId: BLOCK_PRICE_ID,
+    expectedBundleAmountCents: 40_000,
     expectedBundlePriceId: BUNDLE_PRICE_ID,
     expectedReferenceId,
   });
@@ -51,8 +52,8 @@ const verify = (
 describe("verifyTrainingBlockCheckoutSession", () => {
   test("accepts a paid single-block checkout for the exact price and user", () => {
     expect(verify(createCheckoutSession())).toEqual({
-      purchaseType: "block",
       purchasedAt: 1_788_400_800_000,
+      purchaseType: "block",
       referenceId: "user_123",
       stripeCheckoutSessionId: "cs_test_123",
       stripeCustomerId: "cus_123",

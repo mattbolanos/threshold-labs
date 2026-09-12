@@ -128,6 +128,16 @@ export default defineSchema({
     stripeSubscriptionId: v.string(),
   }).index("by_stripe_subscription", ["stripeSubscriptionId"]),
 
+  trainingBlockBundlePrices: defineTable({
+    amountCents: v.number(),
+    createdAt: v.number(),
+    createdByUserId: v.string(),
+    revision: v.number(),
+    stripePriceId: v.string(),
+  })
+    .index("by_revision", ["revision"])
+    .index("by_stripe_price", ["stripePriceId"]),
+
   trainingBlockPurchases: defineTable({
     accessEnd: v.string(),
     accessStart: v.string(),

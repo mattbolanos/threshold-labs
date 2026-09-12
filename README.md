@@ -58,12 +58,13 @@ fall back to the Better Auth record's creation and end dates.
 Training blocks are sold as one-time Stripe payments, with or without a
 membership: $100 for a single block once it has started (start date on or
 before today in Eastern time, so the in-progress block is included and shows
-the workouts published so far), or $400 for every started block (completed and in progress) that exists at
+the workouts published so far), or an admin-set bundle price (initially $400) for every started block
+(completed and in progress) that exists at
 purchase time. Each purchase
 is a `checkout.session.completed` payment-mode session created by
 `trainingBlockPurchases.createCheckout`; the block id and purchase type travel
 in the session metadata. The webhook handler and the success page both verify
-the session (configured price, exact USD amount, paid status, purchasing user)
+the session (approved price, exact USD amount, paid status, purchasing user)
 and then write one `trainingBlockPurchases` row per granted block, snapshotting
 the block's dates and title. Blocks already owned are skipped, and the checkout
 session id keeps the grant idempotent.
@@ -188,12 +189,20 @@ Eastern time, and join the bundle at that time. No separate Stripe product is
 needed for each new block. An existing bundle purchase keeps only the blocks
 included when it was bought.
 
-To change the bundle price, create a new one-time USD price on the existing
-Stripe bundle product, update `STRIPE_TRAINING_BLOCK_BUNDLE_PRICE_ID`, and change
-`TRAINING_BLOCK_BUNDLE_PRICE_CENTS` in `convex/lib/trainingBlockPurchases.ts`.
-The site display and payment verification share that amount. Deploy the site
-and Convex changes together. Finish or expire open checkouts before switching
-prices, because confirmation verifies the configured price ID and amount.
+Admins can change the bundle price in **Admin → Training block bundle**. The
+update creates a new one-time USD price on the existing Stripe bundle product
+and saves its amount and price ID in Convex. New catalog views and checkouts use
+that price immediately, without environment changes or redeployment. Existing
+purchases are unchanged, and checkouts opened earlier can still complete at
+their original price. Concurrent edits require refreshing before retrying.
+
+`STRIPE_TRAINING_BLOCK_BUNDLE_PRICE_ID` and the $400 default are the initial
+bootstrap price only. After the first admin update, `trainingBlockBundlePrices`
+is authoritative and retains approved price history for payment verification.
+Keep previous Stripe prices available for open checkouts. The app supplies the
+saved price ID explicitly; it does not use the Stripe product's default price.
+Run pricing changes separately in preview (test Stripe) and production (live
+Stripe). Anonymous preview auth bypass cannot change prices.
 
 ### Stripe membership description
 

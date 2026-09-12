@@ -1,7 +1,4 @@
-import {
-  TRAINING_BLOCK_BUNDLE_PRICE_CENTS,
-  TRAINING_BLOCK_PRICE_CENTS,
-} from "../../convex/lib/trainingBlockPurchases";
+import { TRAINING_BLOCK_PRICE_CENTS } from "../../convex/lib/trainingBlockPurchases";
 
 export const INSIDE_LAB_PLAN_NAME = "inside-the-lab";
 
@@ -53,10 +50,17 @@ export const trainingBlockPass = {
 } as const;
 
 export const trainingBlockBundle = {
-  price: TRAINING_BLOCK_BUNDLE_PRICE_CENTS / 100,
-  priceLabel: `$${TRAINING_BLOCK_BUNDLE_PRICE_CENTS / 100} once`,
   title: "All current training blocks",
 } as const;
+
+export function formatBundlePrice(amountCents: number) {
+  return new Intl.NumberFormat("en-US", {
+    currency: "USD",
+    maximumFractionDigits: 2,
+    minimumFractionDigits: amountCents % 100 === 0 ? 0 : 2,
+    style: "currency",
+  }).format(amountCents / 100);
+}
 
 export interface TrainingAccessWindow {
   from: string;

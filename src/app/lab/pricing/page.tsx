@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/page-header";
 import {
   getCurrentLabAccess,
   getPendingDiscountOffer,
+  getTrainingBlockBundlePrice,
   getTrainingBlockCatalog,
 } from "@/lib/auth";
 
@@ -16,10 +17,11 @@ export const metadata: Metadata = {
 };
 
 async function PricingPageContent() {
-  const [access, blocks, discountOffer] = await Promise.all([
+  const [access, blocks, discountOffer, bundlePrice] = await Promise.all([
     getCurrentLabAccess(),
     getTrainingBlockCatalog(),
     getPendingDiscountOffer(),
+    getTrainingBlockBundlePrice(),
   ]);
 
   return (
@@ -28,6 +30,7 @@ async function PricingPageContent() {
 
       <MembershipCheckout
         blocks={blocks}
+        bundleAmountCents={bundlePrice.amountCents}
         discountOffer={discountOffer}
         hasMembership={access.source === "subscription"}
         surface="pricing"

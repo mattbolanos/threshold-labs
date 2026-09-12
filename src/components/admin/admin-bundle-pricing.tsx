@@ -38,10 +38,7 @@ export function AdminBundlePricing() {
         {price ? (
           <BundlePriceForm price={price} />
         ) : (
-          <div
-            aria-busy="true"
-            className="flex flex-col gap-3"
-          >
+          <div aria-busy="true" className="flex flex-col gap-3">
             <output className="sr-only">Loading bundle price…</output>
             <Skeleton className="h-8 w-28" />
             <Skeleton className="h-10 w-full max-w-sm" />

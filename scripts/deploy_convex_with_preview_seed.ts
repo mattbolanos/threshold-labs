@@ -1,32 +1,38 @@
 import { runCommand, seedConvexData } from "./seed_convex_data";
+import {
+  getConvexPreviewName,
+  shouldSeedConvexPreview,
+} from "./sync_convex_preview_environment";
 
-const getPreviewName = () =>
-  process.env.CONVEX_PREVIEW_NAME ??
-  process.env.VERCEL_GIT_COMMIT_REF ??
-  process.env.GITHUB_HEAD_REF ??
-  process.env.GITHUB_REF_NAME;
-
-const shouldSeedPreview = () =>
-  process.env.CONVEX_SEED_PREVIEW === "true" ||
-  process.env.VERCEL_ENV === "preview";
-
-runCommand("bunx", [
+const previewName = getConvexPreviewName(process.env);
+const shouldSeedPreview = shouldSeedConvexPreview(process.env);
+const deployArgs = [
   "convex",
   "deploy",
   "--cmd",
-  "bun run build",
+  "bun scripts/build_with_convex_preview_environment.ts",
   "--cmd-url-env-var-name",
   "NEXT_PUBLIC_CONVEX_URL",
-]);
+];
 
-if (!shouldSeedPreview()) {
+if (process.env.CONVEX_DEPLOY_KEY?.startsWith("preview:")) {
+  if (!previewName) {
+    throw new Error(
+      "Missing preview name. Set CONVEX_PREVIEW_NAME, VERCEL_GIT_COMMIT_REF, GITHUB_HEAD_REF, or GITHUB_REF_NAME.",
+    );
+  }
+
+  deployArgs.push("--preview-name", previewName);
+}
+
+runCommand("bunx", deployArgs);
+
+if (!shouldSeedPreview) {
   process.stdout.write(
-    "Skipping Convex preview seed outside preview deployment.\n",
+    "Skipping Convex seed; preserving existing deployment data.\n",
   );
   process.exit(0);
 }
-
-const previewName = getPreviewName();
 
 if (!previewName) {
   throw new Error(

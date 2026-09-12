@@ -42,7 +42,7 @@ We are watching three simple signals:
 - Easy days remain genuinely easy.
 - Sleep and appetite return to baseline within 24 hours.
 
-When those stay stable, progression is straightforward. When they drift, the right move is usually to hold the load—not force another breakthrough.`,
+When those stay stable, progression is straightforward. When they drift, the right move is usually to hold the load–not force another breakthrough.`,
     daysAgo: 0,
     excerpt:
       "Consistency is easier to coach when we judge the block by repeatable weeks, not one standout session.",
@@ -119,7 +119,7 @@ Quality first. Density later. The transfer comes from owning the position before
 
 Training gets noisy when pace, volume, density, and exercise selection all change at once. A cleaner progression changes one variable and watches the response.
 
-Add a rep, extend the work interval, or shorten recovery—but rarely all three in the same week. This makes the result easier to interpret and the next decision easier to defend.
+Add a rep, extend the work interval, or shorten recovery–but rarely all three in the same week. This makes the result easier to interpret and the next decision easier to defend.
 
 Simple progressions are not timid. They are legible.`,
     daysAgo: 27,

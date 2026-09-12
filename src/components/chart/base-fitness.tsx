@@ -6,7 +6,7 @@ import { ChartSkeleton } from "@/components/skeletons/chart";
 import { ComboChart } from "@/components/ui/chart/combo-chart";
 import { useChartRange } from "@/hooks/use-chart-state";
 import { withTrainingBlockChartContext } from "@/lib/training-blocks";
-import { cn } from "@/lib/utils";
+import { cn, formatShortDate } from "@/lib/utils";
 import { api } from "../../../convex/_generated/api";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import {
@@ -16,25 +16,22 @@ import {
 
 const Y_AXIS_PADDING_RATIO = 0.1;
 
-const formatFitnessValue = (value: number) =>
-  value.toLocaleString("en-US", {
-    maximumFractionDigits: 0,
-    minimumFractionDigits: 0,
-  });
+const FITNESS_FORMATTER = new Intl.NumberFormat("en-US", {
+  maximumFractionDigits: 0,
+  minimumFractionDigits: 0,
+});
+const COMPACT_DATE_FORMATTER = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  timeZone: "UTC",
+  year: "2-digit",
+});
+const formatFitnessValue = (value: number) => FITNESS_FORMATTER.format(value);
 
 const formatDate = (value: number | string) =>
-  new Date(`${value}T00:00:00.000Z`).toLocaleDateString("en-US", {
-    day: "numeric",
-    month: "short",
-    timeZone: "UTC",
-  });
+  formatShortDate(new Date(`${value}T00:00:00.000Z`));
 
 const formatCompactDate = (value: number | string) =>
-  new Date(`${value}T00:00:00.000Z`).toLocaleDateString("en-US", {
-    month: "short",
-    timeZone: "UTC",
-    year: "2-digit",
-  });
+  COMPACT_DATE_FORMATTER.format(new Date(`${value}T00:00:00.000Z`));
 
 const getPaddedYAxisDomain = (
   data: ReadonlyArray<{ baseFitness: number; trainingImpact: number }>,

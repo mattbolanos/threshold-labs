@@ -10,7 +10,7 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="noise-texture relative flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden py-10">
+    <div className="noise-texture relative flex min-h-dvh items-center justify-center overflow-clip py-10">
       {/* Diagonal slash lines — athletic motif */}
       <div
         aria-hidden="true"
@@ -48,7 +48,9 @@ export default function AuthLayout({
         className="border-primary/15 absolute right-8 bottom-8 h-16 w-16 border-r-2 border-b-2"
       />
 
-      {children}
+      <div className="relative z-10 flex w-full -translate-y-6 justify-center sm:translate-y-0">
+        {children}
+      </div>
     </div>
   );
 }

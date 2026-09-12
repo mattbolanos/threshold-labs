@@ -14,7 +14,7 @@ export function CurrentTrainingBlockSkeleton() {
 }
 
 type CurrentTrainingBlockProps = {
-  block: Doc<"trainingBlocks"> | null;
+  block?: Doc<"trainingBlocks"> | null;
 };
 
 export function CurrentTrainingBlock({ block }: CurrentTrainingBlockProps) {

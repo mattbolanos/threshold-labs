@@ -9,7 +9,6 @@ import {
 } from "@tanstack/react-table";
 import { useQuery } from "convex/react";
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
-import { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -144,10 +143,6 @@ const COLUMN_GROUPS: ColumnGroup[] = [
   },
 ];
 
-function isGroupStart(key: string) {
-  return COLUMN_GROUPS.some((g) => g.columns[0].key === key);
-}
-
 function SortIcon({
   column,
 }: {
@@ -159,8 +154,8 @@ function SortIcon({
   return <ArrowUpDown className="ml-1 inline h-3 w-3 opacity-30" />;
 }
 
-function buildColumns(): ColumnDef<WeeklyTotal>[] {
-  const weekCol: ColumnDef<WeeklyTotal> = {
+const COLUMNS: ColumnDef<WeeklyTotal>[] = [
+  {
     accessorKey: "week",
     cell: ({ getValue }) => (
       <span className="px-1.5 font-medium tabular-nums">
@@ -180,37 +175,36 @@ function buildColumns(): ColumnDef<WeeklyTotal>[] {
       </Button>
     ),
     meta: { sticky: true },
-  };
-
-  const dataCols: ColumnDef<WeeklyTotal>[] = COLUMN_GROUPS.flatMap((group) =>
-    group.columns.map((col): ColumnDef<WeeklyTotal> => ({
-      accessorKey: col.key,
-      cell: ({ getValue }) => {
-        const value = getValue<number>();
-        if (value === 0) {
-          return <span className="text-muted-foreground/40">&mdash;</span>;
-        }
-        return col.format(value);
-      },
-      header: ({ column }) => (
-        <Button
-          className="px-1.5!"
-          disabled={!column.getCanSort()}
-          onClick={column.getToggleSortingHandler()}
-          size="sm"
-          type="button"
-          variant="ghost"
-        >
-          {col.label}
-          <SortIcon column={column} />
-        </Button>
-      ),
-      meta: { groupStart: isGroupStart(col.key) },
-    })),
-  );
-
-  return [weekCol, ...dataCols];
-}
+  },
+  ...COLUMN_GROUPS.flatMap((group) =>
+    group.columns.map(
+      (col, index): ColumnDef<WeeklyTotal> => ({
+        accessorKey: col.key,
+        cell: ({ getValue }) => {
+          const value = getValue<number>();
+          if (value === 0) {
+            return <span className="text-muted-foreground/40">&mdash;</span>;
+          }
+          return col.format(value);
+        },
+        header: ({ column }) => (
+          <Button
+            className="px-1.5!"
+            disabled={!column.getCanSort()}
+            onClick={column.getToggleSortingHandler()}
+            size="sm"
+            type="button"
+            variant="ghost"
+          >
+            {col.label}
+            <SortIcon column={column} />
+          </Button>
+        ),
+        meta: { groupStart: index === 0 },
+      }),
+    ),
+  ),
+];
 
 function TableSkeleton() {
   return (
@@ -237,10 +231,8 @@ export function TotalsTable() {
     to: range?.to ?? undefined,
   });
 
-  const columns = useMemo(() => buildColumns(), []);
-
   const table = useReactTable({
-    columns,
+    columns: COLUMNS,
     data: data ?? [],
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -297,12 +289,10 @@ export function TotalsTable() {
         <TableRow>
           {headerGroups[0].headers.map((header) => {
             const meta = header.column.columnDef.meta as
-              { sticky?: boolean; groupStart?: boolean } | undefined;
+              | { sticky?: boolean; groupStart?: boolean }
+              | undefined;
             if (meta?.sticky) {
-              // Week column — already rendered as rowSpan={2} above, but we
-              // need the sort button. We render it inside the rowSpan cell
-              // using a portal-like approach. Instead, let's just skip it here
-              // and put the sort button in the rowSpan cell above.
+              // The week header spans both header rows.
               return null;
             }
             return (
@@ -327,7 +317,8 @@ export function TotalsTable() {
           <TableRow key={row.id}>
             {row.getVisibleCells().map((cell) => {
               const meta = cell.column.columnDef.meta as
-                { sticky?: boolean; groupStart?: boolean } | undefined;
+                | { sticky?: boolean; groupStart?: boolean }
+                | undefined;
               return (
                 <TableCell
                   className={cn(

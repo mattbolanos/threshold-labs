@@ -18,7 +18,7 @@ export function BlockContent({ className, workout }: BlockContentProps) {
   return (
     <div
       className={cn(
-        "mb-4 space-y-1 overflow-y-auto px-2 md:-ms-1.5 md:px-0",
+        "mb-4 flex flex-col gap-1 px-2 md:-ms-1.5 md:px-0",
         className,
       )}
     >
@@ -45,9 +45,9 @@ export function BlockContent({ className, workout }: BlockContentProps) {
         />
       ) : null}
       {hasText && (
-        <div className="space-y-2 px-2.5">
+        <div className="flex flex-col gap-2 px-2.5">
           <Separator />
-          <div className="space-y-6">
+          <div className="flex flex-col gap-6">
             <FreeText text={workout.workoutPlan} title="Plan" />
             <FreeText text={workout.notes ?? ""} title="Notes" />
           </div>

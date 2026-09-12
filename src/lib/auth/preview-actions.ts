@@ -1,11 +1,11 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { isVercelPreview } from "./preview.server";
+import { isPreviewAuthBypassEnabled } from "./preview.server";
 import { PREVIEW_ROLE_COOKIE, type PreviewRole } from "./preview-role";
 
 export async function setPreviewRole(role: PreviewRole) {
-  if (!isVercelPreview) {
+  if (!isPreviewAuthBypassEnabled) {
     return;
   }
 

@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { ROLLING_LOAD_DEFINITIONS, RUN_MIX_DEFINITIONS } from "@/app/constants";
 import { AdminBackLink } from "@/components/admin/admin-back-link";
 import { ChartControls } from "@/components/chart/controls";
 import { InfoPopover } from "@/components/chart/info-popover";
 import { RollingLoadChart } from "@/components/chart/rolling-load";
 import { RunMixChart } from "@/components/chart/run-mix";
+import { LabRouteFallback } from "@/components/lab-route-fallback";
 import { TotalsTable } from "@/components/totals/totals-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartStateProvider } from "@/hooks/use-chart-state";
@@ -15,7 +17,7 @@ export const metadata: Metadata = {
   title: "Totals | Admin",
 };
 
-export default async function TotalsPage() {
+async function TotalsPageContent() {
   await checkAdmin();
 
   return (
@@ -81,5 +83,13 @@ export default async function TotalsPage() {
         </div>
       </ChartStateProvider>
     </>
+  );
+}
+
+export default function TotalsPage() {
+  return (
+    <Suspense fallback={<LabRouteFallback />}>
+      <TotalsPageContent />
+    </Suspense>
   );
 }

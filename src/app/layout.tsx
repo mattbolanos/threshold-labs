@@ -4,7 +4,11 @@ import Script from "next/script";
 import "./globals.css";
 import { Suspense } from "react";
 import { SiteShell } from "@/components/site-shell";
-import { getPreviewAuthState } from "@/lib/auth/preview.server";
+import { Toaster } from "@/components/ui/toast";
+import {
+  getPreviewAuthState,
+  isVercelPreview,
+} from "@/lib/auth/preview.server";
 import { getToken } from "@/lib/auth-server";
 
 const outfit = Outfit({
@@ -35,9 +39,10 @@ async function AppShell({ children }: { children: React.ReactNode }) {
     <SiteShell
       initialToken={initialToken}
       isPreview={preview.enabled}
+      isVercelPreview={isVercelPreview}
       previewRole={preview.role}
     >
-      <Suspense>{children}</Suspense>
+      <Suspense fallback={null}>{children}</Suspense>
     </SiteShell>
   );
 }
@@ -50,6 +55,7 @@ export default function RootLayout({
   return (
     <html
       className={`${outfit.variable} ${jetbrainsMono.variable} dark`}
+      data-scroll-behavior="smooth"
       lang="en"
       suppressHydrationWarning
     >
@@ -64,9 +70,10 @@ export default function RootLayout({
       </head>
       <body className="min-h-full overscroll-y-contain bg-background text-foreground antialiased">
         <main>
-          <Suspense>
+          <Suspense fallback={null}>
             <AppShell>{children}</AppShell>
           </Suspense>
+          <Toaster />
         </main>
       </body>
     </html>

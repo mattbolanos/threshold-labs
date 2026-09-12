@@ -44,17 +44,17 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const roleOptions = [
   {
-    description: "Default athlete access to the app.",
+    description: "Standard member role; Lab access requires a subscription.",
     label: "Client",
     value: "client",
   },
   {
-    description: "Can administer workouts and invites.",
+    description: "Grants admin and Lab access when applied at first signup.",
     label: "Admin",
     value: "admin",
   },
   {
-    description: "Coach-level access and client support.",
+    description: "Coach label; Lab access still requires a subscription.",
     label: "Coach",
     value: "coach",
   },
@@ -125,7 +125,7 @@ export function AdminClientInviteForm() {
     )
       .then(() => {
         setStatusMessage(
-          `${normalizedEmail} saved as ${selectedRole?.label ?? "Client"} (${form.isActive ? "active" : "paused"}).`,
+          `${normalizedEmail}: ${selectedRole?.label ?? "Client"} role default saved (${form.isActive ? "active" : "paused"}).`,
         );
         setForm((prev) => ({
           ...prev,
@@ -143,20 +143,20 @@ export function AdminClientInviteForm() {
   };
 
   return (
-    <Card className="border-primary/20 from-card via-card to-muted/30 bg-gradient-to-br py-0 shadow-sm">
+    <Card className="border-primary/20 bg-gradient-to-br from-card via-card to-muted/30 py-0 shadow-sm">
       <CardHeader className="px-4 pt-4 md:px-5 md:pt-5">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div className="space-y-1">
             <CardTitle className="text-base font-semibold tracking-tight">
-              Client Access Invites
+              Pre-signup role default
             </CardTitle>
             <CardDescription>
-              Create or update an invite by email. Existing records are updated
-              automatically.
+              Save the role an email should receive at first signup. This does
+              not block account creation or change an existing user.
             </CardDescription>
           </div>
-          <Badge variant={form.isActive ? "default" : "secondary"}>
-            {form.isActive ? "Active Invite" : "Paused Invite"}
+          <Badge variant={form.isActive ? "default" : "accent"}>
+            {form.isActive ? "Default active" : "Default paused"}
           </Badge>
         </div>
       </CardHeader>
@@ -168,7 +168,7 @@ export function AdminClientInviteForm() {
 
         {errorMessage ? (
           <p
-            className="bg-destructive/10 text-destructive border-destructive/30 rounded-lg border px-3 py-2 text-sm"
+            className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
             role="alert"
           >
             {errorMessage}
@@ -176,7 +176,7 @@ export function AdminClientInviteForm() {
         ) : null}
 
         {statusMessage ? (
-          <p className="text-primary mt-3 inline-flex items-center gap-2 text-sm">
+          <p className="mt-3 inline-flex items-center gap-2 text-sm text-primary">
             <IconCheck aria-hidden className="size-4" />
             <span>{statusMessage}</span>
           </p>
@@ -187,7 +187,7 @@ export function AdminClientInviteForm() {
           onSubmit={handleSubmit}
         >
           <div className="space-y-2">
-            <Label htmlFor={emailId}>Client Email</Label>
+            <Label htmlFor={emailId}>Member Email</Label>
             <Input
               aria-describedby={emailError ? `${emailId}-error` : undefined}
               aria-invalid={emailError ? true : undefined}
@@ -213,33 +213,34 @@ export function AdminClientInviteForm() {
               value={form.email}
             />
             {emailError ? (
-              <p className="text-destructive text-sm" id={`${emailId}-error`}>
+              <p className="text-sm text-destructive" id={`${emailId}-error`}>
                 {emailError}
               </p>
             ) : (
-              <p className="text-muted-foreground text-xs">
-                Use the email your client will sign up with.
+              <p className="text-xs text-muted-foreground">
+                Use the email the member will register with.
               </p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor={nameId}>Client Name (Optional)</Label>
+            <Label htmlFor={nameId}>Member Name (Optional)</Label>
             <Input
               autoComplete="name"
+              className="min-h-11"
               id={nameId}
               name="invite_name"
               onChange={(event) =>
                 setForm((prev) => ({ ...prev, name: event.target.value }))
               }
-              placeholder="Athlete Name…"
+              placeholder="Member Name…"
               type="text"
               value={form.name}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor={roleId}>Role</Label>
+            <Label htmlFor={roleId}>Role at Signup</Label>
             <Select
               id={roleId}
               items={roleOptions}
@@ -251,7 +252,7 @@ export function AdminClientInviteForm() {
               }}
               value={form.role}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="min-h-11 w-full">
                 <SelectValue placeholder="Select a role" />
               </SelectTrigger>
               <SelectContent>
@@ -265,28 +266,31 @@ export function AdminClientInviteForm() {
                 </SelectGroup>
               </SelectContent>
             </Select>
+            <p className="text-xs text-muted-foreground">
+              {selectedRole?.description}
+            </p>
           </div>
 
           <div className="space-y-2">
-            <span className="text-sm font-medium">Invite Status</span>
-            <div className="has-focus-within bg-background rounded-lg border">
+            <span className="text-sm font-medium">Role Default Status</span>
+            <div className="has-focus-within rounded-lg border bg-background">
               <Label
                 className="cursor-pointer items-start justify-between gap-4 p-3"
                 htmlFor={statusId}
               >
                 <span className="space-y-1">
                   <span className="block text-sm font-medium">
-                    Allow Signup
+                    Apply Preassigned Role
                   </span>
-                  <span className="text-muted-foreground block text-xs">
+                  <span className="block text-xs text-muted-foreground">
                     {form.isActive
-                      ? "Client can sign up immediately."
-                      : "Invite is saved but sign up is blocked."}
+                      ? "This role will be applied when the member first signs up."
+                      : "This role is ignored; signup defaults to client."}
                   </span>
                 </span>
                 <input
                   checked={form.isActive}
-                  className="accent-primary mt-0.5 size-5 shrink-0"
+                  className="mt-0.5 size-5 shrink-0 accent-primary"
                   id={statusId}
                   name="invite_active"
                   onChange={(event) =>
@@ -301,7 +305,7 @@ export function AdminClientInviteForm() {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-end gap-2 lg:col-span-2">
+          <div className="flex flex-wrap items-center justify-end gap-3 lg:col-span-2">
             <Button
               className="min-h-11"
               disabled={isSubmitting}
@@ -327,7 +331,7 @@ export function AdminClientInviteForm() {
               ) : (
                 <IconMailPlus aria-hidden />
               )}
-              <span>Save Invite</span>
+              <span>Save Role Default</span>
             </Button>
           </div>
         </form>

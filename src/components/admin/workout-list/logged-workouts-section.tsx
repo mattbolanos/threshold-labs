@@ -40,19 +40,29 @@ export function LoggedWorkoutsSection({
   workoutTable,
 }: LoggedWorkoutsSectionProps) {
   return (
-    <>
-      <div className="flex items-end justify-between">
+    <section
+      aria-labelledby="logged-workouts-heading"
+      className="flex flex-col gap-5"
+    >
+      <header className="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
             Workouts
           </p>
-          <h3 className="text-lg font-semibold tracking-tight">
+          <h2
+            className="text-xl font-semibold tracking-tight"
+            id="logged-workouts-heading"
+          >
             Logged Workouts
-          </h3>
+          </h2>
         </div>
-        <ButtonGroup>
+        <ButtonGroup
+          aria-label="Workout visibility"
+          className="w-full sm:w-fit"
+        >
           {FILTER_OPTIONS.map((option) => (
             <Button
+              className="min-h-9 flex-1 sm:flex-none"
               key={option.value}
               onClick={() => onFilterChange(option.value)}
               size="sm"
@@ -62,54 +72,50 @@ export function LoggedWorkoutsSection({
             </Button>
           ))}
         </ButtonGroup>
-      </div>
+      </header>
 
-      <div className="border-primary/20 relative border-t pt-4">
-        <div className="bg-primary/40 absolute top-0 left-0 h-0.5 w-16" />
-
-        <div className="flex flex-col gap-3">
-          <div className="relative max-w-sm">
-            <IconSearch
-              aria-hidden
-              className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2"
-            />
-            <Input
-              aria-label="Search workouts"
-              className="pl-9"
-              onChange={(event) => onSearchChange(event.target.value)}
-              placeholder="Search by title, tag, week..."
-              type="search"
-              value={searchQuery}
-            />
-          </div>
-
-          {workouts === undefined ? (
-            <div className="text-muted-foreground py-6 text-sm">
-              Loading workouts...
-            </div>
-          ) : filteredWorkouts.length === 0 ? (
-            <Empty className="bg-muted/30 border border-dashed">
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <IconSearch />
-                </EmptyMedia>
-              </EmptyHeader>
-              <EmptyTitle>
-                {searchQuery.trim()
-                  ? "No workouts match your search."
-                  : "No workouts found for this filter."}
-              </EmptyTitle>
-            </Empty>
-          ) : (
-            <WorkoutResults
-              filteredWorkouts={filteredWorkouts}
-              onToggleVisibility={onToggleVisibility}
-              pendingVisibilityId={pendingVisibilityId}
-              workoutTable={workoutTable}
-            />
-          )}
+      <div className="flex flex-col gap-3">
+        <div className="relative w-full sm:max-w-sm">
+          <IconSearch
+            aria-hidden
+            className="text-muted-foreground pointer-events-none absolute top-1/2 start-3 size-4 -translate-y-1/2"
+          />
+          <Input
+            aria-label="Search workouts"
+            className="min-h-11 ps-9"
+            onChange={(event) => onSearchChange(event.target.value)}
+            placeholder="Search by title, tag, week..."
+            type="search"
+            value={searchQuery}
+          />
         </div>
+
+        {workouts === undefined ? (
+          <div className="text-muted-foreground py-6 text-sm">
+            Loading workouts...
+          </div>
+        ) : filteredWorkouts.length === 0 ? (
+          <Empty className="bg-muted/30 border border-dashed">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <IconSearch />
+              </EmptyMedia>
+            </EmptyHeader>
+            <EmptyTitle>
+              {searchQuery.trim()
+                ? "No workouts match your search."
+                : "No workouts found for this filter."}
+            </EmptyTitle>
+          </Empty>
+        ) : (
+          <WorkoutResults
+            filteredWorkouts={filteredWorkouts}
+            onToggleVisibility={onToggleVisibility}
+            pendingVisibilityId={pendingVisibilityId}
+            workoutTable={workoutTable}
+          />
+        )}
       </div>
-    </>
+    </section>
   );
 }

@@ -9,18 +9,27 @@ export function AdminPageHeader() {
       actions={
         <>
           <Link
-            className={buttonVariants({ variant: "outline" })}
+            className={buttonVariants({
+              className: "min-h-11 w-full sm:w-auto",
+              variant: "outline",
+            })}
             href="/lab/admin/posts/new"
           >
             <IconNotebook data-icon="inline-start" />
             <span>New Post</span>
           </Link>
-          <Link className={buttonVariants()} href="/lab/admin/workout/new">
+          <Link
+            className={buttonVariants({
+              className: "min-h-11 w-full sm:w-auto",
+            })}
+            href="/lab/admin/workout/new"
+          >
             <IconPlus data-icon="inline-start" />
             <span>New Workout</span>
           </Link>
         </>
       }
+      description="Manage member access, training content, and operations from one workspace."
       eyebrow="Admin"
       title="Workout Manager"
     />

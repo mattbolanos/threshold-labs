@@ -1,14 +1,13 @@
 "use client";
 
 import { IconArrowNarrowLeft, IconArrowNarrowRight } from "@tabler/icons-react";
-import { useConvex, useQuery } from "convex/react";
+import { useConvex } from "convex/react";
 import {
   addDays,
   addWeeks,
   isAfter,
   isBefore,
   isSameWeek,
-  parseISO,
   startOfWeek,
 } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -19,47 +18,28 @@ import { api } from "../../../convex/_generated/api";
 
 export function WeekNavigation() {
   const convex = useConvex();
-  const workoutsDateRange = useQuery(api.workouts.getWorkoutsDateRange);
-
-  const { jumpToToday, setWeekStart, today, weekStartDate } = useCalendarNav();
+  const {
+    currentWeekStart,
+    isCurrentWeekNavigable,
+    jumpToToday,
+    maxWeekStart,
+    minWeekStart,
+    setWeekStart,
+    weekStartDate,
+  } = useCalendarNav();
 
   const selectedWeekStart = startOfWeek(weekStartDate, { weekStartsOn: 1 });
-  const currentWeekStart = startOfWeek(today, { weekStartsOn: 1 });
-  const maxWorkoutWeekStart = workoutsDateRange?.maxWorkoutDate
-    ? startOfWeek(parseISO(workoutsDateRange.maxWorkoutDate.workoutDate), {
-        weekStartsOn: 1,
-      })
-    : null;
-  const minWorkoutWeekStart = workoutsDateRange?.minWorkoutDate
-    ? startOfWeek(parseISO(workoutsDateRange.minWorkoutDate.workoutDate), {
-        weekStartsOn: 1,
-      })
-    : null;
-  const latestNavigableWeekStart =
-    maxWorkoutWeekStart && isAfter(maxWorkoutWeekStart, currentWeekStart)
-      ? maxWorkoutWeekStart
-      : currentWeekStart;
-
-  const canGoForward = isBefore(selectedWeekStart, latestNavigableWeekStart);
-  const canGoBack = minWorkoutWeekStart
-    ? isAfter(selectedWeekStart, minWorkoutWeekStart)
+  const canGoForward = maxWeekStart
+    ? isBefore(selectedWeekStart, maxWeekStart)
+    : false;
+  const canGoBack = minWeekStart
+    ? isAfter(selectedWeekStart, minWeekStart)
     : false;
   const isCurrentWeek = isSameWeek(selectedWeekStart, currentWeekStart, {
     weekStartsOn: 1,
   });
-  const previousWeekCandidate = addWeeks(selectedWeekStart, -1);
-  const previousWeekStart = canGoBack
-    ? minWorkoutWeekStart &&
-      isBefore(previousWeekCandidate, minWorkoutWeekStart)
-      ? minWorkoutWeekStart
-      : previousWeekCandidate
-    : null;
-  const nextWeekCandidate = addWeeks(selectedWeekStart, 1);
-  const nextWeekStart = canGoForward
-    ? isAfter(nextWeekCandidate, latestNavigableWeekStart)
-      ? latestNavigableWeekStart
-      : nextWeekCandidate
-    : null;
+  const previousWeekStart = canGoBack ? addWeeks(selectedWeekStart, -1) : null;
+  const nextWeekStart = canGoForward ? addWeeks(selectedWeekStart, 1) : null;
 
   const prewarmWeek = (targetWeekStart: Date | null) => {
     if (!targetWeekStart) {
@@ -83,10 +63,7 @@ export function WeekNavigation() {
     void setWeekStart(previousWeekStart);
 
     const weekBeforePrevious = addWeeks(previousWeekStart, -1);
-    if (
-      !minWorkoutWeekStart ||
-      !isBefore(weekBeforePrevious, minWorkoutWeekStart)
-    ) {
+    if (!minWeekStart || !isBefore(weekBeforePrevious, minWeekStart)) {
       prewarmWeek(weekBeforePrevious);
     }
   };
@@ -99,10 +76,12 @@ export function WeekNavigation() {
     void setWeekStart(nextWeekStart);
 
     const weekAfterNext = addWeeks(nextWeekStart, 1);
-    if (!isAfter(weekAfterNext, latestNavigableWeekStart)) {
+    if (!maxWeekStart || !isAfter(weekAfterNext, maxWeekStart)) {
       prewarmWeek(weekAfterNext);
     }
   };
+
+  const canJumpToToday = isCurrentWeekNavigable && !isCurrentWeek;
 
   return (
     <ButtonGroup className="w-full lg:w-fit">
@@ -137,7 +116,7 @@ export function WeekNavigation() {
       <ButtonGroup className="hidden lg:flex">
         <Button
           aria-label="Go to current week"
-          disabled={isCurrentWeek}
+          disabled={!canJumpToToday}
           onClick={jumpToToday}
           onFocus={() => prewarmWeek(currentWeekStart)}
           onPointerEnter={() => prewarmWeek(currentWeekStart)}
@@ -151,7 +130,7 @@ export function WeekNavigation() {
         <Button
           aria-label="Go to current week"
           className="h-10 w-full text-sm"
-          disabled={isCurrentWeek}
+          disabled={!canJumpToToday}
           onClick={jumpToToday}
           onFocus={() => prewarmWeek(currentWeekStart)}
           onPointerEnter={() => prewarmWeek(currentWeekStart)}

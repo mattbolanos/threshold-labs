@@ -1,7 +1,7 @@
 import { createClient, type GenericCtx } from "@convex-dev/better-auth";
 import { convex } from "@convex-dev/better-auth/plugins";
 import { type BetterAuthOptions, betterAuth } from "better-auth/minimal";
-import { emailOTP } from "better-auth/plugins";
+import { makeFunctionReference } from "convex/server";
 import { ConvexError, v } from "convex/values";
 import { components, internal } from "./_generated/api";
 import type { DataModel } from "./_generated/dataModel";
@@ -18,6 +18,12 @@ import authSchema from "./betterAuth/schema";
 import { getAdminUsers } from "./lib/adminUsers";
 import { getAuthEnvironment } from "./lib/authEnvironment";
 import { EMAIL_OTP_EXPIRES_IN_SECONDS } from "./lib/emailOtp";
+import {
+  createEmailOtpPlugin,
+  EMAIL_OTP_SIGN_IN_PATH,
+  type EmailOtpHttpRequest,
+  type EmailOtpHttpResponse,
+} from "./lib/emailOtpAuth";
 import {
   hasActiveLabSubscription,
   INSIDE_LAB_PLAN_NAME,
@@ -136,7 +142,7 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) =>
     hooks: { before: createStripeCheckoutHook(ctx) },
     plugins: [
       convex({ authConfig }),
-      emailOTP({
+      createEmailOtpPlugin({
         allowedAttempts: 5,
         expiresIn: EMAIL_OTP_EXPIRES_IN_SECONDS,
         sendVerificationOTP: async ({ email, otp, type }) => {
@@ -175,8 +181,38 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) =>
     },
   }) satisfies BetterAuthOptions;
 
-export const createAuth = (ctx: GenericCtx<DataModel>) =>
-  betterAuth(createAuthOptions(ctx));
+const signInEmailOtp = makeFunctionReference<
+  "mutation",
+  EmailOtpHttpRequest,
+  EmailOtpHttpResponse
+>("emailOtp:signInEmailOtp");
+
+export const createAuth = (ctx: GenericCtx<DataModel>) => {
+  const auth = betterAuth(createAuthOptions(ctx));
+  const handleRequest = auth.handler;
+  // HTTP actions split adapter writes into separate transactions. Run the
+  // entire OTP verification and session creation in one mutation instead.
+  if ("runMutation" in ctx && !("db" in ctx)) {
+    auth.handler = async (request) => {
+      if (
+        request.method !== "POST" ||
+        new URL(request.url).pathname !== EMAIL_OTP_SIGN_IN_PATH
+      ) {
+        return handleRequest(request);
+      }
+      const result = await ctx.runMutation(signInEmailOtp, {
+        body: await request.text(),
+        headers: Object.fromEntries(request.headers.entries()),
+        url: request.url,
+      });
+      return new Response(result.body, {
+        headers: result.headers,
+        status: result.status,
+      });
+    };
+  }
+  return auth;
+};
 
 export const getEffectiveAuthUser = async (
   ctx: QueryCtx | MutationCtx | ActionCtx,

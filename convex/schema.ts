@@ -123,6 +123,11 @@ export default defineSchema({
     updatedAt: v.number(),
   }).index("by_start_date", ["startDate"]),
 
+  stripeSubscriptionReconciliations: defineTable({
+    generation: v.number(),
+    stripeSubscriptionId: v.string(),
+  }).index("by_stripe_subscription", ["stripeSubscriptionId"]),
+
   trainingBlockPurchases: defineTable({
     accessEnd: v.string(),
     accessStart: v.string(),

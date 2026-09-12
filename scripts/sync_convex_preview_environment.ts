@@ -35,6 +35,21 @@ export const shouldSyncStripePreviewEnvironment = (environment: Environment) =>
   environment.VERCEL_ENV === "preview" &&
   getConvexPreviewName(environment) === STRIPE_PREVIEW_BRANCH;
 
+export const shouldSeedConvexPreview = (environment: Environment) => {
+  if (environment.VERCEL_ENV !== "preview") return false;
+
+  const override = environment.CONVEX_SEED_PREVIEW;
+  if (override !== undefined && override !== "true" && override !== "false") {
+    throw new Error('CONVEX_SEED_PREVIEW must be either "true" or "false".');
+  }
+
+  // Billing records refer to seed document IDs. Keep the long-lived Stripe
+  // preview stable across deploys; disposable previews can still be reseeded.
+  return override !== undefined
+    ? override === "true"
+    : getConvexPreviewName(environment) !== STRIPE_PREVIEW_BRANCH;
+};
+
 const requireSourceVariables = (environment: Environment) => {
   const missing = REQUIRED_SOURCE_VARIABLES.filter(
     (name) => !environment[name]?.trim(),
@@ -46,15 +61,29 @@ const requireSourceVariables = (environment: Environment) => {
     );
   }
 
-  return Object.fromEntries(
+  const variables = Object.fromEntries(
     REQUIRED_SOURCE_VARIABLES.map((name) => [
       name,
-      environment[name] as string,
+      (environment[name] as string).trim(),
     ]),
   ) as Pick<
     ConvexPreviewEnvironment,
     (typeof REQUIRED_SOURCE_VARIABLES)[number]
   >;
+
+  for (const name of [
+    "STRIPE_INSIDE_LAB_PRICE_ID",
+    "STRIPE_TRAINING_BLOCK_PRICE_ID",
+    "STRIPE_TRAINING_BLOCK_BUNDLE_PRICE_ID",
+  ] as const) {
+    if (!/^price_[A-Za-z0-9]+$/.test(variables[name])) {
+      throw new Error(
+        `${name} must contain only a Stripe price ID (price_...).`,
+      );
+    }
+  }
+
+  return variables;
 };
 
 const normalizeUrl = (value: string) =>

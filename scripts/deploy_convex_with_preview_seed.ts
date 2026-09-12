@@ -1,11 +1,11 @@
 import { runCommand, seedConvexData } from "./seed_convex_data";
-import { getConvexPreviewName } from "./sync_convex_preview_environment";
-
-const shouldSeedPreview = () =>
-  process.env.CONVEX_SEED_PREVIEW === "true" ||
-  process.env.VERCEL_ENV === "preview";
+import {
+  getConvexPreviewName,
+  shouldSeedConvexPreview,
+} from "./sync_convex_preview_environment";
 
 const previewName = getConvexPreviewName(process.env);
+const shouldSeedPreview = shouldSeedConvexPreview(process.env);
 const deployArgs = [
   "convex",
   "deploy",
@@ -27,9 +27,9 @@ if (process.env.CONVEX_DEPLOY_KEY?.startsWith("preview:")) {
 
 runCommand("bunx", deployArgs);
 
-if (!shouldSeedPreview()) {
+if (!shouldSeedPreview) {
   process.stdout.write(
-    "Skipping Convex preview seed outside preview deployment.\n",
+    "Skipping Convex seed; preserving existing deployment data.\n",
   );
   process.exit(0);
 }

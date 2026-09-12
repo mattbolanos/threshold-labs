@@ -26,7 +26,12 @@ const discountTypeValidator = v.union(
   v.literal("free_forever"),
 );
 
-const redeemableCodeStatuses = new Set(["active", "provisioning", "revoked"]);
+const redeemableCodeStatuses = new Set([
+  "active",
+  "provisioning",
+  "revoked",
+  "redeemed",
+]);
 
 export const listAdminDiscountCodes = query({
   args: {},
@@ -402,18 +407,22 @@ export const markDiscountCodesRedeemed = internalMutation({
         )
         .unique();
       if (assignment && redeemableCodeStatuses.has(assignment.status)) {
+        // An admin may observe Stripe's redemption before its webhook arrives.
+        // Later deliveries must enrich that record and still grant its history.
+        const resolvedSubscriptionId =
+          assignment.stripeSubscriptionId ?? stripeSubscriptionId;
         await ctx.db.patch(assignment._id, {
-          redeemedAt,
-          redeemedByEmail,
+          redeemedAt: assignment.redeemedAt ?? redeemedAt,
+          redeemedByEmail: assignment.redeemedByEmail ?? redeemedByEmail,
           revokedAt: undefined,
           status: "redeemed",
-          stripeCustomerId,
-          stripeSubscriptionId,
-          updatedAt: redeemedAt,
+          stripeCustomerId: assignment.stripeCustomerId ?? stripeCustomerId,
+          stripeSubscriptionId: resolvedSubscriptionId,
+          updatedAt: Math.max(assignment.updatedAt, redeemedAt),
         });
 
-        if (stripeSubscriptionId) {
-          await grantFullTrainingHistory(ctx, stripeSubscriptionId);
+        if (resolvedSubscriptionId) {
+          await grantFullTrainingHistory(ctx, resolvedSubscriptionId);
         }
       }
     }

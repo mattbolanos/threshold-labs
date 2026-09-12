@@ -1,8 +1,14 @@
 import { makeFunctionReference } from "convex/server";
 import { v } from "convex/values";
-import { action } from "./_generated/server";
+import { action, internalMutation } from "./_generated/server";
 import { authComponent, createAuth, createAuthOptions } from "./auth";
 import { getEmailOtpRequestStatus } from "./lib/emailOtp";
+import {
+  clearSignInOtps,
+  EMAIL_OTP_SIGN_IN_PATH,
+  type EmailOtpHttpResponse,
+  serializeAuthResponse,
+} from "./lib/emailOtpAuth";
 
 const emailOtpModeValidator = v.union(v.literal("login"), v.literal("signup"));
 
@@ -21,6 +27,56 @@ const sendEmailOtp = makeFunctionReference<
   },
   null
 >("emails:sendEmailOtp");
+
+const createEmailOtpRef = makeFunctionReference<
+  "mutation",
+  { email: string },
+  string
+>("emailOtp:createEmailOtp");
+
+export const createEmailOtp = internalMutation({
+  args: { email: v.string() },
+  handler: async (ctx, { email }): Promise<string> => {
+    const auth = createAuth(ctx);
+    const { adapter } = await auth.$context;
+    const normalizedEmail = email.trim().toLowerCase();
+    await clearSignInOtps(adapter, normalizedEmail);
+    return auth.api.createVerificationOTP({
+      body: { email: normalizedEmail, type: "sign-in" },
+    });
+  },
+});
+
+export const signInEmailOtp = internalMutation({
+  args: {
+    body: v.string(),
+    headers: v.record(v.string(), v.string()),
+    url: v.string(),
+  },
+  handler: async (
+    ctx,
+    { body, headers, url },
+  ): Promise<EmailOtpHttpResponse> => {
+    if (new URL(url).pathname !== EMAIL_OTP_SIGN_IN_PATH) {
+      throw new Error("Only email OTP sign-in can use this transaction.");
+    }
+    const auth = createAuth(ctx);
+    const request = new Request(url, { body, headers, method: "POST" });
+    const input = await request
+      .clone()
+      .json()
+      .catch(() => null);
+    if (typeof input?.email === "string") {
+      const { adapter } = await auth.$context;
+      // Remove duplicates left by earlier versions before Better Auth consumes
+      // by identifier. Its Convex adapter deletes only one matching record.
+      await clearSignInOtps(adapter, input.email.toLowerCase(), true);
+    }
+    // The handler returns failed attempts as HTTP responses, so their updated
+    // attempt count commits instead of rolling back with a thrown APIError.
+    return serializeAuthResponse(await auth.handler(request));
+  },
+});
 
 export const requestEmailOtp = action({
   args: {
@@ -54,11 +110,8 @@ export const requestEmailOtp = action({
       };
     }
 
-    const otp = await createAuth(ctx).api.createVerificationOTP({
-      body: {
-        email: normalizedEmail,
-        type: "sign-in",
-      },
+    const otp = await ctx.runMutation(createEmailOtpRef, {
+      email: normalizedEmail,
     });
 
     try {

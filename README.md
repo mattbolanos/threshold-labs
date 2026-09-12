@@ -40,7 +40,7 @@ membership `price_...`, the live $100 one-time training-block `price_...`, the
 live $400 one-time all-blocks `price_...`, and the signing secret for the live
 webhook endpoint at
 `https://your-production-domain.com/api/auth/stripe/webhook`. Subscribe that
-endpoint to `checkout.session.completed`, `customer.subscription.created`,
+endpoint to `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `customer.subscription.created`,
 `customer.subscription.updated`, and `customer.subscription.deleted`.
 
 Each Stripe subscription owns one training-data window in the
@@ -139,11 +139,24 @@ STRIPE_WEBHOOK_SECRET
 `CONVEX_DEPLOY_KEY` must also be a Convex preview deploy key. `SITE_URL` is set
 automatically from Vercel's stable branch URL, and `PREVIEW_AUTH_BYPASS` defaults
 to `true` unless the Vercel Preview environment explicitly sets it to `false`.
-The sync is atomic and fails the deployment if a required variable is missing.
+The sync is atomic and fails the deployment if a required variable is missing
+or a price variable contains anything other than a `price_...` ID.
 It also rejects live-mode Stripe secret keys; use one coherent set of Stripe
 test-mode credentials and prices for the preview. Keep Vercel's **Automatically
 expose System Environment Variables** project setting enabled so the branch name
 and branch URL are available during the build.
+
+Create a separate test webhook for the Stripe preview at
+`https://pastel-salmon-875.convex.site/api/auth/stripe/webhook`, with the five
+events listed above, and scope its `STRIPE_WEBHOOK_SECRET` to the `stripe`
+Vercel Preview branch. The direct Convex URL accepts Stripe deliveries without
+going through Vercel's preview login protection.
+
+The persistent `stripe` preview preserves its data on every deployment.
+Other previews still receive fresh seed data by default. Set
+`CONVEX_SEED_PREVIEW=false` to preserve another preview, or deliberately set it
+to `true` to replace a preview's seed tables. Replacing blocks invalidates
+existing purchase references, so keep it disabled for billing acceptance tests.
 
 All Vercel previews also sync `VERCEL_ENV=preview` to their Convex preview
 deployment. When `PREVIEW_AUTH_BYPASS=false`, signed-in users can enable

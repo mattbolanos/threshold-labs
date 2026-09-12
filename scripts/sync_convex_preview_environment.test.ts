@@ -4,6 +4,7 @@ import {
   buildConvexPreviewEnvironment,
   getVercelPreviewSiteUrl,
   serializeEnvironment,
+  shouldSeedConvexPreview,
   shouldSyncStripePreviewEnvironment,
   syncConvexPreviewEnvironment,
 } from "./sync_convex_preview_environment";
@@ -18,7 +19,7 @@ const validEnvironment = {
   RESEND_API_KEY: "re_preview",
   STRIPE_INSIDE_LAB_PRICE_ID: "price_membership",
   STRIPE_SECRET_KEY: "sk_test_preview",
-  STRIPE_TRAINING_BLOCK_BUNDLE_PRICE_ID: "price_block_bundle",
+  STRIPE_TRAINING_BLOCK_BUNDLE_PRICE_ID: "price_blockbundle",
   STRIPE_TRAINING_BLOCK_PRICE_ID: "price_block",
   STRIPE_WEBHOOK_SECRET: "whsec_preview",
   VERCEL_BRANCH_URL: "threshold-labs-git-stripe.vercel.app",
@@ -27,6 +28,51 @@ const validEnvironment = {
 };
 
 describe("stripe Convex preview environment", () => {
+  test("keeps billing fixtures stable across preview builds", () => {
+    expect(shouldSeedConvexPreview(validEnvironment)).toBe(false);
+    expect(
+      shouldSeedConvexPreview({
+        ...validEnvironment,
+        VERCEL_GIT_COMMIT_REF: "disposable-preview",
+      }),
+    ).toBe(true);
+    expect(
+      shouldSeedConvexPreview({
+        ...validEnvironment,
+        CONVEX_SEED_PREVIEW: "false",
+        VERCEL_GIT_COMMIT_REF: "disposable-preview",
+      }),
+    ).toBe(false);
+    expect(
+      shouldSeedConvexPreview({
+        ...validEnvironment,
+        CONVEX_SEED_PREVIEW: "true",
+        VERCEL_ENV: "production",
+      }),
+    ).toBe(false);
+  });
+
+  test("rejects malformed price values before attempting a sync", () => {
+    for (const name of [
+      "STRIPE_INSIDE_LAB_PRICE_ID",
+      "STRIPE_TRAINING_BLOCK_PRICE_ID",
+      "STRIPE_TRAINING_BLOCK_BUNDLE_PRICE_ID",
+    ]) {
+      expect(() =>
+        buildConvexPreviewEnvironment({
+          ...validEnvironment,
+          [name]: `${name}=price_example`,
+        }),
+      ).toThrow(`${name} must contain only a Stripe price ID`);
+    }
+    expect(
+      buildConvexPreviewEnvironment({
+        ...validEnvironment,
+        STRIPE_INSIDE_LAB_PRICE_ID: " price_membership\n",
+      }).STRIPE_INSIDE_LAB_PRICE_ID,
+    ).toBe("price_membership");
+  });
+
   test("syncs only the stripe Vercel preview", () => {
     expect(shouldSyncStripePreviewEnvironment(validEnvironment)).toBe(true);
     expect(

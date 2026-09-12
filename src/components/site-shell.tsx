@@ -22,11 +22,13 @@ export function SiteShell({
   children,
   initialToken,
   isPreview,
+  isVercelPreview,
   previewRole,
 }: {
   children: React.ReactNode;
   initialToken?: string | null;
   isPreview: boolean;
+  isVercelPreview: boolean;
   previewRole: PreviewRole;
 }) {
   const pathname = usePathname();
@@ -38,7 +40,11 @@ export function SiteShell({
 
   return (
     <Providers initialToken={initialToken}>
-      <NavBar isPreview={isPreview} previewRole={previewRole} />
+      <NavBar
+        isPreview={isPreview}
+        isVercelPreview={isVercelPreview}
+        previewRole={previewRole}
+      />
       <PrivatePage>{children}</PrivatePage>
     </Providers>
   );

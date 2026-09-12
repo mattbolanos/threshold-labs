@@ -45,20 +45,6 @@ export function subtractCalendarDays(date: string, days: number) {
   return result.toISOString().slice(0, 10);
 }
 
-function subtractCalendarMonth(date: string) {
-  const [year, month, day] = date.split("-").map(Number);
-  const lastDayOfPreviousMonth = new Date(Date.UTC(year, month - 1, 0));
-  const result = new Date(
-    Date.UTC(
-      lastDayOfPreviousMonth.getUTCFullYear(),
-      lastDayOfPreviousMonth.getUTCMonth(),
-      Math.min(day, lastDayOfPreviousMonth.getUTCDate()),
-    ),
-  );
-
-  return result.toISOString().slice(0, 10);
-}
-
 function isValidQueryDate(value: string) {
   if (!QUERY_DATE_PATTERN.test(value)) {
     return false;
@@ -82,7 +68,10 @@ export function getWorkoutAccessWindow(
 }
 
 export function getMembershipAccessStart(startedAt: number) {
-  return subtractCalendarMonth(formatLabDate(new Date(startedAt)));
+  return subtractCalendarDays(
+    formatLabDate(new Date(startedAt)),
+    WORKOUT_HISTORY_DAYS,
+  );
 }
 
 export function getMembershipAccessEnd(
@@ -132,6 +121,13 @@ export function getWorkoutListingAccessWindows(
   const accessWindows: WorkoutAccessWindow[] = [
     ...(purchasedBlockWindows ?? []),
   ];
+
+  if (accessSource === "transition") {
+    accessWindows.push({
+      from: TRAINING_HISTORY_START_DATE,
+      to: formatLabDate(now),
+    });
+  }
 
   if (accessSource === "subscription") {
     const currentWindow = getWorkoutAccessWindow(now);

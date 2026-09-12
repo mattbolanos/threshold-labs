@@ -18,11 +18,17 @@ export type { NavUserData } from "./user-account-menu";
 
 interface NavUserProps {
   isPreview: boolean;
+  isVercelPreview: boolean;
   previewRole: PreviewRole;
   user?: NavUserData | null;
 }
 
-export function NavUser({ isPreview, previewRole, user }: NavUserProps) {
+export function NavUser({
+  isPreview,
+  isVercelPreview,
+  previewRole,
+  user,
+}: NavUserProps) {
   if (!user) {
     return null;
   }
@@ -51,6 +57,7 @@ export function NavUser({ isPreview, previewRole, user }: NavUserProps) {
       <PopoverContent align="end" className="w-64">
         <UserAccountMenu
           isPreview={isPreview}
+          isVercelPreview={isVercelPreview}
           previewRole={previewRole}
           user={user}
         />

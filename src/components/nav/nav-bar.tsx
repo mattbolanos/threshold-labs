@@ -18,10 +18,15 @@ import { NavUser } from "./nav-user";
 
 interface NavBarProps {
   isPreview: boolean;
+  isVercelPreview: boolean;
   previewRole: PreviewRole;
 }
 
-export function NavBar({ isPreview, previewRole }: NavBarProps) {
+export function NavBar({
+  isPreview,
+  isVercelPreview,
+  previewRole,
+}: NavBarProps) {
   const pathname = usePathname();
 
   const user = useQuery(api.auth.getCurrentUser, {
@@ -77,12 +82,18 @@ export function NavBar({ isPreview, previewRole }: NavBarProps) {
             </NavigationMenuList>
           </NavigationMenu>
         </div>
-        <NavUser isPreview={isPreview} previewRole={previewRole} user={user} />
+        <NavUser
+          isPreview={isPreview}
+          isVercelPreview={isVercelPreview}
+          previewRole={previewRole}
+          user={user}
+        />
         {/* mobile */}
         <MobileMenu
           currentPathname={pathname}
           hasAccess={hasAccess}
           isPreview={isPreview}
+          isVercelPreview={isVercelPreview}
           previewRole={previewRole}
           user={user}
         />

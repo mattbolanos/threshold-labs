@@ -44,6 +44,7 @@ const accessLabels = {
   none: "No lab access",
   subscription: "Member access",
   training_blocks: "Block access",
+  transition: "Complimentary access",
 };
 
 function MembershipCell({ user }: { user: AdminUser }) {

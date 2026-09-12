@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { AuthHeader } from "@/components/auth/auth-header";
 import { EmailOtpAuthForm } from "@/components/auth/email-otp-auth-form";
 
@@ -10,7 +11,13 @@ export default function LoginPage() {
   return (
     <div className="relative z-10 w-full max-w-md">
       <AuthHeader title="Access Inside the Lab" />
-      <EmailOtpAuthForm mode="login" />
+      <Suspense
+        fallback={
+          <p className="text-center text-muted-foreground">Loading sign in…</p>
+        }
+      >
+        <EmailOtpAuthForm mode="login" />
+      </Suspense>
     </div>
   );
 }

@@ -10,7 +10,9 @@ export default defineSchema({
   }).index("by_email", ["email"]),
 
   discountCodes: defineTable({
+    availableAt: v.optional(v.number()),
     code: v.string(),
+    complimentaryAccessExpired: v.optional(v.boolean()),
     createdAt: v.number(),
     createdByUserId: v.string(),
     deliveredAt: v.optional(v.number()),
@@ -32,6 +34,7 @@ export default defineSchema({
     redeemedAt: v.optional(v.number()),
     redeemedByEmail: v.optional(v.string()),
     revokedAt: v.optional(v.number()),
+    scheduledEmailId: v.optional(v.id("_scheduled_functions")),
     status: v.union(
       v.literal("provisioning"),
       v.literal("active"),
@@ -99,6 +102,11 @@ export default defineSchema({
     .index("by_slug", ["slug"])
     .index("by_published_at", ["publishedAt"])
     .index("by_visibility_and_published_at", ["isVisible", "publishedAt"]),
+
+  previewAdminSessions: defineTable({
+    sessionId: v.string(),
+    userId: v.string(),
+  }).index("by_session_id", ["sessionId"]),
 
   races: defineTable({
     createdAt: v.number(),

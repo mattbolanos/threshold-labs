@@ -1,10 +1,15 @@
 "use client";
 
 import { IconAlertCircle, IconLock, IconStack2 } from "@tabler/icons-react";
-import { useSearchParams } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { CheckoutOptionCard } from "@/components/auth/checkout-option-card";
 import { TrainingBlockCatalog } from "@/components/auth/training-block-catalog";
+import {
+  type CheckoutOption,
+  getCheckoutReturnPath,
+  parseCheckoutOption,
+} from "@/lib/auth/routes";
 import {
   createTrainingBlockCheckout,
   type TrainingBlockPurchaseRequest,
@@ -13,6 +18,7 @@ import { authClient } from "@/lib/auth-client";
 import {
   type DiscountOffer,
   discountOffers,
+  formatInvitationDate,
   formatWorkoutCount,
   INSIDE_LAB_PLAN_NAME,
   insideLabMembership,
@@ -21,13 +27,12 @@ import {
 } from "@/lib/billing";
 import { cn } from "@/lib/utils";
 
-type CheckoutOption = "bundle" | "membership" | `block:${string}`;
-
 interface MembershipCheckoutProps {
   blocks: TrainingBlockCatalogEntry[];
   /** An admin-issued offer tied to this member's email, applied at checkout. */
   discountOffer?: DiscountOffer | null;
   hasMembership?: boolean;
+  isAuthenticated?: boolean;
   surface?: "pricing" | "subscribe";
 }
 
@@ -35,39 +40,52 @@ export function MembershipCheckout({
   blocks,
   discountOffer = null,
   hasMembership = false,
+  isAuthenticated = true,
   surface = "subscribe",
 }: MembershipCheckoutProps) {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const resumedCheckout = useRef(false);
   const checkoutRequestPending = useRef(false);
   const [error, setError] = useState<string | null>(null);
   const [opening, setOpening] = useState<CheckoutOption | null>(null);
+  const isTransitionPending = Boolean(
+    discountOffer?.availableAt && discountOffer.availableAt > Date.now(),
+  );
 
-  async function runCheckout(
-    option: CheckoutOption,
-    checkout: () => Promise<void>,
-  ) {
-    if (checkoutRequestPending.current) return;
+  const runCheckout = useCallback(
+    async (option: CheckoutOption, checkout: () => Promise<void>) => {
+      if (checkoutRequestPending.current) return;
 
-    checkoutRequestPending.current = true;
-    const returnPath = surface === "pricing" ? "/lab/pricing" : "/subscribe";
-    window.history.replaceState({}, "", returnPath);
-    setError(null);
-    setOpening(option);
+      if (!isAuthenticated) {
+        router.push(
+          `/signup?next=${encodeURIComponent(getCheckoutReturnPath(option))}`,
+        );
+        return;
+      }
 
-    try {
-      await checkout();
-    } catch (checkoutError) {
-      checkoutRequestPending.current = false;
-      setOpening(null);
-      setError(
-        checkoutError instanceof Error
-          ? checkoutError.message
-          : "Secure checkout could not be opened.",
-      );
-    }
-  }
+      checkoutRequestPending.current = true;
+      const returnPath = surface === "pricing" ? "/lab/pricing" : "/subscribe";
+      window.history.replaceState({}, "", returnPath);
+      setError(null);
+      setOpening(option);
 
-  function openMembershipCheckout() {
+      try {
+        await checkout();
+      } catch (checkoutError) {
+        checkoutRequestPending.current = false;
+        setOpening(null);
+        setError(
+          checkoutError instanceof Error
+            ? checkoutError.message
+            : "Secure checkout could not be opened.",
+        );
+      }
+    },
+    [isAuthenticated, router, surface],
+  );
+
+  const openMembershipCheckout = useCallback(() => {
     return runCheckout("membership", async () => {
       const { error: checkoutError } = await authClient.subscription.upgrade({
         cancelUrl:
@@ -84,17 +102,50 @@ export function MembershipCheckout({
         );
       }
     });
-  }
+  }, [runCheckout, surface]);
 
-  function openBlockCheckout(
-    option: CheckoutOption,
-    purchase: TrainingBlockPurchaseRequest,
-  ) {
-    return runCheckout(option, async () => {
-      const { url } = await createTrainingBlockCheckout(purchase, surface);
-      window.location.assign(url);
-    });
-  }
+  const openBlockCheckout = useCallback(
+    (option: CheckoutOption, purchase: TrainingBlockPurchaseRequest) => {
+      return runCheckout(option, async () => {
+        const { url } = await createTrainingBlockCheckout(purchase, surface);
+        window.location.assign(url);
+      });
+    },
+    [runCheckout, surface],
+  );
+
+  const requestedPurchase = parseCheckoutOption(searchParams.get("purchase"));
+  useEffect(() => {
+    if (!isAuthenticated || !requestedPurchase || resumedCheckout.current)
+      return;
+    resumedCheckout.current = true;
+    if (requestedPurchase === "membership") {
+      if (!hasMembership && !isTransitionPending) void openMembershipCheckout();
+    } else if (requestedPurchase === "bundle") {
+      if (blocks.some((block) => !block.isOwned)) {
+        void openBlockCheckout("bundle", { kind: "bundle" });
+      }
+    } else {
+      const trainingBlockId = requestedPurchase.slice("block:".length);
+      const block = blocks.find(
+        (candidate) => candidate._id === trainingBlockId,
+      );
+      if (block && !block.isOwned) {
+        void openBlockCheckout(requestedPurchase, {
+          kind: "block",
+          trainingBlockId,
+        });
+      }
+    }
+  }, [
+    blocks,
+    hasMembership,
+    isAuthenticated,
+    isTransitionPending,
+    openBlockCheckout,
+    openMembershipCheckout,
+    requestedPurchase,
+  ]);
 
   const cancelledOption = searchParams.get("checkout");
   const checkoutCancelled =
@@ -116,6 +167,13 @@ export function MembershipCheckout({
 
   return (
     <div className="space-y-10">
+      {isTransitionPending && discountOffer?.availableAt ? (
+        <output className="block rounded-lg bg-muted px-4 py-3 text-sm text-muted-foreground">
+          Your full lab access is complimentary through{" "}
+          {formatInvitationDate(discountOffer.availableAt)}. We’ll email your
+          $50/month invitation that day. No payment is needed now.
+        </output>
+      ) : null}
       {checkoutCancelled || error ? (
         <p
           aria-live="polite"
@@ -135,24 +193,28 @@ export function MembershipCheckout({
       <div className={cn("grid gap-5", blocks.length > 0 && "md:grid-cols-2")}>
         <CheckoutOptionCard
           badge={
-            hasMembership
-              ? "Current plan"
-              : membershipOffer
-                ? "Your offer"
-                : "Monthly access"
+            isTransitionPending
+              ? "Complimentary access"
+              : hasMembership
+                ? "Current plan"
+                : membershipOffer
+                  ? "Your offer"
+                  : "Monthly access"
           }
           buttonLabel={
-            hasMembership
-              ? "Membership active"
-              : membershipOffer
-                ? "Claim your offer"
-                : "Choose monthly membership"
+            isTransitionPending
+              ? "Invitation scheduled"
+              : hasMembership
+                ? "Membership active"
+                : membershipOffer
+                  ? "Claim your offer"
+                  : "Choose monthly membership"
           }
-          disabled={opening !== null}
+          disabled={opening !== null || isTransitionPending}
           features={[
             membershipOffer
               ? "Every workout, past and present, plus every new one as it lands"
-              : "Every workout from the month before you join, plus every new one as it lands",
+              : "Every workout from 30 days before you join, plus every new one as it lands",
             "Training overview and full performance charts",
             "Every Lab Note, past and future",
           ]}
@@ -184,7 +246,9 @@ export function MembershipCheckout({
             icon={<IconStack2 aria-hidden className="size-6" />}
             isOpening={opening === "bundle"}
             isOwned={ownsEveryBlock}
-            limitations={["Future blocks require the monthly membership"]}
+            limitations={[
+              "Future blocks are sold separately or included with membership",
+            ]}
             onCheckout={() =>
               void openBlockCheckout("bundle", { kind: "bundle" })
             }

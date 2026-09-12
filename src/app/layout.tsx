@@ -5,7 +5,10 @@ import "./globals.css";
 import { Suspense } from "react";
 import { SiteShell } from "@/components/site-shell";
 import { Toaster } from "@/components/ui/toast";
-import { getPreviewAuthState } from "@/lib/auth/preview.server";
+import {
+  getPreviewAuthState,
+  isVercelPreview,
+} from "@/lib/auth/preview.server";
 import { getToken } from "@/lib/auth-server";
 
 const outfit = Outfit({
@@ -36,6 +39,7 @@ async function AppShell({ children }: { children: React.ReactNode }) {
     <SiteShell
       initialToken={initialToken}
       isPreview={preview.enabled}
+      isVercelPreview={isVercelPreview}
       previewRole={preview.role}
     >
       <Suspense fallback={null}>{children}</Suspense>

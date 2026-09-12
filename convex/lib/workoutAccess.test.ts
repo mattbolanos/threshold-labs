@@ -40,16 +40,16 @@ describe("getWorkoutAccessWindow", () => {
 });
 
 describe("getMembershipAccessStart", () => {
-  test("fixes the membership boundary one month before purchase", () => {
+  test("fixes the membership boundary 30 days before purchase", () => {
     expect(
       getMembershipAccessStart(Date.parse("2026-09-03T16:00:00.000Z")),
-    ).toBe("2026-08-03");
+    ).toBe("2026-08-04");
   });
 
-  test("clamps to the end of shorter months", () => {
+  test("uses exactly 30 days across shorter months", () => {
     expect(
       getMembershipAccessStart(Date.parse("2026-03-31T16:00:00.000Z")),
-    ).toBe("2026-02-28");
+    ).toBe("2026-03-01");
   });
 });
 

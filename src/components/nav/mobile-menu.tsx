@@ -24,6 +24,7 @@ const ITEM_CLASS = cn(
 interface MobileMenuProps {
   hasAccess: boolean;
   isPreview: boolean;
+  isVercelPreview: boolean;
   previewRole: PreviewRole;
   currentPathname: string;
   user?: NavUserData | null;
@@ -32,6 +33,7 @@ interface MobileMenuProps {
 export function MobileMenu({
   hasAccess,
   isPreview,
+  isVercelPreview,
   previewRole,
   currentPathname,
   user,
@@ -95,6 +97,7 @@ export function MobileMenu({
                 <UserAccountMenu
                   actionSize="lg"
                   isPreview={isPreview}
+                  isVercelPreview={isVercelPreview}
                   onNavigate={() => setOpen(false)}
                   previewRole={previewRole}
                   user={user}

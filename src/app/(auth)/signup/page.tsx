@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { AuthHeader } from "@/components/auth/auth-header";
 import { EmailOtpAuthForm } from "@/components/auth/email-otp-auth-form";
 
@@ -13,7 +14,13 @@ export default function SignUpPage() {
         description="Sign up with Google, or register with your email"
         title="Create an Account"
       />
-      <EmailOtpAuthForm mode="signup" />
+      <Suspense
+        fallback={
+          <p className="text-center text-muted-foreground">Loading signup…</p>
+        }
+      >
+        <EmailOtpAuthForm mode="signup" />
+      </Suspense>
     </div>
   );
 }

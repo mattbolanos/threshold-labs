@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { AuthHeader } from "@/components/auth/auth-header";
 import { DiscountOfferCheckout } from "@/components/auth/discount-offer-checkout";
 import { MembershipCheckout } from "@/components/auth/membership-checkout";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
+  getCurrentLabAccess,
   getPendingDiscountOffer,
-  getPostAuthDestination,
   getTrainingBlockCatalog,
+  isAppAuthenticated,
 } from "@/lib/auth";
 
 export const metadata: Metadata = {
@@ -18,29 +18,32 @@ export const metadata: Metadata = {
 interface SubscribePageProps {
   searchParams: Promise<{
     checkout?: string | string[];
+    purchase?: string | string[];
     view?: string | string[];
   }>;
 }
 
 async function MembershipAccessGate({ searchParams }: SubscribePageProps) {
-  const [{ checkout, view }, destination] = await Promise.all([
-    searchParams,
-    getPostAuthDestination(),
-  ]);
-  if (destination === "/lab/lab-notes") {
-    redirect(destination);
-  }
-
-  const discountOffer = await getPendingDiscountOffer();
+  const [{ checkout, purchase, view }, isAuthenticated, blocks] =
+    await Promise.all([
+      searchParams,
+      isAppAuthenticated(),
+      getTrainingBlockCatalog(),
+    ]);
+  const [access, discountOffer] = isAuthenticated
+    ? await Promise.all([getCurrentLabAccess(), getPendingDiscountOffer()])
+    : [null, null];
+  const hasMembership = access?.source === "subscription";
   // Returning from a cancelled Stripe session, or explicitly asking for the
   // full menu, must not bounce the member straight back into checkout.
-  const showAllOptions = checkout !== undefined || view === "all";
+  const showAllOptions =
+    checkout !== undefined || purchase !== undefined || view === "all";
 
-  if (discountOffer && !showAllOptions) {
+  const offerAvailable =
+    !discountOffer?.availableAt || discountOffer.availableAt <= Date.now();
+  if (discountOffer && offerAvailable && !hasMembership && !showAllOptions) {
     return <DiscountOfferCheckout offer={discountOffer} />;
   }
-
-  const blocks = await getTrainingBlockCatalog();
 
   return (
     <>
@@ -48,7 +51,12 @@ async function MembershipAccessGate({ searchParams }: SubscribePageProps) {
         description="Follow training as it happens with the monthly membership, or buy training blocks outright and keep them for good."
         title="Choose your access"
       />
-      <MembershipCheckout blocks={blocks} discountOffer={discountOffer} />
+      <MembershipCheckout
+        blocks={blocks}
+        discountOffer={discountOffer}
+        hasMembership={hasMembership}
+        isAuthenticated={isAuthenticated}
+      />
     </>
   );
 }
@@ -71,7 +79,7 @@ function MembershipCheckoutFallback() {
 
 export default function SubscribePage({ searchParams }: SubscribePageProps) {
   return (
-    <div className="relative z-10 w-full max-w-6xl">
+    <div className="route-padding-x route-padding-y relative z-10 mx-auto w-full max-w-6xl">
       <Suspense fallback={<MembershipCheckoutFallback />}>
         <MembershipAccessGate searchParams={searchParams} />
       </Suspense>

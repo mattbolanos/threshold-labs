@@ -20,7 +20,8 @@ type Environment = Record<string, string | undefined>;
 export type ConvexPreviewEnvironment = Record<
   | (typeof REQUIRED_SOURCE_VARIABLES)[number]
   | "PREVIEW_AUTH_BYPASS"
-  | "SITE_URL",
+  | "SITE_URL"
+  | "VERCEL_ENV",
   string
 >;
 
@@ -99,6 +100,7 @@ export const buildConvexPreviewEnvironment = (
     ...sourceVariables,
     PREVIEW_AUTH_BYPASS: previewAuthBypass,
     SITE_URL: getVercelPreviewSiteUrl(environment),
+    VERCEL_ENV: "preview",
   };
 };
 
@@ -110,9 +112,9 @@ export const serializeEnvironment = (environment: Record<string, string>) =>
 export const syncConvexPreviewEnvironment = (
   environment: Environment = process.env,
 ) => {
-  if (!shouldSyncStripePreviewEnvironment(environment)) {
+  if (environment.VERCEL_ENV !== "preview") {
     process.stdout.write(
-      "Skipping Convex environment sync outside the stripe Vercel preview.\n",
+      "Skipping Convex environment sync outside Vercel previews.\n",
     );
     return;
   }
@@ -124,7 +126,12 @@ export const syncConvexPreviewEnvironment = (
   }
 
   const previewName = getConvexPreviewName(environment);
-  const previewEnvironment = buildConvexPreviewEnvironment(environment);
+  if (!previewName) {
+    throw new Error("Missing Convex preview name.");
+  }
+  const previewEnvironment = shouldSyncStripePreviewEnvironment(environment)
+    ? buildConvexPreviewEnvironment(environment)
+    : { VERCEL_ENV: "preview" };
   const result = spawnSync(
     "bunx",
     [

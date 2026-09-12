@@ -96,7 +96,7 @@ export const sendDiscountCodeEmail = internalAction({
       discountType,
       recipientEmail: recipient,
       signupUrl: new URL(
-        "/signup",
+        "/signup?next=%2Fsubscribe",
         getAuthEnvironment(ctx, "SITE_URL"),
       ).toString(),
     });

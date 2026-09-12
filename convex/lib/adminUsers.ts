@@ -5,6 +5,7 @@ import type { QueryCtx } from "../_generated/server";
 import type { Doc as AuthDoc } from "../betterAuth/_generated/dataModel";
 import { hasActiveLabSubscription, INSIDE_LAB_PLAN_NAME } from "./labAccess";
 import { resolveMembershipAccess } from "./membershipAccess";
+import { getComplimentaryAccessThrough } from "./memberTransition";
 
 async function readAuthRecords<Model extends "user" | "subscription">(
   ctx: QueryCtx,
@@ -32,7 +33,11 @@ export function describeAdminUser(
   purchases: Doc<"trainingBlockPurchases">[],
   windows: Doc<"membershipAccessWindows">[],
   currentUserId?: string,
+  offers: Doc<"discountCodes">[] = [],
 ) {
+  const complimentaryAccessThrough = user.emailVerified
+    ? getComplimentaryAccessThrough(offers)
+    : null;
   const membershipSubscriptions = subscriptions.filter(
     (subscription) => subscription.plan === INSIDE_LAB_PLAN_NAME,
   );
@@ -57,9 +62,12 @@ export function describeAdminUser(
         ? ("admin" as const)
         : activeSubscription
           ? ("subscription" as const)
-          : purchases.length > 0
-            ? ("training_blocks" as const)
-            : ("none" as const),
+          : complimentaryAccessThrough
+            ? ("transition" as const)
+            : purchases.length > 0
+              ? ("training_blocks" as const)
+              : ("none" as const),
+    complimentaryAccessThrough,
     createdAt: user.createdAt,
     email: user.email,
     emailVerified: user.emailVerified,
@@ -107,11 +115,12 @@ function groupByReference<T extends { referenceId: string }>(records: T[]) {
 }
 
 export async function getAdminUsers(ctx: QueryCtx, currentUserId?: string) {
-  const [users, subscriptions, purchases, windows] = await Promise.all([
+  const [users, subscriptions, purchases, windows, offers] = await Promise.all([
     readAuthRecords(ctx, "user"),
     readAuthRecords(ctx, "subscription"),
     ctx.db.query("trainingBlockPurchases").collect(),
     ctx.db.query("membershipAccessWindows").collect(),
+    ctx.db.query("discountCodes").collect(),
   ]);
   const subscriptionsByUser = groupByReference(subscriptions);
   const purchasesByUser = groupByReference(purchases);
@@ -125,6 +134,9 @@ export async function getAdminUsers(ctx: QueryCtx, currentUserId?: string) {
         purchasesByUser.get(user._id) ?? [],
         windowsByUser.get(user._id) ?? [],
         currentUserId,
+        offers.filter(
+          (offer) => offer.recipientEmail === user.email.trim().toLowerCase(),
+        ),
       ),
     );
 }

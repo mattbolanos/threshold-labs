@@ -1,5 +1,4 @@
 import { ConvexError, v } from "convex/values";
-import Stripe from "stripe";
 import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import {
@@ -11,14 +10,13 @@ import {
   query,
 } from "./_generated/server";
 import { assertAdmin, authComponent } from "./auth";
-import { getAuthEnvironment } from "./lib/authEnvironment";
 import { normalizeDiscountCodeRecipient } from "./lib/discountCodeEmail";
+import { issueDiscountCode } from "./lib/discountCodeIssuing";
+import type { DiscountCodeType } from "./lib/discountCodes";
 import {
-  type DiscountCodeType,
-  getDiscountCodePrefix,
-  getDiscountCouponDefinition,
-  isDiscountCouponCompatible,
-} from "./lib/discountCodes";
+  getTransitionAccessEnd,
+  validateTransitionDate,
+} from "./lib/memberTransition";
 import { createStripeClient } from "./lib/stripeAuth";
 import { TRAINING_HISTORY_START_DATE } from "./lib/workoutAccess";
 import { isPreviewAuthEnabled } from "./previewAuth";
@@ -30,82 +28,6 @@ const discountTypeValidator = v.union(
 
 const redeemableCodeStatuses = new Set(["active", "provisioning", "revoked"]);
 
-function createCustomerFacingCode(discountType: DiscountCodeType) {
-  const randomPart = crypto.randomUUID().replaceAll("-", "").slice(0, 12);
-  return `${getDiscountCodePrefix(discountType)}-${randomPart}`.toUpperCase();
-}
-
-function isMissingStripeResource(error: unknown) {
-  return (
-    error instanceof Stripe.errors.StripeInvalidRequestError &&
-    error.code === "resource_missing"
-  );
-}
-
-function stripeProductId(
-  product: string | Stripe.Product | Stripe.DeletedProduct,
-) {
-  return typeof product === "string" ? product : product.id;
-}
-
-async function ensureDiscountCoupon(
-  stripeClient: Stripe,
-  discountType: DiscountCodeType,
-  priceId: string,
-) {
-  const price = await stripeClient.prices.retrieve(priceId);
-  const definition = getDiscountCouponDefinition(discountType, {
-    currency: price.currency,
-    id: price.id,
-    interval: price.recurring?.interval ?? null,
-    productId: stripeProductId(price.product),
-    unitAmount: price.unit_amount,
-  });
-
-  let coupon: Stripe.Coupon;
-  try {
-    coupon = await stripeClient.coupons.retrieve(definition.couponId);
-  } catch (error) {
-    if (!isMissingStripeResource(error)) {
-      throw error;
-    }
-
-    coupon = await stripeClient.coupons.create(
-      {
-        amount_off: definition.amountOff,
-        applies_to: { products: [definition.productId] },
-        currency: definition.currency,
-        duration: "forever",
-        id: definition.couponId,
-        metadata: {
-          discountType,
-          priceId: price.id,
-        },
-        name: definition.name,
-        percent_off: definition.percentOff,
-      },
-      { idempotencyKey: `threshold-coupon-${definition.couponId}` },
-    );
-  }
-
-  const couponMatches = isDiscountCouponCompatible(definition, {
-    amountOff: coupon.amount_off,
-    currency: coupon.currency,
-    duration: coupon.duration,
-    percentOff: coupon.percent_off,
-    productIds: coupon.applies_to?.products ?? null,
-    valid: coupon.valid,
-  });
-
-  if (!couponMatches) {
-    throw new Error(
-      `Stripe coupon ${definition.couponId} does not match the configured offer.`,
-    );
-  }
-
-  return coupon;
-}
-
 export const listAdminDiscountCodes = query({
   args: {},
   handler: async (ctx) => {
@@ -116,6 +38,7 @@ export const listAdminDiscountCodes = query({
 
 export const reserveDiscountCode = internalMutation({
   args: {
+    availableAt: v.optional(v.number()),
     code: v.string(),
     createdByUserId: v.string(),
     discountType: discountTypeValidator,
@@ -123,6 +46,23 @@ export const reserveDiscountCode = internalMutation({
   },
   handler: async (ctx, args) => {
     const now = Date.now();
+    if (args.availableAt && args.recipientEmail) {
+      const existing = await ctx.db
+        .query("discountCodes")
+        .withIndex("by_recipient_email", (q) =>
+          q.eq("recipientEmail", args.recipientEmail),
+        )
+        .collect();
+      if (
+        existing.some(
+          (code) => code.status === "active" || code.status === "provisioning",
+        )
+      ) {
+        throw new ConvexError(
+          "This member already has an active or pending offer. Revoke it before scheduling another.",
+        );
+      }
+    }
     return await ctx.db.insert("discountCodes", {
       ...args,
       createdAt: now,
@@ -140,7 +80,25 @@ export const completeDiscountCode = internalMutation({
     stripePromotionCodeId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    const code = await ctx.db.get(args.discountCodeId);
+    if (!code || code.status !== "provisioning")
+      throw new ConvexError("Pending offer not found.");
+    const scheduledEmailId = code.availableAt
+      ? await ctx.scheduler.runAt(
+          code.availableAt,
+          internal.memberTransitions.deliverInvitation,
+          { discountCodeId: code._id },
+        )
+      : undefined;
+    if (code.availableAt) {
+      await ctx.scheduler.runAt(
+        getTransitionAccessEnd(code.availableAt),
+        internal.memberTransitions.endComplimentaryAccess,
+        { discountCodeId: code._id },
+      );
+    }
     await ctx.db.patch(args.discountCodeId, {
+      scheduledEmailId,
       status: "active",
       stripeCouponId: args.stripeCouponId,
       stripePromotionCodeId: args.stripePromotionCodeId,
@@ -226,7 +184,12 @@ export const getPendingDiscountOffer = query({
       user.email,
     );
 
-    return discountCode ? { discountType: discountCode.discountType } : null;
+    return discountCode
+      ? {
+          availableAt: discountCode.availableAt,
+          discountType: discountCode.discountType,
+        }
+      : null;
   },
 });
 
@@ -286,15 +249,16 @@ export const markDiscountCodeDeliveryFailed = internalMutation({
 
 export const generateDiscountCode = action({
   args: {
+    availableAt: v.optional(v.number()),
     discountType: discountTypeValidator,
     recipientEmail: v.optional(v.string()),
   },
   handler: async (
     ctx,
-    { discountType, recipientEmail },
+    { availableAt, discountType, recipientEmail },
   ): Promise<{
     code: string;
-    deliveryStatus: "failed" | "not_requested" | "sent";
+    deliveryStatus: "failed" | "not_requested" | "sent" | "scheduled";
     discountCodeId: Id<"discountCodes">;
     discountType: DiscountCodeType;
     recipientEmail?: string;
@@ -317,107 +281,20 @@ export const generateDiscountCode = action({
       }
     }
 
-    const code = createCustomerFacingCode(discountType);
-    const discountCodeId: Id<"discountCodes"> = await ctx.runMutation(
-      internal.discountCodes.reserveDiscountCode,
-      {
-        code,
-        createdByUserId: admin._id.toString(),
+    if (availableAt !== undefined) {
+      validateTransitionDate({
+        availableAt,
         discountType,
         recipientEmail: normalizedRecipient,
-      },
-    );
-
-    try {
-      const stripeClient = createStripeClient(ctx);
-      const coupon = await ensureDiscountCoupon(
-        stripeClient,
-        discountType,
-        getAuthEnvironment(ctx, "STRIPE_INSIDE_LAB_PRICE_ID"),
-      );
-
-      // Emailed offers are locked to the recipient's Stripe customer, which
-      // only exists once they start checkout, so their promotion code is
-      // created lazily. See ensureRecipientPromotionCode.
-      const promotionCode = normalizedRecipient
-        ? null
-        : await stripeClient.promotionCodes.create(
-            {
-              code,
-              max_redemptions: 1,
-              metadata: {
-                createdByUserId: admin._id.toString(),
-                discountCodeId,
-                discountType,
-              },
-              promotion: { coupon: coupon.id, type: "coupon" },
-            },
-            { idempotencyKey: `threshold-promotion-code-${discountCodeId}` },
-          );
-
-      await ctx.runMutation(internal.discountCodes.completeDiscountCode, {
-        discountCodeId,
-        stripeCouponId: coupon.id,
-        stripePromotionCodeId: promotionCode?.id,
       });
-    } catch (error) {
-      const failureReason =
-        error instanceof Error ? error.message : "Stripe provisioning failed.";
-      await ctx.runMutation(internal.discountCodes.failDiscountCode, {
-        discountCodeId,
-        failureReason,
-      });
-      throw new ConvexError(failureReason);
     }
 
-    if (!normalizedRecipient) {
-      return {
-        code,
-        deliveryStatus: "not_requested",
-        discountCodeId,
-        discountType,
-      };
-    }
-
-    try {
-      await ctx.runAction(internal.emails.sendDiscountCodeEmail, {
-        code,
-        discountType,
-        recipient: normalizedRecipient,
-      });
-      await ctx.runMutation(
-        internal.discountCodes.markDiscountCodeDeliverySent,
-        { discountCodeId },
-      );
-
-      return {
-        code,
-        deliveryStatus: "sent",
-        discountCodeId,
-        discountType,
-        recipientEmail: normalizedRecipient,
-      };
-    } catch (error) {
-      const deliveryError =
-        error instanceof Error
-          ? error.message.slice(0, 1000)
-          : "Email delivery failed after the code was created.";
-      await ctx.runMutation(
-        internal.discountCodes.markDiscountCodeDeliveryFailed,
-        {
-          deliveryError,
-          discountCodeId,
-        },
-      );
-
-      return {
-        code,
-        deliveryStatus: "failed",
-        discountCodeId,
-        discountType,
-        recipientEmail: normalizedRecipient,
-      };
-    }
+    return issueDiscountCode(ctx, {
+      availableAt,
+      createdByUserId: admin._id.toString(),
+      discountType,
+      recipientEmail: normalizedRecipient,
+    });
   },
 });
 
@@ -487,6 +364,9 @@ export const markDiscountCodeRevoked = internalMutation({
     }
 
     const now = Date.now();
+    if (discountCode.scheduledEmailId) {
+      await ctx.scheduler.cancel(discountCode.scheduledEmailId);
+    }
     await ctx.db.patch(discountCodeId, {
       revokedAt: now,
       status: "revoked",

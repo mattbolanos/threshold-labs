@@ -44,8 +44,8 @@ describe("resolveMembershipAccess", () => {
         windows: [],
       }),
     ).toEqual({
-      accessStart: "2026-12-16",
-      pastAccessWindows: [{ from: "2026-05-03", to: "2026-08-03" }],
+      accessStart: "2026-12-17",
+      pastAccessWindows: [{ from: "2026-05-04", to: "2026-08-03" }],
     });
   });
 

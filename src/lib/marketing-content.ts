@@ -19,7 +19,7 @@ export const offers = [
       "Personalized programming",
       "Direct access to me",
       "Fitness and race-specific plan",
-      "$300/month",
+      "Limited spots",
     ],
     eyebrow: "Built for you",
     title: "1:1 Coaching",
@@ -68,7 +68,7 @@ export const offers = [
       "Add the $70 membership for new workouts",
     ],
     eyebrow: "Historical access",
-    title: "Training blocks",
+    title: "Inside the Lab – Training Blocks",
   },
 ] as const;
 

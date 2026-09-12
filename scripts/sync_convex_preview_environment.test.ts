@@ -1,9 +1,11 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, spyOn, test } from "bun:test";
+import * as childProcess from "node:child_process";
 import {
   buildConvexPreviewEnvironment,
   getVercelPreviewSiteUrl,
   serializeEnvironment,
   shouldSyncStripePreviewEnvironment,
+  syncConvexPreviewEnvironment,
 } from "./sync_convex_preview_environment";
 
 const validEnvironment = {
@@ -70,7 +72,68 @@ describe("stripe Convex preview environment", () => {
       STRIPE_TRAINING_BLOCK_PRICE_ID:
         validEnvironment.STRIPE_TRAINING_BLOCK_PRICE_ID,
       STRIPE_WEBHOOK_SECRET: validEnvironment.STRIPE_WEBHOOK_SECRET,
+      VERCEL_ENV: "preview",
     });
+  });
+
+  test("preserves real login when the preview auth bypass is disabled", () => {
+    expect(
+      buildConvexPreviewEnvironment({
+        ...validEnvironment,
+        PREVIEW_AUTH_BYPASS: "false",
+      }),
+    ).toMatchObject({ PREVIEW_AUTH_BYPASS: "false", VERCEL_ENV: "preview" });
+  });
+
+  test("syncs the preview marker on other branches without copying Stripe secrets", () => {
+    const spawn = spyOn(childProcess, "spawnSync").mockReturnValue({
+      status: 0,
+    } as ReturnType<typeof childProcess.spawnSync>);
+    try {
+      syncConvexPreviewEnvironment({
+        CONVEX_DEPLOY_KEY: validEnvironment.CONVEX_DEPLOY_KEY,
+        VERCEL_ENV: "preview",
+        VERCEL_GIT_COMMIT_REF: "feature-branch",
+      });
+      expect(spawn).toHaveBeenCalledTimes(1);
+      const [command, args, options] = spawn.mock.calls[0];
+      expect(command).toBe("bunx");
+      expect(args).toEqual([
+        "convex",
+        "env",
+        "set",
+        "--force",
+        "--preview-name",
+        "feature-branch",
+      ]);
+      expect(options?.input).toBe('VERCEL_ENV="preview"\n');
+    } finally {
+      spawn.mockRestore();
+    }
+  });
+
+  test("never syncs outside previews or with a non-preview deploy key", () => {
+    const spawn = spyOn(childProcess, "spawnSync");
+    try {
+      for (const VERCEL_ENV of ["production", "development", undefined]) {
+        syncConvexPreviewEnvironment({ ...validEnvironment, VERCEL_ENV });
+      }
+      expect(() =>
+        syncConvexPreviewEnvironment({
+          ...validEnvironment,
+          CONVEX_DEPLOY_KEY: "prod:team:project|secret",
+        }),
+      ).toThrow("preview deploy key");
+      expect(() =>
+        syncConvexPreviewEnvironment({
+          CONVEX_DEPLOY_KEY: validEnvironment.CONVEX_DEPLOY_KEY,
+          VERCEL_ENV: "preview",
+        }),
+      ).toThrow("Missing Convex preview name");
+      expect(spawn).not.toHaveBeenCalled();
+    } finally {
+      spawn.mockRestore();
+    }
   });
 
   test("fails when a required source variable is missing", () => {

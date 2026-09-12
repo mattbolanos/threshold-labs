@@ -24,7 +24,7 @@ export interface MembershipAccess {
 }
 
 /**
- * Each Stripe subscription owns one access window: it opens one month before
+ * Each Stripe subscription owns one access window: it opens 30 days before
  * that subscription started and closes on the day the subscription stopped
  * being active. Stored windows come from Stripe webhooks; subscriptions that
  * predate the table fall back to the Better Auth record.

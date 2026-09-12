@@ -55,8 +55,6 @@ export const getCurrentLabAccess = cache(async () => {
 });
 
 export const getTrainingBlockCatalog = cache(async () => {
-  await checkAuthenticated();
-
   return fetchAuthQuery(api.trainingBlockPurchases.getTrainingBlockCatalog, {});
 });
 

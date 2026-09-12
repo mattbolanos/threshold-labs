@@ -42,7 +42,9 @@ interface MembershipCardProps {
     | "none"
     | "preview"
     | "subscription"
+    | "transition"
     | "training_blocks";
+  complimentaryAccessThrough?: string | null;
   hasBillingAccount: boolean;
   isBillingPreview?: boolean;
   plansHref?: Route | UrlObject;
@@ -197,6 +199,7 @@ function StripeFooter({ actions, note }: { actions: ReactNode; note: string }) {
 
 export function MembershipCard({
   accessSource,
+  complimentaryAccessThrough,
   hasBillingAccount,
   isBillingPreview = false,
   plansHref = "/subscribe",
@@ -216,6 +219,7 @@ export function MembershipCard({
     subscription !== null ||
     trainingBlocks !== null ||
     accessSource === "admin" ||
+    accessSource === "transition" ||
     accessSource === "preview";
   const previewNote =
     "This preview shows the active-member state. Billing actions connect to Stripe in a live account.";
@@ -254,6 +258,14 @@ export function MembershipCard({
 
   return (
     <div className="flex flex-col gap-6">
+      {accessSource === "transition" && complimentaryAccessThrough ? (
+        <AccessCard
+          badge={<Badge variant="accent">Complimentary</Badge>}
+          description={`All historical and ongoing training data is included at no charge through ${formatTrainingAccessDate(complimentaryAccessThrough)}. On your invitation day, we’ll email you a $50/month offer with full history included. You won’t be charged unless you choose to subscribe.`}
+          icon={<IconLockOpen className="size-5" stroke={2} />}
+          title="Member transition"
+        />
+      ) : null}
       {subscription && statusDetails ? (
         <AccessCard
           action={

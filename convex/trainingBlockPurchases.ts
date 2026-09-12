@@ -118,8 +118,8 @@ export const getCheckoutBlocks = internalQuery({
 
 /**
  * Started training blocks (completed and in progress) with ownership for the
- * signed-in user. Used by the pricing and subscribe pages, so it never
- * requires an existing entitlement.
+ * signed-in user, or unowned entries for a visitor. Used by the public
+ * subscribe catalog and member pricing page; workout details remain protected.
  */
 export const getTrainingBlockCatalog = query({
   args: {},

@@ -2,6 +2,7 @@ import { IconUserPlus } from "@tabler/icons-react";
 import Link from "next/link";
 import { AdminBackLink } from "@/components/admin/admin-back-link";
 import { AdminDiscountCodeManager } from "@/components/admin/admin-discount-code-manager";
+import { AdminMemberTransition } from "@/components/admin/admin-member-transition";
 import { AdminUserManager } from "@/components/admin/admin-user-manager";
 import { AdminUsersErrorBoundary } from "@/components/admin/admin-users-error-boundary";
 import { PageHeader } from "@/components/page-header";
@@ -32,6 +33,7 @@ export function AdminUsersPage() {
       <AdminUsersErrorBoundary>
         <AdminUserManager />
       </AdminUsersErrorBoundary>
+      <AdminMemberTransition />
       <AdminDiscountCodeManager />
     </div>
   );

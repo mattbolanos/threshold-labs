@@ -2,6 +2,7 @@ import type { GenericCtx } from "@convex-dev/better-auth";
 import type Stripe from "stripe";
 import { internal } from "../_generated/api";
 import type { DataModel } from "../_generated/dataModel";
+import { isDiscountOfferAvailable } from "./memberTransition";
 
 interface RecipientCheckoutIdentity {
   email: string;
@@ -30,6 +31,11 @@ export async function ensureRecipientPromotionCode(
   );
   if (!discountCode) {
     return null;
+  }
+  if (!isDiscountOfferAvailable(discountCode)) {
+    throw new Error(
+      "Your complimentary access is active. Your $50/month membership will be available on your invitation day.",
+    );
   }
   if (discountCode.stripePromotionCodeId) {
     return discountCode.stripePromotionCodeId;

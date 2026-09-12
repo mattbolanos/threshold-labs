@@ -10,18 +10,21 @@ import type { PreviewRole } from "@/lib/auth/preview-role";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { ContactUsDialog } from "./contact-us-dialog";
+import { PreviewAdminSwitch } from "./preview-admin-switch";
 import { PreviewRoleSwitch } from "./preview-role-switch";
 
 export interface NavUserData {
   email: string;
   name: string;
   role?: string | null;
+  previewAdmin?: boolean;
 }
 
 interface UserAccountMenuProps {
   actionSize?: ComponentProps<typeof Button>["size"];
   className?: string;
   isPreview: boolean;
+  isVercelPreview: boolean;
   onNavigate?: () => void;
   previewRole: PreviewRole;
   user: NavUserData;
@@ -37,6 +40,7 @@ export function UserAccountMenu({
   actionSize = "default",
   className,
   isPreview,
+  isVercelPreview,
   onNavigate,
   previewRole,
   user,
@@ -80,7 +84,12 @@ export function UserAccountMenu({
         {isPreview ? (
           <PreviewRoleSwitch className="px-2" role={previewRole} />
         ) : (
-          <LogOutButton onLoggedOut={onNavigate} size={actionSize} />
+          <>
+            {isVercelPreview ? (
+              <PreviewAdminSwitch enabled={user.previewAdmin === true} />
+            ) : null}
+            <LogOutButton onLoggedOut={onNavigate} size={actionSize} />
+          </>
         )}
       </div>
     </div>

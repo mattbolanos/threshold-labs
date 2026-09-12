@@ -44,9 +44,8 @@ endpoint to `checkout.session.completed`, `customer.subscription.created`,
 `customer.subscription.updated`, and `customer.subscription.deleted`.
 
 Each Stripe subscription owns one training-data window in the
-`membershipAccessWindows` table. The window opens on the matching calendar date
-one month before that subscription's checkout (for example, September 3 opens
-August 3), extends forward while the subscription stays active, and closes on
+`membershipAccessWindows` table. The window opens 30 days before that subscription's checkout (for example,
+September 3 opens August 4), extends forward while the subscription stays active, and closes on
 the day the subscription stops being active (the earlier of the cancellation
 and the paid-through date). Renewals never move a window. A member who cancels
 and later subscribes again receives a new window for the new subscription plus
@@ -59,8 +58,8 @@ fall back to the Better Auth record's creation and end dates.
 Training blocks are sold as one-time Stripe payments, with or without a
 membership: $100 for a single block once it has started (start date on or
 before today in Eastern time, so the in-progress block is included and shows
-the workouts published so far), or $400 for every completed block (end date
-before today) that exists at purchase time. Each purchase
+the workouts published so far), or $400 for every started block (completed and in progress) that exists at
+purchase time. Each purchase
 is a `checkout.session.completed` payment-mode session created by
 `trainingBlockPurchases.createCheckout`; the block id and purchase type travel
 in the session metadata. The webhook handler and the success page both verify
@@ -100,7 +99,7 @@ Two forever-duration offers are supported:
 Both offers include every workout, past and present. When the
 `checkout.session.completed` webhook records a redemption against a
 subscription, it moves that subscription's `membershipAccessWindows` start back
-to the beginning of the training history instead of the usual one month before
+to the beginning of the training history instead of the usual 30 days before
 checkout. The window still closes normally if the subscription ends.
 
 The shared coupons do not have global redemption caps. The one-use limit belongs
@@ -146,6 +145,13 @@ test-mode credentials and prices for the preview. Keep Vercel's **Automatically
 expose System Environment Variables** project setting enabled so the branch name
 and branch URL are available during the build.
 
+All Vercel previews also sync `VERCEL_ENV=preview` to their Convex preview
+deployment. When `PREVIEW_AUTH_BYPASS=false`, signed-in users can enable
+**Impersonate admin** in the desktop account menu or mobile menu. This grants
+admin access only to the current login session; switching it off restores the
+account's normal permissions without changing its saved role. The existing
+**Admin mode** switch remains available in previews with the auth bypass enabled.
+
 For a new deployment, temporarily set the first verified administrator email
 before that account signs up:
 
@@ -156,3 +162,63 @@ bunx convex env set --prod AUTH_BOOTSTRAP_ADMIN_EMAIL admin@example.com
 Remove `AUTH_BOOTSTRAP_ADMIN_EMAIL` after the account has been created. Never
 set `PREVIEW_AUTH_BYPASS=true` on the production Convex deployment; it disables
 both membership and administrator authorization checks.
+
+## September 2026 feedback
+
+The `/subscribe` catalog is public. Visitors can view block descriptions, dates,
+workout counts, and prices before creating an account. Choosing a purchase sends
+them through signup or login and resumes that selection with email OTP or Google.
+Workout contents and checkout creation still require the appropriate access.
+
+New blocks automatically go on sale for $100 when their start date arrives in
+Eastern time, and join the bundle at that time. No separate Stripe product is
+needed for each new block. An existing bundle purchase keeps only the blocks
+included when it was bought.
+
+To change the bundle price, create a new one-time USD price on the existing
+Stripe bundle product, update `STRIPE_TRAINING_BLOCK_BUNDLE_PRICE_ID`, and change
+`TRAINING_BLOCK_BUNDLE_PRICE_CENTS` in `convex/lib/trainingBlockPurchases.ts`.
+The site display and payment verification share that amount. Deploy the site
+and Convex changes together. Finish or expire open checkouts before switching
+prices, because confirmation verifies the configured price ID and amount.
+
+### Stripe membership description
+
+The outdated historical-data description in the feedback screenshot lives on
+Stripe's product. With the intended deployment's `STRIPE_SECRET_KEY` and
+`STRIPE_INSIDE_LAB_PRICE_ID` set, review and apply the correction:
+
+```sh
+bun scripts/sync_stripe_membership_copy.ts
+bun scripts/sync_stripe_membership_copy.ts --apply
+```
+
+The script validates the $70 monthly USD price, changes only its product
+description, and reads it back to verify. Run separately for test and live
+Stripe when ready; no subscriptions or prices are changed.
+
+### Existing-member transition
+
+Use **Users & access → Transition an existing member** for each of the eight
+active members from the feedback document; exclude the cancelling member, Petr
+Mrázek. The form defaults to October 5, 2026 at 9 a.m. in the administrator's local
+time. Recipient addresses are entered in the admin tool, not stored in source.
+
+Scheduling a transition provisions a recipient-bound $50/month offer and grants
+complimentary full training history plus ongoing workouts immediately, even if
+the person has not created their account yet. They sign in with the matching,
+verified email. Free access lasts through the invitation day in Eastern time;
+the $50 offer only becomes available at the scheduled time. The invitation links
+back to checkout after either login or signup, with the offer applied. No card or
+subscription is created during the complimentary period. Subscribing retains
+full history through the existing discount-redemption flow.
+
+Issued codes shows the scheduled invitation and delivery status. Revoke cancels
+the scheduled invitation and complimentary access. Failed invitations can be
+retried there; retries reuse the email's idempotency key. Already delivered,
+redeemed, revoked, or not-yet-due invitations are not sent again.
+
+Cancel the old provider's upcoming payments separately before inviting members
+to the new subscription. Creating these transitions does not alter existing
+payments. Scheduling the invitations is an explicit admin action after deployment;
+no member emails are sent or scheduled by a build or migration.

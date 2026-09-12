@@ -41,6 +41,7 @@ const accessOptions = [
   { label: "Active access", value: "active" },
   { label: "All users", value: "all" },
   { label: "Members", value: "subscription" },
+  { label: "Complimentary access", value: "transition" },
   { label: "Block access only", value: "training_blocks" },
   { label: "No lab access", value: "none" },
   { label: "Admins", value: "admin" },

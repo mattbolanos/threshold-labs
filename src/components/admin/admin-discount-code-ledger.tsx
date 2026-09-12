@@ -9,6 +9,7 @@ import {
 } from "@tabler/icons-react";
 import { useState } from "react";
 import { CopyCodeButton } from "@/components/admin/copy-code-button";
+import { RetryInvitationButton } from "@/components/admin/retry-invitation-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -59,6 +60,15 @@ function statusBadge(status: Doc<"discountCodes">["status"]) {
 
 function DeliverySummary({ code }: { code: Doc<"discountCodes"> }) {
   if (code.recipientEmail) {
+    if (code.availableAt && code.deliveryStatus === "pending") {
+      return (
+        <span>
+          Invitation to <strong>{code.recipientEmail}</strong> scheduled for{" "}
+          {dateFormatter.format(code.availableAt)}. Complimentary full access
+          lasts through that day in Eastern time.
+        </span>
+      );
+    }
     if (code.deliveryStatus === "sent") {
       return (
         <span>
@@ -242,6 +252,12 @@ export function AdminDiscountCodeLedger({
 
                 {isActive ? (
                   <div className="flex shrink-0 flex-wrap gap-2 md:justify-end">
+                    {discountCode.availableAt &&
+                    discountCode.deliveryStatus === "failed" ? (
+                      <RetryInvitationButton
+                        discountCodeId={discountCode._id}
+                      />
+                    ) : null}
                     {discountCode.recipientEmail ? null : (
                       <CopyCodeButton code={discountCode.code} />
                     )}

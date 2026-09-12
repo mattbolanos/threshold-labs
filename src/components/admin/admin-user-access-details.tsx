@@ -23,6 +23,14 @@ export function AdminUserAccessDetails({ user }: { user: AdminUser }) {
                 ? "No lab content or workouts. An active membership or block purchase is required."
                 : "Lab Notes, races, training blocks, and charts. Workout access is listed below."}
           </p>
+          {user.accessSource === "transition" &&
+          user.complimentaryAccessThrough ? (
+            <p className="text-sm">
+              Full training history and new workouts are complimentary through{" "}
+              {formatTrainingAccessDate(user.complimentaryAccessThrough)}. A
+              $50/month invitation is scheduled for that day.
+            </p>
+          ) : null}
           {user.accessSource === "subscription" &&
           user.subscription?.accessStart ? (
             <div className="space-y-2 text-sm">

@@ -67,6 +67,11 @@ async function MembershipPageContent() {
       />
       <MembershipCard
         accessSource={access.source}
+        complimentaryAccessThrough={
+          "complimentaryAccessThrough" in access
+            ? access.complimentaryAccessThrough
+            : null
+        }
         hasBillingAccount={access.hasBillingAccount || isBillingPreview}
         isBillingPreview={isBillingPreview}
         plansHref={plansHref}

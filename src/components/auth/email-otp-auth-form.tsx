@@ -2,8 +2,9 @@
 
 import { IconBrandGoogleFilled } from "@tabler/icons-react";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
-import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { type FormEvent, useRef, useState } from "react";
+import { AuthModeSwitch } from "@/components/auth/auth-mode-switch";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -29,6 +30,7 @@ import {
 } from "@/lib/auth/request-email-otp";
 import {
   getEmailOtpSuccessPath,
+  getSafeAuthReturnPath,
   POST_AUTH_PATH,
   SIGNUP_SUCCESS_PATH,
 } from "@/lib/auth/routes";
@@ -39,7 +41,12 @@ const otpIndexes = [0, 1, 2, 3, 4, 5] as const;
 
 type AuthStep = "email" | "otp";
 type PendingAction =
-  "google" | "redirect" | "resend-code" | "send-code" | "verify-code" | null;
+  | "google"
+  | "redirect"
+  | "resend-code"
+  | "send-code"
+  | "verify-code"
+  | null;
 
 interface EmailOtpAuthFormProps {
   mode: EmailOtpMode;
@@ -70,6 +77,8 @@ function getErrorMessage(error: unknown, fallback: string) {
 }
 
 export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
+  const searchParams = useSearchParams();
+  const nextPath = getSafeAuthReturnPath(searchParams.get("next"));
   const isSignup = mode === "signup";
   const [email, setEmail] = useState("");
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
@@ -160,7 +169,7 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
 
       isRedirecting = true;
       setPendingAction("redirect");
-      window.location.replace(getEmailOtpSuccessPath(mode));
+      window.location.replace(getEmailOtpSuccessPath(mode, nextPath));
     } catch (error) {
       setRequestError(
         getErrorMessage(
@@ -225,9 +234,9 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
 
     try {
       const { error } = await authClient.signIn.social({
-        callbackURL: POST_AUTH_PATH,
-        errorCallbackURL: `${window.location.origin}/${mode}`,
-        newUserCallbackURL: SIGNUP_SUCCESS_PATH,
+        callbackURL: nextPath ?? POST_AUTH_PATH,
+        errorCallbackURL: `${window.location.origin}/${mode}${nextPath ? `?next=${encodeURIComponent(nextPath)}` : ""}`,
+        newUserCallbackURL: nextPath ?? SIGNUP_SUCCESS_PATH,
         provider: "google",
       });
 
@@ -476,20 +485,7 @@ export function EmailOtpAuthForm({ mode }: EmailOtpAuthFormProps) {
       </CardContent>
 
       {step === "email" ? (
-        <CardFooter className="justify-center gap-1.5">
-          <span className="text-muted-foreground">
-            {isSignup ? "Already have an account?" : "New here?"}
-          </span>
-          <Button
-            className="px-0!"
-            nativeButton={false}
-            render={<Link href={isSignup ? "/login" : "/signup"} />}
-            size="sm"
-            variant="link"
-          >
-            {isSignup ? "Sign in" : "Create an account"}
-          </Button>
-        </CardFooter>
+        <AuthModeSwitch mode={mode} nextPath={nextPath} />
       ) : (
         <CardFooter className="justify-center">
           <Button

@@ -23,11 +23,13 @@ import {
   INSIDE_LAB_PLAN_NAME,
 } from "./lib/labAccess";
 import { resolveMembershipAccess } from "./lib/membershipAccess";
+import { getMemberTransitionAccess } from "./lib/memberTransition";
 import {
   createStripeAuthPlugin,
   createStripeCheckoutHook,
 } from "./lib/stripeAuth";
 import { getPurchasedBlockWindows } from "./lib/trainingBlockPurchases";
+import { isPreviewAdminEnabled } from "./previewAdmin";
 import {
   createPreviewUser,
   isPreviewAuthEnabled,
@@ -176,12 +178,30 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) =>
 export const createAuth = (ctx: GenericCtx<DataModel>) =>
   betterAuth(createAuthOptions(ctx));
 
+export const getEffectiveAuthUser = async (
+  ctx: QueryCtx | MutationCtx | ActionCtx,
+): Promise<
+  | (NonNullable<Awaited<ReturnType<typeof authComponent.safeGetAuthUser>>> & {
+      previewAdmin: boolean;
+    })
+  | null
+> => {
+  const user = await authComponent.safeGetAuthUser(ctx);
+  if (!user) return null;
+
+  const previewAdmin: boolean = isPreviewAdminEnabled()
+    ? await ctx.runQuery(internal.previewAdmin.getSession, {})
+    : false;
+
+  return { ...user, previewAdmin, role: previewAdmin ? "admin" : user.role };
+};
+
 export const assertAdmin = async (ctx: QueryCtx | MutationCtx | ActionCtx) => {
   if (isPreviewAuthEnabled()) {
     return null;
   }
 
-  const user = await authComponent.safeGetAuthUser(ctx);
+  const user = await getEffectiveAuthUser(ctx);
 
   if (!user || user.role !== "admin") {
     throw new ConvexError("Administrator access is required.");
@@ -201,7 +221,7 @@ export const getLabAccess = async (ctx: QueryCtx | MutationCtx) => {
     };
   }
 
-  const user = await authComponent.safeGetAuthUser(ctx);
+  const user = await getEffectiveAuthUser(ctx);
 
   if (!user) {
     return {
@@ -224,7 +244,12 @@ export const getLabAccess = async (ctx: QueryCtx | MutationCtx) => {
   }
 
   const referenceId = user._id.toString();
-  const [subscriptions, blockPurchases, accessWindows] = await Promise.all([
+  const [
+    subscriptions,
+    blockPurchases,
+    accessWindows,
+    complimentaryAccessThrough,
+  ] = await Promise.all([
     getSubscriptionsForReference(ctx, referenceId),
     ctx.db
       .query("trainingBlockPurchases")
@@ -234,6 +259,7 @@ export const getLabAccess = async (ctx: QueryCtx | MutationCtx) => {
       .query("membershipAccessWindows")
       .withIndex("by_reference_id", (q) => q.eq("referenceId", referenceId))
       .collect(),
+    user.emailVerified ? getMemberTransitionAccess(ctx, user.email) : null,
   ]);
   const membershipSubscriptions = subscriptions.filter(
     (subscription) => subscription.plan === INSIDE_LAB_PLAN_NAME,
@@ -264,13 +290,18 @@ export const getLabAccess = async (ctx: QueryCtx | MutationCtx) => {
   const hasTrainingBlocks = blockPurchases.length > 0;
 
   return {
-    hasAccess: Boolean(activeSubscription || hasTrainingBlocks),
+    complimentaryAccessThrough,
+    hasAccess: Boolean(
+      activeSubscription || hasTrainingBlocks || complimentaryAccessThrough,
+    ),
     hasBillingAccount: activeSubscription ? true : hasBillingAccount,
     source: activeSubscription
       ? ("subscription" as const)
-      : hasTrainingBlocks
-        ? ("training_blocks" as const)
-        : ("none" as const),
+      : complimentaryAccessThrough
+        ? ("transition" as const)
+        : hasTrainingBlocks
+          ? ("training_blocks" as const)
+          : ("none" as const),
     subscription: subscription
       ? {
           accessStart: membershipAccess.accessStart,
@@ -349,7 +380,7 @@ export const getCurrentUser = query({
       return createPreviewUser(previewRole as PreviewRole | undefined);
     }
 
-    return (await authComponent.safeGetAuthUser(ctx)) ?? null;
+    return getEffectiveAuthUser(ctx);
   },
 });
 

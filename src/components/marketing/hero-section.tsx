@@ -5,7 +5,7 @@ import { MarketingContainer } from "./marketing-container";
 
 const stats = [
   { label: "Athletes coached", value: "150+" },
-  { label: "Men's Pro PR", value: "56:28" },
+  { label: "Men's Pro PR", value: "54:10" },
   { label: "Pro Doubles PR", value: "49:00" },
   { label: "Mixed Doubles PR", value: "52:54" },
 ] as const;

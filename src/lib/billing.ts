@@ -1,3 +1,8 @@
+import {
+  TRAINING_BLOCK_BUNDLE_PRICE_CENTS,
+  TRAINING_BLOCK_PRICE_CENTS,
+} from "../../convex/lib/trainingBlockPurchases";
+
 export const INSIDE_LAB_PLAN_NAME = "inside-the-lab";
 
 export const insideLabMembership = {
@@ -10,6 +15,7 @@ export const insideLabMembership = {
 export type DiscountOfferType = "fifty_monthly" | "free_forever";
 
 export interface DiscountOffer {
+  availableAt?: number;
   discountType: DiscountOfferType;
 }
 
@@ -41,14 +47,14 @@ export const discountOffers: Record<
 };
 
 export const trainingBlockPass = {
-  price: 100,
-  priceLabel: "$100 per block",
+  price: TRAINING_BLOCK_PRICE_CENTS / 100,
+  priceLabel: `$${TRAINING_BLOCK_PRICE_CENTS / 100} per block`,
   title: "Training block",
 } as const;
 
 export const trainingBlockBundle = {
-  price: 400,
-  priceLabel: "$400 once",
+  price: TRAINING_BLOCK_BUNDLE_PRICE_CENTS / 100,
+  priceLabel: `$${TRAINING_BLOCK_BUNDLE_PRICE_CENTS / 100} once`,
   title: "All current training blocks",
 } as const;
 
@@ -116,6 +122,12 @@ const formatMembershipDate = (timestamp: number | null) =>
 
 export const formatPurchaseDate = (timestamp: number) =>
   membershipDateFormatter.format(new Date(timestamp));
+
+export const formatInvitationDate = (timestamp: number) =>
+  new Intl.DateTimeFormat("en-US", {
+    dateStyle: "medium",
+    timeZone: "America/New_York",
+  }).format(new Date(timestamp));
 
 export const formatTrainingAccessDate = (date: string) =>
   membershipDateFormatter.format(new Date(`${date}T00:00:00.000Z`));

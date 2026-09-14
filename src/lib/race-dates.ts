@@ -18,5 +18,3 @@ export const formatDateRange = (startDate: string, endDate: string) => {
 
   return `${format(start, "MMM dd, yyyy")}–${format(end, "MMM dd, yyyy")}`;
 };
-
-export const formatRaceDateRange = formatDateRange;

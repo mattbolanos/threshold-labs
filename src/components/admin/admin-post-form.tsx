@@ -62,7 +62,7 @@ function EditPostLoader({ postId }: { postId: string }) {
     return (
       <div className="flex flex-col gap-3">
         <AdminBackLink href="/lab/admin/posts" label="Back to Posts" />
-        <p className="text-muted-foreground text-sm">Loading post...</p>
+        <p className="text-sm text-muted-foreground">Loading post...</p>
       </div>
     );
   }
@@ -72,7 +72,7 @@ function EditPostLoader({ postId }: { postId: string }) {
       <div className="flex flex-col gap-3">
         <AdminBackLink href="/lab/admin/posts" label="Back to Posts" />
         <h1 className="text-xl font-semibold">Post not found</h1>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           This post may have been removed.
         </p>
       </div>
@@ -157,20 +157,20 @@ function PostWriter({ initialForm, mode, postId }: PostWriterProps) {
       <AdminBackLink href="/lab/admin/posts" label="Back to Posts" />
 
       <header className="flex flex-col gap-1">
-        <p className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
+        <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
           Lab Notes
         </p>
         <h1 className="text-2xl font-semibold tracking-tight">
           {mode === "create" ? "New Post" : "Edit Post"}
         </h1>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           Build with Markdown blocks and review the final Typeset rendering as
           you write.
         </p>
       </header>
 
       {errorMessage ? (
-        <p className="text-destructive text-sm" role="alert">
+        <p className="text-sm text-destructive" role="alert">
           {errorMessage}
         </p>
       ) : null}
@@ -240,7 +240,7 @@ function PostWriter({ initialForm, mode, postId }: PostWriterProps) {
           </Tabs>
 
           <CardFooter className="flex-wrap justify-between gap-3">
-            <Badge variant={form.isVisible ? "default" : "secondary"}>
+            <Badge variant={form.isVisible ? "default" : "accent"}>
               {form.isVisible ? "Visible" : "Hidden"}
             </Badge>
             <div className="flex items-center gap-2">

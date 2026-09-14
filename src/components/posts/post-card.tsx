@@ -38,7 +38,7 @@ export function PostCard({ post }: PostCardProps) {
         <CardHeader>
           <CardDescription className="flex flex-wrap items-center gap-2">
             {post.isPinned ? (
-              <Badge className="text-primary" variant="secondary">
+              <Badge className="text-primary" variant="accent">
                 <IconPinnedFilled aria-hidden data-icon="inline-start" />
                 Pinned
               </Badge>

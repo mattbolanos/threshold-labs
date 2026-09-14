@@ -41,7 +41,7 @@ const formatValue = (value: TooltipPayloadItem["value"]) => {
     return value;
   }
 
-  return "—";
+  return "–";
 };
 
 const renderDefaultContent = ({

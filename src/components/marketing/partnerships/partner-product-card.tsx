@@ -6,7 +6,6 @@ import type {
 } from "@/lib/partnership-content";
 
 type PartnerProductCardProps = {
-  affiliateDisclosure?: string;
   brand: string;
   index: number;
   product: PartnerProduct | FeaturedPartnerProduct;
@@ -19,7 +18,6 @@ function hasImage(
 }
 
 export function PartnerProductCard({
-  affiliateDisclosure,
   brand,
   index,
   product,
@@ -27,7 +25,7 @@ export function PartnerProductCard({
   const featured = hasImage(product);
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-white/10 bg-neutral-900/60 transition-colors hover:border-lime-300/40">
+    <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-white/10 bg-neutral-900/60 transition-colors hover:border-primary/40">
       {featured ? (
         <div className="relative aspect-square overflow-hidden bg-neutral-100">
           <Image
@@ -45,7 +43,7 @@ export function PartnerProductCard({
 
       <div className="flex flex-1 flex-col p-6 sm:p-7">
         <div className="flex items-center justify-between gap-4">
-          <p className="text-xs font-bold tracking-widest text-lime-300 uppercase">
+          <p className="text-xs font-bold tracking-widest text-primary uppercase">
             {brand}
           </p>
           <span className="font-mono text-xs text-neutral-600">
@@ -58,9 +56,9 @@ export function PartnerProductCard({
         <p className="mt-3 flex-1 text-sm leading-7 text-neutral-400">
           {product.description}
         </p>
-        <div className="mt-6 flex flex-col items-start gap-2">
+        <div className="mt-6 flex flex-col items-start">
           <a
-            className="inline-flex items-center gap-2 text-sm font-bold text-white transition-colors hover:text-lime-300"
+            className="inline-flex items-center gap-2 text-sm font-bold text-white transition-colors hover:text-primary"
             href={product.href}
             rel="noreferrer"
             target="_blank"
@@ -68,11 +66,6 @@ export function PartnerProductCard({
             View {product.title}
             <IconArrowUpRight aria-hidden className="size-4" />
           </a>
-          {affiliateDisclosure ? (
-            <p className="text-xs leading-5 text-neutral-400">
-              {affiliateDisclosure}
-            </p>
-          ) : null}
         </div>
       </div>
     </article>

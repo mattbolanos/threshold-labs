@@ -10,6 +10,7 @@ import { ChartSkeleton } from "@/components/skeletons/chart";
 import { BarChart } from "@/components/ui/chart/bar-chart";
 import { useChartRange } from "@/hooks/use-chart-state";
 import { getColorClassName } from "@/lib/chart-utils";
+import { formatShortDate } from "@/lib/utils";
 import { api } from "../../../convex/_generated/api";
 import { createTooltip } from "./tooltip";
 
@@ -41,13 +42,7 @@ export function RunMixChart({ yAxisWidth }: RunMixChartProps) {
       legendPosition="left"
       type="stacked"
       xAxisPadding={4}
-      xTicksFormatter={(value) =>
-        new Date(value).toLocaleDateString("en-US", {
-          day: "numeric",
-          month: "short",
-          timeZone: "UTC",
-        })
-      }
+      xTicksFormatter={(value) => formatShortDate(new Date(value))}
       yAxisWidth={yAxisWidth}
     />
   );

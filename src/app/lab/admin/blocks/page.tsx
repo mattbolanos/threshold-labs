@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { AdminBackLink } from "@/components/admin/admin-back-link";
 import { AdminTrainingBlockList } from "@/components/admin/admin-training-block-list";
+import { LabRouteFallback } from "@/components/lab-route-fallback";
 import { checkAdmin } from "@/lib/auth";
 
 export const metadata: Metadata = {
@@ -8,7 +10,7 @@ export const metadata: Metadata = {
   title: "Training Blocks | Admin",
 };
 
-export default async function AdminTrainingBlocksPage() {
+async function AdminTrainingBlocksPageContent() {
   await checkAdmin();
 
   return (
@@ -16,5 +18,13 @@ export default async function AdminTrainingBlocksPage() {
       <AdminBackLink />
       <AdminTrainingBlockList />
     </div>
+  );
+}
+
+export default function AdminTrainingBlocksPage() {
+  return (
+    <Suspense fallback={<LabRouteFallback />}>
+      <AdminTrainingBlocksPageContent />
+    </Suspense>
   );
 }

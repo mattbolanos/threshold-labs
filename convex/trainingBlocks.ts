@@ -1,12 +1,6 @@
 import { ConvexError, v } from "convex/values";
-import {
-  type MutationCtx,
-  mutation,
-  type QueryCtx,
-  query,
-} from "./_generated/server";
-import { authComponent } from "./auth";
-import { isPreviewAuthEnabled } from "./previewAuth";
+import { mutation, query } from "./_generated/server";
+import { assertAdmin, assertLabAccess } from "./auth";
 import {
   findTrainingBlockForDate,
   getTrainingBlocksOverlappingRange,
@@ -25,15 +19,6 @@ type TrainingBlockInput = {
   endDate: string;
   startDate: string;
   title: string;
-};
-
-const assertAdmin = async (ctx: QueryCtx | MutationCtx) => {
-  if (isPreviewAuthEnabled()) return;
-
-  const user = await authComponent.safeGetAuthUser(ctx);
-  if (!user || user.role !== "admin") {
-    throw new ConvexError("Only admins can manage training blocks.");
-  }
 };
 
 const normalizeTrainingBlock = (block: TrainingBlockInput) => {
@@ -113,6 +98,7 @@ export const getTrainingBlocksForAdmin = query({
 export const getCurrentTrainingBlock = query({
   args: { onDate: v.string() },
   handler: async (ctx, { onDate }) => {
+    await assertLabAccess(ctx);
     if (!DATE_PATTERN.test(onDate)) return null;
 
     const blocks = await getTrainingBlocksOverlappingRange(ctx, onDate, onDate);

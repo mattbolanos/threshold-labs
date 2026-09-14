@@ -1,6 +1,4 @@
-import { type ClassValue, clsx } from "clsx";
 import { addDays, format, isValid, parse } from "date-fns";
-import { twMerge } from "tailwind-merge";
 
 const TRAINING_LOAD_SCALE_FACTOR = 3;
 const QUERY_DATE_FORMAT = "yyyy-MM-dd";
@@ -17,10 +15,19 @@ const ONE_DECIMAL_FORMATTER = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 1,
   minimumFractionDigits: 1,
 });
+const WORKOUT_DATE_FORMATTER = new Intl.DateTimeFormat("en-US", {
+  day: "2-digit",
+  month: "short",
+  timeZone: "UTC",
+  year: "numeric",
+});
+const SHORT_DATE_FORMATTER = new Intl.DateTimeFormat("en-US", {
+  day: "numeric",
+  month: "short",
+  timeZone: "UTC",
+});
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+export { cn } from "cn";
 
 export function formatOneDecimal(value: number): string {
   return ONE_DECIMAL_FORMATTER.format(value);
@@ -85,10 +92,9 @@ export function calculateSTL(
 }
 
 export function formatWorkoutDate(date: Date): string {
-  return date.toLocaleDateString("en-US", {
-    day: "2-digit",
-    month: "short",
-    timeZone: "UTC",
-    year: "numeric",
-  });
+  return WORKOUT_DATE_FORMATTER.format(date);
+}
+
+export function formatShortDate(date: Date): string {
+  return SHORT_DATE_FORMATTER.format(date);
 }

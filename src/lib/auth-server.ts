@@ -18,6 +18,7 @@ if (!convexSiteUrl) {
 }
 
 export const {
+  fetchAuthAction,
   fetchAuthQuery,
   getToken,
   handler,

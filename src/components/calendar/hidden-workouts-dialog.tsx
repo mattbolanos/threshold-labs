@@ -2,7 +2,7 @@
 
 import { IconChevronRight, IconX } from "@tabler/icons-react";
 import { useState } from "react";
-import { BlockContent } from "@/components/block/block-content";
+import { BlockContent } from "@/components/block/lazy-block-content";
 import {
   Dialog,
   DialogClose,

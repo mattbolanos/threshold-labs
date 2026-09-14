@@ -38,20 +38,22 @@ export function LabNotesFeedSkeleton() {
 }
 
 type LabNotesFeedProps = {
-  posts: Pick<
-    Doc<"posts">,
-    | "_id"
-    | "category"
-    | "excerpt"
-    | "isPinned"
-    | "publishedAt"
-    | "slug"
-    | "title"
-  >[];
+  posts?:
+    | Pick<
+        Doc<"posts">,
+        | "_id"
+        | "category"
+        | "excerpt"
+        | "isPinned"
+        | "publishedAt"
+        | "slug"
+        | "title"
+      >[]
+    | null;
 };
 
 export function LabNotesFeed({ posts }: LabNotesFeedProps) {
-  if (posts.length === 0) {
+  if (!posts?.length) {
     return (
       <Empty className="min-h-64 border">
         <EmptyHeader>

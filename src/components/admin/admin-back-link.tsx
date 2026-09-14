@@ -17,7 +17,7 @@ export function AdminBackLink({
   return (
     <Link
       className={cn(
-        "text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm transition-colors",
+        "text-muted-foreground hover:bg-muted hover:text-foreground -ms-2 inline-flex min-h-9 self-start items-center gap-2 rounded-md px-2 text-sm font-medium transition-colors",
         className,
       )}
       href={href}

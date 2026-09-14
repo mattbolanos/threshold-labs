@@ -1,13 +1,7 @@
 import { ConvexError, v } from "convex/values";
-import {
-  type MutationCtx,
-  mutation,
-  type QueryCtx,
-  query,
-} from "./_generated/server";
-import { authComponent } from "./auth";
+import { type MutationCtx, mutation, query } from "./_generated/server";
+import { assertAdmin, assertLabAccess } from "./auth";
 import { sortPostsByPinnedThenPublishedAt } from "./postSorting";
-import { isPreviewAuthEnabled } from "./previewAuth";
 
 const postInputValidator = v.object({
   category: v.string(),
@@ -27,18 +21,6 @@ type PostInput = {
   publishedAt: number;
   slug: string;
   title: string;
-};
-
-const assertAdmin = async (ctx: QueryCtx | MutationCtx) => {
-  if (isPreviewAuthEnabled()) {
-    return;
-  }
-
-  const user = await authComponent.safeGetAuthUser(ctx);
-
-  if (!user || user.role !== "admin") {
-    throw new ConvexError("Only admins can manage posts.");
-  }
 };
 
 const normalizeSlug = (value: string) =>
@@ -182,6 +164,7 @@ export const setPostPinned = mutation({
 export const getPublishedPosts = query({
   args: {},
   handler: async (ctx) => {
+    await assertLabAccess(ctx);
     const posts = await ctx.db
       .query("posts")
       .withIndex("by_visibility_and_published_at", (q) =>
@@ -207,6 +190,7 @@ export const getPublishedPostBySlug = query({
     slug: v.string(),
   },
   handler: async (ctx, { slug }) => {
+    await assertLabAccess(ctx);
     const post = await ctx.db
       .query("posts")
       .withIndex("by_slug", (q) => q.eq("slug", normalizeSlug(slug)))

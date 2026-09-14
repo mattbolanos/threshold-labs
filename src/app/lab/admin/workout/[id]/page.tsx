@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { AdminWorkoutForm } from "@/components/admin/admin-workout-form";
+import { LabRouteFallback } from "@/components/lab-route-fallback";
 import { checkAdmin } from "@/lib/auth";
 
 export const metadata: Metadata = {
@@ -7,7 +9,7 @@ export const metadata: Metadata = {
   title: "Edit Workout",
 };
 
-export default async function EditWorkoutPage({
+async function EditWorkoutPageContent({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -15,4 +17,16 @@ export default async function EditWorkoutPage({
   const [, { id }] = await Promise.all([checkAdmin(), params]);
 
   return <AdminWorkoutForm mode="edit" workoutId={id} />;
+}
+
+export default function EditWorkoutPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  return (
+    <Suspense fallback={<LabRouteFallback />}>
+      <EditWorkoutPageContent params={params} />
+    </Suspense>
+  );
 }

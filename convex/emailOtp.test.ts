@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, expect, spyOn, test } from "bun:test";
 import { memoryAdapter } from "better-auth/adapters/memory";
 import { type FunctionReference, getFunctionName } from "convex/server";
+import Stripe from "stripe";
 import type { ActionCtx, MutationCtx } from "./_generated/server";
 import { authComponent, createAuth } from "./auth";
 import { createEmailOtp, signInEmailOtp } from "./emailOtp";
@@ -160,6 +161,39 @@ test("resend replaces the old code and a successful code cannot be replayed", as
   expect((await signIn(second)).status).toBe(400);
   expect(database.session).toHaveLength(1);
   expect(mutationCalls).toBeGreaterThanOrEqual(2);
+});
+
+test("verifies an existing unverified billing user without calling Stripe in the mutation", async () => {
+  database.user.push({
+    createdAt: new Date(),
+    email,
+    emailVerified: false,
+    id: "legacy-billing-user",
+    name: "Legacy Member",
+    role: "client",
+    stripeCustomerId: "cus_existing",
+    updatedAt: new Date(),
+  });
+  const retrieve = spyOn(
+    Stripe.resources.Customers.prototype,
+    "retrieve",
+  ).mockResolvedValue({
+    email,
+    id: "cus_existing",
+  } as Stripe.Response<Stripe.Customer>);
+
+  try {
+    const otp = await issue();
+    const response = await signIn(otp);
+    expect(response.status).toBe(200);
+    expect(retrieve).not.toHaveBeenCalled();
+    expect(database.user[0].emailVerified).toBe(true);
+    expect(database.user[0].stripeCustomerId).toBe("cus_existing");
+    expect(database.session).toHaveLength(1);
+    expect((await signIn(otp)).status).toBe(400);
+  } finally {
+    retrieve.mockRestore();
+  }
 });
 
 test("cleans legacy duplicate records before consuming the latest code", async () => {

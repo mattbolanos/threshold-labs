@@ -111,5 +111,36 @@ export function createStripeAuthPlugin(ctx: GenericCtx<DataModel>) {
       ...plugin.endpoints,
       stripeWebhook: webhook.endpoints.stripeWebhook,
     },
+    init: (...args: Parameters<typeof plugin.init>) => {
+      const initialized = plugin.init(...args);
+      if (!initialized) return initialized;
+      const userHooks = initialized.options.databaseHooks.user;
+      const syncCustomer = userHooks.update.after;
+
+      return {
+        ...initialized,
+        options: {
+          ...initialized.options,
+          databaseHooks: {
+            ...initialized.options.databaseHooks,
+            user: {
+              ...userHooks,
+              update: {
+                ...userHooks.update,
+                after: async (
+                  ...updateArgs: Parameters<typeof syncCustomer>
+                ) => {
+                  // OTP sign-in only changes emailVerified, never the email.
+                  // It runs atomically in a Convex mutation, where Stripe's
+                  // network I/O would abort verification and session creation.
+                  if (updateArgs[1]?.path === "/sign-in/email-otp") return;
+                  return syncCustomer(...updateArgs);
+                },
+              },
+            },
+          },
+        },
+      };
+    },
   };
 }

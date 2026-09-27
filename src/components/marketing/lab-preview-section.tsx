@@ -3,12 +3,17 @@ import Link from "next/link";
 import { LAB_PREVIEW_WEEK } from "@/components/marketing/lab-preview-data";
 import { LabWeekPreview } from "@/components/marketing/lab-week-preview";
 import { MarketingContainer } from "@/components/marketing/marketing-container";
+import { insideLabMembership } from "@/lib/billing";
 
-export function LabPreviewSection() {
+export function LabPreviewSection({
+  salesPage = false,
+}: {
+  salesPage?: boolean;
+}) {
   return (
     <section
       className="scroll-mt-24 border-y border-primary/10 bg-neutral-900/45"
-      id="inside-the-lab"
+      id="training-preview"
     >
       <MarketingContainer
         className="route-padding-x scroll-mt-24 py-20 sm:py-24"
@@ -20,21 +25,25 @@ export function LabPreviewSection() {
               Inside the Lab
             </p>
             <h2 className="mt-4 text-3xl font-black tracking-tight text-white sm:text-5xl">
-              Preview Inside the Lab
+              See a week from the inside.
             </h2>
             <p className="mt-5 text-lg leading-8 text-neutral-400">
               Open the highlighted sessions to see the exact plan, fueling,
-              training load, and notes behind the work. The complete log and
-              every weekly decision are inside the Lab.
+              training load, and notes behind the work. This sample shows
+              Stephen’s training, rather than a program prescribed for you.
             </p>
           </div>
 
           <div className="flex w-full flex-col items-stretch lg:w-auto lg:items-end lg:justify-self-end">
             <Link
               className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-bold text-neutral-950 transition-colors outline-none hover:bg-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:scale-96 lg:w-fit"
-              href="/signup"
+              href={
+                salesPage ? "/subscribe?purchase=membership" : "/inside-the-lab"
+              }
             >
-              Create your account
+              {salesPage
+                ? `Join Inside the Lab · ${insideLabMembership.priceLabel}`
+                : "Explore membership & pricing"}
               <IconArrowRight aria-hidden className="size-4" />
             </Link>
           </div>

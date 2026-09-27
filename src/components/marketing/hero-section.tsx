@@ -4,7 +4,7 @@ import { coachingApplicationUrl } from "@/lib/marketing-content";
 import { MarketingContainer } from "./marketing-container";
 
 const stats = [
-  { label: "Athletes coached", value: "150+" },
+  { label: "Athletes coached", value: "200+" },
   { label: "Men's Pro PR", value: "54:10" },
   { label: "Pro Doubles PR", value: "49:00" },
   { label: "Mixed Doubles PR", value: "52:54" },
@@ -62,10 +62,10 @@ export function HeroSection() {
             />
             <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black via-black/60 to-transparent p-6 pt-20">
               <p className="text-xs font-bold tracking-widest text-primary uppercase">
-                One system. Every season.
+                Built by Stephen Pelkofer
               </p>
               <p className="mt-1 text-lg font-bold text-white">
-                Train together. Keep building.
+                Coach. Athlete. Community Builder.
               </p>
             </div>
           </div>

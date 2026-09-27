@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: process.env.LOCAL_DEV_ORIGIN
+    ? [process.env.LOCAL_DEV_ORIGIN]
+    : [],
   cacheComponents: true,
   async redirects() {
     return [

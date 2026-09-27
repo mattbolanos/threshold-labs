@@ -112,8 +112,12 @@ export function TestimonialsSection() {
         </div>
 
         <div
-          className="marketing-slider -mx-5 flex snap-x snap-mandatory items-start gap-4 overflow-x-auto scroll-smooth px-5 pb-4 sm:-mx-8 sm:px-8 lg:mx-0 lg:px-0"
+          className="-mx-5 flex snap-x snap-mandatory items-start gap-4 overflow-x-auto scroll-smooth px-5 pb-4 sm:-mx-8 sm:px-8 lg:mx-0 lg:px-0"
           ref={sliderRef}
+          style={{
+            scrollbarColor: "var(--primary) transparent",
+            scrollbarWidth: "thin",
+          }}
         >
           {testimonials.map((testimonial) => {
             const isExpanded = expandedTestimonials.has(testimonial.name);
@@ -165,7 +169,8 @@ export function TestimonialsSection() {
           })}
         </div>
         <p className="mt-2 text-xs font-medium text-neutral-500">
-          Swipe or scroll to see more results.
+          {testimonials.length} client reviews. Use the arrows, swipe, or scroll
+          horizontally to see them all.
         </p>
       </MarketingContainer>
     </section>

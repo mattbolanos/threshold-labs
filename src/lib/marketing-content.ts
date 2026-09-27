@@ -4,10 +4,15 @@ export const coachingApplicationUrl = "https://forms.gle/F6qMZQee6CayBHrMA";
 
 export const appMembershipUrl = "https://coach.everfit.io/package/IT400203";
 
+export const appMembership = {
+  price: 40,
+  priceLabel: "$40/month",
+} as const;
+
 export const marketingNav = [
   { href: "/#results", label: "Athlete Results" },
   { href: "/partnerships", label: "Partnerships" },
-  { href: "/#inside-the-lab", label: "Inside the Lab" },
+  { href: "/inside-the-lab", label: "Inside the Lab" },
 ] as const;
 
 export const offers = [

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { LAB_PREVIEW_WEEK } from "@/components/marketing/lab-preview-data";
 import { LabWeekPreview } from "@/components/marketing/lab-week-preview";
 import { MarketingContainer } from "@/components/marketing/marketing-container";
+import { insideLabMembership } from "@/lib/billing";
 
 export function LabPreviewSection({
   salesPage = false,
@@ -41,7 +42,7 @@ export function LabPreviewSection({
               }
             >
               {salesPage
-                ? "Join Inside the Lab · $70/month"
+                ? `Join Inside the Lab · ${insideLabMembership.priceLabel}`
                 : "Explore membership & pricing"}
               <IconArrowRight aria-hidden className="size-4" />
             </Link>

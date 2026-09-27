@@ -37,6 +37,8 @@ export function AppProofSection() {
             <a
               className="mt-6 inline-block text-sm font-bold text-primary underline-offset-4 hover:underline"
               href={appMembershipUrl}
+              rel="noreferrer"
+              target="_blank"
             >
               Find your training in the app ↗
             </a>

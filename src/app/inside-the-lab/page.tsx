@@ -8,10 +8,10 @@ import { LabValueSection } from "@/components/marketing/lab-value-section";
 import { MarketingFooter } from "@/components/marketing/marketing-footer";
 import { MarketingHeader } from "@/components/marketing/marketing-header";
 import { MarketingHeaderFallback } from "@/components/marketing/marketing-header-fallback";
+import { insideLabMembership } from "@/lib/billing";
 
 export const metadata: Metadata = {
-  description:
-    "Follow Stephen Pelkofer’s HYROX training, race decisions, and Lab Notes. See a sample training week and join Inside the Lab for $70/month.",
+  description: `Follow Stephen Pelkofer’s HYROX training, race decisions, and Lab Notes. See a sample training week and join Inside the Lab for ${insideLabMembership.priceLabel}.`,
   title: "Inside the Lab | Stephen Pelkofer’s Training & Analysis",
 };
 

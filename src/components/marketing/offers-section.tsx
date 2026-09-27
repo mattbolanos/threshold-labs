@@ -1,7 +1,7 @@
 import { IconArrowUpRight, IconCheck } from "@tabler/icons-react";
 import Link from "next/link";
 import { insideLabMembership } from "@/lib/billing";
-import { appMembershipUrl } from "@/lib/marketing-content";
+import { appMembership, appMembershipUrl } from "@/lib/marketing-content";
 import { MarketingContainer } from "./marketing-container";
 
 const memberships = [
@@ -20,7 +20,7 @@ const memberships = [
     id: "app-membership",
     number: "01",
     platform: "Training delivered through Everfit",
-    price: 40,
+    price: appMembership.price,
     title: "Threshold Lab App",
   },
   {
@@ -42,6 +42,9 @@ const memberships = [
     title: "Inside the Lab",
   },
 ] as const;
+
+const ctaClass =
+  "mt-auto flex items-center justify-between gap-3 rounded-xl bg-primary px-5 py-4 text-sm font-bold text-neutral-950 transition hover:brightness-110";
 
 export function OffersSection() {
   return (
@@ -101,13 +104,22 @@ export function OffersSection() {
               <p className="mb-6 text-sm font-medium text-white">
                 {product.fit}
               </p>
-              <Link
-                className="mt-auto flex items-center justify-between gap-3 rounded-xl bg-primary px-5 py-4 text-sm font-bold text-neutral-950 transition hover:brightness-110"
-                href={product.href}
-              >
-                {product.cta}
-                <IconArrowUpRight aria-hidden className="size-4" />
-              </Link>
+              {product.href === appMembershipUrl ? (
+                <a
+                  className={ctaClass}
+                  href={product.href}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  {product.cta}
+                  <IconArrowUpRight aria-hidden className="size-4" />
+                </a>
+              ) : (
+                <Link className={ctaClass} href={product.href}>
+                  {product.cta}
+                  <IconArrowUpRight aria-hidden className="size-4" />
+                </Link>
+              )}
               <p className="mt-3 text-center text-xs text-neutral-400">
                 {product.platform}
               </p>

@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { insideLabMembership } from "@/lib/billing";
+import { appMembership } from "@/lib/marketing-content";
 import { MarketingContainer } from "./marketing-container";
 
 const questions = [
   {
-    answer:
-      "Inside the Lab is access to Stephen’s training and analysis. If you want a structured program to follow for your own goals, choose the $40/month Threshold Lab App membership. The two products are purchased separately.",
+    answer: `Inside the Lab is access to Stephen’s training and analysis. If you want a structured program to follow for your own goals, choose the ${appMembership.priceLabel} Threshold Lab App membership. The two products are purchased separately.`,
     question: "Is this a training plan for me?",
   },
   {
